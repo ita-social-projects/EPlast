@@ -132,8 +132,14 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> AddAdmin(SectorAdministrationDTO newAdmin)
         {
-            await _sectorAdministrationService.AddSectorAdministratorAsync(newAdmin);
-
+            try
+            {
+                await _sectorAdministrationService.AddSectorAdministratorAsync(newAdmin);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"User {{{newAdmin.UserId}}} became Admin for governing body sector {{{newAdmin.SectorId}}}" +
                                    $" with role {{{newAdmin.AdminType.AdminTypeName}}}.");
 
@@ -161,7 +167,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Documents/{sectorId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int sectorId)
         {
             var sectorProfileDto = await _sectorService.GetSectorDocumentsAsync(sectorId);
@@ -186,7 +192,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("FileBase64/{fileName}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
             var fileBase64 = await _sectorDocumentsService.DownloadSectorDocumentAsync(fileName);
@@ -216,6 +222,22 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUserAccess(string userId)
         {
             return Ok(await _sectorService.GetUserAccessAsync(userId));
+        }
+
+        [HttpGet("GetUserAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserAdministrations(string UserId)
+        {
+            var userAdmins = await _sectorService.GetAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
+        }
+
+        [HttpGet("GetUserPreviousAdmins/{UserId}")]
+        public async Task<IActionResult> GetUserPreviousAdministrations(string UserId)
+        {
+            var userAdmins = await _sectorService.GetPreviousAdministrationsOfUserAsync(UserId);
+
+            return Ok(userAdmins);
         }
     }
 }

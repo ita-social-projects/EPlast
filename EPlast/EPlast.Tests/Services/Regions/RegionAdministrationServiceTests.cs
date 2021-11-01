@@ -136,7 +136,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task GetAdministrationAsyn_ReturnsIEnumerableRegionAdministrationDTO()
+        public async Task GetAdministrationAsync_ReturnsIEnumerableRegionAdministrationDTO()
         {
             // Arrange
             _repoWrapper.Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),

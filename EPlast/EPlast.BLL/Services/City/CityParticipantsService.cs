@@ -120,10 +120,10 @@ namespace EPlast.BLL.Services.City
                 
             };
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
-            var regId = await _cityService.GetByIdAsync(cityId);
+            var regionId = await _cityService.GetByIdAsync(cityId);
             var regionAdministrations =
                 await _repositoryWrapper.RegionAdministration.GetAllAsync(d =>
-                    d.UserId == userId && d.Status && d.RegionId != regId.RegionId);
+                    d.UserId == userId && d.Status && d.RegionId != regionId.RegionId);
             if (regionAdministrations != null)
             {
                 foreach (var elem in regionAdministrations)
@@ -132,7 +132,6 @@ namespace EPlast.BLL.Services.City
                     elem.Status = false;
                     _repositoryWrapper.RegionAdministration.Update(elem);
                 }
-
             }
 
             await _repositoryWrapper.SaveAsync();
@@ -344,10 +343,14 @@ namespace EPlast.BLL.Services.City
             {
                 var userMembershipDates = await _repositoryWrapper.UserMembershipDates
                             .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
-                userMembershipDates.DateEntry = isApproved ? DateTime.Now : default;
-                user.RegistredOn = DateTime.Now;
-                _repositoryWrapper.UserMembershipDates.Update(userMembershipDates);
-                await _repositoryWrapper.SaveAsync();
+                //Change entry date and register date only If the user enters the city for the first time
+                if (userMembershipDates.DateEntry == default)
+                {
+                    userMembershipDates.DateEntry = isApproved ? DateTime.Now : default;
+                    user.RegistredOn = DateTime.Now;
+                    _repositoryWrapper.UserMembershipDates.Update(userMembershipDates);
+                    await _repositoryWrapper.SaveAsync();
+                }
             }
         }
 

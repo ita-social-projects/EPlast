@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace EPlast.BLL.Interfaces.Region
         Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId);
         Task AddRegionAsync(RegionDTO region);
         Task EditRegionAsync(int regId, RegionDTO region);
+        Task<Tuple<IEnumerable<RegionObjectsDTO>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive);
         Task<RegionDTO> GetRegionByNameAsync(string Name);
         Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user);
         Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO);
@@ -69,6 +71,16 @@ namespace EPlast.BLL.Interfaces.Region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         Task RemoveFollowerAsync(int followerId);
+
+        /// <summary>
+        /// Get Active Regions Names
+        /// </summary>
+        IEnumerable<RegionNamesDTO> GetActiveRegionsNames();
+
+        /// <summary>
+        /// Get true if region name is exist
+        /// </summary>
+        /// <param name="name">The name of the region</param>
         Task<bool> CheckIfRegionNameExistsAsync(string name);
     }
 }

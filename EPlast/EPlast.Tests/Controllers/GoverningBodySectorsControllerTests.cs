@@ -258,13 +258,28 @@ namespace EPlast.Tests.Controllers
             //Act
             var result = await _controller.AddAdmin(testAdmin);
             var resultValue = (result as OkObjectResult)?.Value;
-
+            
             //Assert
             _sectorAdministrationService.Verify(x => x.AddSectorAdministratorAsync(
                 It.IsAny<SectorAdministrationDTO>()), Times.Once);
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()));
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(testAdmin, resultValue);
+        }
+
+        [Test]
+        public async Task AddAdmin_UserHasRestrictedRoles_ReturnsBadRequest()
+        {
+            //Arrange
+            _sectorAdministrationService
+                .Setup(x => x.AddSectorAdministratorAsync(It.IsAny<SectorAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var result = await _controller.AddAdmin(new SectorAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -421,6 +436,37 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(testAccesses, resultValue);
         }
 
+        [Test]
+        public async Task GetUserAdministrations_Valid_Test()
+        {
+            // Arrange
+            _sectorService
+                .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+
+            // Act
+            var result = await _controller.GetUserAdministrations("1");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserPreviousAdministrations_Valid_Test()
+        {
+            // Arrange
+            _sectorService
+                .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+
+            // Act
+            var result = await _controller.GetUserPreviousAdministrations("1");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
         private SectorDTO CreateSectorDto()
         {
             return new SectorDTO()

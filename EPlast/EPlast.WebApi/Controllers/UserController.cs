@@ -119,7 +119,7 @@ namespace EPlast.WebApi.Controllers
             var currentUser = await _userService.GetUserAsync(currentUserId);
             var focusUser = await _userService.GetUserAsync(focusUserId);
 
-            if(focusUser == null)
+            if (focusUser == null)
             {
                 _loggerService.LogError($"User not found. UserId:{focusUserId}");
                 return NotFound();
@@ -137,10 +137,9 @@ namespace EPlast.WebApi.Controllers
             }
 
             PersonalDataViewModel model;
-            if(isThisUser ||
+            if (isThisUser ||
                      isUserAdmin ||
-
-                     await _userService.IsUserInClubAsync(currentUser,focusUser) ||
+                     await _userService.IsUserInClubAsync(currentUser, focusUser) ||
                      await _userService.IsUserInCityAsync(currentUser, focusUser) ||
                      await _userService.IsUserInRegionAsync(currentUser, focusUser)
             )
@@ -150,7 +149,6 @@ namespace EPlast.WebApi.Controllers
                     User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
                     TimeToJoinPlast = (int)time.TotalDays,
                     IsUserPlastun = isFocusUserPlastun,
-                    
                 };
 
                 return Ok(model);
@@ -233,6 +231,35 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
+        [HttpPut("photo/{userid}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> EditProfilePhotoAsync(string userid, [FromBody] string imageBase64)
+        {
+            try
+            {
+                var currentUserId = _userManager.GetUserId(User);
+                var currentUser = await _userService.GetUserAsync(currentUserId);
+                var userToUpdate = await _userManagerService.FindByIdAsync(userid);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+
+                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
+                {
+                    await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
+                    _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
+                    return Ok("Photo successfully updated");
+                }
+
+                _loggerService.LogInformation($"User {currentUserId} cannot update profile photo of user {userid}");
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+            catch (Exception ex)
+            {
+                _loggerService.LogError($"Cannot update user photo because: {ex.Message}");
+                return BadRequest();
+            }
+        }
+
         /// <summary>
         /// Edit a user
         /// </summary>
@@ -311,10 +338,23 @@ namespace EPlast.WebApi.Controllers
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
-
+            var userViewModel = _mapper.Map<UserDTO, UserInfoViewModel>(user);
+            var userApproverViewModel = _mapper.Map<UserDTO, UserInfoViewModel>(currentUser);
+            var isUserHeadOfClub =
+                await _userManagerService.IsInRoleAsync(
+                    _mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead);
+            var isUserHeadDeputyOfClub =
+                await _userManagerService.IsInRoleAsync(
+                    _mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy);
+            var canApproveClubMember = ((clubApprover == null) && (userViewModel.ClubId == userApproverViewModel.ClubId
+                                                                   && canApprove && userId != currentUserId
+                                                                   && (isUserHeadOfClub ||
+                                                                       isUserHeadDeputyOfClub))) ||
+                                       await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
             var model = new UserApproversViewModel
             {
-                User = _mapper.Map<UserDTO, UserInfoViewModel>(user),
+                User = userViewModel,
+                CanApproveClubMember = canApproveClubMember,
                 CanApprove = canApprove,
                 CanApprovePlastMember = canApprovePlastMember,
                 TimeToJoinPlast = ((int)time.TotalDays),
@@ -323,8 +363,8 @@ namespace EPlast.WebApi.Controllers
                 CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
                 IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHead),
                 IsUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHeadDeputy),
-                IsUserHeadOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead),
-                IsUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy),
+                IsUserHeadOfClub = isUserHeadOfClub,
+                IsUserHeadDeputyOfClub = isUserHeadDeputyOfClub,
                 IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
                 IsUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHeadDeputy),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)

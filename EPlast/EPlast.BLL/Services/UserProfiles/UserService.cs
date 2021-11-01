@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services.UserProfiles
                         ThenInclude(g => g.Work).
                     Include(g => g.CityMembers).
                         ThenInclude(g => g.City).
-                        ThenInclude(g=>g.Region).
+                        ThenInclude(g => g.Region).
                     Include(g => g.ClubMembers).
                         ThenInclude(g => g.Club).
                     Include(g => g.UserProfile).
@@ -147,6 +147,15 @@ namespace EPlast.BLL.Services.UserProfiles
             user = SaveCorrectLinks(user);
             user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
+            await _repoWrapper.SaveAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task UpdatePhotoAsyncForBase64(UserDTO user, string photoBase64)
+        {
+            user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, photoBase64);
+            var userForUpdate = _mapper.Map<UserDTO, User>(user);
+            _repoWrapper.User.Update(userForUpdate);
             await _repoWrapper.SaveAsync();
         }
 
@@ -375,7 +384,7 @@ namespace EPlast.BLL.Services.UserProfiles
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
                                      || !(await IsApprovedCLubMember(focusUser.Id));
             bool sameClub = IsUserSameClub(currentUser, focusUser);
-            return ((isUserHeadDeputyOfClub && sameClub)||(isUserHeadOfClub && sameClub) || (isFocusUserPlastun && sameClub));
+            return ((isUserHeadDeputyOfClub && sameClub) || (isUserHeadOfClub && sameClub) || (isFocusUserPlastun && sameClub));
         }
 
         public async Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser)

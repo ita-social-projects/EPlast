@@ -255,7 +255,7 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
-            CityDTO cityDto = new CityDTO() { RegionId = 1 };
+            CityDTO cityDto = new CityDTO() { RegionId = fakeId };
             _cityService
                 .Setup(x => x.GetByIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(cityDto); 
@@ -321,7 +321,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                 .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             // Act
-            var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), "1");
+            var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
 
             // Assert
             _repoWrapper.Verify(x => x.SaveAsync());
