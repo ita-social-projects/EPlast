@@ -46,21 +46,25 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
 
-            var lowerRoles = new List<string>
+            var restrictedRoles = new List<string>
             {
                 Roles.RegisteredUser,
                 Roles.Supporter,
                 Roles.FormerPlastMember,
-                Roles.Interested
+                Roles.Interested,
+                Roles.GoverningBodyHead,
+                Roles.GoverningBodySecretary
             };
 
             var roles = await _userManager.GetRolesAsync(user);
 
-            if(roles.Intersect(lowerRoles).Any())
+            if (roles.Intersect(restrictedRoles).Any())
             {
-                throw new ArgumentException("Can't add a lowrole user");
+                throw new ArgumentException("Can't add with the restricted roles");
             }
-            var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
+            var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? 
+                Roles.GoverningBodyHead : 
+                Roles.GoverningBodySecretary;
             await _userManager.AddToRoleAsync(user, adminRole);
 
             await CheckGoverningBodyHasAdmin(governingBodyAdministrationDto.GoverningBodyId, adminType.AdminTypeName);

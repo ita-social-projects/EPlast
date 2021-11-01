@@ -166,6 +166,21 @@ namespace EPlast.Tests.Controllers
                 .Where(n => n.Name.Equals("Курінь")));
         }
 
+        [Test]
+        public async Task GetClubUsers_CityId_ReturnsOk()
+        {
+            // Arrange
+            _clubService.Setup(x => x.GetClubUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<ClubUserDTO>());
+            int cityID = 1;
+
+            // Act
+            var result = await CreateClubController.GetCityUsers(cityID);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<ClubUserDTO>>((result as ObjectResult).Value);
+        }
+
         [TestCase(2)]
         public async Task GetProfile_Valid_Test(int id)
         {
@@ -176,12 +191,16 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()))
                 .Returns(new ClubViewModel());
             ClubController controller = CreateClubController;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            controller.ControllerContext.HttpContext = mockHttpContext.Object;
 
             // Act
             var result = await controller.GetProfile(id);
 
             // Assert
-            _mapper.Verify(m => m.Map<ClubProfileDTO, ClubViewModel>(It.IsAny<ClubProfileDTO>()));
+
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }

@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
-using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,13 @@ namespace EPlast.WebApi.Controllers
         private readonly IDecisionService _decisionService;
         private readonly IPdfService _pdfService;
         private readonly IMapper _mapper;
-        public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper)
+        private readonly IGoverningBodiesService _governingBodiesService;
+        public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper, IGoverningBodiesService governingBodiesService)
         {
             _pdfService = pdfService;
             _decisionService = decisionService;
             _mapper = mapper;
+            _governingBodiesService = governingBodiesService;
         }
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace EPlast.WebApi.Controllers
         {
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
             {
-                GoverningBodies = await _decisionService.GetGoverningBodyListAsync(),
+                GoverningBodies = await _governingBodiesService.GetGoverningBodiesListAsync(),
                 DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
                 DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
             };

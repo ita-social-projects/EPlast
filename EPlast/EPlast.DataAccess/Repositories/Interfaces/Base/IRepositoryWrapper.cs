@@ -52,6 +52,7 @@ namespace EPlast.DataAccess.Repositories
         IEventGallaryRepository EventGallary { get; }
         IEventStatusRepository EventStatus { get; }
         IEventTypeRepository EventType { get; }
+        IEventSectionRepository EventSection { get; }
         IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
         IGallaryRepository Gallary { get; }
         IGenderRepository Gender { get; }

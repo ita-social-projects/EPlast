@@ -7,6 +7,8 @@ using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -44,9 +46,27 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             };
 
             var user = await _userManager.FindByIdAsync(sectorAdministrationDto.UserId);
-            var role = adminType.AdminTypeName == Roles.GoverningBodySectorHead ?
-                Roles.GoverningBodySectorHead : Roles.GoverningBodySectorSecretary;
-            await _userManager.AddToRoleAsync(user, role);
+
+            var restrictedRoles = new List<string>
+            {
+                Roles.RegisteredUser,
+                Roles.Supporter,
+                Roles.FormerPlastMember,
+                Roles.Interested,
+                Roles.GoverningBodySectorHead,
+                Roles.GoverningBodySectorSecretary,
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Intersect(restrictedRoles).Any())
+            {
+                throw new ArgumentException("Can't add with the restricted roles");
+            }
+            var adminRole = adminType.AdminTypeName == Roles.GoverningBodySectorHead ?
+                Roles.GoverningBodySectorHead : 
+                Roles.GoverningBodySectorSecretary;
+            await _userManager.AddToRoleAsync(user, adminRole);
 
             await RemoveSectorAdminIfPresent(sectorAdministrationDto.SectorId, adminType.AdminTypeName);
 
@@ -93,7 +113,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 Roles.GoverningBodySectorHead : Roles.GoverningBodySectorSecretary;
             await _userManager.RemoveFromRoleAsync(user, role);
 
-            _repositoryWrapper.GoverningBodySectorAdministration.Delete(admin);
+            _repositoryWrapper.GoverningBodySectorAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
         }
 

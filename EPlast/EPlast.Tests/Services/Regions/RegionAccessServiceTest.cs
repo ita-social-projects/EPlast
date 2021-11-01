@@ -294,7 +294,7 @@ namespace EPlast.Tests.Services.Regions
         private List<RegionForAdministrationDTO> _expected = new List<RegionForAdministrationDTO>
         {
             new RegionForAdministrationDTO
-                {ID = 1, RegionName = "TestRegionName", YearsHasReport = new List<int> {DateTime.Now.Year}}
+                {ID = 1, RegionName = "TestRegionName", YearsHasReport = new List<int> {DateTime.Now.Year}, IsActive = true}
         };
     }
 }

@@ -1,13 +1,14 @@
-﻿using EPlast.BLL.Interfaces.Events;
+﻿using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -20,11 +21,13 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IActionManager _actionManager;
         private readonly UserManager<User> _userManager;
+        private readonly IEventCategoryManager _eventCategoryManager;
 
-        public EventsController(IActionManager actionManager, UserManager<User> userManager)
+        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventCategoryManager eventCategoryManager)
         {
             _actionManager = actionManager;
             _userManager = userManager;
+            _eventCategoryManager = eventCategoryManager;
         }
 
         /// <summary>
@@ -56,9 +59,24 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get event categories of the appropriate event type.
+        /// Get all event sections
+        /// </summary>
+        /// <returns>Array of data for creating event</returns>
+        /// <response code="200">Instance of EventCreateDTO</response>
+        /// <response code="400">When the EventCreateDTO is null or empty</response> 
+        [HttpGet("sections")]
+        public async Task<IActionResult> GetSections()
+        {
+            var eventSections = await _actionManager.GetEventSectionsAsync();
+
+            return Ok(eventSections);
+        }
+
+        /// <summary>
+        /// Get event categories of the appropriate event type. If type is Акція - get all event categories.
         /// </summary>
         /// <returns>List of event categories of the appropriate event type.</returns>
+        /// <param name="typeId">The Id of event type</param>
         /// <param name="page">A number of the page</param>
         /// <param name="pageSize">A count of categories to display</param>
         /// <response code="200">List of event categories</response>
@@ -66,12 +84,36 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Events does not exist</response> 
         [HttpGet("types/{typeId:int}/categories/{page:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetCategoriesByPage(int page, int pageSize)
+        public async Task<IActionResult> GetCategoriesByTypeAndPageAsync(int typeId, int page, int pageSize)
         {
-            var categories = await _actionManager.GetActionCategoriesAsync();
+            IEnumerable<BLL.DTO.Events.EventCategoryDTO> categories;
+            if (typeId == 1)
+            {
+                categories = await _actionManager.GetActionCategoriesAsync();
+            }
+            else
+            {
+                categories = await _actionManager.GetCategoriesByTypeIdAsync(typeId);
+            }
             var categoriesViewModel = new EventsCategoryViewModel(page, pageSize, categories);
 
             return Ok(categoriesViewModel);
+        }
+
+        /// <summary>
+        /// Create a new category
+        /// </summary>
+        /// <returns>A newly created category</returns>
+        /// <param name="createDTO"></param>
+        /// <response code="201">Instance of EventCategoryCreateDTO</response>
+        /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
+        [HttpPost("newCategory")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDTO createDTO)
+        {
+            createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
+
+            return Ok(createDTO);
         }
 
         /// <summary>
@@ -92,10 +134,20 @@ namespace EPlast.WebApi.Controllers
         }
 
 
+        /// <summary>
+        /// Get events of the appropriate event type, event category and event status.
+        /// </summary>
+        /// <returns>List of events of the appropriate event type, event category and event status.</returns>
+        /// <param name="typeId">The Id of event type</param>
+        /// <param name="categoryId">The Id of event category</param>
+        /// <param name="status">The status of event</param>
+        /// <response code="200">List of events</response>
+        /// <response code="400">Server could not understand the request due to i
+        /// nvalid syntax</response> 
+        /// <response code="404">Events don't exist</response> 
 
         [HttpGet("~/api/types/{typeId:int}/categories/{categoryId:int}/events/{status}")]
-       
-        public async Task<IActionResult> GetEventsByCategory(int typeId, int categoryId, int status)
+        public async Task<IActionResult> GetEventsByCategoryAndStatus(int typeId, int categoryId, int status)
         {
             return Ok(await _actionManager.GetEventsByStatusAsync(categoryId, typeId, status, await _userManager.GetUserAsync(User)));
         }
@@ -145,7 +197,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetPictures(int eventId)
         {
             var pictures = await _actionManager.GetPicturesAsync(eventId);
-            
+
             return Ok(pictures);
         }
 
@@ -262,7 +314,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> FillEventGallery(int eventId, [FromForm] IList<IFormFile> files)
         {
-                return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));      
+            return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));
         }
 
 
