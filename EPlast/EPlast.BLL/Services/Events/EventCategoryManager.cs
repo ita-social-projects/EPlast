@@ -1,5 +1,7 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +13,13 @@ namespace EPlast.BLL.Services.Events
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IEventTypeManager _eventTypeManager;
+        private readonly IMapper _mapper;
 
-        public EventCategoryManager(IRepositoryWrapper repoWrapper, IEventTypeManager eventTypeManager)
+        public EventCategoryManager(IRepositoryWrapper repoWrapper, IEventTypeManager eventTypeManager, IMapper mapper)
         {
             _repoWrapper = repoWrapper;
             _eventTypeManager = eventTypeManager;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<EventCategoryDTO>> GetDTOAsync()
@@ -53,10 +57,28 @@ namespace EPlast.BLL.Services.Events
                 .Select(eventTypeCategory => new EventCategoryDTO()
                 {
                     EventCategoryId = eventTypeCategory.EventCategoryId,
-                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
+                    EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName,
+                    EventSectionId = eventTypeCategory.EventCategory.EventSectionId
                 });
 
             return dto;
+        }
+
+        /// <inheritdoc />
+        public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDTO model)
+        {
+            var eventCategoryToCreate = _mapper.Map<EventCategoryDTO, EventCategory>(model.EventCategory);
+
+            await _repoWrapper.EventCategory.CreateAsync(eventCategoryToCreate);
+            await _repoWrapper.EventCategoryType.CreateAsync(new EventCategoryType()
+            {
+                EventCategory = eventCategoryToCreate,
+                EventTypeId = model.EventTypeId
+            });
+
+            await _repoWrapper.SaveAsync();
+
+            return eventCategoryToCreate.ID;
         }
     }
 }

@@ -562,14 +562,33 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _regionService.Setup(x => x.GetRegions()).ReturnsAsync(GetAdminRegions());
+            
             // Act
             var result = await _regionController.GetRegions();
             var actual = (result as ObjectResult).Value;
+            
             // Assert
             _regionService.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDTO>>(actual);
+        }
+
+        [Test]
+        public void GetActiveRegionsNames_ReturnsActiveRegionsNames()
+        {
+            // Arrange
+            _regionService.Setup(x => x.GetActiveRegionsNames()).Returns(GetRegionNames());
+            
+            // Act
+            var result = _regionController.GetActiveRegionsNames();
+            var actual = (result as ObjectResult).Value;
+            
+            // Assert
+            _regionService.Verify();
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(actual);
         }
 
         [Test]
@@ -940,12 +959,17 @@ namespace EPlast.Tests.Controllers
                 .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
                 .ReturnsAsync(CreateTuple);
             var expected = StatusCodes.Status200OK;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
+
             // Act
             var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-            _regionService.Verify();
+            _regionService.Verify((u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive)));
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }
@@ -1054,10 +1078,21 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionForAdministrationDTO>()
             {
-                new RegionForAdministrationDTO(){ ID =2, RegionName="Lviv"},
-                new RegionForAdministrationDTO(){ ID =3},
-                new RegionForAdministrationDTO(){ ID =4},
-                new RegionForAdministrationDTO(){ ID =5}
+                new RegionForAdministrationDTO(){ ID = 2, RegionName="Lviv"},
+                new RegionForAdministrationDTO(){ ID = 3 },
+                new RegionForAdministrationDTO(){ ID = 4 },
+                new RegionForAdministrationDTO(){ ID = 5 }
+            };
+        }
+
+        private IEnumerable<RegionNamesDTO> GetRegionNames()
+        {
+            return new List<RegionNamesDTO>()
+            {
+                new RegionNamesDTO(){ ID = 2, RegionName="Lviv"},
+                new RegionNamesDTO(){ ID = 3 },
+                new RegionNamesDTO(){ ID = 4 },
+                new RegionNamesDTO(){ ID = 5 }
             };
         }
 
@@ -1065,10 +1100,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionAdministrationDTO>()
             {
-                new RegionAdministrationDTO(){ ID =2 },
-                new RegionAdministrationDTO(){ ID =3 },
-                new RegionAdministrationDTO(){ ID =4 },
-                new RegionAdministrationDTO(){ ID =5 }
+                new RegionAdministrationDTO(){ ID = 2 },
+                new RegionAdministrationDTO(){ ID = 3 },
+                new RegionAdministrationDTO(){ ID = 4 },
+                new RegionAdministrationDTO(){ ID = 5 }
             };
         }
 
@@ -1076,10 +1111,10 @@ namespace EPlast.Tests.Controllers
         {
             return new List<RegionDTO>()
             {
-                new RegionDTO(){ ID =2, RegionName="Lviv"},
-                new RegionDTO(){ ID =3},
-                new RegionDTO(){ ID =4},
-                new RegionDTO(){ ID =5}
+                new RegionDTO(){ ID = 2, RegionName="Lviv"},
+                new RegionDTO(){ ID = 3 },
+                new RegionDTO(){ ID = 4 },
+                new RegionDTO(){ ID = 5 }
             };
         }
         private Tuple<IEnumerable<RegionObjectsDTO>, int> CreateTuple => new Tuple<IEnumerable<RegionObjectsDTO>, int>(CreateRegionObjects, 100);

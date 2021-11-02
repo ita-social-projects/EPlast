@@ -1495,6 +1495,9 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
 
@@ -1526,6 +1529,9 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<int>("GoverningBodyId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");

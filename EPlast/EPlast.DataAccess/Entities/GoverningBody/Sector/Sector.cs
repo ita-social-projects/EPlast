@@ -22,5 +22,6 @@ namespace EPlast.DataAccess.Entities.GoverningBody.Sector
 
         public ICollection<SectorAdministration> Administration { get; set; }
         public ICollection<SectorDocuments> Documents { get; set; }
+        public bool IsActive { get; set; }
     }
 }

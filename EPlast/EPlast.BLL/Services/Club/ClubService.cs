@@ -24,9 +24,9 @@ namespace EPlast.BLL.Services.Club
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
         private readonly IClubBlobStorageRepository _clubBlobStorage;
-        private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<DataAccessClub.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
+
         private const int MembersDisplayCount = 9;
         private const int FollowersDisplayCount = 6;
         private const int DocumentsDisplayCount = 6;
@@ -44,7 +44,6 @@ namespace EPlast.BLL.Services.Club
             _mapper = mapper;
             _env = env;
             _clubBlobStorage = clubBlobStorage;
-            _clubAccessService = clubAccessService;
             _userManager = userManager;
             _uniqueId = uniqueId;
         }
@@ -119,6 +118,16 @@ namespace EPlast.BLL.Services.Club
                            .ThenInclude(d => d.ClubDocumentType));
 
             return _mapper.Map<DataAccessClub.Club, ClubDTO>(club);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ClubUserDTO>> GetClubUsersAsync(int clubId)
+        {
+            var clubMembers = await _repoWrapper.ClubMembers.GetAllAsync(d => d.ClubId == clubId,
+                include: source => source
+                    .Include(t => t.User));
+            var users = clubMembers.Select(x => x.User);
+            return _mapper.Map<IEnumerable<DataAccessClub.User>, IEnumerable<ClubUserDTO>>(users);
         }
 
         private async Task<ClubProfileDTO> GetClubInfoAsync(int clubId)
@@ -204,58 +213,7 @@ namespace EPlast.BLL.Services.Club
         {
             var clubProfileDto = await GetClubProfileAsync(clubId);
             var userId = await _userManager.GetUserIdAsync(user);
-            var userRoles = await _userManager.GetRolesAsync(user);
 
-            var members = clubProfileDto.Members.Where(m => m.IsApproved).ToList();
-            var admins = clubProfileDto.Admins;
-            var followers = clubProfileDto.Followers.Where(m => !m.IsApproved).ToList();
-
-            foreach (var member in members)
-            {
-                var id = member.UserId;
-
-                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(
-                    upd => upd.UserId == id, 
-                    include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == id)?.PlastDegree;
-
-                member.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
-                {
-                    Id = userDegree.Id,
-                    Name = userDegree.Name,
-                };
-                var cityMembers = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(a => a.UserId == id);
-                if (cityMembers != null)
-                {
-                    var city = await _repoWrapper.City.GetFirstAsync(a => a.ID == cityMembers.CityId);
-                    member.User.CityName = city.Name.ToString();
-                }
-            }
-
-            foreach (var admin in admins)
-            {
-                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == admin.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == admin.UserId)?.PlastDegree;
-                admin.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
-                {
-                    Id = userDegree.Id,
-                    Name = userDegree.Name,
-                };
-            }
-
-            foreach (var follower in followers)
-            {
-                var userPlastDegree = await _repoWrapper.UserPlastDegree.GetAllAsync(upd => upd.UserId == follower.UserId, include: pd => pd.Include(d => d.PlastDegree));
-                var userDegree = userPlastDegree?.FirstOrDefault(u => u.UserId == follower.UserId)?.PlastDegree;
-                follower.User.PlastDegree = userDegree == null ? null : new DataAccessClub.PlastDegree
-                {
-                    Id = userDegree.Id,
-                    Name = userDegree.Name,
-                };
-            }
-
-            clubProfileDto.Club.CanCreate = userRoles.Contains(Roles.Admin);
-            clubProfileDto.Club.CanEdit = await _clubAccessService.HasAccessAsync(user, clubId);
             clubProfileDto.Club.CanJoin = (await _repoWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.User.Id == userId && u.ClubId == clubId)) == null;
 

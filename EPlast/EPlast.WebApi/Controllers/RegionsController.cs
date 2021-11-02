@@ -320,7 +320,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("FileBase64/{fileName}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetFileBase64(string fileName)
         {
             var fileBase64 = await _regionService.DownloadFileAsync(fileName);
@@ -477,7 +477,8 @@ namespace EPlast.WebApi.Controllers
             var regions = tuple.Item1;
             var regionsCount = tuple.Item2;
 
-            return StatusCode(StatusCodes.Status200OK, new { regions = regions, total = regionsCount });
+            return StatusCode(StatusCodes.Status200OK, new {page = page, pageSize = pageSize, regions = regions, total = regionsCount, canCreate = User.IsInRole(Roles.Admin)
+            });
         }
 
 
@@ -506,6 +507,18 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetRegions()
         {
             var regions = await _regionService.GetRegions();
+            return Ok(regions);
+        }
+
+        /// <summary>
+        /// Get active regions names
+        /// </summary>
+        /// <returns>List of regions names</returns>
+        [HttpGet("RegionsNames")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public IActionResult GetActiveRegionsNames()
+        {
+            var regions = _regionService.GetActiveRegionsNames();
             return Ok(regions);
         }
 
