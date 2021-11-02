@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.Internal;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -215,7 +216,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
 
-            admins.Where(a => a.Sector != null).Select(x => x.Sector.Administration = null);
+            admins.Where(a => a.Sector != null).ForAll(a => a.Sector.Administration = null);
 
             //var administrations = admins.ToList();
             //foreach (var admin in administrations)
