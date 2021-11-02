@@ -215,7 +215,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
 
-            foreach (var admin in admins)
+            var administrations = admins.ToList();
+            foreach (var admin in administrations)
             {
                 if (admin.Sector != null)
                 {
@@ -223,7 +224,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 }
             }
 
-            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(administrations);
         }
 
         public async Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
@@ -233,7 +234,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
 
-            foreach (var admin in admins)
+            var administrations = admins.ToList();
+            foreach (var admin in administrations)
             {
                 if (admin.Sector != null)
                 {
@@ -241,7 +243,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 }
             }
 
-            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins).Reverse();
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(administrations).Reverse();
         }
     }
 }

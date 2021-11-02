@@ -1,5 +1,8 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -8,6 +11,11 @@ namespace EPlast.DataAccess.Repositories
         public CityRepository(EPlastDBContext dbContext)
             : base(dbContext)
         {
+        }
+        public async Task<IEnumerable<City>> GetCityById(int cityId)
+        {
+            var cities = EPlastDBContext.Set<City>().FromSqlRaw("dbo.sp_GetCityProfile @CityId = {0}", cityId);
+            return cities;
         }
     }
 }
