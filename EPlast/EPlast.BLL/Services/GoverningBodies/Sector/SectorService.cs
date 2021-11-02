@@ -212,19 +212,21 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         {
             var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
-                 source => source.Include(c => c.User).Include(c => c.AdminType)
+                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
 
-            var administrations = admins.ToList();
-            foreach (var admin in administrations)
-            {
-                if (admin.Sector != null)
-                {
-                    admin.Sector.Administration = null;
-                }
-            }
+            admins.Where(a => a.Sector != null).Select(x => x.Sector.Administration = null);
 
-            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(administrations);
+            //var administrations = admins.ToList();
+            //foreach (var admin in administrations)
+            //{
+            //    if (admin.Sector != null)
+            //    {
+            //        admin.Sector.Administration = null;
+            //    }
+            //}
+
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins);
         }
 
         public async Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
