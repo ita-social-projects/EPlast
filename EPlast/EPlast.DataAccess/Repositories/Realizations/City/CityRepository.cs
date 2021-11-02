@@ -12,10 +12,5 @@ namespace EPlast.DataAccess.Repositories
             : base(dbContext)
         {
         }
-        public async Task<IEnumerable<City>> GetCityById(int cityId)
-        {
-            var cities = EPlastDBContext.Set<City>().FromSqlRaw("dbo.sp_GetCityProfile @CityId = {0}", cityId);
-            return cities;
-        }
     }
 }
