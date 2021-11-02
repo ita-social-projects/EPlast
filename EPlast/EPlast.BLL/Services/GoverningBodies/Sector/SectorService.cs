@@ -212,7 +212,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         {
             var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
-                 source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
+                 source => source.Include(c => c.User).Include(c => c.AdminType)
                  );
 
             var administrations = admins.ToList();
