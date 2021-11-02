@@ -93,12 +93,6 @@ namespace EPlast.BLL.Services
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
-        /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetCityByIdAsync(int cityId)
-        {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await _repoWrapper.City.GetCityById(cityId));
-        }
-
         public CityAdministrationDTO GetCityHead(CityDTO city)
         {
             var cityHead = city.CityAdministration?
