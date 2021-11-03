@@ -12,7 +12,8 @@ namespace EPlast.BLL.Services.PDF.Documents
         private const int TextWidth = 510;
         private const int LeftIndent = 60;
         private const string FontName = "Calibri";
-        private const int BaseFontSize = 10;     
+        private const int BaseFontSize = 10;
+
         public AnnualReportPdf(AnnualReport annualReport, IPdfSettings settings) : base(settings)
         {
             _annualReport = annualReport;
