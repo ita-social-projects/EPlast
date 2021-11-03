@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities;
 
 namespace EPlast.DataAccess.Repositories.Contracts
 {
