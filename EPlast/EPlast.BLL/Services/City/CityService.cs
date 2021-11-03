@@ -121,8 +121,6 @@ namespace EPlast.BLL.Services
         public async Task<CityProfileDTO> GetCityProfileAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
-            //var city = await GetCityByIdAsync(cityId);
-            //var cityProfile = city.First();
             if (city == null)
             {
                 return null;

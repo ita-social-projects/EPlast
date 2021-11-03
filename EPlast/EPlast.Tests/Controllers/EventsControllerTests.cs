@@ -23,6 +23,7 @@ namespace EPlast.Tests.Controllers
 
         private EventsController _eventsController;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IEventCategoryManager> _eventCategoryManager;
 
         [SetUp]
         public void SetUp()
@@ -30,10 +31,11 @@ namespace EPlast.Tests.Controllers
             _actionManager = new Mock<IActionManager>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-
+            _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventsController = new EventsController(
                 _actionManager.Object,
-                _userManager.Object);
+                _userManager.Object,
+                _eventCategoryManager.Object);
         }
 
         [Test]
@@ -117,6 +119,24 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task CreateEventCategory_ReturnsCreatedResult()
+        {
+            // Arrange
+            _eventCategoryManager
+                .Setup((x) => x.CreateEventCategoryAsync(CreateFakeEventCategory()))
+                .ReturnsAsync(It.IsAny<int>());
+            // Act
+            var result = await _eventsController.CreateEventCategory(CreateFakeEventCategory());
+            var resultValue = (result as OkObjectResult).Value;
+
+            // Assert
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<EventCategoryCreateDTO>(resultValue);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+
+        }
+
+        [Test]
         public async Task GetEvents_ReturnsOkObjectResult()
         {
             // Arrange
@@ -139,6 +159,48 @@ namespace EPlast.Tests.Controllers
 
         [Test]
         public async Task GetEvents_ListWithTwoItems_ReturnsListWithTwoCategories()
+        {
+            // Arrange
+            var listCount = 2;
+            _actionManager
+                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
+                .ReturnsAsync(CreateListOfFakeGeneralEvents());
+
+            var expected = listCount;
+
+            // Act
+            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
+
+            var actual = (result as ObjectResult).Value as List<GeneralEventDTO>;
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.AreEqual(expected, actual.Count);
+        }
+
+        [Test]
+        public async Task GetSections_ReturnsOkObjectResult()
+        {
+            // Arrange
+            _actionManager
+                .Setup((x) => x.GetEventSectionsAsync())
+                .ReturnsAsync(CreateListOfFakeEventSections());
+            var expectedCount = 2;
+
+            // Act
+            var result = await _eventsController.GetSections();
+            var resultObject = (result as OkObjectResult).Value;
+            var eventList = resultObject as List<EventSectionDTO>;
+
+            // Assert
+            Assert.NotNull(resultObject);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedCount, eventList.Count);
+
+        }
+
+        [Test]
+        public async Task GetSections_ListWithTwoItems_ReturnsListWithTwoCategories()
         {
             // Arrange
             var listCount = 2;
@@ -593,6 +655,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expectedCount, actual);
         }
+
         [Test]
         public async Task GetEventsByCategoryAndStatus_ReturnOkObjectResult()
         {
@@ -616,6 +679,7 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(expectedCount, categoryList.Count);
 
         }
+
         [Test]
         public async Task GetCategoriesByTypeAndPage_ReturnOkObjectResultTestAsync()
         {
@@ -675,12 +739,12 @@ namespace EPlast.Tests.Controllers
             => new List<EventCategoryDTO>()
             {
                 new EventCategoryDTO()
-                { 
+                {
                     EventCategoryId = 0,
                     EventCategoryName = "SomeEventCategoryName",
                 },
                 new EventCategoryDTO()
-                { 
+                {
                     EventCategoryId = 1,
                     EventCategoryName = "AnotherEventCategoryName",
                 },
@@ -702,6 +766,22 @@ namespace EPlast.Tests.Controllers
                 },
             };
 
+        private List<EventSectionDTO> CreateListOfFakeEventSections()
+            => new List<EventSectionDTO>()
+            {
+                new EventSectionDTO()
+                {
+                    EventSectionId = 0,
+                    EventSectionName = "SomeEventSectionName",
+
+                },
+                new EventSectionDTO()
+                {
+                    EventSectionId = 1,
+                    EventSectionName = "AnotherEventSectionName",
+                },
+            };
+
         private EventDTO CreateFakeEvent()
             => new EventDTO()
             {
@@ -711,6 +791,18 @@ namespace EPlast.Tests.Controllers
                     EventName = "SomeEventName",
                 },
                 
+            };
+
+        private EventCategoryCreateDTO CreateFakeEventCategory()
+            => new EventCategoryCreateDTO()
+            {
+                EventCategory = new EventCategoryDTO()
+                {
+                    EventCategoryId = 1,
+                    EventCategoryName = "new category",
+                    EventSectionId = 2
+                },
+                EventTypeId = 3
             };
 
         private List<EventGalleryDTO> CreateListOfFakeEventGallery()
@@ -728,6 +820,6 @@ namespace EPlast.Tests.Controllers
                 },
 
             };
-
+        
     }
 }

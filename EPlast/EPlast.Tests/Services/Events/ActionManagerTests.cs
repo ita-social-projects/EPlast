@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Linq;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Services.Events;
 using Microsoft.AspNetCore.Http;
 
@@ -129,6 +130,20 @@ namespace EPlast.Tests.Services.Events
 
             //Assert
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetEventSectionsTestAsync()
+        {
+            //Arrange
+            _mockEventWrapper.Setup(x => x.EventSectionManager.GetEventSectionsDTOAsync())
+                .ReturnsAsync(new List<EventSectionDTO>());
+            //Act
+            var methodResult = await _actionManager.GetEventSectionsAsync();
+
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsAssignableFrom<List<EventSectionDTO>>(methodResult);
         }
 
         private int testEventId = 1;

@@ -1,9 +1,9 @@
 ﻿using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -18,7 +18,17 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of all event types.</returns>
         Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync();
 
+        /// <summary>
+        /// Get all event categories.
+        /// </summary>
+        /// <returns>List of all event categories.</returns>
         Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync();
+
+        /// <summary>
+        /// Get all events sections.
+        /// </summary>
+        /// <returns>List of event sections.</returns>
+        Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync();
 
         /// <summary>
         /// Get list of event categories by event type Id.

@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -40,30 +40,31 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
         {
-            var dto = await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
-            return dto;
+            return await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
         {
-            var dto = await _eventWrapper.EventCategoryManager.GetDTOAsync();
-            return dto;
+            return await _eventWrapper.EventCategoryManager.GetDTOAsync();
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync()
+        {
+            return await _eventWrapper.EventSectionManager.GetEventSectionsDTOAsync();
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
-            var dto = await _eventWrapper.EventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
-
-            return dto;
+            return await _eventWrapper.EventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
         {
-            var dto = await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
-
-            return dto;
+            return await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
         }
 
         /// <inheritdoc />
@@ -76,9 +77,8 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
-
-            var dto = await GetEventDtosAsync(events, user);
-            return dto;
+            
+            return await GetEventDtosAsync(events, user);
         }
 
         /// <inheritdoc />
@@ -98,28 +98,35 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.Participants)
                         .ThenInclude(p => p.User)
                         .Include(e => e.Participants)
-                            .ThenInclude(p => p.ParticipantStatus)
+                        .ThenInclude(p => p.ParticipantStatus)
                         .Include(e => e.EventStatus)
                         .Include(e => e.EventAdministrations)
-                            .ThenInclude(a => a.User)
+                        .ThenInclude(a => a.User)
                         .Include(e => e.EventAdministrations)
-                            .ThenInclude(a => a.EventAdministrationType)
+                        .ThenInclude(a => a.EventAdministrationType)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
-                    );
+                );
 
             var dto = new EventDTO()
             {
                 Event = _mapper.Map<Event, EventInfoDTO>(targetEvent),
-                IsUserEventAdmin = (targetEvent.EventAdministrations.Any(evAdm => evAdm.UserID == _userManager.GetUserIdAsync(user).Result)) || isUserGlobalEventAdmin,
-                IsUserParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
-                IsUserApprovedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
-                IsUserUndeterminedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),
-                IsUserRejectedParticipant = targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
+                IsUserEventAdmin =
+                    (targetEvent.EventAdministrations.Any(evAdm =>
+                        evAdm.UserID == _userManager.GetUserIdAsync(user).Result)) || isUserGlobalEventAdmin,
+                IsUserParticipant =
+                    targetEvent.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
+                IsUserApprovedParticipant = targetEvent.Participants.Any(p =>
+                    p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
+                IsUserUndeterminedParticipant = targetEvent.Participants.Any(p =>
+                    p.UserId == _userManager.GetUserIdAsync(user).Result &&
+                    p.ParticipantStatusId == undeterminedStatus),
+                IsUserRejectedParticipant = targetEvent.Participants.Any(p =>
+                    p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == rejectedStatus),
                 IsEventFinished = targetEvent.EventStatusID == finishedEvent
             };
 
-            if (!dto.IsUserEventAdmin && dto.ParticipantAssessment !=0)
+            if (!dto.IsUserEventAdmin && dto.ParticipantAssessment != 0)
             {
                 dto.Event.EventParticipants = dto.Event.EventParticipants.Where(p => p.StatusId == approvedStatus);
             }
@@ -129,7 +136,8 @@ namespace EPlast.BLL.Services.Events
                 && (DateTime.Now < targetEvent.EventDateEnd.Add(new TimeSpan(3, 0, 0, 0))))
             {
                 dto.CanEstimate = true;
-                dto.ParticipantAssessment = targetEvent.Participants.First(p => p.UserId == _userManager.GetUserIdAsync(user).Result).Estimate;
+                dto.ParticipantAssessment = targetEvent.Participants
+                    .First(p => p.UserId == _userManager.GetUserIdAsync(user).Result).Estimate;
             }
 
             return dto;
@@ -214,36 +222,31 @@ namespace EPlast.BLL.Services.Events
         /// <inheritdoc />
         public async Task<int> ApproveParticipantAsync(int id)
         {
-            int result = await _participantManager.ChangeStatusToApprovedAsync(id);
-            return result;
+            return await _participantManager.ChangeStatusToApprovedAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<int> UnderReviewParticipantAsync(int id)
         {
-            int result = await _participantManager.ChangeStatusToUnderReviewAsync(id);
-            return result;
+            return await _participantManager.ChangeStatusToUnderReviewAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<int> RejectParticipantAsync(int id)
         {
-            int result = await _participantManager.ChangeStatusToRejectedAsync(id);
-            return result;
+            return await _participantManager.ChangeStatusToRejectedAsync(id);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
-            var uploadedPictures = await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
-            return uploadedPictures;
+            return await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
         }
 
         /// <inheritdoc />
         public async Task<int> DeletePictureAsync(int id)
         {
-            int result = await _eventWrapper.EventGalleryManager.DeletePictureAsync(id);
-            return result;
+            return await _eventWrapper.EventGalleryManager.DeletePictureAsync(id);
         }
 
         public async Task CheckEventsStatusesAsync()
