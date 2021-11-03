@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -11,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Internal;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -97,7 +97,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         {
             var sectors = await _repoWrapper.GoverningBodySector.GetAllAsync(
                 s => s.GoverningBodyId == governingBodyId && s.IsActive);
-            return _mapper.Map<IEnumerable<GBSector>, IEnumerable <SectorDTO>>(sectors);
+            return _mapper.Map<IEnumerable<GBSector>, IEnumerable<SectorDTO>>(sectors);
         }
 
         public async Task<string> GetLogoBase64Async(string logoName)
@@ -114,7 +114,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             }
 
             var sectorHead = sector.Administration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodySectorHead 
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodySectorHead
                                      && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             var sectorAdmins = sector.Administration?
@@ -198,7 +198,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             sector.IsActive = false;
             var admins = (await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(x => x.SectorId == sectorId))
                 ?? new List<SectorAdministration>();
-            
+
             foreach (var admin in admins)
             {
                 await _sectorAdministrationService.RemoveAdministratorAsync(admin.Id);
