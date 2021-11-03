@@ -12,8 +12,7 @@ namespace EPlast.BLL.Services.PDF.Documents
         private const int TextWidth = 510;
         private const int LeftIndent = 60;
         private const string FontName = "Calibri";
-        private const int BaseFontSize = 10;
-        
+        private const int BaseFontSize = 10;     
         public AnnualReportPdf(AnnualReport annualReport, IPdfSettings settings) : base(settings)
         {
             _annualReport = annualReport;
@@ -207,7 +206,6 @@ namespace EPlast.BLL.Services.PDF.Documents
                 : (_annualReport.ImprovementNeeds.Split('\n').Length - 1) * 10;
             var textArea = new XRect(column1_X, currentRowY, textAreaWidth, 10 + additionalHeight);
             tf.DrawString((_annualReport.ListProperty != null ? $"{_annualReport.ListProperty}" : "Інформація відсутня"), font, XBrushes.Black, textArea, XStringFormats.TopLeft);
-
             currentRowY += 20 + additionalHeight;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
