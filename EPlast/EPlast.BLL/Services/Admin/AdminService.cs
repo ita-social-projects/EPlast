@@ -243,9 +243,10 @@ namespace EPlast.BLL.Services
             string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
             string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
+            string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
                 tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
-                tableFilterParameters.SortKey, tableFilterParameters.SearchData, tableFilterParameters.FilterRoles);
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 

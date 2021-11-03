@@ -348,8 +348,8 @@ namespace EPlast.Tests.Services.Regions
             var result = await _regionService.GetRegionDocsAsync(It.IsAny<int>());
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionDocumentDTO>>(result);
             Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<RegionDocumentDTO>>(result);
         }
 
         [Test]

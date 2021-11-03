@@ -41,7 +41,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task GetEventTypesTest()
+        public async Task GetEventTypesTestAsync()
         {
             //Arrange
 
@@ -56,7 +56,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task GetActionCategoriesTest()
+        public async Task GetActionCategoriesTestAsync()
         {
             //Arrange
             _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOAsync())
@@ -70,7 +70,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task GetCategoriesByTypeIdTest()
+        public async Task GetCategoriesByTypeIdTestAsync()
         {
             //Arrange
             var eventTypeId = 1;
@@ -85,7 +85,21 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task GetEventsTest()
+        public async Task GetEventSectionsTestAsync()
+        {
+            //Arrange
+            _eventWrapper.Setup(x => x.EventSectionManager.GetEventSectionsDTOAsync())
+                .ReturnsAsync(new List<EventSectionDTO>());
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var methodResult = await actionManager.GetEventSectionsAsync();
+            //Assert
+            Assert.NotNull(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventSectionDTO>>(methodResult);
+        }
+
+        [Fact]
+        public async Task GetEventsTestAsync()
         {
             //Arrange
             string expectedID = "abc-1";
@@ -119,7 +133,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(GetEvents().Count(), methodResult.Count());
         }
         [Fact]
-        public async Task GetEventInfoTest()
+        public async Task GetEventInfoTestAsync()
         {
             //Arrange
             string expectedID = "abc-1";
@@ -143,7 +157,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task DeleteEventSuccessTest()
+        public async Task DeleteEventSuccessTestAsync()
         {
             //Arrange
             int testEventId = 2;
@@ -159,7 +173,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task DeleteEventFailTest()
+        public async Task DeleteEventFailTestAsync()
         {
             //Arrange
             int testEventId = 2;
@@ -173,7 +187,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task SubscribeOnEventSuccessTest()
+        public async Task SubscribeOnEventSuccessTestAsync()
         {
             //Arrange
             int testEventId = 2;
@@ -191,7 +205,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public async Task SubscribeOnEventFailTest()
+        public async Task SubscribeOnEventFailTestAsync()
         {
             //Arrange
             int testEventId = 2;
@@ -210,7 +224,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task UnSubscribeOnEventSuccessTest()
+        public async Task UnSubscribeOnEventSuccessTestAsync()
         {
             //Arrange
             int testEventId = 2;
@@ -228,7 +242,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public async Task UnSubscribeOnEventFailTest()
+        public async Task UnSubscribeOnEventFailTestAsync()
         {
             //Arrange
             int testEventId = 2;
@@ -247,7 +261,7 @@ namespace EPlast.XUnitTest.Services.Events
         }
 
         [Fact]
-        public async Task ApproveParticipantTest()
+        public async Task ApproveParticipantTestAsync()
         {
             //Arrange
             int testParticipantId = 3;
@@ -260,7 +274,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public async Task UnderReviewParticipantTest()
+        public async Task UnderReviewParticipantTestAsync()
         {
             //Arrange
             int testParticipantId = 3;
@@ -273,7 +287,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public async Task RejectParticipantTest()
+        public async Task RejectParticipantTestAsync()
         {
             //Arrange
             int testParticipantId = 3;
@@ -286,7 +300,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.Equal(StatusCodes.Status200OK, methodResult);
         }
         [Fact]
-        public async Task GetPicturesTest()
+        public async Task GetPicturesTestAsync()
         {
             //Arrange
             int eventId = 3;
@@ -300,7 +314,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.IsType<List<EventGalleryDTO>>(methodResult);
         }
         [Fact]
-        public async Task FillEventGalleryTest()
+        public async Task FillEventGalleryTestAsync()
         {
             //Arrange
             int eventId = 3;
@@ -314,7 +328,7 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.IsType<List<EventGalleryDTO>>(methodResult);
         }
         [Fact]
-        public async Task DeletePictureTest()
+        public async Task DeletePictureTestAsync()
         {
             //Arrange
             int eventId = 3;
