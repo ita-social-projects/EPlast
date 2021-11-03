@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -96,7 +97,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         {
             var sectors = await _repoWrapper.GoverningBodySector.GetAllAsync(
                 s => s.GoverningBodyId == governingBodyId && s.IsActive);
-            return _mapper.Map<IEnumerable<GBSector>, IEnumerable <SectorDTO>>(sectors);
+            return _mapper.Map<IEnumerable<GBSector>, IEnumerable<SectorDTO>>(sectors);
         }
 
         public async Task<string> GetLogoBase64Async(string logoName)
@@ -113,7 +114,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             }
 
             var sectorHead = sector.Administration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodySectorHead 
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.GoverningBodySectorHead
                                      && (DateTime.Now < a.EndDate || a.EndDate == null));
 
             var sectorAdmins = sector.Administration?
@@ -197,7 +198,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             sector.IsActive = false;
             var admins = (await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(x => x.SectorId == sectorId))
                 ?? new List<SectorAdministration>();
-            
+
             foreach (var admin in admins)
             {
                 await _sectorAdministrationService.RemoveAdministratorAsync(admin.Id);
@@ -214,14 +215,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
-
-            foreach (var admin in admins)
-            {
-                if (admin.Sector != null)
-                {
-                    admin.Sector.Administration = null;
-                }
-            }
+            admins.Where(a => a.Sector != null).ForAll(a => a.Sector.Administration = null);
 
             return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins);
         }
@@ -232,14 +226,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
-
-            foreach (var admin in admins)
-            {
-                if (admin.Sector != null)
-                {
-                    admin.Sector.Administration = null;
-                }
-            }
+            admins.Where(a => a.Sector != null).ForAll(a => a.Sector.Administration = null);
 
             return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins).Reverse();
         }
