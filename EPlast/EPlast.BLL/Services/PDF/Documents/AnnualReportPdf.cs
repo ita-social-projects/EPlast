@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.ExtensionMethods;
 using EPlast.DataAccess.Entities;
 using PdfSharpCore.Drawing;
+using PdfSharpCore.Drawing.Layout;
 using PdfSharpCore.Pdf;
 
 namespace EPlast.BLL.Services.PDF.Documents
@@ -10,9 +11,9 @@ namespace EPlast.BLL.Services.PDF.Documents
         private readonly AnnualReport _annualReport;
         private const int TextWidth = 510;
         private const int LeftIndent = 60;
-        private const string FontName = "Times New Roman";
+        private const string FontName = "Calibri";
         private const int BaseFontSize = 10;
-
+        
         public AnnualReportPdf(AnnualReport annualReport, IPdfSettings settings) : base(settings)
         {
             _annualReport = annualReport;
@@ -33,10 +34,11 @@ namespace EPlast.BLL.Services.PDF.Documents
             int column2_X = 200;
             int column3_X = 500;
             int topRectHeight = 100;
+            int additionalHeight = 0;
+            int textAreaWidth = 500;
             XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
             XFont font = new XFont(FontName, BaseFontSize, XFontStyle.Regular, options);
             XPen pen = new XPen(XColors.Black);
-
             XStringFormat format = new XStringFormat();
 
 
@@ -189,25 +191,34 @@ namespace EPlast.BLL.Services.PDF.Documents
             page = document.AddPage();
             // Also missing:
             gfx = XGraphics.FromPdfPage(page);
+            XTextFormatter tf = new XTextFormatter(gfx);
             currentRowY = 40;
 
             gfx.DrawString("Майно та потреби станиці", font, XBrushes.Black, 250, currentRowY, format);
             currentRowY += 15;
             gfx.DrawString(
-                "Вкажіть, що вам допоможе ефективніше залучати волонтерів та створювати виховні частини (гнізда, курені)",
+                "Вкажіть, що вам допоможе ефективніше залучати волонтерів та створювати виховні частини (гнізда, курені):",
                 new XFont(FontName, BaseFontSize, XFontStyle.Italic, options), XBrushes.Black, column1_X,
                 currentRowY, format);
             currentRowY += 15;
-            gfx.DrawString($"{_annualReport.ListProperty}", font, XBrushes.Black, column1_X, currentRowY, format);
 
-            currentRowY += 20;
+            additionalHeight = _annualReport.ImprovementNeeds == null
+                ? 0
+                : (_annualReport.ImprovementNeeds.Split('\n').Length - 1) * 10;
+            var textArea = new XRect(column1_X, currentRowY, textAreaWidth, 10 + additionalHeight);
+            tf.DrawString((_annualReport.ListProperty != null ? $"{_annualReport.ListProperty}" : "Інформація відсутня"), font, XBrushes.Black, textArea, XStringFormats.TopLeft);
+
+            currentRowY += 20 + additionalHeight;
             gfx.DrawLine(pen, lineStart, currentRowY, lineEnd, currentRowY);
             //////////////////////////////////////////////////////////
             currentRowY += 15;
             gfx.DrawString("Вкажіть перелік майна, що є в станиці:", new XFont(FontName, BaseFontSize, XFontStyle.Italic, options), XBrushes.Black, column1_X, currentRowY, format);
             currentRowY += 20;
-            gfx.DrawString($"{_annualReport.ImprovementNeeds}", font, XBrushes.Black, column1_X, currentRowY, format);
-
+            additionalHeight = _annualReport.ImprovementNeeds == null
+                ? 0
+                : (_annualReport.ImprovementNeeds.Split('\n').Length - 1) * 10;
+            textArea = new XRect(column1_X, currentRowY, textAreaWidth, 10 + additionalHeight);
+            tf.DrawString((_annualReport.ImprovementNeeds != null ? $"{_annualReport.ImprovementNeeds}" : "Інформація відсутня"), font, XBrushes.Black, textArea, format);
         }
     }
 }
