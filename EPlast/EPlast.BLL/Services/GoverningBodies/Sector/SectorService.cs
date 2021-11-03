@@ -215,17 +215,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.Sector)
                  );
-
             admins.Where(a => a.Sector != null).ForAll(a => a.Sector.Administration = null);
-
-            //var administrations = admins.ToList();
-            //foreach (var admin in administrations)
-            //{
-            //    if (admin.Sector != null)
-            //    {
-            //        admin.Sector.Administration = null;
-            //    }
-            //}
 
             return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins);
         }
