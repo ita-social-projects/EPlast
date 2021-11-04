@@ -125,22 +125,31 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
+            const int membersToShow = 9;
+            const int followersToShow = 6;
+            const int adminsToShow = 6;
+            const int documentToShow = 6;
             var cityHead = GetCityHead(city);
             var cityHeadDeputy = GetCityHeadDeputy(city);
-            var cityAdmins = GetCityAdmins(city);
+            var cityAdmins = city.CityAdministration
+                .Where(a => a.Status)
+                .Take(adminsToShow)
+                .ToList();
             city.AdministrationCount = city.CityAdministration == null ? 0
                 : city.CityAdministration.Count(a => a.Status);
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
+                .Take(membersToShow)
                 .ToList();
             city.MemberCount = city.CityMembers
                 .Count(m => m.IsApproved);
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
+                .Take(followersToShow)
                 .ToList();
             city.FollowerCount = city.CityMembers
                 .Count(m => !m.IsApproved);
-            var cityDoc = city.CityDocuments.ToList();
+            var cityDoc = city.CityDocuments.Take(documentToShow).ToList();
             city.DocumentsCount = city.CityDocuments.Count();
 
             var cityProfileDto = new CityProfileDTO
