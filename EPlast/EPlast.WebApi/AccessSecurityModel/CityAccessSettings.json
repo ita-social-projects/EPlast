@@ -8,7 +8,7 @@
     "AddCityHead": true,
     "DownloadDocument": true
   },
-  "Голова Округи": {
+  "Р“РѕР»РѕРІР° РћРєСЂСѓРіРё": {
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
@@ -17,7 +17,7 @@
     "AddCityHead": false,
     "DownloadDocument": true
   },
-  "Заступник Голови Округи": {
+  "Р—Р°СЃС‚СѓРїРЅРёРє Р“РѕР»РѕРІРё РћРєСЂСѓРіРё": {
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
@@ -26,7 +26,7 @@
     "AddCityHead": false,
     "DownloadDocument": true
   },
-  "Голова Станиці": {
+  "Р“РѕР»РѕРІР° РЎС‚Р°РЅРёС†С–": {
     "IsAdmin": true,
     "EditCity": true,
     "CreateCity": false,
@@ -35,7 +35,7 @@
     "AddCityHead": true,
     "DownloadDocument": true
   },
-  "Заступник Голови Станиці": {
+  "Р—Р°СЃС‚СѓРїРЅРёРє Р“РѕР»РѕРІРё РЎС‚Р°РЅРёС†С–": {
     "IsAdmin": true,
     "EditClub": true,
     "CreateClub": false,
@@ -44,7 +44,7 @@
     "AddCityHead": false,
     "DownloadDocument": true
   },
-  "Голова Куреня": {
+  "Р“РѕР»РѕРІР° РљСѓСЂРµРЅСЏ": {
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
@@ -53,7 +53,7 @@
     "AddCityHead": false,
     "DownloadDocument": false
   },
-  "Заступник Голови Куреня": {
+  "Р—Р°СЃС‚СѓРїРЅРёРє Р“РѕР»РѕРІРё РљСѓСЂРµРЅСЏ": {
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
@@ -62,7 +62,7 @@
     "AddCityHead": false,
     "DownloadDocument": false
   },
-  "Прихильник": {
+  "РџСЂРёС…РёР»СЊРЅРёРє": {
     "IsAdmin": false,
     "EditCity": false,
     "CreateCity": false,
@@ -71,7 +71,7 @@
     "AddCityHead": false,
     "DownloadDocument": true
   },
-  "Дійсний член організації": {
+  "Р”С–Р№СЃРЅРёР№ С‡Р»РµРЅ РѕСЂРіР°РЅС–Р·Р°С†С–С—": {
     "IsAdmin": false,
     "EditCity": false,
     "CreateCity": false,
@@ -80,7 +80,7 @@
     "AddCityHead": false,
     "DownloadDocument": true
   },
-  "Зареєстрований користувач": {
+  "Р—Р°СЂРµС”СЃС‚СЂРѕРІР°РЅРёР№ РєРѕСЂРёСЃС‚СѓРІР°С‡": {
     "IsAdmin": false,
     "EditCity": false,
     "CreateCity": false,
