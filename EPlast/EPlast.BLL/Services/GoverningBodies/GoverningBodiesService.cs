@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Internal;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.Interfaces;
@@ -222,14 +223,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.GoverningBody)
                  );
 
-            foreach (var admin in admins)
-            {
-                if (admin.GoverningBody != null)
-                {
-                    admin.GoverningBody.GoverningBodyAdministration = null;
-                }
-            }
-
+            admins.Where(x => x.GoverningBody != null).ForAll(x => x.GoverningBody.GoverningBodyAdministration = null);
             return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins);
         }
 
@@ -240,14 +234,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.GoverningBody)
                  );
 
-            foreach (var admin in admins)
-            {
-                if (admin.GoverningBody != null)
-                {
-                    admin.GoverningBody.GoverningBodyAdministration = null;
-                }
-            }
-
+            admins.Where(x => x.GoverningBody != null).ForAll(x => x.GoverningBody.GoverningBodyAdministration = null);
             return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins).Reverse();
         }
     }
