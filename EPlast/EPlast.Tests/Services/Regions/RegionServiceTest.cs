@@ -333,6 +333,36 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public void AddDocumentAsync_DocumentHasNoExtension_ThrowsArgumentExeption()
+        {
+            // Arrange
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "Name" };
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
+        }
+
+        [Test]
+        public void AddDocumentAsync_DocumentNameIsEmpty_ThrowsArgumentExeption()
+        {
+            // Arrange
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = ".doc" };
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
+        }
+
+        [Test]
+        public void AddDocumentAsync_DocumentHasWrongExtension_ThrowsArgumentExeption()
+        {
+            // Arrange
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "qwe.dejavu" };
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
+        }
+
+        [Test]
         public async Task GetRegionDocsAsync_ReturnsIEnumerableRegionDocumentDTO()
         {
             // Arrange
