@@ -25,7 +25,7 @@ namespace EPlast.BLL.Services
         private readonly IWebHostEnvironment _env;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
         private readonly ICityAccessService _cityAccessService;
-        private readonly UserManager<DataAccessCity.User> _userManager; 
+        private readonly UserManager<DataAccessCity.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
 
         public CityService(IRepositoryWrapper repoWrapper,
@@ -112,7 +112,6 @@ namespace EPlast.BLL.Services
         {
             var cityAdmins = city.CityAdministration
                 .Where(a => a.Status)
-                .Take(6)
                 .ToList();
             return cityAdmins;
         }
@@ -133,19 +132,17 @@ namespace EPlast.BLL.Services
                 : city.CityAdministration.Count(a => a.Status);
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
-                .Take(9)
                 .ToList();
             city.MemberCount = city.CityMembers
                 .Count(m => m.IsApproved);
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
-                .Take(6)
                 .ToList();
             city.FollowerCount = city.CityMembers
                 .Count(m => !m.IsApproved);
-            var cityDoc = city.CityDocuments.Take(6).ToList();
+            var cityDoc = city.CityDocuments.ToList();
             city.DocumentsCount = city.CityDocuments.Count();
-            
+
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
@@ -260,7 +257,7 @@ namespace EPlast.BLL.Services
                     .Include(t => t.User)
                     .Include(t => t.City)
                     .Include(t => t.AdminType));
-            var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>,IEnumerable<CityAdministrationGetDTO>>(admins);
+            var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(admins);
             return admin;
         }
 
