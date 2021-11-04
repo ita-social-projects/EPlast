@@ -225,8 +225,28 @@ namespace EPlast.BLL.Services.Region
         public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
-            var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
-            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+
+            var allowedExtensions = new List<string>() { "pdf", "doc", "docx" };
+
+            var dotIndex = documentDTO.FileName.LastIndexOf('.');
+            if (dotIndex == -1)
+            {
+                throw new ArgumentException("The file must have \'pdf\',\'doc\' or \'docx\' extension");
+            }
+
+            var name = documentDTO.FileName.Substring(0, dotIndex).Trim();
+            if (name == string.Empty)
+            {
+                throw new ArgumentException("The file name cannot be empty");
+            }
+
+            var extension = documentDTO.FileName.Substring(dotIndex + 1);
+            if (!allowedExtensions.Contains(extension))
+            {
+                throw new ArgumentException("The extension must be \'pdf\',\'doc\' or \'docx\'");
+            }
+
+            var fileName = $"{_uniqueId.GetUniqueId()}.{extension}";
             await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;
 

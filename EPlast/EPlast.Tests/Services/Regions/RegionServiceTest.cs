@@ -320,8 +320,8 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
 
-            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName="Some.FileName" };
-            RegionDocuments regionDocuments = new RegionDocuments() { ID = 2, BlobName = "Some, book", FileName = "Some.FileName" };
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName="Some.doc" };
+            RegionDocuments regionDocuments = new RegionDocuments() { ID = 2, BlobName = "Some, book", FileName = "Some.doc" };
             _mapper.Setup(x=>x.Map<RegionDocumentDTO, RegionDocuments>(doc))
                 .Returns(regionDocuments);
             _repoWrapper.Setup(x=>x.RegionDocument.Attach(regionDocuments));
