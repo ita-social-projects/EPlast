@@ -90,8 +90,7 @@ namespace EPlast.BLL.Services
                         .ThenInclude(a => a.User)
                     .Include(m => m.CityMembers)
                         .ThenInclude(u => u.User));
-            var a = _mapper.Map<DataAccessCity.City, CityDTO>(city);
-            return a;
+            return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
         public CityAdministrationDTO GetCityHead(CityDTO city)
