@@ -228,7 +228,7 @@ namespace EPlast.BLL.Services.Region
             var dotIndex = documentDTO.FileName.LastIndexOf('.');
             if (dotIndex == -1)
             {
-                throw new ArgumentException("The file must have \'pdf\',\'doc\' or \'docx\' extension");
+                throw new ArgumentException(@"The file must have 'pdf', 'doc' or 'docx' extension");
             }
 
             var fileName = documentDTO.FileName.Substring(0, dotIndex).Trim();
@@ -240,7 +240,7 @@ namespace EPlast.BLL.Services.Region
             var extension = documentDTO.FileName.Substring(dotIndex + 1);
             if (!allowedExtensions.Contains(extension))
             {
-                throw new ArgumentException("The extension must be \'pdf\',\'doc\' or \'docx\'");
+                throw new ArgumentException(@"The extension must be 'pdf', 'doc' or 'docx' format");
             }
             splittedName = new[] { fileName, extension };
         }
