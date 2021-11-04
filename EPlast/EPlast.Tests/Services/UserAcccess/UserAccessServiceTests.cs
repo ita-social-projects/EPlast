@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.UserAccess;
 using EPlast.DataAccess.Entities;
@@ -6,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.City;
 
 namespace EPlast.Tests.Services.UserAccess
 {
