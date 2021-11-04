@@ -125,10 +125,10 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            int membersToShow = 9;
-            int followersToShow = 6;
-            int adminsToShow = 6;
-            int documentToShow = 6;
+            const int membersToShow = 9;
+            const int followersToShow = 6;
+            const int adminsToShow = 6;
+            const int documentToShow = 6;
             var cityHead = GetCityHead(city);
             var cityHeadDeputy = GetCityHeadDeputy(city);
             var cityAdmins = city.CityAdministration
