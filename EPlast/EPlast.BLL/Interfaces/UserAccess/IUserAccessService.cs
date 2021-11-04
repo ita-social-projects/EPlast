@@ -12,5 +12,10 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// Returns dictionary with user accesses for clubs
         /// </summary>
         Task<Dictionary<string, bool>> GetUserClubAccessAsync(int clubId, string userId, User user);
+
+        /// <summary>
+        /// Returns dictionary with user accesses for cities
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserCityAccessAsync(int clubId, string userId, User user);
     }
 }

@@ -30,5 +30,12 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserClubAccessAsync(clubId, userId, await _userManager.GetUserAsync(User)));
         }
+
+        [HttpGet("GetUserCityAccess/{cityId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserCityAccess(int cityId, string userId)
+        {
+            return Ok(await _userAccessService.GetUserCityAccessAsync(cityId, userId, await _userManager.GetUserAsync(User)));
+        }
     }
 }
