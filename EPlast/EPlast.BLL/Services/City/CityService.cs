@@ -112,7 +112,6 @@ namespace EPlast.BLL.Services
         {
             var cityAdmins = city.CityAdministration
                 .Where(a => a.Status)
-                //.Take(6)
                 .ToList();
             return cityAdmins;
         }
