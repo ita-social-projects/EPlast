@@ -83,6 +83,14 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
+        /// <summary>
+        /// Confirmation of delete a user
+        /// </summary>
+        /// <param name="roles">The specified roles</param>
+        /// <param name="include">Specifies wether we include or exclude roles</param>
+        /// <returns>The all users that have all the specified roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Roles are empty</response>
         [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
@@ -94,6 +102,14 @@ namespace EPlast.WebApi.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Confirmation of delete a user
+        /// </summary>
+        /// <param name="roles">The specified roles</param>
+        /// <param name="include">Specifies wether we include or exclude roles</param>
+        /// <returns>The all users that have any of the specified roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Roles are empty</response>
         [HttpGet("GetUsersByAnyRole/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAnyRole([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
