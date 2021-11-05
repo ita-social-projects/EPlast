@@ -323,8 +323,8 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
 
-            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName="Some.FileName" };
-            RegionDocuments regionDocuments = new RegionDocuments() { ID = 2, BlobName = "Some, book", FileName = "Some.FileName" };
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName="Some.doc" };
+            RegionDocuments regionDocuments = new RegionDocuments() { ID = 2, BlobName = "Some, book", FileName = "Some.doc" };
             _mapper.Setup(x=>x.Map<RegionDocumentDTO, RegionDocuments>(doc))
                 .Returns(regionDocuments);
             _repoWrapper.Setup(x=>x.RegionDocument.Attach(regionDocuments));
@@ -333,6 +333,36 @@ namespace EPlast.Tests.Services.Regions
             // Assert
             Assert.IsInstanceOf<RegionDocumentDTO>(result);
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public void AddDocumentAsync_DocumentHasNoExtension_ThrowsArgumentExeption()
+        {
+            // Arrange
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "Name" };
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
+        }
+
+        [Test]
+        public void AddDocumentAsync_DocumentNameIsEmpty_ThrowsArgumentExeption()
+        {
+            // Arrange
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = ".doc" };
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
+        }
+
+        [Test]
+        public void AddDocumentAsync_DocumentHasWrongExtension_ThrowsArgumentExeption()
+        {
+            // Arrange
+            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "qwe.dejavu" };
+
+            // Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
         }
 
         [Test]

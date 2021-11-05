@@ -49,8 +49,15 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> AddDocument(RegionDocumentDTO document)
         {
-            await _regionService.AddDocumentAsync(document);
-            _logger.LogInformation($"Document with id {{{document.ID}}} was added.");
+            try
+            {
+                await _regionService.AddDocumentAsync(document);
+                _logger.LogInformation($"Document with id {{{document.ID}}} was added.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok(document);
         }

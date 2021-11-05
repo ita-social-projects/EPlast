@@ -271,12 +271,34 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
+        private void ValidateFileName(RegionDocumentDTO documentDTO, out string[] splittedName )
+        {
+            var allowedExtensions = new List<string>() { "pdf", "doc", "docx" };
 
+            var dotIndex = documentDTO.FileName.LastIndexOf('.');
+            if (dotIndex == -1)
+            {
+                throw new ArgumentException(@"The file must have 'pdf', 'doc' or 'docx' extension");
+            }
+
+            var fileName = documentDTO.FileName.Substring(0, dotIndex).Trim();
+            if (fileName == string.Empty)
+            {
+                throw new ArgumentException("The file name cannot be empty");
+            }
+
+            var extension = documentDTO.FileName.Substring(dotIndex + 1);
+            if (!allowedExtensions.Contains(extension))
+            {
+                throw new ArgumentException(@"The extension must be 'pdf', 'doc' or 'docx' format");
+            }
+            splittedName = new[] { fileName, extension };
+        }
         public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
-            var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
-            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+            ValidateFileName(documentDTO, out string[] splittedName);
+            var fileName = $"{_uniqueId.GetUniqueId()}.{splittedName.Last()}";
             await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;
 
