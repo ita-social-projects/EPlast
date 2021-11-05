@@ -92,10 +92,13 @@ namespace EPlast.Tests.Services.Regions
         [TestCase]
         public async Task UsersTableAsync_NullInput_ReturnsIEnumerableUserTableDTO()
         {
+            // Arrange
             _repoWrapper
                 .Setup(x => x.Region.GetRegionsObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(CreateTuple);
+            // Act
             var result = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(1, 2, null, false);
+            // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDTO>, int>>(result);
         }
@@ -772,7 +775,7 @@ namespace EPlast.Tests.Services.Regions
         private Tuple<IEnumerable<RegionObject>, int> CreateTuple => new Tuple<IEnumerable<RegionObject>, int>(CreateRegionObjects, 100);
         private IEnumerable<RegionObject> CreateRegionObjects => new List<RegionObject>()
         {
-            new RegionObject(),
+            new RegionObject(){ Logo = "logo.png"},
             new RegionObject()
         };
     }
