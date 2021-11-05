@@ -450,13 +450,17 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
 
-            Region reg = new Region() { ID = 2 };
-            RegionDTO region = new RegionDTO() { ID = 3, City = "Lviv" };
+            Region reg = new Region() { ID = 2, Logo = "some logo" };
+            RegionDTO region = new RegionDTO() { ID = 3, City = "Lviv", Logo = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVRPUjogZ2QtanBlZyB2MS4wICh1c" };
             _repoWrapper
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(reg);
-
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+            _regionBlobStorage.Setup(x => x.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _repoWrapper
                 .Setup(x=>x.Region.Update(reg));
 
@@ -540,6 +544,7 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.RegionDocument.GetAllAsync( It.IsAny<Expression<Func<RegionDocuments, bool>>>(),
             It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
                 .ReturnsAsync(new List<RegionDocuments>());
+            _regionBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Image");
 
             // Act
             var result = await _regionService.GetRegionProfileByIdAsync(fakeId, user);
@@ -713,7 +718,8 @@ namespace EPlast.Tests.Services.Regions
 
         private readonly RegionDTO regionDTO = new RegionDTO
         {
-            City = "city"
+            City = "city",
+            Logo = "Some logo.png"
         };
 
         private readonly IEnumerable<RegionNamesDTO> regionsNames = new List<RegionNamesDTO>

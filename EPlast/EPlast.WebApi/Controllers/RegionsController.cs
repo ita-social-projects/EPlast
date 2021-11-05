@@ -3,16 +3,12 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
-using EPlast.WebApi.Extensions;
-using EPlast.WebApi.Models.Region;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -135,7 +131,7 @@ namespace EPlast.WebApi.Controllers
 
             return Ok();
         }
-
+        
         [HttpGet("GetAdminTypeId/{name}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<int> GetAdminTypeId(string name)
