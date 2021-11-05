@@ -96,6 +96,7 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper
                 .Setup(x => x.Region.GetRegionsObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(CreateTuple);
+            _regionBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).Throws(new ArgumentException("Can not get image"));
             // Act
             var result = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(1, 2, null, false);
             // Assert
@@ -577,7 +578,7 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.RegionDocument.GetAllAsync( It.IsAny<Expression<Func<RegionDocuments, bool>>>(),
             It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
                 .ReturnsAsync(new List<RegionDocuments>());
-            _regionBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Image");
+            _regionBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ThrowsAsync(new Exception("Can not get blob"));
 
             // Act
             var result = await _regionService.GetRegionProfileByIdAsync(fakeId, user);

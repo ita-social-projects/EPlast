@@ -226,7 +226,7 @@ namespace EPlast.BLL.Services.Region
         private async Task<string> UploadPhotoAsyncFromBase64(int regionId, string imageBase64)
         {
             var oldImageName = (await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.ID == regionId)).Logo;
-            if (!string.IsNullOrWhiteSpace(imageBase64) && imageBase64.Length > 0)
+            if (!string.IsNullOrWhiteSpace(imageBase64))
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
@@ -248,7 +248,7 @@ namespace EPlast.BLL.Services.Region
             }
             else
             {
-                return string.IsNullOrEmpty(imageBase64) ? null : oldImageName;
+                return null;
             }
         }
     
