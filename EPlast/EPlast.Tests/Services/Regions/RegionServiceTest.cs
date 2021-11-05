@@ -495,6 +495,7 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(reg);
             _regionBlobStorage.Setup(x => x.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
+            _regionBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>())).ThrowsAsync(new Exception());
             _repoWrapper
                 .Setup(x=>x.Region.Update(reg));
 
