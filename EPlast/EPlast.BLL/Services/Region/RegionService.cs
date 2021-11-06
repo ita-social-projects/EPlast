@@ -243,7 +243,6 @@ namespace EPlast.BLL.Services.Region
                         Console.WriteLine($"Cannot delete image because {ex}");
                     }
                 }
-
                 return fileName;
             }
             else
