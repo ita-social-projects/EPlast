@@ -138,7 +138,7 @@ namespace EPlast.WebApi.Controllers
 
             return Ok();
         }
-        
+
         [HttpGet("GetAdminTypeId/{name}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<int> GetAdminTypeId(string name)
