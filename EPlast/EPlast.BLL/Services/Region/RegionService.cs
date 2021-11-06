@@ -95,7 +95,6 @@ namespace EPlast.BLL.Services.Region
                 {
                     Console.WriteLine($"Cannot get image from blob storage because {ex}");
                 }
-
             }
             var rows = tuple.Item2;
             return new Tuple<IEnumerable<RegionObjectsDTO>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(regions), rows);
