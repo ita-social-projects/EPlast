@@ -510,6 +510,34 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public void EditRegionAsync_LogoEmpty_ReturnsCorrect()
+        {
+            // Arrange
+
+            Region reg = new Region() { ID = 2, Logo = "some logo" };
+            RegionDTO region = new RegionDTO() { ID = 3, City = "Lviv", Logo = string.Empty };
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+            _repoWrapper
+                .Setup(x => x.Region.Update(reg));
+
+            _repoWrapper
+                  .Setup(x => x.SaveAsync());
+            // Act
+            var result = _regionService.EditRegionAsync(It.IsAny<int>(), region);
+
+            // Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public void DeleteFileAsync_ReturnsCorrect()
         {
             // Arrange
