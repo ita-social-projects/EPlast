@@ -44,7 +44,7 @@ namespace EPlast.Tests.Services.Redis
             var result = await _redisCacheService.CheckIfKeyExistsAsync(Key);
 
             //Assert
-            Assert.AreEqual(result, true);
+            Assert.AreEqual(true, result);
         }
 
         [Test]

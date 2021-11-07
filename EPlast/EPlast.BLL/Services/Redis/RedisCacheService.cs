@@ -10,15 +10,13 @@ namespace EPlast.BLL.Services.Redis
 {
     public class RedisCacheService : ICacheService
     {
-        private readonly IConnectionMultiplexer _connectionMultiplexer;
         private readonly IDatabase _db;
         private readonly IServer _server;
 
         public RedisCacheService(IConnectionMultiplexer connectionMultiplexer, IConfiguration Configuration)
         {
-            _connectionMultiplexer = connectionMultiplexer;
-            _db = _connectionMultiplexer.GetDatabase();
-            _server = _connectionMultiplexer.GetServer(Configuration.GetConnectionString("Redis"));
+            _db = connectionMultiplexer.GetDatabase();
+            _server = connectionMultiplexer.GetServer(Configuration.GetConnectionString("Redis"));
         }
 
         public async Task<bool> CheckIfKeyExistsAsync(string recordId)
@@ -45,7 +43,10 @@ namespace EPlast.BLL.Services.Redis
         public async Task RemoveRecordsByPatternAsync(string pattern)
         {
             var keys = _server.Keys(pattern: pattern + "*", pageSize: 1000);
-            keys.ForAll(async x => await _db.KeyDeleteAsync(x));
+            foreach(var key in keys)
+            {
+                await _db.KeyDeleteAsync(key);
+            }
         }
 
         public async Task SetCacheRecordAsync<T>(string recordId, T data, TimeSpan? absoluteExpireTime = null)
