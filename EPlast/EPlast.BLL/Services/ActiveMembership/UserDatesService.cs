@@ -21,23 +21,24 @@ namespace EPlast.BLL.Services.ActiveMembership
             _userManagerService = userManagerService;
         }
 
-        public async Task<bool> ChangeUserMembershipDatesAsync(UserMembershipDatesDTO userMembershipDatesDTO)
+        public async Task<bool> ChangeUserOathDateAsync(UserOathDateDTO userOathDateDTO)
         {
             bool isChanged = false;
-            var userDto = await _userManagerService.FindByIdAsync(userMembershipDatesDTO.UserId);
+            var userDto = await _userManagerService.FindByIdAsync(userOathDateDTO.UserId);
             if (userDto != null)
             {
                 UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userDto.Id);
-                if(userMembershipDates != null)
+                if (userMembershipDates != null)
                 {
-                    userMembershipDates.DateEntry = userMembershipDatesDTO.DateEntry;
-                    userMembershipDates.DateOath = userMembershipDatesDTO.DateOath;
-                    userMembershipDates.DateEnd = userMembershipDatesDTO.DateEnd;
-                    _repoWrapper.UserMembershipDates.Update(userMembershipDates);
-                    await _repoWrapper.SaveAsync();
-                    isChanged = true;
+                    var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > userOathDateDTO.DateOath;
+                    if (userMembershipDates.DateEntry <= userOathDateDTO.DateOath && dateOathIsLowerDateEnd)
+                    {
+                        userMembershipDates.DateOath = userOathDateDTO.DateOath;
+                        _repoWrapper.UserMembershipDates.Update(userMembershipDates);
+                        await _repoWrapper.SaveAsync();
+                        isChanged = true;
+                    }
                 }
-
             }
             return isChanged;
         }
@@ -61,10 +62,10 @@ namespace EPlast.BLL.Services.ActiveMembership
         {
             var userDto = await _userManagerService.FindByIdAsync(userId);
 
-            if(userDto != null)
+            if (userDto != null)
             {
                 UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userId);
-                
+
                 if (userMembershipDates != null)
                 {
                     return _mapper.Map<UserMembershipDatesDTO>(userMembershipDates);
@@ -78,11 +79,11 @@ namespace EPlast.BLL.Services.ActiveMembership
             var userDto = await _userManagerService.FindByIdAsync(userId);
             if (userDto != null)
             {
-                UserMembershipDates userMembershipDates = new UserMembershipDates() 
+                UserMembershipDates userMembershipDates = new UserMembershipDates()
                 {
-                    UserId = userId, 
+                    UserId = userId,
                     DateEntry = default,
-                    DateOath = default, 
+                    DateOath = default,
                     DateEnd = default
                 };
 
