@@ -49,6 +49,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Update="AccessSecurityModel\DistinctionsAccessSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="AccessSecurityModel\RegionsBoardAccessSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

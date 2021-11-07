@@ -81,7 +81,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpDelete("DeleveSubsection/{id}")]
+        [HttpDelete("DeleteSubsection/{id}")]
         public async Task<IActionResult> DeleteAboutBaseSubsection(int id)
         {
             try
@@ -95,7 +95,8 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("AboutBaseSection/Create/{id}")]
+        [HttpPost("AboutBaseSection/Create")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> AddAboutBaseSection(SectionDTO sectionDTO)
         {
             if (ModelState.IsValid)
@@ -113,7 +114,7 @@ namespace EPlast.WebApi.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPost("AboutBaseSubsection/Create/{id}")]
+        [HttpPost("AboutBaseSubsection/Create")]
         public async Task<IActionResult> AddAboutBaseSubsection(SubsectionDTO subsectionDTO)
         {
             if (ModelState.IsValid)

@@ -16,11 +16,11 @@ namespace EPlast.BLL.Services
     public class AnnualReportService : IAnnualReportService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ICityAccessService _cityAccessService;
+        private readonly IDistinctionAccessService _cityAccessService;
         private readonly IRegionAnnualReportService _regionAnnualReportService;
         private readonly IMapper _mapper;
 
-        public AnnualReportService(IRepositoryWrapper repositoryWrapper, ICityAccessService cityAccessService, IRegionAnnualReportService regionAnnualReportService,
+        public AnnualReportService(IRepositoryWrapper repositoryWrapper, IDistinctionAccessService cityAccessService, IRegionAnnualReportService regionAnnualReportService,
         IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;

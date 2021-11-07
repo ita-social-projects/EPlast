@@ -33,7 +33,7 @@ namespace EPlast.Tests.Services.City
         private Mock<IMapper> _mapper;
         private Mock<IWebHostEnvironment> _env;
         private Mock<ICityBlobStorageRepository> _cityBlobStorage;
-        private Mock<ICityAccessService> _cityAccessService;
+        private Mock<IDistinctionAccessService> _cityAccessService;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserStore<User>> _user;
         private Mock<IUniqueIdService> _uniqueId;
@@ -45,7 +45,7 @@ namespace EPlast.Tests.Services.City
             _mapper = new Mock<IMapper>();
             _env = new Mock<IWebHostEnvironment>();
             _cityBlobStorage = new Mock<ICityBlobStorageRepository>();
-            _cityAccessService = new Mock<ICityAccessService>();
+            _cityAccessService = new Mock<IDistinctionAccessService>();
             _user = new Mock<IUserStore<User>>();
             _uniqueId = new Mock<IUniqueIdService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);

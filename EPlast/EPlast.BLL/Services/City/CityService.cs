@@ -24,7 +24,7 @@ namespace EPlast.BLL.Services
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _env;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
-        private readonly ICityAccessService _cityAccessService;
+        private readonly IDistinctionAccessService _cityAccessService;
         private readonly UserManager<DataAccessCity.User> _userManager; 
         private readonly IUniqueIdService _uniqueId;
 
@@ -32,7 +32,7 @@ namespace EPlast.BLL.Services
             IMapper mapper,
             IWebHostEnvironment env,
             ICityBlobStorageRepository cityBlobStorage,
-            ICityAccessService cityAccessService,
+            IDistinctionAccessService cityAccessService,
             UserManager<DataAccessCity.User> userManager,
             IUniqueIdService uniqueId)
         {

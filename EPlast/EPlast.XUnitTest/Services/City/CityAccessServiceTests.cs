@@ -30,7 +30,7 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
         private readonly Mock<UserManager<User>> _userManager;
-        private readonly ICityAccessService _cityAccessService;
+        private readonly IDistinctionAccessService _cityAccessService;
 
         public CityAccessServiceTests()
         {
@@ -38,7 +38,7 @@ namespace EPlast.XUnitTest.Services.City
             _userManager = new Mock<UserManager<User>>(userStore.Object, null, null, null, null, null, null, null, null);
             _repositoryWrapper.Setup(r => r.AdminType.GetFirstAsync(It.IsAny<Expression<Func<AdminType, bool>>>(), null))
                 .ReturnsAsync(new AdminType());
-            var cityAccessSettings = new CityAccessSettings(_repositoryWrapper.Object);
+            var cityAccessSettings = new DistinctionsAccessSettings(_repositoryWrapper.Object);
             _cityAccessService = new CityAccessService(_repositoryWrapper.Object, cityAccessSettings, _userManager.Object, _mapper.Object);
         }
 

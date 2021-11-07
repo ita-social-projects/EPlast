@@ -26,7 +26,7 @@ namespace EPlast.XUnitTest.Services.City
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IWebHostEnvironment> _env;
         private readonly Mock<ICityBlobStorageRepository> _cityBlobStorage;
-        private readonly Mock<ICityAccessService> _cityAccessService;
+        private readonly Mock<IDistinctionAccessService> _cityAccessService;
         private readonly Mock<IUniqueIdService> _uniqueId;
 
         public CityServiceTests()
@@ -35,7 +35,7 @@ namespace EPlast.XUnitTest.Services.City
             _mapper = new Mock<IMapper>();
             _env = new Mock<IWebHostEnvironment>();
             _cityBlobStorage = new Mock<ICityBlobStorageRepository>();
-            _cityAccessService = new Mock<ICityAccessService>();
+            _cityAccessService = new Mock<IDistinctionAccessService>();
             _uniqueId = new Mock<IUniqueIdService>();
         }
 

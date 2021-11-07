@@ -66,7 +66,7 @@ namespace EPlast.WebApi.StartupExtensions
         public static IServiceCollection AddDependency(this IServiceCollection services)
         {
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
-            services.AddScoped<CityAccessSettings, CityAccessSettings>();
+            services.AddScoped<DistinctionsAccessSettings, DistinctionsAccessSettings>();
             services.AddScoped<ClubAccessSettings, ClubAccessSettings>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IActionManager, ActionManager>();
@@ -81,7 +81,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IBlankExtractFromUPUBlobStorageRepository, BlankExtractFromUpuBlobStorageRepository>();
             services.AddScoped<IBlankExtractFromUPUDocumentService, BlankExtractFromUpuDocumentService>();
             services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
-            services.AddScoped<ICityAccessService, CityAccessService>();
+            services.AddScoped<IDistinctionAccessService, CityAccessService>();
             services.AddScoped<ICityBlobStorageRepository, CityBlobStorageRepository>();
             services.AddScoped<ICityDocumentsService, CityDocumentsService>();
             services.AddScoped<ICityFilesBlobStorageRepository, CityFilesBlobStorageRepository>();

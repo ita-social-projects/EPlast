@@ -26,14 +26,14 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityService _cityService;
         private readonly ICityParticipantsService _cityParticipantsService;
         private readonly ICityDocumentsService _cityDocumentsService;
-        private readonly ICityAccessService _cityAccessService;
+        private readonly IDistinctionAccessService _cityAccessService;
         private readonly UserManager<User> _userManager;
 
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
             ICityService cityService,
             ICityDocumentsService cityDocumentsService,
-            ICityAccessService cityAccessService, UserManager<User> userManager, 
+            IDistinctionAccessService cityAccessService, UserManager<User> userManager, 
             ICityParticipantsService cityParticipantsService)
         {
             _logger = logger;

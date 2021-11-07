@@ -15,7 +15,7 @@ namespace EPlast.Tests.Services.City.CityAccess.CityAccessGetters
 {
     internal class CityAccessForRegionAdminGetterTests
     {
-        private ICItyAccessGetter _cityAccessForRegionAdminGetter;
+        private IDistinctionAccessGetter _cityAccessForRegionAdminGetter;
         private Mock<IRepositoryWrapper> _mockRepositoryWrapper;
 
         [SetUp]

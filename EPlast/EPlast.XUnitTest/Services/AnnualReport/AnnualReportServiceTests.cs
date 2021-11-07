@@ -23,7 +23,7 @@ namespace EPlast.XUnitTest.Services.AnnualReport
     public class AnnualReportServiceTests
     {
         private readonly IAnnualReportService _annualReportService;
-        private readonly Mock<ICityAccessService> _cityAccessService = new Mock<ICityAccessService>();
+        private readonly Mock<IDistinctionAccessService> _cityAccessService = new Mock<IDistinctionAccessService>();
 
         private readonly Mock<IRegionAnnualReportService> _regionAnnualReportService =
             new Mock<IRegionAnnualReportService>();

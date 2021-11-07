@@ -21,7 +21,7 @@ namespace EPlast.Tests.Controllers
 {
     internal class CityControllerTests
     {
-        private readonly Mock<ICityAccessService> _cityAccessService;
+        private readonly Mock<IDistinctionAccessService> _cityAccessService;
         private readonly Mock<ICityDocumentsService> _cityDocumentsService;
         private readonly Mock<ICityParticipantsService> _cityParticipantsService;
         private readonly Mock<ICityService> _cityService;
@@ -31,7 +31,7 @@ namespace EPlast.Tests.Controllers
 
         public CityControllerTests()
         {
-            _cityAccessService = new Mock<ICityAccessService>();
+            _cityAccessService = new Mock<IDistinctionAccessService>();
             _cityService = new Mock<ICityService>();
             _cityParticipantsService = new Mock<ICityParticipantsService>();
             _mapper = new Mock<IMapper>();

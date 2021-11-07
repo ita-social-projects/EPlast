@@ -20,7 +20,7 @@ namespace EPlast.Tests.Services
     class AnnualReportServiceTests
     {
         private IAnnualReportService _annualReportService;
-        private Mock<ICityAccessService> _cityAccessService;
+        private Mock<IDistinctionAccessService> _cityAccessService;
         private Mock<IRegionAnnualReportService> _regionAnnualReportService;
         private Mock<IRepositoryWrapper> _repositoryWrapper;
         private Mapper _mapper;
@@ -30,7 +30,7 @@ namespace EPlast.Tests.Services
         [SetUp]
         public void SetUp()
         {
-            _cityAccessService = new Mock<ICityAccessService>();
+            _cityAccessService = new Mock<IDistinctionAccessService>();
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
             _mapper = new Mapper(new MapperConfiguration(cfg => cfg.AddProfile<AnnualReportProfile>()));
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
