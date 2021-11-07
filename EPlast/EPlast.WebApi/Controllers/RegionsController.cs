@@ -485,7 +485,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName)
         {
             string regionRecordKey = $"{ActiveRegionsCacheKey}_{page}_{regionName}";
-            var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
+            var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
             
             if (regionsTuple is null)
             {
@@ -511,7 +511,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetNotActiveRegions(int page, int pageSize, string regionName)
         {
             string regionRecordKey = $"{ArchivedRegionsCacheKey}_{page}_{regionName}";
-            var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
+            var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
 
             if (regionsTuple is null)
             {
