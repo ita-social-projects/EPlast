@@ -22,7 +22,7 @@ namespace EPlast.Tests.Services.PDF
         private static Mock<IRepositoryWrapper> _repository;
         private static Mock<ILoggerService<PdfService>> _logger;
         private static Mock<IDecisionBlobStorageRepository> _decisionBlobStorage;
-       
+
         [SetUp]
         public void SetUp()
         {
@@ -38,19 +38,18 @@ namespace EPlast.Tests.Services.PDF
             _repository.Setup(rep => rep.ClubMembers.FindByCondition(It.IsAny<Expression<Func<ClubMembers, bool>>>()))
                 .Returns(GetTestClubMembersQueryable());
             _logger.Setup(log => log.LogError(It.IsAny<string>()));
-            _pdfService = new PdfService(_repository.Object,_logger.Object,_decisionBlobStorage.Object);
+            _pdfService = new PdfService(_repository.Object, _logger.Object, _decisionBlobStorage.Object);
         }
 
         [TestCase(1)]
         [TestCase(546546)]
         public void DecisionCreatePDFAsync_ReturnsByteArray_Test(int decisionId)
         {
-
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(Decesions.FirstOrDefault());
             _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
-           
+
             var actualReturn = _pdfService.DecisionCreatePDFAsync(decisionId);
 
             _repository.Verify(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
@@ -58,7 +57,7 @@ namespace EPlast.Tests.Services.PDF
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
 
-        [TestCase("1")] 
+        [TestCase("1")]
         [TestCase("546546")]
         public void BlankCreatePdfAsync_WithFatherName_ReturnsByteArray(string userId)
         {
@@ -67,18 +66,19 @@ namespace EPlast.Tests.Services.PDF
                 .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(GetUserWithFatherName(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+            _repository.Setup(x =>
+                    x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                It.IsAny<Func<IQueryable<CityMembers>,
-                IIncludableQueryable<CityMembers, object>>>()))
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(new CityMembers());
             _repository
-               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<ClubMembers>,
-               IIncludableQueryable<ClubMembers, object>>>()))
-               .ReturnsAsync(new ClubMembers());
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
 
             // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
@@ -96,18 +96,19 @@ namespace EPlast.Tests.Services.PDF
             _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(GetUserWithoutFatherName(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+            _repository.Setup(x =>
+                    x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                It.IsAny<Func<IQueryable<CityMembers>,
-                IIncludableQueryable<CityMembers, object>>>()))
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(new CityMembers());
             _repository
-               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<ClubMembers>,
-               IIncludableQueryable<ClubMembers, object>>>()))
-               .ReturnsAsync(new ClubMembers());
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>,
+                        IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
 
             // Act
             var actualReturn = _pdfService.BlankCreatePDFAsync(userId);
@@ -125,7 +126,8 @@ namespace EPlast.Tests.Services.PDF
             _repository.Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(GetUserWithoutFirstName(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+            _repository.Setup(x =>
+                    x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
@@ -147,7 +149,6 @@ namespace EPlast.Tests.Services.PDF
         }
 
 
-
         [TestCase("1")]
         [TestCase("546546")]
         public void BlankCreatePdfAsync_WithoutListConfirmedUser_ReturnsByteArray(string userId)
@@ -157,7 +158,8 @@ namespace EPlast.Tests.Services.PDF
                 .Setup(x => x.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
                     It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(GetUserWithoutListConfirmedUser(userId));
-            _repository.Setup(x => x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
+            _repository.Setup(x =>
+                    x.UserProfile.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(), null))
                 .ReturnsAsync(new UserProfile());
             _repository
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
@@ -219,7 +221,7 @@ namespace EPlast.Tests.Services.PDF
         {
             //Arrange
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
-                   It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
+                    It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(Decesions.FirstOrDefault());
             _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>()))
                 .Throws(new Exception("Test"));
@@ -239,7 +241,8 @@ namespace EPlast.Tests.Services.PDF
         public void MethodicDocumentCreatePdfAsync_ReturnsByteArray_Test(int methodicDocumentId)
         {
             // Arrange
-            _repository.Setup(rep => rep.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+            _repository.Setup(rep => rep.MethodicDocument.GetFirstAsync(
+                    It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
                     It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
                 .ReturnsAsync(MethodicDocuments.FirstOrDefault(m => m.ID == methodicDocumentId));
             _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
@@ -248,8 +251,10 @@ namespace EPlast.Tests.Services.PDF
             var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
 
             // Assert
-            _repository.Verify(rep => rep.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
-                It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()), Times.Once);
+            _repository.Verify(rep => rep.MethodicDocument.GetFirstAsync(
+                    It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
+                    It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()),
+                Times.Once);
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
 
@@ -289,17 +294,19 @@ namespace EPlast.Tests.Services.PDF
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
+        [TestCase(4)]
         public void AnnualReportCreatePDFAsync_ReturnsByteArray_Test(int annualReportId)
         {
-
-            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .ReturnsAsync(AnnualReports.FirstOrDefault(x=>x.ID==annualReportId));
+                .ReturnsAsync(AnnualReports.FirstOrDefault(x => x.ID == annualReportId));
             _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
 
             var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
 
-            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<AnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
         }
@@ -308,15 +315,17 @@ namespace EPlast.Tests.Services.PDF
         public void AnnualReportCreatePDFAsync_ReturnsNull_Test(int annualReportId)
         {
             // Arrange
-            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .ReturnsAsync((AnnualReport)null);
+            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+                .ReturnsAsync((AnnualReport) null);
 
             // Act
             var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
 
             // Assert
-            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<AnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
             _logger.Verify();
             Assert.Null(actualReturn.Result);
@@ -326,15 +335,17 @@ namespace EPlast.Tests.Services.PDF
         public void AnnualReportCreatePDFAsync_ThrowsException_CallsLogErrorMethod(int annualReportId)
         {
             // Arrange
-            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
                 .Throws(new Exception("Test"));
 
             // Act
             var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
 
             // Assert
-            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<AnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
             _logger.Verify(x => x.LogError("Exception: Test"));
             Assert.Null(actualReturn.Result);
@@ -450,32 +461,45 @@ namespace EPlast.Tests.Services.PDF
         {
             return new List<User>
             {
-                new User(){Id = "1",Approvers = new List<Approver>(){new Approver(){User =new User(),UserID = "1",ConfirmedUser = new ConfirmedUser()}}},
-                new User(){Id = "546546",Approvers = new List<Approver>(){new Approver(){User =new User(), UserID = "546546", ConfirmedUser = new ConfirmedUser()}}}
+                new User()
+                {
+                    Id = "1",
+                    Approvers = new List<Approver>()
+                        {new Approver() {User = new User(), UserID = "1", ConfirmedUser = new ConfirmedUser()}}
+                },
+                new User()
+                {
+                    Id = "546546",
+                    Approvers = new List<Approver>()
+                        {new Approver() {User = new User(), UserID = "546546", ConfirmedUser = new ConfirmedUser()}}
+                }
             }.AsQueryable();
         }
+
         private static IQueryable<UserProfile> GetTestUserProfilesQueryable()
         {
             return new List<UserProfile>
             {
-                new UserProfile(){ UserID ="1"},
-                new UserProfile(){ UserID ="546546"}
+                new UserProfile() {UserID = "1"},
+                new UserProfile() {UserID = "546546"}
             }.AsQueryable();
         }
+
         private static IQueryable<CityMembers> GetTestCityMembersQueryable()
         {
             return new List<CityMembers>
             {
-                new CityMembers(){ UserId ="1",CityId=3,City = new DataAccess.Entities.City()},
-                new CityMembers(){ UserId ="546546",CityId=3,City = new DataAccess.Entities.City()}
+                new CityMembers() {UserId = "1", CityId = 3, City = new DataAccess.Entities.City()},
+                new CityMembers() {UserId = "546546", CityId = 3, City = new DataAccess.Entities.City()}
             }.AsQueryable();
         }
+
         private static IQueryable<ClubMembers> GetTestClubMembersQueryable()
         {
             return new List<ClubMembers>
             {
-                new ClubMembers(){ UserId ="1",Club = new DataAccess.Entities.Club()},
-                new ClubMembers(){ UserId ="546546", Club = new DataAccess.Entities.Club()}
+                new ClubMembers() {UserId = "1", Club = new DataAccess.Entities.Club()},
+                new ClubMembers() {UserId = "546546", Club = new DataAccess.Entities.Club()}
             }.AsQueryable();
         }
 
@@ -510,9 +534,10 @@ namespace EPlast.Tests.Services.PDF
                 NumberOfUnatstvaNoname = 1,
                 NumberOfUnatstvaProspectors = 1,
                 NumberOfUnatstvaSkobVirlyts = 1,
-                NumberOfUnatstvaSupporters = 1
+                NumberOfUnatstvaSupporters = 1,
             };
         }
+
         private IQueryable<AnnualReport> AnnualReports => new List<AnnualReport>()
         {
             new AnnualReport()
@@ -524,7 +549,7 @@ namespace EPlast.Tests.Services.PDF
                     Name = "CityName"
                 },
                 Date = DateTime.Now,
-                NewCityAdmin = new User(){FirstName = "FName", LastName = "LName"},
+                NewCityAdmin = new User() {FirstName = "FName", LastName = "LName"},
                 NumberOfAdministrators = 1,
                 NumberOfBeneficiaries = 1,
                 NumberOfClubs = 1,
@@ -536,6 +561,8 @@ namespace EPlast.Tests.Services.PDF
                 NumberOfTeacherAdministrators = 1,
                 NumberOfTeachers = 1,
                 MembersStatistic = _fakeMembersStatistic(),
+                ListProperty = null,
+                ImprovementNeeds = null,
             },
             new AnnualReport()
             {
@@ -557,6 +584,8 @@ namespace EPlast.Tests.Services.PDF
                 NumberOfTeacherAdministrators = 2,
                 NumberOfTeachers = 2,
                 MembersStatistic = _fakeMembersStatistic(),
+                ListProperty = "LProperty",
+                ImprovementNeeds = null,
             },
             new AnnualReport()
             {
@@ -567,7 +596,8 @@ namespace EPlast.Tests.Services.PDF
                     Name = "CityName"
                 },
                 Date = DateTime.Now,
-                NewCityAdmin = new User(){FirstName = "FName", LastName = "LName", Email = "email@email.com", PhoneNumber = "0123456"},
+                NewCityAdmin = new User()
+                    {FirstName = "FName", LastName = "LName", Email = "email@email.com", PhoneNumber = "0123456"},
                 NumberOfAdministrators = 3,
                 NumberOfBeneficiaries = 3,
                 NumberOfClubs = 3,
@@ -579,6 +609,33 @@ namespace EPlast.Tests.Services.PDF
                 NumberOfTeacherAdministrators = 3,
                 NumberOfTeachers = 3,
                 MembersStatistic = _fakeMembersStatistic(),
+                ListProperty = null,
+                ImprovementNeeds = "INeeds",
+            },
+            new AnnualReport()
+            {
+                ID = 4,
+                CityId = 4,
+                City = new DataAccess.Entities.City()
+                {
+                    Name = "CityName"
+                },
+                Date = DateTime.Now,
+                NewCityAdmin = new User()
+                    {FirstName = "FName", LastName = "LName", Email = "email@email.com", PhoneNumber = "0124456"},
+                NumberOfAdministrators = 4,
+                NumberOfBeneficiaries = 4,
+                NumberOfClubs = 4,
+                NumberOfHonoraryMembers = 4,
+                NumberOfIndependentGroups = 4,
+                NumberOfIndependentRiy = 4,
+                NumberOfPlastpryiatMembers = 4,
+                NumberOfSeatsPtashat = 4,
+                NumberOfTeacherAdministrators = 4,
+                NumberOfTeachers = 4,
+                MembersStatistic = _fakeMembersStatistic(),
+                ListProperty = "LProperty",
+                ImprovementNeeds = "INeeds",
             },
         }.AsQueryable();
 
@@ -598,7 +655,8 @@ namespace EPlast.Tests.Services.PDF
             {
                 ID = 101, Type = "Other", Date = new DateTime(), Description = "Description55",
                 Name = "Name55", FileName = "dsf", Organization = new Organization()
-            },            new MethodicDocument
+            },
+            new MethodicDocument
             {
                 ID = 155, Type = "None", Date = new DateTime(), Description = "Description55",
                 Name = "Name55", FileName = "dsf", Organization = new Organization()
