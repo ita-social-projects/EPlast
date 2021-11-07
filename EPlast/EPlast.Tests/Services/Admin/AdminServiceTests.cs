@@ -351,7 +351,6 @@ namespace EPlast.Tests.Services
             // Arrange
             var registeredUser = Roles.RegisteredUser;
             var admin = Roles.Admin;
-            var interested = Roles.Interested;
 
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
