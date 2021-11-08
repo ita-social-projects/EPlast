@@ -103,6 +103,7 @@ namespace EPlast.BLL.Services
             {
                 membershipDates.DateEnd = DateTime.Now;
                 _repoWrapper.UserMembershipDates.Update(membershipDates);
+                await _repoWrapper.SaveAsync();
             }
 
             await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
