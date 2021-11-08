@@ -3,16 +3,12 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
-using EPlast.WebApi.Extensions;
-using EPlast.WebApi.Models.Region;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -53,8 +49,15 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> AddDocument(RegionDocumentDTO document)
         {
-            await _regionService.AddDocumentAsync(document);
-            _logger.LogInformation($"Document with id {{{document.ID}}} was added.");
+            try
+            {
+                await _regionService.AddDocumentAsync(document);
+                _logger.LogInformation($"Document with id {{{document.ID}}} was added.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok(document);
         }
