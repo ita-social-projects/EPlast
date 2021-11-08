@@ -1,0 +1,92 @@
+{
+  "Admin": {
+    "IsAdmin": true,
+    "CreateRegion": true,
+    "EditRegion": true,
+    "DeleteRegion": true,
+    "AddRegionSecretary": true,
+    "AddRegionHead": true,
+    "DownloadDocument": true
+  },
+  "Голова Округи": {
+    "IsAdmin": true,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": true,
+    "AddRegionHead": true,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Округи": {
+    "IsAdmin": true,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": true,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Голова Станиці": {
+    "IsAdmin": true,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Станиці": {
+    "IsAdmin": true,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Голова Куреня": {
+    "IsAdmin": true,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Куреня": {
+    "IsAdmin": true,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Прихильник": {
+    "IsAdmin": false,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Дійсний член організації": {
+    "IsAdmin": false,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Зареєстрований користувач": {
+    "IsAdmin": false,
+    "EditRegion": false,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": false
+  }
+}
