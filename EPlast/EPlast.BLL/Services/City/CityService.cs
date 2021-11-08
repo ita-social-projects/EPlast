@@ -213,6 +213,17 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task<bool> PlastMemberCheck(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (await _userManager.IsInRoleAsync(user, Roles.PlastMember))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
