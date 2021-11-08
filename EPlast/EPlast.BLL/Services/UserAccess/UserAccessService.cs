@@ -16,6 +16,7 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly ISecurityModel _securityModel;
 
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
+        private const string DistinctionSecuritySettingsFile = "DistinctionsAccessSettings.json";
 
         public UserAccessService(IClubAccessService clubAccessService, ISecurityModel securityModel)
         {
@@ -28,6 +29,13 @@ namespace EPlast.BLL.Services.UserAccess
             _securityModel.SetSettingsFile(ClubSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             userAccess["EditClub"] = await _clubAccessService.HasAccessAsync(user, clubId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId, User user)
+        {
+            _securityModel.SetSettingsFile(DistinctionSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }
     }

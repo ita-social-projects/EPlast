@@ -41,5 +41,21 @@ namespace EPlast.Tests.Services.UserAccess
             Assert.IsNotEmpty(result);
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
         }
+
+        [Test]
+        public async Task GetUserDistinctionAccesses_ReturnsListOfDistinctionAccesses()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessService.GetUserDistinctionAccessAsync(It.IsAny<string>(), It.IsAny<User>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
     }
 }
