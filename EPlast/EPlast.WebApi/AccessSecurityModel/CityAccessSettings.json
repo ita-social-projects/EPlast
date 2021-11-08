@@ -1,0 +1,92 @@
+{
+  "Admin": {
+    "IsAdmin": true,
+    "CreateCity": true,
+    "EditCity": true,
+    "DeleteCity": true,
+    "AddCitySecretary": true,
+    "AddCityHead": true,
+    "DownloadDocument": true
+  },
+  "Голова Округи": {
+    "IsAdmin": true,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Округи": {
+    "IsAdmin": true,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Голова Станиці": {
+    "IsAdmin": true,
+    "EditCity": true,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": true,
+    "AddCityHead": true,
+    "DownloadDocument": true
+  },
+  "Заступник Голови Станиці": {
+    "IsAdmin": true,
+    "EditClub": true,
+    "CreateClub": false,
+    "DeleteClub": false,
+    "AddCitySecretary": true,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Голова Куреня": {
+    "IsAdmin": true,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": false
+  },
+  "Заступник Голови Куреня": {
+    "IsAdmin": true,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": false
+  },
+  "Прихильник": {
+    "IsAdmin": false,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Дійсний член організації": {
+    "IsAdmin": false,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Зареєстрований користувач": {
+    "IsAdmin": false,
+    "EditCity": false,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": false
+  }
+}

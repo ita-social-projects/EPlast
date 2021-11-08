@@ -1,12 +1,8 @@
 ﻿using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -31,6 +27,20 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _userAccessService.GetUserClubAccessAsync(clubId, userId, await _userManager.GetUserAsync(User)));
         }
 
+        [HttpGet("GetUserCityAccess/{cityId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserCityAccess(int cityId, string userId)
+        {
+            return Ok(await _userAccessService.GetUserCityAccessAsync(cityId, userId, await _userManager.GetUserAsync(User)));
+        }
+
+        [HttpGet("GetUserRegionAccess/{regionId}/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserRegionAccess(int regionId, string userId)
+        {
+            return Ok(await _userAccessService.GetUserRegionAccessAsync(regionId, userId, await _userManager.GetUserAsync(User)));
+        }
+        
         [HttpGet("GetUserDistinctionAccess/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserDistinctionAccess(string userId)

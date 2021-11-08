@@ -73,6 +73,23 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetCheckPlastMember_UserId_ReturnOk()
+        {
+            // Arrange
+            _cityService
+                .Setup(x => x.PlastMemberCheck(It.IsAny<string>()))
+                .ReturnsAsync(new bool());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.GetCheckPlastMember(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task AddDocument_Valid_Test()
         {
             // Arrange
