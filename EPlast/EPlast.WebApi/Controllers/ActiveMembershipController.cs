@@ -143,11 +143,7 @@ namespace EPlast.WebApi.Controllers
             var focusUser = await _userManager.FindByIdAsync(userOathDateDTO.UserId);
             var roles = await _userManager.GetRolesAsync(focusUser);
             //If user is registered or former member, then we can not change oath date!
-            if(roles.Contains(Roles.RegisteredUser) || roles.Count == 0)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
-            if (!await HasAccessAsync(userOathDateDTO.UserId))
+            if(roles.Contains(Roles.RegisteredUser) || roles.Count == 0 || !await HasAccessAsync(userOathDateDTO.UserId))
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
