@@ -40,5 +40,6 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserRegionAccessAsync(regionId, userId, await _userManager.GetUserAsync(User)));
         }
+
     }
 }
