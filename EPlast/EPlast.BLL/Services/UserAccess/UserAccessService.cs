@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services.UserAccess
             _regionAccessService = regionAccessService;
             _securityModel = securityModel;
         }
-        
+
         public async Task<Dictionary<string, bool>> GetUserClubAccessAsync(int clubId, string userId, User user)
         {
             _securityModel.SetSettingsFile(ClubSecuritySettingsFile);
