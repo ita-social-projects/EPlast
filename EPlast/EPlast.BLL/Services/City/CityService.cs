@@ -212,6 +212,7 @@ namespace EPlast.BLL.Services
             return cityProfileDto;
         }
 
+        /// <inheritdoc />
         public async Task<bool> PlastMemberCheck(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
