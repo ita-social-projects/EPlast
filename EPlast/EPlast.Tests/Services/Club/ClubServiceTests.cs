@@ -62,6 +62,23 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task ArchiveAsync_ClubIsNotEmpty_ThrowsInvalidOperationException()
+        {
+            // Arrange
+            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
+               .ReturnsAsync(new DataAccessClub.Club()
+               {
+                   ClubAdministration = new List<ClubAdministration>(),
+                   ClubMembers = new List<ClubMembers>()
+               });
+            _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            //Act // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _clubService.ArchiveAsync(Id));
+        }
+
+        [Test]
         public void CreateAsync_InvalidOperationException()
         {
             // Arrange
