@@ -590,8 +590,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(new { cities = await _cityAccessService.GetAllCitiesIdAndName(await _userManager.GetUserAsync(User)) });
         }
 
-
-
         [HttpGet("GetUserAdmins/{UserId}")]
         
         public async Task<IActionResult> GetUserAdministrations(string  UserId)
@@ -601,7 +599,14 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
+        [HttpGet("GetCheckPlastMember/{userId}")]
 
+        public async Task<IActionResult> GetCheckPlastMember(string userId)
+        {
+            var check = await _cityService.PlastMemberCheck(userId);
+
+            return Ok(check);
+        }
 
         [HttpGet("GetUserPreviousAdmins/{UserId}")]
 
