@@ -23,7 +23,7 @@ namespace EPlast.BLL.Services.UserAccess
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
 
-        public UserAccessService(IClubAccessService clubAccessService, ICityAccessService cityAccessService, IRegionAccessService regionAccessService,IAnnualReportAccessService annualReportAccessService, ISecurityModel securityModel)
+        public UserAccessService(IClubAccessService clubAccessService, ICityAccessService cityAccessService, IRegionAccessService regionAccessService, IAnnualReportAccessService annualReportAccessService, ISecurityModel securityModel)
         {
             _clubAccessService = clubAccessService;
             _cityAccessService = cityAccessService;
