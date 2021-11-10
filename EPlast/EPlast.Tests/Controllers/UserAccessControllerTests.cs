@@ -95,7 +95,7 @@ namespace EPlast.Tests.Controllers
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
             _userAccessService
-                .Setup(x => x.GetUserDistinctionAccessAsync(It.IsAny<string>(), It.IsAny<User>()))
+                .Setup(x => x.GetUserDistinctionAccessAsync(It.IsAny<string>()))
                 .ReturnsAsync(dict);
 
             //Act
