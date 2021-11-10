@@ -1,11 +1,6 @@
-﻿using EPlast.BLL.Services.Interfaces;
-using EPlast.DataAccess.Entities;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Internal;
-using Newtonsoft.Json;
 
 namespace EPlast.BLL.Services
 {
