@@ -21,9 +21,8 @@ namespace EPlast.BLL.Services
 
         public async Task<bool> CanEditCityReportAsync(string userId, int reportId)
         {
-            var annualReport =
-                _repositoryWrapper.AnnualReports.FindByCondition(x => (x.CreatorId == userId && x.ID == reportId));
-            return annualReport.Any();
+            var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(x => (x.CreatorId == userId && x.ID == reportId));
+            return annualReport != null;
         }
     }
 }
