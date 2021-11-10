@@ -16,6 +16,6 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// <summary>
         /// Returns dictionary with user accesses for distinctions
         /// </summary>
-        Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId, User user);
+        Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId);
     }
 }
