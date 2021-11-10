@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId, User user)
+        public async Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId)
         {
             _securityModel.SetSettingsFile(DistinctionSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
