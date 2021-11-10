@@ -77,6 +77,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
+            services.AddScoped<IAnnualReportAccessService, AnnualReportAccessService>();
             services.AddScoped<IAuthEmailService, AuthEmailService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IBlankAchievementBlobStorageRepository, BlankAchievementBlobStorageRepository>();
