@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["EditCity"] = await _cityAccessService.HasAccessAsync(user, cityId);
             return userAccess;
         }
-
+        
         public async Task<Dictionary<string, bool>> GetUserRegionAccessAsync(int regionId, string userId, User user)
         {
             _securityModel.SetSettingsFile(RegionSecuritySettingsFile);

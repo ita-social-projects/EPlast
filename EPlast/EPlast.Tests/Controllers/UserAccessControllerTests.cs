@@ -67,7 +67,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
             Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
         }
-
+      
         [Test]
         public async Task GetUserRegionAccesses_ReturnsAccessList()
         {

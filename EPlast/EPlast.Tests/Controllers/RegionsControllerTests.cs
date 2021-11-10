@@ -10,7 +10,6 @@ using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -18,8 +17,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.Resources;
-using System.Text;
-using System.Linq.Expressions;
+using EPlast.BLL.Interfaces.Cache;
 
 namespace EPlast.Tests.Controllers
 {
@@ -32,6 +30,7 @@ namespace EPlast.Tests.Controllers
         private RegionsController _regionController;
         private Mock<IRegionService> _regionService;
         private Mock<UserManager<User>> _userManager;
+        private Mock<ICacheService> _cache;
 
         [Test]
         public async Task AddAdministrator_CorrectData_ReturnsOkObjectResult()
@@ -975,12 +974,61 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetActiveRegions_PagePageSize_ReturnsStatusCodeOKAsync()
+        {
+            // Arrange
+            int page = 1;
+            int pageSize = 2;
+            string regionName = null;
+            bool isArchive = false;
+            _regionService
+                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+
+            _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
+
+            // Act
+            var result = await _regionController.GetActiveRegions(page, pageSize, regionName);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            _regionService.Verify((u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive)));
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
         public async Task GetNotActiveRegions_PagePageSizeRegionName_StatusCodesStatus200OKAsync()
         {
             // Arrange
             int page = 1;
             int pageSize = 2;
             string regionName = "Lviv";
+            bool isArchive = true;
+            _regionService
+                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
+            // Act
+            var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            _regionService.Verify();
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetNotActiveRegions_PagePageSize_StatusCodesStatus200OKAsync()
+        {
+            // Arrange
+            int page = 1;
+            int pageSize = 2;
+            string regionName = null;
             bool isArchive = true;
             _regionService
                 .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
@@ -1005,7 +1053,8 @@ namespace EPlast.Tests.Controllers
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            _regionController = new RegionsController(
+            _cache = new Mock<ICacheService>();
+            _regionController = new RegionsController(_cache.Object,
                 _logger.Object,
                 _regionService.Object, 
                 _regionAdministrationService.Object,
