@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.Services.Interfaces;
 
 namespace EPlast.BLL.Services.UserAccess
 {
