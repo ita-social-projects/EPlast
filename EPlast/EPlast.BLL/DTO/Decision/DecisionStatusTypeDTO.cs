@@ -7,7 +7,7 @@ namespace EPlast.BLL.DTO
         [Description("У розгляді")]
         InReview,
 
-        [Description("Підтверджено")]
+        [Description("Потверджено")]
         Confirmed,
 
         [Description("Скасовано")]
