@@ -8,7 +8,7 @@ namespace EPlast.DataAccess.Entities
         [Description("У розгляді")]
         InReview,
 
-        [Description("Підтверджено")]
+        [Description("Потверджено")]
         Confirmed,
 
         [Description("Скасовано")]
