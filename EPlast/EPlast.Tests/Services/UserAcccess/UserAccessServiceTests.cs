@@ -89,7 +89,7 @@ namespace EPlast.Tests.Services.UserAccess
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
-            var result = await _userAccessService.GetUserDistinctionAccessAsync(It.IsAny<string>(), It.IsAny<User>());
+            var result = await _userAccessService.GetUserDistinctionAccessAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotEmpty(result);
