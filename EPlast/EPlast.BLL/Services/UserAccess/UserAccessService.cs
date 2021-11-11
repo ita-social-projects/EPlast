@@ -54,14 +54,14 @@ namespace EPlast.BLL.Services.UserAccess
             _securityModel.SetSettingsFile(EventUserSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-            if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)) && eventId != null)
+            if (eventId != null)
             {
                 var access = await _eventAccessService.HasAccessAsync(user, (int)eventId);
-                new List<string> { "EditEvent", "DeleteEvent", "AddPhotos", "SeeUserTable", "ApproveParticipant" }.ForEach(i => userAccess[i] = access);
-                if (access)
+                if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
                 {
-                    userAccess["SubscribeOnEvent"] = !access;
+                    FunctionalityWithSpecificAccessForEvents.functionalities.ForEach(i => userAccess[i] = access);
                 }
+                userAccess["SubscribeOnEvent"] = access ? false : true;
             }
             return userAccess;
         }
