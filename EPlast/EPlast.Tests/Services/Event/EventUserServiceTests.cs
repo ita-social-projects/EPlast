@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Events;
-using Microsoft.AspNetCore.Identity;
-using EPlast.DataAccess.Repositories;
-using Moq;
-using NUnit.Framework;
 using EPlast.BLL.Services.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Moq;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using DBUser = EPlast.DataAccess.Entities.User;
 
 namespace EPlast.Tests.Services.Event

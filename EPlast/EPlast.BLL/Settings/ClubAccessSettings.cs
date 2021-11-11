@@ -1,7 +1,7 @@
 ﻿using EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters;
 using EPlast.DataAccess.Repositories;
-using System.Collections.Generic;
 using EPlast.Resources;
+using System.Collections.Generic;
 
 namespace EPlast.BLL.Settings
 {
