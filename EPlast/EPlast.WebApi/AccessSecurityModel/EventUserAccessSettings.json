@@ -1,0 +1,62 @@
+{
+  "Admin": {
+    "ApproveEvent": true,
+    "CreateEvent": true,
+    "EditEvent": true,
+    "DeleteEvent": true,
+    "SubscribeOnEvent": true,
+    "AddPhotos": true,
+    "SeeUserTable": true,
+    "ApproveParticipant": true
+  },
+  "Голова Керівного Органу": {
+    "ApproveEvent": true,
+    "CreateEvent": true,
+    "EditEvent": true,
+    "DeleteEvent": true,
+    "SubscribeOnEvent": true,
+    "AddPhotos": true,
+    "SeeUserTable": true,
+    "ApproveParticipant": true
+  },
+  "Голова Станиці": {
+    "ApproveEvent": false,
+    "CreateEvent": true,
+    "EditEvent": true,
+    "DeleteEvent": true,
+    "SubscribeOnEvent": true,
+    "AddPhotos": true,
+    "SeeUserTable": true,
+    "ApproveParticipant": true
+  },
+  "Дійсний член організації": {
+    "ApproveEvent": false,
+    "CreateEvent": true,
+    "EditEvent": true,
+    "DeleteEvent": true,
+    "SubscribeOnEvent": true,
+    "AddPhotos": true,
+    "SeeUserTable": true,
+    "ApproveParticipant": true
+  },
+  "Прихильник": {
+    "ApproveEvent": false,
+    "CreateEvent": false,
+    "EditEvent": false,
+    "DeleteEvent": false,
+    "SubscribeOnEvent": true,
+    "AddPhotos": false,
+    "SeeUserTable": true,
+    "ApproveParticipant": false
+  },
+  "Зареєстрований користувач": {
+    "ApproveEvent": false,
+    "CreateEvent": false,
+    "EditEvent": false,
+    "DeleteEvent": false,
+    "SubscribeOnEvent": false,
+    "AddPhotos": false,
+    "SeeUserTable": false,
+    "ApproveParticipant": false
+  }
+}

@@ -337,7 +337,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [HttpPut("ArchiveCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Archive(int cityId)
         {
             await _cityService.ArchiveAsync(cityId);
@@ -349,7 +349,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [HttpPut("UnArchiveCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> UnArchive(int cityId)
         {
             await _cityService.UnArchiveAsync(cityId);
@@ -361,7 +361,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [HttpDelete("RemoveCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Remove(int cityId)
         {
             await _cityService.RemoveAsync(cityId);

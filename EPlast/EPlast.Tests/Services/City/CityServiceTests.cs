@@ -70,6 +70,23 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public void ArchiveAsync_CityIsNotEmpty_ThrowInvalidOperationException()
+        {
+            // Arrange
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+               .ReturnsAsync(new DataAccessCity.City()
+               {
+                   CityAdministration = new List<CityAdministration>(),
+                   CityMembers = new List<CityMembers>()
+               });
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _cityService.ArchiveAsync(Id));
+        }
+
+        [Test]
         public void GetCityHead_ReturnsCityHead_Valid()
         {
             // Arrange

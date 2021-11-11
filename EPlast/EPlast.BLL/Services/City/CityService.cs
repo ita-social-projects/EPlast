@@ -169,7 +169,7 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
         {
-            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId,
+            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
                 include: source => source
                     .Include(t => t.User));
             var users = cityMembers.Select(x => x.User);
@@ -486,9 +486,16 @@ namespace EPlast.BLL.Services
         public async Task ArchiveAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive);
-            city.IsActive = false;
-            _repoWrapper.City.Update(city);
-            await _repoWrapper.SaveAsync();
+            if (city.CityMembers is null && city.CityAdministration is null)
+            {
+                city.IsActive = false;
+                _repoWrapper.City.Update(city);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)

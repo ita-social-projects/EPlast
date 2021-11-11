@@ -41,6 +41,7 @@ using EPlast.BLL.Services.Distinctions;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
+using EPlast.BLL.Services.EventUser.EventUserAccess;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
@@ -77,6 +78,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
+            services.AddScoped<IAnnualReportAccessService, AnnualReportAccessService>();
             services.AddScoped<IAuthEmailService, AuthEmailService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IBlankAchievementBlobStorageRepository, BlankAchievementBlobStorageRepository>();
@@ -124,6 +126,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IEventStatusManager, EventStatusManager>();
             services.AddScoped<IEventTypeManager, EventTypeManager>();
             services.AddScoped<IEventUserManager, EventUserManager>();
+            services.AddScoped<IEventUserAccessService, EventUserAccessService>();
             services.AddScoped<IEventWrapper, EventWrapper>();
             services.AddScoped<IFileManager, FileManager>();
             services.AddScoped<IFileStreamManager, FileStreamManager>();

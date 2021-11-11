@@ -1,0 +1,121 @@
+{
+  "Admin": {
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": true,
+    "SubmitCityReport": true,
+    "SubmitClubReport": true,
+    "SubmitRegionReport": true,
+    "EditReport": true,
+    "ChangeReportStatus": true,
+    "DeleteReport": true
+  },
+  "Голова Округи": {
+    "IsAdmin": true,
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": true,
+    "SubmitCityReport": false,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": true,
+    "EditReport": true,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Заступник Голови Округи": {
+    "IsAdmin": true,
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": true,
+    "SubmitCityReport": false,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": true,
+    "EditReport": true,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Голова Станиці": {
+    "IsAdmin": true,
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": true,
+    "SubmitCityReport": true,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": false,
+    "EditReport": false,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Заступник Голови Станиці": {
+    "IsAdmin": true,
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": true,
+    "SubmitCityReport": true,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": false,
+    "EditReport": false,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Голова Куреня": {
+    "IsAdmin": true,
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": false,
+    "SubmitCityReport": false,
+    "SubmitClubReport": true,
+    "SubmitRegionReport": false,
+    "EditReport": true,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Заступник Голови Куреня": {
+    "IsAdmin": true,
+    "ViewAnnualReportsTable": true,
+    "FindEveryAnnualReportInSearch": true,
+    "ViewEveryAnnualReport": false,
+    "SubmitCityReport": false,
+    "SubmitClubReport": true,
+    "SubmitRegionReport": false,
+    "EditReport": true,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Прихильник": {
+    "IsAdmin": false,
+    "ViewAnnualReportsTable": false,
+    "FindEveryAnnualReportInSearch": false,
+    "ViewEveryAnnualReport": false,
+    "SubmitCityReport": false,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": false,
+    "EditReport": false,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Дійсний член організації": {
+    "IsAdmin": false,
+    "ViewAnnualReportsTable": false,
+    "FindEveryAnnualReportInSearch": false,
+    "ViewEveryAnnualReport": false,
+    "SubmitCityReport": false,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": false,
+    "EditReport": false,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  },
+  "Зареєстрований користувач": {
+    "IsAdmin": false,
+    "ViewAnnualReportsTable": false,
+    "FindEveryAnnualReportInSearch": false,
+    "ViewEveryAnnualReport": false,
+    "SubmitCityReport": false,
+    "SubmitClubReport": false,
+    "SubmitRegionReport": false,
+    "EditReport": false,
+    "ChangeReportStatus": false,
+    "DeleteReport": false
+  }
+}
