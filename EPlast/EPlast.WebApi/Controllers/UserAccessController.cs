@@ -47,6 +47,13 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserRegionAccessAsync(regionId, userId, await _userManager.GetUserAsync(User)));
         }
+        
+        [HttpGet("GetUserDistinctionAccess/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserDistinctionAccess(string userId)
+        {
+            return Ok(await _userAccessService.GetUserDistinctionAccessAsync(userId));
+        }
 
         [HttpGet("GetUserAnnualReportAccess/{userId}/{cityReportId?}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
