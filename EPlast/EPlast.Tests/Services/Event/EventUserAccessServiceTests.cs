@@ -1,23 +1,11 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.AnnualReport;
-using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Interfaces.Events;
+﻿using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
-using EPlast.BLL.Interfaces.Region;
-using EPlast.BLL.Mapping.AnnualReport;
-using EPlast.BLL.Services;
 using EPlast.BLL.Services.EventUser.EventUserAccess;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
-using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Event
