@@ -30,8 +30,12 @@ namespace EPlast.BLL.Services.UserAccess
         private const string CitySecuritySettingsFile = "CityAccessSettings.json";
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
+        private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
 
-        public UserAccessService(IClubAccessService clubAccessService, IEventUserAccessService eventAccessService, UserManager<DatabaseEntities.User> userManager, ICityAccessService cityAccessService, IRegionAccessService regionAccessService, IAnnualReportAccessService annualReportAccessService, ISecurityModel securityModel)
+        public UserAccessService(IClubAccessService clubAccessService, IEventUserAccessService eventAccessService,
+            UserManager<DatabaseEntities.User> userManager, ICityAccessService cityAccessService,
+            IRegionAccessService regionAccessService, IAnnualReportAccessService annualReportAccessService,
+            ISecurityModel securityModel)
         {
             _clubAccessService = clubAccessService;
             _eventAccessService = eventAccessService;
@@ -57,23 +61,26 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null)
+        public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user,
+            int? eventId = null)
         {
             _securityModel.SetSettingsFile(EventUserSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
             if (eventId != null)
             {
-                bool access = await _eventAccessService.HasAccessAsync(user, (int)eventId);
+                bool access = await _eventAccessService.HasAccessAsync(user, (int) eventId);
                 if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
                 {
                     FunctionalityWithSpecificAccessForEvents.functionalities.ForEach(i => userAccess[i] = access);
                 }
+
                 if (access)
                 {
                     userAccess["SubscribeOnEvent"] = false;
                 }
             }
+
             return userAccess;
         }
 
@@ -84,7 +91,7 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["EditCity"] = await _cityAccessService.HasAccessAsync(user, cityId);
             return userAccess;
         }
-        
+
         public async Task<Dictionary<string, bool>> GetUserRegionAccessAsync(int regionId, string userId, User user)
         {
             _securityModel.SetSettingsFile(RegionSecuritySettingsFile);
@@ -93,14 +100,24 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, int? cityReportId=null)
+        public async Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId,
+            int? cityReportId = null)
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             if (cityReportId != null)
             {
-                userAccess["EditReport"] = await _annualReportAccessService.CanEditCityReportAsync(userId, (int)cityReportId);
+                userAccess["EditReport"] =
+                    await _annualReportAccessService.CanEditCityReportAsync(userId, (int) cityReportId);
             }
+
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }
     }
