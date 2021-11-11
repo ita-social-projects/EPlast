@@ -660,7 +660,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveRegion/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> RemoveRegion(int Id)
         {
             var admins = await _regionAdministrationService.GetAdministrationAsync(Id);

@@ -51,9 +51,16 @@ namespace EPlast.BLL.Services.Club
         public async Task ArchiveAsync(int clubId)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && c.IsActive);
-            club.IsActive = false;
-            _repoWrapper.Club.Update(club);
-            await _repoWrapper.SaveAsync();
+            if (club.ClubMembers is null && club.ClubAdministration is null)
+            {
+                club.IsActive = false;
+                _repoWrapper.Club.Update(club);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         /// <inheritdoc />

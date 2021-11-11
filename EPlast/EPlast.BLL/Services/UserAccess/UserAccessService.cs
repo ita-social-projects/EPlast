@@ -1,18 +1,24 @@
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.UserAccess
 {
     public class UserAccessService : IUserAccessService
     {
         private readonly IClubAccessService _clubAccessService;
+        private readonly IEventUserAccessService _eventAccessService;
+        private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly ICityAccessService _cityAccessService;
         private readonly IRegionAccessService _regionAccessService;
         private readonly IAnnualReportAccessService _annualReportAccessService;
@@ -20,6 +26,8 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly ISecurityModel _securityModel;
 
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
+        private const string DistinctionSecuritySettingsFile = "DistinctionsAccessSettings.json";
+        private const string EventUserSecuritySettingsFile = "EventUserAccessSettings.json";
         private const string CitySecuritySettingsFile = "CityAccessSettings.json";
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
@@ -32,10 +40,14 @@ namespace EPlast.BLL.Services.UserAccess
                 IRegionAccessService regionAccessService,
                 IAnnualReportAccessService annualReportAccessService,
                 IUserProfileAccessService userProfileAccessService,
+                IEventUserAccessService eventAccessService,
+                UserManager<DatabaseEntities.User> userManager,
                 ISecurityModel securityModel
             )
         {
             _clubAccessService = clubAccessService;
+            _eventAccessService = eventAccessService;
+            _userManager = userManager;
             _cityAccessService = cityAccessService;
             _regionAccessService = regionAccessService;
             _annualReportAccessService = annualReportAccessService;
@@ -48,6 +60,33 @@ namespace EPlast.BLL.Services.UserAccess
             _securityModel.SetSettingsFile(ClubSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             userAccess["EditClub"] = await _clubAccessService.HasAccessAsync(user, clubId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(DistinctionSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null)
+        {
+            _securityModel.SetSettingsFile(EventUserSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            if (eventId != null)
+            {
+                bool access = await _eventAccessService.HasAccessAsync(user, (int)eventId);
+                if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
+                {
+                    FunctionalityWithSpecificAccessForEvents.functionalities.ForEach(i => userAccess[i] = access);
+                }
+                if (access)
+                {
+                    userAccess["SubscribeOnEvent"] = false;
+                }
+            }
             return userAccess;
         }
 

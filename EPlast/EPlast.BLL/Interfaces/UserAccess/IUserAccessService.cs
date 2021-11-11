@@ -14,6 +14,11 @@ namespace EPlast.BLL.Interfaces.UserAccess
         Task<Dictionary<string, bool>> GetUserClubAccessAsync(int clubId, string userId, User user);
 
         /// <summary>
+        /// Returns dictionary with user accesses for distinctions
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserDistinctionAccessAsync(string userId);
+
+        /// <summary>
         /// Returns dictionary with user accesses for cities
         /// </summary>
         Task<Dictionary<string, bool>> GetUserCityAccessAsync(int cityId, string userId, User user);
@@ -28,6 +33,11 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// cityReportId is optional if we want to check user access for certain city report
         /// </summary>
         Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, int? cityReportId=null);
+
+        /// <summary>
+        /// Returns dictionary with user accesses for events
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null);
 
         /// <summary>
         /// Returns dictionary with user accesses for UserProfile

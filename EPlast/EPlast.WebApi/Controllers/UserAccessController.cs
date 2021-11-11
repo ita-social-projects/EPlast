@@ -27,6 +27,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _userAccessService.GetUserClubAccessAsync(clubId, userId, await _userManager.GetUserAsync(User)));
         }
 
+        [HttpGet("GetEventUserAccess/{userId}/{eventId?}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetEventUserAccess(string userId, int? eventId = null)
+        {
+            return Ok(await _userAccessService.GetUserEventAccessAsync(userId, await _userManager.GetUserAsync(User), eventId));
+        }
+
         [HttpGet("GetUserCityAccess/{cityId}/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserCityAccess(int cityId, string userId)
@@ -40,6 +47,13 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserRegionAccessAsync(regionId, userId, await _userManager.GetUserAsync(User)));
         }
+        
+        [HttpGet("GetUserDistinctionAccess/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserDistinctionAccess(string userId)
+        {
+            return Ok(await _userAccessService.GetUserDistinctionAccessAsync(userId));
+        }
 
         [HttpGet("GetUserAnnualReportAccess/{userId}/{cityReportId?}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
@@ -48,7 +62,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _userAccessService.GetUserAnnualReportAccessAsync(userId, cityReportId));
         }
 
-        [HttpGet("GetUserAnnualReportAccess/{userId}/{focusUserId}")]
+        [HttpGet("GetUserProfileAccess/{userId}/{focusUserId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserProfileAccess(string userId,string focusUserId )
         {
