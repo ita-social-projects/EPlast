@@ -130,7 +130,7 @@ namespace EPlast.BLL.Services.Club
         /// <inheritdoc />
         public async Task<IEnumerable<ClubUserDTO>> GetClubUsersAsync(int clubId)
         {
-            var clubMembers = await _repoWrapper.ClubMembers.GetAllAsync(d => d.ClubId == clubId,
+            var clubMembers = await _repoWrapper.ClubMembers.GetAllAsync(d => d.ClubId == clubId && d.IsApproved,
                 include: source => source
                     .Include(t => t.User));
             var users = clubMembers.Select(x => x.User);
