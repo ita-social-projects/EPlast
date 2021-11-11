@@ -356,7 +356,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="clubId">The id of the Club</param>
         [HttpDelete("RemoveClub/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Remove(int clubId)
         {
             await _clubService.RemoveAsync(clubId);
@@ -460,7 +460,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="clubId">The id of the club</param>
         [HttpPut("ArchiveClub/{clubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Archive(int clubId)
         {
             await _clubService.ArchiveAsync(clubId);
@@ -472,7 +472,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="clubId">The id of the club</param>
         [HttpPut("UnArchiveClub/{clubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> UnArchive(int clubId)
         {
             await _clubService.UnArchiveAsync(clubId);
