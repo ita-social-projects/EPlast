@@ -59,7 +59,6 @@ namespace EPlast.Tests.Services.UserAccess
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
         }
 
-
         [Test] 
         public async Task GetUserEventAccesses_EventIdNotNullAndRolePlastMember_FunctionHasAccessAsyncCalled_And_ReturnsListOfEventAccesses()
         {
@@ -73,6 +72,7 @@ namespace EPlast.Tests.Services.UserAccess
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
             _eventAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), (int)eventId))
                 .ReturnsAsync(It.IsAny<bool>());
+
             //Act
             var result = await _userAccessService.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), eventId);
 
@@ -81,7 +81,6 @@ namespace EPlast.Tests.Services.UserAccess
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
             _eventAccessService.Verify(v => v.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()), Times.Once());
         }
-
 
         [Test]
         public async Task GetUserEventAccesses_EventIdNull_FunctionHasAccessAsyncNotCalled_And_ReturnsListOfEventAccesses()

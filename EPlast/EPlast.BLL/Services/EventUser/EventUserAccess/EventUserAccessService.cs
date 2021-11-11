@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.DataAccess.Entities;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,11 +15,10 @@ namespace EPlast.BLL.Services.EventUser.EventUserAccess
             _eventAdmininistrationManager = eventAdmininistrationManager;
         }
 
-        public async Task<bool> HasAccessAsync(DataAccess.Entities.User user, int eventId)
+        public async Task<bool> HasAccessAsync(User user, int eventId)
         {
             var eventAdmins = await _eventAdmininistrationManager.GetEventAdmininistrationByUserIdAsync(user.Id);
             return eventAdmins.Any(e => e.EventID == eventId);
         }
-
     }
 }

@@ -29,6 +29,7 @@ namespace EPlast.Tests.Services.Event
             _eventAdministrationManager
                 .Setup(x => x.GetEventAdmininistrationByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new List<EventAdministration>() { new EventAdministration { ID = 1 } });
+
             //Act
             var result = await _eventUserAccessService.HasAccessAsync(new User { Id = "1" }, It.IsAny<int>());
 
