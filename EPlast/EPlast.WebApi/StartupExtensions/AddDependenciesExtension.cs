@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.Blank;
+using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EducatorsStaff;
@@ -49,6 +50,7 @@ using EPlast.BLL.Services.Logging;
 using EPlast.BLL.Services.Notifications;
 using EPlast.BLL.Services.PDF;
 using EPlast.BLL.Services.Precautions;
+using EPlast.BLL.Services.Redis;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
 using EPlast.BLL.Services.Statistics;
@@ -75,6 +77,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IAdminService, AdminService>();
             services.AddScoped<IAdminTypeService, AdminTypeService>();
             services.AddScoped<IAnnualReportService, AnnualReportService>();
+            services.AddScoped<IAnnualReportAccessService, AnnualReportAccessService>();
             services.AddScoped<IAuthEmailService, AuthEmailService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IBlankAchievementBlobStorageRepository, BlankAchievementBlobStorageRepository>();
@@ -180,6 +183,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IJwtService, JwtService>();
             services.AddTransient<IUniqueIdService, UniqueIdService>();
             services.AddSingleton<IUserMapService, UserMapService>();
+            services.AddSingleton<ICacheService, RedisCacheService>();
             return services;
         }
     }
