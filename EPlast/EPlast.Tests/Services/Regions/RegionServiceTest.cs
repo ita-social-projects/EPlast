@@ -59,7 +59,10 @@ namespace EPlast.Tests.Services.Regions
                 Cities = null,
                 RegionAdministration = null
             };
-            IEnumerable<RegionFollowers> followers = new List<RegionFollowers>();
+            IEnumerable<RegionFollowers> followers = new List<RegionFollowers> 
+            {
+                new RegionFollowers()
+            };
             _repoWrapper
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
