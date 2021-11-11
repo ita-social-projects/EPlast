@@ -62,7 +62,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task ArchiveAsync_ClubIsNotEmpty_ThrowsInvalidOperationException()
+        public void ArchiveAsync_ClubIsNotEmpty_ThrowsInvalidOperationException()
         {
             // Arrange
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))

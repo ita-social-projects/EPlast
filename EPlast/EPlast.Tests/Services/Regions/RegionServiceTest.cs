@@ -80,7 +80,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task ArchiveRegionAsync_RegionIsNotEmpty_ThrowsInvalidException()
+        public void ArchiveRegionAsync_RegionIsNotEmpty_ThrowsInvalidException()
         {
             // Arrange
             Region reg = new Region()
@@ -104,7 +104,7 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper.Setup(x => x.Region.Update(reg));
             _repoWrapper.Setup(x => x.SaveAsync());
 
-            // Assert
+            // Act // Assert
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _regionService.ArchiveRegionAsync(fakeId));
         }
 

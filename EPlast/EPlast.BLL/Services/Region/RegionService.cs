@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services.Region
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive);
             var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
-            if (region.Cities is null && region.RegionAdministration is null && followers.Count() == 0)
+            if (region.Cities is null && region.RegionAdministration is null && followers.Any())
             {
                 region.IsActive = false;
                 _repoWrapper.Region.Update(region);
