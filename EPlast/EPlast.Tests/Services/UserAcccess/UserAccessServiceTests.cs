@@ -80,7 +80,7 @@ namespace EPlast.Tests.Services.UserAccess
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
         }
       
-      [Test]
+        [Test]
         public async Task GetUserDistinctionAccesses_ReturnsListOfDistinctionAccesses()
         {
             //Arrange
