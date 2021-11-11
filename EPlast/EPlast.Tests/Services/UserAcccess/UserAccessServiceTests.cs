@@ -93,6 +93,7 @@ namespace EPlast.Tests.Services.UserAccess
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
             _eventAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(It.IsAny<bool>());
+            
             //Act
             var result = await _userAccessService.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>());
 
