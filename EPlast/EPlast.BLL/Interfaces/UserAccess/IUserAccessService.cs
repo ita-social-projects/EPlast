@@ -34,12 +34,10 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// </summary>
         Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, int? cityReportId = null);
 
-
         /// <summary>
         /// Returns dictionary with user accesses for Statistics
         /// </summary>
         Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId);
-
 
         /// <summary>
         /// Returns dictionary with user accesses for events
