@@ -486,9 +486,16 @@ namespace EPlast.BLL.Services
         public async Task ArchiveAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive);
-            city.IsActive = false;
-            _repoWrapper.City.Update(city);
-            await _repoWrapper.SaveAsync();
+            if (city.CityMembers is null && city.CityAdministration is null)
+            {
+                city.IsActive = false;
+                _repoWrapper.City.Update(city);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)

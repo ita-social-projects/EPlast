@@ -46,9 +46,17 @@ namespace EPlast.BLL.Services.Region
         public async Task ArchiveRegionAsync(int regionId)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive);
-            region.IsActive = false;
-            _repoWrapper.Region.Update(region);
-            await _repoWrapper.SaveAsync();
+            var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
+            if (region.Cities is null && region.RegionAdministration is null && followers.Any())
+            {
+                region.IsActive = false;
+                _repoWrapper.Region.Update(region);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public async Task AddRegionAsync(RegionDTO region)

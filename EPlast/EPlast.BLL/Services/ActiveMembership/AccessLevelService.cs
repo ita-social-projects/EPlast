@@ -32,13 +32,17 @@ namespace EPlast.BLL.Services.ActiveMembership
                 {
                     accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription());
                 };
+                RolesDictionary[Roles.GoverningBodySecretary] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySecretary.GetDescription());
+                };
                 RolesDictionary[Roles.GoverningBodySectorHead] = () =>
                 {
                     accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription());
                 };
-                RolesDictionary[Roles.GoverningBodySecretary] = () =>
+                RolesDictionary[Roles.GoverningBodySectorSecretary] = () =>
                 {
-                    accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySecretary.GetDescription());
+                    accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorSecretary.GetDescription());
                 };
                 RolesDictionary[Roles.KurinHead] = () =>
                 {
