@@ -50,23 +50,65 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void ArchiveRegionAsync_ReturnsCorrect()
+        public async Task ArchiveRegionAsync_ReturnsCorrect()
         {
             // Arrange
-            Region reg = new Region() { ID = 2 };
+            Region reg = new Region()
+            {
+                ID = 2,
+                Cities = null,
+                RegionAdministration = null
+            };
+            IEnumerable<RegionFollowers> followers = new List<RegionFollowers> 
+            {
+                new RegionFollowers()
+            };
             _repoWrapper
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(reg);
+            _repoWrapper
+                .Setup(x => x.RegionFollowers.GetAllAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                .ReturnsAsync(followers);
             _repoWrapper.Setup(x => x.Region.Update(reg));
             _repoWrapper.Setup(x => x.SaveAsync());
 
             // Act
-            _ = _regionService.ArchiveRegionAsync(fakeId);
+            await _regionService.ArchiveRegionAsync(fakeId);
 
             // Assert
             _repoWrapper.Verify(r => r.Region.Update(It.IsAny<Region>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
+        }
+
+        [Test]
+        public void ArchiveRegionAsync_RegionIsNotEmpty_ThrowsInvalidException()
+        {
+            // Arrange
+            Region reg = new Region()
+            {
+                ID = 2,
+                Cities = new List<EPlast.DataAccess.Entities.City>(),
+                RegionAdministration = new List<RegionAdministration>()
+            };
+            IEnumerable<RegionFollowers> followers = new List<RegionFollowers>
+            { 
+                new RegionFollowers()
+            };
+            _repoWrapper
+                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
+                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
+                .ReturnsAsync(reg);
+            _repoWrapper
+                .Setup(x => x.RegionFollowers.GetAllAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
+                .ReturnsAsync(followers);
+            _repoWrapper.Setup(x => x.Region.Update(reg));
+            _repoWrapper.Setup(x => x.SaveAsync());
+
+            // Act // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _regionService.ArchiveRegionAsync(fakeId));
         }
 
         [Test]
@@ -142,7 +184,6 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
             Assert.IsNotNull(result);
         }
-
 
         [Test]
         public async Task GetLogoBase64_ReturnsStringLogo()
