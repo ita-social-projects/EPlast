@@ -58,26 +58,23 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user,
-            int? eventId = null)
+        public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null)
         {
             _securityModel.SetSettingsFile(EventUserSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
             if (eventId != null)
             {
-                bool access = await _eventAccessService.HasAccessAsync(user, (int) eventId);
+                bool access = await _eventAccessService.HasAccessAsync(user, (int)eventId);
                 if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
                 {
                     FunctionalityWithSpecificAccessForEvents.functionalities.ForEach(i => userAccess[i] = access);
                 }
-
                 if (access)
                 {
                     userAccess["SubscribeOnEvent"] = false;
                 }
             }
-
             return userAccess;
         }
 
