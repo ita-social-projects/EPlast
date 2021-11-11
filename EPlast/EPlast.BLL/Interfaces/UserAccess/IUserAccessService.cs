@@ -28,5 +28,10 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// cityReportId is optional if we want to check user access for certain city report
         /// </summary>
         Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, int? cityReportId=null);
+
+        /// <summary>
+        /// Returns dictionary with user accesses for UserProfile
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId);
     }
 }

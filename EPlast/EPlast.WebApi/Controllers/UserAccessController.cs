@@ -47,5 +47,12 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserAnnualReportAccessAsync(userId, cityReportId));
         }
+
+        [HttpGet("GetUserAnnualReportAccess/{userId}/{focusUserId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserProfileAccess(string userId,string focusUserId )
+        {
+            return Ok(await _userAccessService.GetUserProfileAccessAsync(userId, focusUserId));
+        }
     }
 }
