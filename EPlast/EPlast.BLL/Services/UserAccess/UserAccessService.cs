@@ -117,10 +117,13 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId)
+        public async Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId, User user)
         {
             _securityModel.SetSettingsFile(UserProfileAccessSettings);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            userAccess["ViewShortProfile"] = await _userProfileAccessService.ViewShortProfile(user, focusUserId);
+            userAccess["ViewFullProfile"] = await _userProfileAccessService.ViewFullProfile(user, focusUserId);
+            userAccess["EditUserProfile"] = await _userProfileAccessService.EditUserProfile(user, focusUserId);
             return userAccess;
         }
     }

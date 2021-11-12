@@ -24,6 +24,7 @@ namespace EPlast.Tests.Services.UserAccess
         private Mock<UserManager<User>> _userManager;
         private Mock<ICityAccessService> _cityAccessService;
         private Mock<IRegionAccessService> _regionAccessService;
+        private Mock<IUserProfileAccessService> _userProfileAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
 
         private UserAccessService _userAccessService;
@@ -39,8 +40,9 @@ namespace EPlast.Tests.Services.UserAccess
             _cityAccessService = new Mock<ICityAccessService>();
             _regionAccessService = new Mock<IRegionAccessService>();
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
+            _userProfileAccessService = new Mock<IUserProfileAccessService>();
 
-            _userAccessService = new UserAccessService(_clubAccessService.Object, _eventAccessService.Object, _userManager.Object, _cityAccessService.Object, _regionAccessService.Object, _annualReportAccessService.Object, _securityModel.Object);
+            _userAccessService = new UserAccessService(_clubAccessService.Object, _cityAccessService.Object, _regionAccessService.Object, _annualReportAccessService.Object, _userProfileAccessService.Object, _eventAccessService.Object, _userManager.Object, _securityModel.Object);
         }
 
         [Test]

@@ -47,7 +47,7 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserRegionAccessAsync(regionId, userId, await _userManager.GetUserAsync(User)));
         }
-        
+
         [HttpGet("GetUserDistinctionAccess/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserDistinctionAccess(string userId)
@@ -64,9 +64,9 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("GetUserProfileAccess/{userId}/{focusUserId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUserProfileAccess(string userId,string focusUserId )
+        public async Task<IActionResult> GetUserProfileAccess(string userId, string focusUserId)
         {
-            return Ok(await _userAccessService.GetUserProfileAccessAsync(userId, focusUserId));
+            return Ok(await _userAccessService.GetUserProfileAccessAsync(userId, focusUserId, await _userManager.GetUserAsync(User)));
         }
     }
 }

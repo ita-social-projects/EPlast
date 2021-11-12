@@ -5,6 +5,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 using System.Threading.Tasks;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
@@ -25,11 +26,13 @@ namespace EPlast.BLL.Services.UserProfiles
 
         private async Task<bool> IsSameClubAsync(User user, string focusUserId)
         {
-            var focusUser = await _userService.GetUserAsync(focusUserId);
-            var currentUser = await _userService.GetUserAsync(user.Id);
-            var currentUserClub = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(x => x.ClubMembers.Equals(focusUser.ClubMembers));
-            var focusUserClub = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(x => x.ClubMembers.Equals(currentUser.ClubMembers));
-            if (focusUserClub.ID == currentUserClub.ID)
+            var currentUserClub = await _repositoryWrapper.ClubMembers.GetFirstOrDefaultAsync(x => x.UserId == user.Id);
+            var focusUserClub = await _repositoryWrapper.ClubMembers.GetFirstOrDefaultAsync(x => x.UserId == focusUserId);
+            if (focusUserClub == null || currentUserClub == null)
+            {
+                return false;
+            }
+            if (focusUserClub.ClubId == currentUserClub.ClubId)
             {
                 return true;
             }
@@ -38,11 +41,13 @@ namespace EPlast.BLL.Services.UserProfiles
 
         private async Task<bool> IsSameCityAsync(User user, string focusUserId)
         {
-            var focusUser = await _userService.GetUserAsync(focusUserId);
-            var currentUser = await _userService.GetUserAsync(user.Id);
-            var currentUserCity = await _repositoryWrapper.City.GetFirstOrDefaultAsync(x => x.CityMembers.Equals(focusUser.CityMembers));
-            var focusUserCity = await _repositoryWrapper.City.GetFirstOrDefaultAsync(x => x.CityMembers.Equals(currentUser.CityMembers));
-            if (focusUserCity.ID == currentUserCity.ID)
+            var currentUserCity = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(x => x.UserId == user.Id);
+            var focusUserCity = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(x => x.UserId == focusUserId);
+            if(focusUserCity == null || currentUserCity == null)
+            {
+                return false;
+            }
+            if (focusUserCity.CityId == currentUserCity.CityId)
             {
                 return true;
             }
@@ -51,11 +56,13 @@ namespace EPlast.BLL.Services.UserProfiles
 
         private async Task<bool> IsSameRegionAsync(User user, string focusUserId)
         {
-            var focusUser = await _userService.GetUserAsync(focusUserId);
-            var currentUser = await _userService.GetUserAsync(user.Id);
-            var currentUserRegion = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(x => x.City.Equals(focusUser.CityMembers));
-            var focusUserRegion = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(x => x.City.Equals(currentUser.CityMembers));
-            if (focusUserRegion.ID == currentUserRegion.ID)
+            var currentUserCity = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(x => x.UserId == user.Id);
+            var focusUserCity = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(x => x.UserId == focusUserId);
+            if (focusUserCity == null || currentUserCity == null)
+            {
+                return false;
+            }
+            if (focusUserCity.City.RegionId == currentUserCity.City.RegionId)
             {
                 return true;
             }
@@ -103,7 +110,20 @@ namespace EPlast.BLL.Services.UserProfiles
 
         public async Task<bool> EditUserProfile(User user, string focusUserId)
         {
+            var roles = await _userManager.GetRolesAsync(user);
             if (await IsAdminAsync(user))
+            {
+                return true;
+            }
+            if((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && await IsSameRegionAsync(user, focusUserId))
+            {
+                return true;
+            }
+            if ((roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)) && await IsSameCityAsync(user, focusUserId))
+            {
+                return true;
+            }
+            if ((roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy)) && await IsSameClubAsync(user, focusUserId))
             {
                 return true;
             }
