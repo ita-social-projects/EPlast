@@ -31,19 +31,10 @@ namespace EPlast.BLL.Services.UserAccess
         private const string CitySecuritySettingsFile = "CityAccessSettings.json";
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
+        private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
         private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
 
-        public UserAccessService
-            (
-                IClubAccessService clubAccessService,
-                ICityAccessService cityAccessService,
-                IRegionAccessService regionAccessService,
-                IAnnualReportAccessService annualReportAccessService,
-                IUserProfileAccessService userProfileAccessService,
-                IEventUserAccessService eventAccessService,
-                UserManager<DatabaseEntities.User> userManager,
-                ISecurityModel securityModel
-            )
+        public UserAccessService(IClubAccessService clubAccessService, ICityAccessService cityAccessService, IRegionAccessService regionAccessService, IAnnualReportAccessService annualReportAccessService, ISecurityModel securityModel)
         {
             _clubAccessService = clubAccessService;
             _eventAccessService = eventAccessService;
@@ -124,6 +115,13 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["ViewShortProfile"] = await _userProfileAccessService.ViewShortProfile(user, focusUserId);
             userAccess["ViewFullProfile"] = await _userProfileAccessService.ViewFullProfile(user, focusUserId);
             userAccess["EditUserProfile"] = await _userProfileAccessService.EditUserProfile(user, focusUserId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }
     }
