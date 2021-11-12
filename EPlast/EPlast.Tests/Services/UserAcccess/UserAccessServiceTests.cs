@@ -59,7 +59,7 @@ namespace EPlast.Tests.Services.UserAccess
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
         }
 
-        [Test] 
+        [Test]
         public async Task GetUserEventAccesses_EventIdNotNullAndRolePlastMember_FunctionHasAccessAsyncCalled_And_ReturnsListOfEventAccesses()
         {
             //Arrange
@@ -67,7 +67,7 @@ namespace EPlast.Tests.Services.UserAccess
 
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
-            
+
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
             _eventAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), (int)eventId))
@@ -88,12 +88,12 @@ namespace EPlast.Tests.Services.UserAccess
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
-            
+
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
             _eventAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(It.IsAny<bool>());
-            
+
             //Act
             var result = await _userAccessService.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>());
 
@@ -161,6 +161,23 @@ namespace EPlast.Tests.Services.UserAccess
 
             //Act
             var result = await _userAccessService.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
+
+        [Test]
+        public async Task GetUserStatisticsAccesses_ReturnsListOfStatisticsAccesses()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessService.GetUserStatisticsAccessAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotEmpty(result);

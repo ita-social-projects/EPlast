@@ -30,6 +30,7 @@ namespace EPlast.BLL.Services.UserAccess
         private const string CitySecuritySettingsFile = "CityAccessSettings.json";
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
+        private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
 
         public UserAccessService(IClubAccessService clubAccessService, IEventUserAccessService eventAccessService, UserManager<DatabaseEntities.User> userManager, ICityAccessService cityAccessService, IRegionAccessService regionAccessService, IAnnualReportAccessService annualReportAccessService, ISecurityModel securityModel)
         {
@@ -84,7 +85,7 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["EditCity"] = await _cityAccessService.HasAccessAsync(user, cityId);
             return userAccess;
         }
-        
+
         public async Task<Dictionary<string, bool>> GetUserRegionAccessAsync(int regionId, string userId, User user)
         {
             _securityModel.SetSettingsFile(RegionSecuritySettingsFile);
@@ -101,6 +102,13 @@ namespace EPlast.BLL.Services.UserAccess
             {
                 userAccess["EditReport"] = await _annualReportAccessService.CanEditCityReportAsync(userId, (int)cityReportId);
             }
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }
     }

@@ -87,7 +87,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
             Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
         }
-      
+
         [Test]
         public async Task GetUserRegionAccesses_ReturnsAccessList()
         {
@@ -140,6 +140,26 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>(), It.IsAny<int>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetUserStatisticsAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserStatisticsAccessAsync(It.IsAny<string>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserStatisticsAccess(It.IsAny<string>());
             var resultValue = (result as ObjectResult)?.Value;
 
             //Assert
