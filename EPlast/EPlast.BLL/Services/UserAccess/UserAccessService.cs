@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -122,8 +123,8 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(UserProfileAccessSettings);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            userAccess["ViewShortProfile"] = await _userProfileAccessService.ViewShortProfile(user, focusUserId);
-            userAccess["ViewFullProfile"] = await _userProfileAccessService.ViewFullProfile(user, focusUserId);
+            userAccess["ViewUserShortProfile"] = !(await _userProfileAccessService.ViewFullProfile(user, focusUserId));
+            userAccess["ViewUserFullProfile"] = await _userProfileAccessService.ViewFullProfile(user, focusUserId);
             userAccess["EditUserProfile"] = await _userProfileAccessService.EditUserProfile(user, focusUserId);
             return userAccess;
         }

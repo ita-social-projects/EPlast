@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserAccess;
 using EPlast.DataAccess.Entities;
@@ -179,6 +180,22 @@ namespace EPlast.Tests.Services.UserAccess
 
             //Act
             var result = await _userAccessService.GetUserStatisticsAccessAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
+
+        [Test]
+        public async Task GetUserProfileAccesses_ReturnsListOfUserProfileAccesses()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessService.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>());
 
             //Assert
             Assert.IsNotEmpty(result);

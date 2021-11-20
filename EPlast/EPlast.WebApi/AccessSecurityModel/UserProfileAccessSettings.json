@@ -1,7 +1,7 @@
 {
   "Admin": {
     "ViewUserFullProfile": true,
-    "ViewShortProfile": false,
+    "ViewUserShortProfile": false,
     "HaveTimer": false,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -40,7 +40,7 @@
   },
   "Голова Керівного Органу": {
     "ViewUserFullProfile": true,
-    "ViewShortProfile": false,
+    "ViewUserShortProfile": false,
     "HaveTimer": false,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -79,7 +79,7 @@
   },
   "Голова Округи": {
     "ViewUserFullProfile": true,
-    "ViewShortProfile": true,
+    "ViewUserShortProfile": true,
     "HaveTimer": false,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -118,7 +118,7 @@
   },
   "Голова Станиці": {
     "ViewUserFullProfile": true,
-    "ViewShortProfile": true,
+    "ViewUserShortProfile": true,
     "HaveTimer": false,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -157,7 +157,7 @@
   },
   "Голова Куреня": {
     "ViewUserFullProfile": true,
-    "ViewShortProfile": true,
+    "ViewUserShortProfile": true,
     "HaveTimer": false,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -196,7 +196,7 @@
   },
   "Прихильник": {
     "ViewUserFullProfile": false,
-    "ViewShortProfile": true,
+    "ViewUserShortProfile": true,
     "HaveTimer": true,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -235,7 +235,7 @@
   },
   "Дійсний член організації": {
     "ViewUserFullProfile": true,
-    "ViewShortProfile": true,
+    "ViewUserShortProfile": true,
     "HaveTimer": false,
     "SeeUserTimer": true,
     "ChangeClub": true,
@@ -274,7 +274,7 @@
   },
   "Зареєстрований користувач": {
     "ViewUserFullProfile": false,
-    "ViewShortProfile": false,
+    "ViewUserShortProfile": false,
     "HaveTimer": false,
     "SeeUserTimer": false,
     "ChangeClub": false,
