@@ -46,23 +46,18 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             };
 
             var user = await _userManager.FindByIdAsync(sectorAdministrationDto.UserId);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            var restrictedRoles = new List<string>
+            var allowedRoles = new List<List<string>>
             {
-                Roles.RegisteredUser,
-                Roles.Supporter,
-                Roles.FormerPlastMember,
-                Roles.Interested,
-                Roles.GoverningBodySectorHead,
-                Roles.GoverningBodySectorSecretary,
+                { new List<string>(){ Roles.PlastMember } },
+                { new List<string>(){ Roles.PlastMember, Roles.KurinHead } },
+                { new List<string>(){ Roles.PlastMember, Roles.KurinHeadDeputy } }
             };
+            
+            if (!allowedRoles.Any(x => x.OrderByDescending(x => x).SequenceEqual(userRoles.OrderByDescending(x => x))))
+                throw new ArgumentException("Can't add user with the roles");
 
-            var roles = await _userManager.GetRolesAsync(user);
-
-            if (roles.Intersect(restrictedRoles).Any())
-            {
-                throw new ArgumentException("Can't add with the restricted roles");
-            }
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodySectorHead ?
                 Roles.GoverningBodySectorHead : 
                 Roles.GoverningBodySectorSecretary;
