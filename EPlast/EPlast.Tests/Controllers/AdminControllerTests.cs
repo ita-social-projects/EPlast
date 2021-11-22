@@ -421,6 +421,20 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
         }
+
+        public async Task GetUsersByExactRoles_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            AdminController adminController = CreateAdminController;
+
+            //Act
+            var res = await adminController.GetUsersByExactRoles("Roles", true);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {
             Page = 1,
