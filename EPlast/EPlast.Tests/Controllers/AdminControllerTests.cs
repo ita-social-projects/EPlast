@@ -421,7 +421,8 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
         }
-
+        
+        [Test]
         public async Task GetUsersByExactRoles_ReturnsOkObjectResult()
         {
             //Arrange
@@ -435,6 +436,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
         }
+        
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {
             Page = 1,

@@ -67,7 +67,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <summary>
         /// Get all users that match the condition and roles in delegate
         /// </summary>
-        /// <param name="rolesString">String that represents roles grouprs divided by '|' and roles by ','</param>
+        /// <param name="rolesString">String that represents roles groups divided by '|' and roles by ','</param>
         /// <param name="include">Boolean variable that indicates whether include or exclude user by roles</param>
         /// <returns>Users that have the roles</returns>
         Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>> filterRoles);
