@@ -882,7 +882,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "1" });
 
             //Acts
-            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.SequenceEqual(y))).ToList();
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAllRoles)).ToList();
 
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
@@ -905,7 +905,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "1" });
 
             //Acts
-            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.Any())).ToList();
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAnyRoles)).ToList();
 
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
