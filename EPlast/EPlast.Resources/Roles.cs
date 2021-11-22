@@ -49,7 +49,7 @@ namespace EPlast.Resources
             + CityHead + "," + CityHeadDeputy;
         public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + GoverningBodyHead + "," + CityHead + "," + CityHeadDeputy;
-        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," 
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
             + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodySectorHead;
         public static List<string> ListOfRoles = new List<string>
         {
@@ -69,7 +69,8 @@ namespace EPlast.Resources
             Roles.FormerPlastMember,
             Roles.Supporter,
             Roles.RegisteredUser,
-            Roles.Admin
+            Roles.Admin,
+            Roles.GoverningBodySectorSecretary
         };
     }
 }

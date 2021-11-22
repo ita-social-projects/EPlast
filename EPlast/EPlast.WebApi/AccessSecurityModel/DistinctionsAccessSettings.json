@@ -1,0 +1,112 @@
+{
+  "Admin": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": true,
+    "EditTypeDistinction": true,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": true,
+    "DeleteUserDistinctions": true
+  },
+  "Голова Керівного Органу": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": true,
+    "EditTypeDistinction": true,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": true,
+    "DeleteUserDistinctions": true
+  },
+  "Голова Округи": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Заступник Голови Округи": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Голова Станиці": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Заступник Голови Станиці": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Голова Куреня": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Заступник Голови Куреня": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Прихильник": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Дійсний член організації": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  },
+  "Зареєстрований користувач": {
+    "ViewCategory": false,
+    "ViewTable": false,
+    "SearchDistinction": false,
+    "AddDistinction": false,
+    "EditTypeDistinction": false,
+    "ViewUserProfile": false,
+    "EditUserDistinctions": false,
+    "DeleteUserDistinctions": false
+  }
+}

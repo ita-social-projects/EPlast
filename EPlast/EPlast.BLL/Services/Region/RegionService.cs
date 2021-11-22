@@ -7,15 +7,14 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO;
-using Microsoft.AspNetCore.Identity;
 using DataAccessRegion = EPlast.DataAccess.Entities;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -47,9 +46,17 @@ namespace EPlast.BLL.Services.Region
         public async Task ArchiveRegionAsync(int regionId)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regionId && d.IsActive);
-            region.IsActive = false;
-            _repoWrapper.Region.Update(region);
-            await _repoWrapper.SaveAsync();
+            var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
+            if (region.Cities is null && region.RegionAdministration is null && followers.Any())
+            {
+                region.IsActive = false;
+                _repoWrapper.Region.Update(region);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public async Task AddRegionAsync(RegionDTO region)
@@ -57,12 +64,6 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.Region.CreateAsync(_mapper.Map<RegionDTO, DataAccessRegion.Region>(region));
 
             await _repoWrapper.SaveAsync();
-        }
-
-        private async Task<bool> CheckCreated(string name)
-        {
-            return await _repoWrapper.Region.GetFirstOrDefaultAsync(
-                predicate: a => a.RegionName == name) != null;
         }
 
         public async Task<IEnumerable<RegionDTO>> GetAllRegionsAsync()
@@ -87,6 +88,22 @@ namespace EPlast.BLL.Services.Region
         {
             var tuple = await _repoWrapper.Region.GetRegionsObjects(page, pageSize, regionName, isArchive);
             var regions = tuple.Item1;
+            //get images from blob storage
+            foreach (var region in regions)
+            {
+                try
+                {
+                    //If string is null or empty then image is default, and it is not stored in Blob storage :)
+                    if (!string.IsNullOrEmpty(region.Logo))
+                    {
+                        region.Logo = await _regionBlobStorage.GetBlobBase64Async(region.Logo);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Cannot get image from blob storage because {ex}");
+                }
+            }
             var rows = tuple.Item2;
             return new Tuple<IEnumerable<RegionObjectsDTO>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(regions), rows);
         }
@@ -97,7 +114,7 @@ namespace EPlast.BLL.Services.Region
               include: source => source
                   .Include(r => r.RegionAdministration)
                       .ThenInclude(t => t.AdminType));
-            var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && !r.IsActive );
+            var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && !r.IsActive);
             return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
         }
 
@@ -122,6 +139,18 @@ namespace EPlast.BLL.Services.Region
         public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, User user)
         {
             var region = await GetRegionByIdAsync(regionId);
+            try
+            {
+                //If string is null or empty then image is default, and it is not stored in Blob storage :)
+                if (!string.IsNullOrEmpty(region.Logo))
+                {
+                    region.Logo = await _regionBlobStorage.GetBlobBase64Async(region.Logo);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Can not get image from blob storage because {ex}");
+            }
             var regionProfile = _mapper.Map<RegionDTO, RegionProfileDTO>(region);
             var userRoles = await _userManager.GetRolesAsync(user);
             var documents = await _repoWrapper
@@ -201,11 +230,38 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<DataAccessRegion.Region, RegionDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
         }
 
+        private async Task<string> UploadPhotoAsyncFromBase64(int regionId, string imageBase64)
+        {
+            var oldImageName = (await _repoWrapper.Region.GetFirstOrDefaultAsync(x => x.ID == regionId)).Logo;
+            if (!string.IsNullOrWhiteSpace(imageBase64))
+            {
+                var base64Parts = imageBase64.Split(',');
+                var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+                var fileName = $"{_uniqueId.GetUniqueId()}.{ext}";
+                await _regionBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
+                if (!string.IsNullOrEmpty(oldImageName))
+                {
+                    try
+                    {
+                        await _regionBlobStorage.DeleteBlobAsync(oldImageName);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Cannot delete image because {ex}");
+                    }
+                }
+                return fileName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    
         public async Task EditRegionAsync(int regId, RegionDTO region)
         {
             var ChangedRegion = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regId);
-
-            ChangedRegion.Logo = region.Logo;
+            ChangedRegion.Logo = await UploadPhotoAsyncFromBase64(regId, region.Logo);
             ChangedRegion.City = region.City;
             ChangedRegion.Link = region.Link;
             ChangedRegion.Email = region.Email;
@@ -331,7 +387,7 @@ namespace EPlast.BLL.Services.Region
         /// <inheritdoc />
         public async Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId)
         {
-            var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId && d.IsApproved, 
+            var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId && d.IsApproved,
                 include: source => source
                     .Include(t => t.User));
             var users = city.Select(x => x.User);

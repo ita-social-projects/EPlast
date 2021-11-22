@@ -98,6 +98,14 @@ namespace EPlast.BLL.Services
                 await _sectorAdministrationService.RemoveAdministratorAsync(sectorAdmin.Id);
             }
 
+            var membershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (membershipDates != null)
+            {
+                membershipDates.DateEnd = DateTime.Now;
+                _repoWrapper.UserMembershipDates.Update(membershipDates);
+                await _repoWrapper.SaveAsync();
+            }
+
             await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
         }
 
@@ -327,15 +335,18 @@ namespace EPlast.BLL.Services
         {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
             var cityMember = await _repoWrapper.CityMembers
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
-            if (role == Roles.Supporter && cityMember.IsApproved)
+            if (role == Roles.Supporter && cityMember.IsApproved && userMembershipDates.DateEntry == default)
             {
                 userMembershipDates.DateEntry = DateTime.Now;
             }
-            else if (role != Roles.PlastMember)
+            //This user is former member, and we change his role to registered, that's why we reset his EndDate
+            else if (role == Roles.RegisteredUser && roles.Count == 0)
             {
-                userMembershipDates.DateEntry = default;
+                userMembershipDates.DateEnd = default;
             }
             else
             {

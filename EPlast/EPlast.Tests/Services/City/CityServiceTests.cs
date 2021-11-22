@@ -70,6 +70,23 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public void ArchiveAsync_CityIsNotEmpty_ThrowInvalidOperationException()
+        {
+            // Arrange
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+               .ReturnsAsync(new DataAccessCity.City()
+               {
+                   CityAdministration = new List<CityAdministration>(),
+                   CityMembers = new List<CityMembers>()
+               });
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _cityService.ArchiveAsync(Id));
+        }
+
+        [Test]
         public void GetCityHead_ReturnsCityHead_Valid()
         {
             // Arrange
@@ -494,6 +511,50 @@ namespace EPlast.Tests.Services.City
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task PlastMemberCheck_UserId_ReturnTrue()
+        {
+            // Arrange
+            User user = new User() {Id = "a"}; 
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManager
+                .Setup(x => x.IsInRoleAsync(user, It.IsAny<string>()))
+                .ReturnsAsync(true);
+            const bool expected = true;
+
+            // Act
+            var result = await _cityService.PlastMemberCheck(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<bool>(result);
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public async Task PlastMemberCheck_UserId_ReturnFalse()
+        {
+            // Arrange
+            User user = new User() { Id = "a" };
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManager
+                .Setup(x => x.IsInRoleAsync(user, It.IsAny<string>()))
+                .ReturnsAsync(false);
+            const bool expected = false;
+
+            // Act
+            var result = await _cityService.PlastMemberCheck(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<bool>(result);
+            Assert.AreEqual(expected, result);
         }
 
         [Test]
