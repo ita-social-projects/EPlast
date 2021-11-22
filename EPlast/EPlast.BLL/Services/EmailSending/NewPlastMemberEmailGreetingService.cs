@@ -69,6 +69,7 @@ namespace EPlast.BLL.Services
                 {
                     var us = await _userManager.FindByIdAsync(user.Id);
                     await _userManager.AddToRoleAsync(us, role);
+                    await _userManager.RemoveFromRoleAsync(us, Roles.Supporter);
                     newPlastuns.Add(user);
                 }
             }
