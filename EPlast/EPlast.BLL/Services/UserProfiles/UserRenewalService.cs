@@ -70,13 +70,9 @@ namespace EPlast.BLL.Services.UserProfiles
             
             var renewals =
                 await _repoWrapper.UserRenewal.GetAllAsync(renewal => renewal.UserId == userRenewal.UserId);
-             
-            if (renewals.Any())
-            {
-                if ((DateTime.Now - renewals.Last().RequestDate).Days < 10) 
-                    return false;
-            }
-            return true;
+
+            if (!renewals.Any()) return true;
+            return (DateTime.Now - renewals.Last().RequestDate).Days >= 10;
         }
 
         /// <inheritdoc />
