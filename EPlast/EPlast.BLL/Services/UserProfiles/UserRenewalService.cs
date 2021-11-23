@@ -110,7 +110,7 @@ namespace EPlast.BLL.Services.UserProfiles
             var user = await _userManager.FindByIdAsync(userId);
 
             if (!await _userManager.IsInRoleAsync(user, Roles.FormerPlastMember)) 
-                throw new ArgumentException();
+                throw new ArgumentException("User is not Former-Member", nameof(userRenewal));
 
             await _userManager.RemoveFromRoleAsync(user, Roles.FormerPlastMember);
             await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
