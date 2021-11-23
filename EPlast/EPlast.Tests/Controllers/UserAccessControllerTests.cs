@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -42,6 +40,126 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await _userAccessController.GetUserClubAccess(It.IsAny<int>(), It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetEventUserAccess_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetEventUserAccess(It.IsAny<string>(), It.IsAny<int>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetUserCityAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserCityAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserCityAccess(It.IsAny<int>(), It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetUserRegionAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserRegionAccess(It.IsAny<int>(), It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetUserDistinctionAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserDistinctionAccessAsync(It.IsAny<string>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserDistinctionAccess(It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetUserAnnualReportAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<int>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>(), It.IsAny<int>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
+
+        [Test]
+        public async Task GetUserStatisticsAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserStatisticsAccessAsync(It.IsAny<string>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserStatisticsAccess(It.IsAny<string>());
             var resultValue = (result as ObjectResult)?.Value;
 
             //Assert

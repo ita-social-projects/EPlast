@@ -44,6 +44,7 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<RegionObject> RegionObjects { get; set; }
+        public DbSet<RegionNamesObject> RegionNamesObjects { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Subsection> Subsections { get; set; }
         public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }

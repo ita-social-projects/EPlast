@@ -6,6 +6,7 @@ using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace EPlast.WebApi.StartupExtensions
 {
@@ -34,12 +35,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
             services.AddIdentityOptions();
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = Configuration.GetConnectionString("Redis");
-                options.InstanceName = "Redis_";
-            });
-
+            services.AddRedisOptionExtenshion(Configuration);
             services.AddDependency();
 
             return services;

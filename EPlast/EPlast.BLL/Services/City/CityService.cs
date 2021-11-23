@@ -25,7 +25,7 @@ namespace EPlast.BLL.Services
         private readonly IWebHostEnvironment _env;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
         private readonly ICityAccessService _cityAccessService;
-        private readonly UserManager<DataAccessCity.User> _userManager; 
+        private readonly UserManager<DataAccessCity.User> _userManager;
         private readonly IUniqueIdService _uniqueId;
 
         public CityService(IRepositoryWrapper repoWrapper,
@@ -125,7 +125,6 @@ namespace EPlast.BLL.Services
         {
             var cityAdmins = city.CityAdministration
                 .Where(a => a.Status)
-                .Take(6)
                 .ToList();
             return cityAdmins;
         }
@@ -139,26 +138,33 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
+            const int membersToShow = 9;
+            const int followersToShow = 6;
+            const int adminsToShow = 6;
+            const int documentToShow = 6;
             var cityHead = GetCityHead(city);
             var cityHeadDeputy = GetCityHeadDeputy(city);
-            var cityAdmins = GetCityAdmins(city);
+            var cityAdmins = city.CityAdministration
+                .Where(a => a.Status)
+                .Take(adminsToShow)
+                .ToList();
             city.AdministrationCount = city.CityAdministration == null ? 0
                 : city.CityAdministration.Count(a => a.Status);
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
-                .Take(9)
+                .Take(membersToShow)
                 .ToList();
             city.MemberCount = city.CityMembers
                 .Count(m => m.IsApproved);
             var followers = city.CityMembers
                 .Where(m => !m.IsApproved)
-                .Take(6)
+                .Take(followersToShow)
                 .ToList();
             city.FollowerCount = city.CityMembers
                 .Count(m => !m.IsApproved);
-            var cityDoc = city.CityDocuments.Take(6).ToList();
+            var cityDoc = city.CityDocuments.Take(documentToShow).ToList();
             city.DocumentsCount = city.CityDocuments.Count();
-            
+
             var cityProfileDto = new CityProfileDTO
             {
                 City = city,
@@ -176,7 +182,7 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
         {
-            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId,
+            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
                 include: source => source
                     .Include(t => t.User));
             var users = cityMembers.Select(x => x.User);
@@ -217,6 +223,17 @@ namespace EPlast.BLL.Services
             };
 
             return cityProfileDto;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> PlastMemberCheck(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (await _userManager.IsInRoleAsync(user, Roles.PlastMember))
+            {
+                return true;
+            }
+            return false;
         }
 
         /// <inheritdoc />
@@ -281,6 +298,18 @@ namespace EPlast.BLL.Services
             var cityHeadDeputyId = cityHeadDeputy != null ? cityHeadDeputy.UserId : "No Id";
 
             return $"{cityHeadId},{cityHeadDeputyId}";
+        
+        /// <inheritdoc />
+        public async Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId)
+        {
+            var admins = await _repoWrapper.CityAdministration.GetAllAsync(d => d.CityId == cityId && d.Status,
+                include: source => source
+                    .Include(t => t.User)
+                    .Include(t => t.City)
+                    .Include(t => t.AdminType));
+            var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(admins);
+            return admin;
+
         }
 
         /// <inheritdoc />
@@ -488,9 +517,16 @@ namespace EPlast.BLL.Services
         public async Task ArchiveAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && c.IsActive);
-            city.IsActive = false;
-            _repoWrapper.City.Update(city);
-            await _repoWrapper.SaveAsync();
+            if (city.CityMembers is null && city.CityAdministration is null)
+            {
+                city.IsActive = false;
+                _repoWrapper.City.Update(city);
+                await _repoWrapper.SaveAsync();
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)

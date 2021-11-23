@@ -167,7 +167,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Documents/{sectorId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int sectorId)
         {
             var sectorProfileDto = await _sectorService.GetSectorDocumentsAsync(sectorId);

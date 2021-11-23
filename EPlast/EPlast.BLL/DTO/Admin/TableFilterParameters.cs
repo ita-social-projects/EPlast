@@ -13,7 +13,7 @@ namespace EPlast.BLL.DTO.Admin
         public IEnumerable<int> Clubs { get; set; }
         public IEnumerable<int> Degrees { get; set; }
         public int SortKey { get; set; }
-        public string FilterRoles { get; set; }
+        public IEnumerable<string> FilterRoles { get; set; }
         public string SearchData { get; set; }
     }
 }

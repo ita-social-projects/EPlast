@@ -214,6 +214,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all administrators of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>All administrators of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">City not found</response>
+        [HttpGet("GetAdministrations/{cityId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAdministrations(int cityId)
+        {
+            var admins = await _cityService.GetAdministrationAsync(cityId);
+            return Ok(admins);
+        }
+
+        /// <summary>
         /// Get all documents of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
@@ -322,7 +337,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [HttpPut("ArchiveCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Archive(int cityId)
         {
             await _cityService.ArchiveAsync(cityId);
@@ -334,7 +349,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [HttpPut("UnArchiveCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> UnArchive(int cityId)
         {
             await _cityService.UnArchiveAsync(cityId);
@@ -346,7 +361,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [HttpDelete("RemoveCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Remove(int cityId)
         {
             await _cityService.RemoveAsync(cityId);
@@ -575,8 +590,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(new { cities = await _cityAccessService.GetAllCitiesIdAndName(await _userManager.GetUserAsync(User)) });
         }
 
-
-
         [HttpGet("GetUserAdmins/{UserId}")]
         
         public async Task<IActionResult> GetUserAdministrations(string  UserId)
@@ -586,7 +599,14 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
+        [HttpGet("GetCheckPlastMember/{userId}")]
 
+        public async Task<IActionResult> GetCheckPlastMember(string userId)
+        {
+            var check = await _cityService.PlastMemberCheck(userId);
+
+            return Ok(check);
+        }
 
         [HttpGet("GetUserPreviousAdmins/{UserId}")]
 

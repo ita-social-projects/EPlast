@@ -98,6 +98,14 @@ namespace EPlast.BLL.Services
                 await _sectorAdministrationService.RemoveAdministratorAsync(sectorAdmin.Id);
             }
 
+            var membershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (membershipDates != null)
+            {
+                membershipDates.DateEnd = DateTime.Now;
+                _repoWrapper.UserMembershipDates.Update(membershipDates);
+                await _repoWrapper.SaveAsync();
+            }
+
             await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
         }
 
@@ -211,21 +219,68 @@ namespace EPlast.BLL.Services
             return citiesDTO;
         }
 
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string roles, bool include, Func<IEnumerable<string>, IEnumerable<string>, bool> checkIntersectedRoles)
+        /// <inheritdoc />
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>> filterRoles)
         {
+            var rolesGroups = rolesString.Split('|');
             var users = await _repoWrapper.User.GetAllAsync();
-            var rolesList = roles.Split(",").OrderByDescending(x => x);
             var filteredUsers = new List<ShortUserInformationDTO>();
+            foreach (var rolesGroup in rolesGroups)
+            {
+                var roles = rolesGroup.Split(',').OrderByDescending(x => x);
+                filteredUsers.AddRange(await filterRoles(users, roles, include));
+            }
+            return filteredUsers;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ShortUserInformationDTO>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
+        {
+            var filteredUsers = new List<ShortUserInformationDTO>();
+
             foreach (var user in users)
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-                var intersectedRoles = userRoles.Intersect(rolesList).OrderByDescending(x => x);
-                if (checkIntersectedRoles(intersectedRoles, rolesList) == include)
+                var intersectedRoles = userRoles.Intersect(roles).OrderByDescending(x => x);
+                if (intersectedRoles.Any() == include)
                 {
                     filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
                 }
             }
-            return filteredUsers.ToList();
+            return filteredUsers;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ShortUserInformationDTO>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
+        {
+            var filteredUsers = new List<ShortUserInformationDTO>();
+
+            foreach (var user in users)
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+                var intersectedRoles = userRoles.Intersect(roles).OrderByDescending(x => x);
+                if (intersectedRoles.SequenceEqual(roles) == include)
+                {
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                }
+            }
+            return filteredUsers;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
+        {
+            var filteredUsers = new List<ShortUserInformationDTO>();
+
+            foreach (var user in users)
+            {
+                var userRoles = (await _userManager.GetRolesAsync(user)).ToList();
+                if (roles.SequenceEqual(userRoles.OrderByDescending(x => x)) == include)
+                {
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                }
+            }
+            return filteredUsers;
         }
 
         /// <inheritdoc />
@@ -243,9 +298,10 @@ namespace EPlast.BLL.Services
             string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
             string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
+            string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
                 tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
-                tableFilterParameters.SortKey, tableFilterParameters.SearchData, tableFilterParameters.FilterRoles);
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
@@ -279,15 +335,18 @@ namespace EPlast.BLL.Services
         {
             UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates
                            .GetFirstOrDefaultAsync(umd => umd.UserId == userId);
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
             var cityMember = await _repoWrapper.CityMembers
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
-            if (role == Roles.Supporter && cityMember.IsApproved)
+            if (role == Roles.Supporter && cityMember.IsApproved && userMembershipDates.DateEntry == default)
             {
                 userMembershipDates.DateEntry = DateTime.Now;
             }
-            else if (role != Roles.PlastMember)
+            //This user is former member, and we change his role to registered, that's why we reset his EndDate
+            else if (role == Roles.RegisteredUser && roles.Count == 0)
             {
-                userMembershipDates.DateEntry = default;
+                userMembershipDates.DateEnd = default;
             }
             else
             {

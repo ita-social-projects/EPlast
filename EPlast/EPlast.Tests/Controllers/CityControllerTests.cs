@@ -73,6 +73,23 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetCheckPlastMember_UserId_ReturnOk()
+        {
+            // Arrange
+            _cityService
+                .Setup(x => x.PlastMemberCheck(It.IsAny<string>()))
+                .ReturnsAsync(new bool());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.GetCheckPlastMember(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task AddDocument_Valid_Test()
         {
             // Arrange
@@ -107,6 +124,21 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<List<CityUserDTO>>((result as ObjectResult).Value);
+        }
+
+        [Test]
+        public async Task GetCityAdmins_CityId_ReturnsOkObjResult()
+        {
+            // Arrange
+            int id = 2;
+            _cityService.Setup(x => x.GetAdministrationAsync(id)).ReturnsAsync(GetAdmins());
+
+            // Act
+            var result = await CreateCityController.GetAdministrations(id);
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsInstanceOf<List<CityAdministrationGetDTO>>((result as ObjectResult).Value);
         }
 
         [Test]
@@ -995,6 +1027,17 @@ namespace EPlast.Tests.Controllers
             return 1;
         }
 
+        private IEnumerable<CityAdministrationGetDTO> GetAdmins()
+        {
+            return new List<CityAdministrationGetDTO>()
+            {
+                new CityAdministrationGetDTO(){ Id = 2 },
+                new CityAdministrationGetDTO(){ Id = 3 },
+                new CityAdministrationGetDTO(){ Id = 4 },
+                new CityAdministrationGetDTO(){ Id = 5 }
+            };
+        }
+        
         private string GetStringFakeId()
         {
             return "1";

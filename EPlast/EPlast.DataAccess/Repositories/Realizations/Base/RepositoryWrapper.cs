@@ -45,6 +45,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEventAdminRepository _eventAdmin;
         private IEventTypeRepository _eventType;
         private IEventStatusRepository _eventStatus;
+        private IEventSectionRepository _eventSection;
         private IReligionRepository _religion;
         private IGenderRepository _gender;
         private IUpuDegreeRepository _upuDegree;
@@ -473,6 +474,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _eventStatus;
+            }
+        }
+
+        public IEventSectionRepository EventSection
+        {
+            get
+            {
+                if (_eventSection == null)
+                {
+                    _eventSection = new EventSectionRepository(_dbContext);
+                }
+
+                return _eventSection;
             }
         }
 
@@ -1134,6 +1148,5 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        
     }
 }

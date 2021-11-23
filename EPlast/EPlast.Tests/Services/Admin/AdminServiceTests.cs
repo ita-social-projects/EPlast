@@ -345,6 +345,42 @@ namespace EPlast.Tests.Services
             _repoWrapper.Verify();
         }
 
+        [TestCase("userId")]
+        public async Task ChangeCurrentRoleAsync_AddRegistered_CaseFormerMember_ReturnsCorrectAsync(string userId)
+        {
+            // Arrange
+            var registeredUser = Roles.RegisteredUser;
+            var admin = Roles.Admin;
+
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new User());
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string>() {});
+            _userManager
+                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), registeredUser));
+
+            _repoWrapper
+                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserMembershipDates>,
+                        IIncludableQueryable<UserMembershipDates, object>>>()))
+                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>,
+                        IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
+            _userManager
+                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), admin));
+
+            // Act
+            await service.ChangeCurrentRoleAsync(userId, registeredUser);
+
+            // Assert
+            _userManager.Verify();
+            _repoWrapper.Verify();
+        }
+
         [Test]
         public async Task ChangeCurrentRoleAsync_AddInterested_ReturnsCorrectAsync()
         {
@@ -882,7 +918,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "1" });
 
             //Acts
-            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.SequenceEqual(y))).ToList();
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAllRoles)).ToList();
 
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
@@ -905,11 +941,35 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "1" });
 
             //Acts
-            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.Any())).ToList();
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAnyRoles)).ToList();
 
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
         }
+
+        [Test]
+        public async Task GetUsersByExactRoles_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            string[] roles = new string[] { "Role2", "Role1" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByExactRoles)).ToList();
+
+            //Assert
+            Assert.AreEqual(res[0].ID, user.Id);
+        }
+
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>

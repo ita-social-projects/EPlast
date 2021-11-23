@@ -138,17 +138,19 @@ namespace EPlast.WebApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         [HttpPost("dates")]
-        public async Task<IActionResult> ChangeUserDates(UserMembershipDatesDTO userMembershipDatesDTO)
+        public async Task<IActionResult> ChangeUserOathDateAsync(UserOathDateDTO userOathDateDTO)
         {
-            if (!await HasAccessAsync(userMembershipDatesDTO.UserId))
+            var focusUser = await _userManager.FindByIdAsync(userOathDateDTO.UserId);
+            var roles = await _userManager.GetRolesAsync(focusUser);
+            //If user is registered or former member, then we can not change oath date!
+            if(roles.Contains(Roles.RegisteredUser) || roles.Count == 0 || !await HasAccessAsync(userOathDateDTO.UserId))
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
-            if (await _userDatesService.ChangeUserMembershipDatesAsync(userMembershipDatesDTO))
+            if (await _userDatesService.ChangeUserOathDateAsync(userOathDateDTO))
             {
-                return Ok(userMembershipDatesDTO);
+                return Ok(userOathDateDTO);
             }
-
             return BadRequest();
         }
 

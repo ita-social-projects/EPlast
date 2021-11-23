@@ -70,6 +70,23 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public void ArchiveAsync_CityIsNotEmpty_ThrowInvalidOperationException()
+        {
+            // Arrange
+            _repoWrapper.Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+               .ReturnsAsync(new DataAccessCity.City()
+               {
+                   CityAdministration = new List<CityAdministration>(),
+                   CityMembers = new List<CityMembers>()
+               });
+            _repoWrapper.Setup(r => r.City.Update(It.IsAny<DataAccessCity.City>()));
+            _repoWrapper.Setup(r => r.SaveAsync());
+
+            // Act // Assert
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _cityService.ArchiveAsync(Id));
+        }
+
+        [Test]
         public void GetCityHead_ReturnsCityHead_Valid()
         {
             // Arrange
@@ -520,6 +537,50 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task PlastMemberCheck_UserId_ReturnTrue()
+        {
+            // Arrange
+            User user = new User() {Id = "a"}; 
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManager
+                .Setup(x => x.IsInRoleAsync(user, It.IsAny<string>()))
+                .ReturnsAsync(true);
+            const bool expected = true;
+
+            // Act
+            var result = await _cityService.PlastMemberCheck(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<bool>(result);
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
+        public async Task PlastMemberCheck_UserId_ReturnFalse()
+        {
+            // Arrange
+            User user = new User() { Id = "a" };
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManager
+                .Setup(x => x.IsInRoleAsync(user, It.IsAny<string>()))
+                .ReturnsAsync(false);
+            const bool expected = false;
+
+            // Act
+            var result = await _cityService.PlastMemberCheck(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<bool>(result);
+            Assert.AreEqual(expected, result);
+        }
+
+        [Test]
         public async Task GetCityMembersAsync_WithCityIsNull_ReturnsNull()
         {
             // Arrange
@@ -604,6 +665,26 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.Null(result);
+        }
+      
+        [Test]
+        public async Task GetAdministrationAsync_CityId_ReturnClubAdministrtionGetDTO()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration>());
+
+            _mapper.Setup(x => x.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+                .Returns(GetFakeAdminDTO());
+
+            //Act
+            var result = await _cityService.GetAdministrationAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<CityAdministrationGetDTO>>(result);
+            Assert.AreEqual(3, result.Count());
         }
 
         [Test]
@@ -1307,6 +1388,15 @@ namespace EPlast.Tests.Services.City
             city.Region = GetTestRegion();
 
             return city;
+        }
+        
+        private IEnumerable<CityAdministrationGetDTO> GetFakeAdminDTO()
+        {
+            return new List<CityAdministrationGetDTO>() {
+                new CityAdministrationGetDTO(){ Id = 2, AdminTypeId = 2, CityId = 2 },
+                new CityAdministrationGetDTO(){ Id = 3, AdminTypeId = 3, CityId = 3 },
+                new CityAdministrationGetDTO(){ Id = 4, AdminTypeId = 4, CityId = 4 }
+            };
         }
 
         private DataAccessCity.City GetTestCityWithoutLogo()
