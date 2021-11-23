@@ -10,6 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BLL.Services.EventUser;
+using EPlast.BLL.Services.Interfaces;
 using Microsoft.EntityFrameworkCore.Query;
 using NUnit.Framework;
 using Moq;
@@ -24,6 +25,7 @@ namespace EPlast.Tests.Services.Event
         private Mock<IEventCategoryManager> _eventCategoryManager;
         private Mock<IEventStatusManager> _eventStatusManager;
         private Mock<IEventAdministrationTypeManager> _eventAdministrationTypeManager;
+        private Mock<IUserManagerService> _userManagerService;
         private EventUserManager _service;
 
         [SetUp]
@@ -34,9 +36,10 @@ namespace EPlast.Tests.Services.Event
             _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventStatusManager = new Mock<IEventStatusManager>();
             _eventAdministrationTypeManager = new Mock<IEventAdministrationTypeManager>();
+            _userManagerService = new Mock<IUserManagerService>();
 
             _service = new EventUserManager(_repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object, _eventAdministrationTypeManager.Object);
+                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManagerService.Object);
         }
 
         [Test]

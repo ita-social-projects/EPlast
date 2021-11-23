@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections;
+using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
@@ -8,10 +10,30 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.EventUser
 {
+    public static class AsyncExtensions
+    {
+        public static async Task<IEnumerable<T>> WhereAsync<T>(
+            this IEnumerable<T> source, Func<T, Task<bool>> func)
+        {
+            var res = new List<T>();
+            foreach (var element in source)
+            {
+                if (await func(element))
+                    res.Append(element);
+            }
+            return res;
+        }
+    }
+
     /// <inheritdoc/>
     public class EventUserManager : IEventUserManager
     {
@@ -20,17 +42,19 @@ namespace EPlast.BLL.Services.EventUser
         private readonly IEventCategoryManager eventCategoryManager;
         private readonly IEventStatusManager eventStatusManager;
         private readonly IEventAdministrationTypeManager eventAdministrationTypeManager;
+        private readonly IUserManagerService userManagerService;
 
 
         public EventUserManager(IRepositoryWrapper repoWrapper, IMapper mapper,
             IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager,
-            IEventAdministrationTypeManager eventAdministrationTypeManager)
+            IEventAdministrationTypeManager eventAdministrationTypeManager, IUserManagerService userManagerService)
         {
             this.repoWrapper = repoWrapper;
             this.mapper = mapper;
             this.eventCategoryManager = eventCategoryManager;
             this.eventStatusManager = eventStatusManager;
             this.eventAdministrationTypeManager = eventAdministrationTypeManager;
+            this.userManagerService = userManagerService;
         }
 
         private int commandantTypeId;
@@ -40,9 +64,14 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<EventCreateDTO> InitializeEventCreateDTOAsync()
         {
+            var allUsers = await repoWrapper.User.GetAllAsync();
+            //var filtered =await allUsers.WhereAsync(async u => await userManagerService.IsInRoleAsync(mapper.Map<User, UserDTO>(u),
+            //    new[] {Roles.Admin, Roles.GoverningBodyHead, Roles.CityHead, Roles.RegionBoardHead, Roles.OkrugaHead, Roles.PlastMember}));
+
             return new EventCreateDTO()
             {
-                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(await repoWrapper.User.GetAllAsync()),
+                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(allUsers.Where(u=> userManagerService.IsInRoleAsync(mapper.Map<User, UserDTO>(u), new[] { Roles.Admin, Roles.GoverningBodyHead, Roles.CityHead, Roles.RegionBoardHead, Roles.OkrugaHead, Roles.PlastMember }).Result)),
+                //Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(await repoWrapper.User.GetAllAsync()),
                 EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDTO>>(await repoWrapper.EventType.GetAllAsync()),
                 EventCategories = await eventCategoryManager.GetDTOAsync()
             };
