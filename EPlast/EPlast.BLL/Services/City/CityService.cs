@@ -309,7 +309,6 @@ namespace EPlast.BLL.Services
                     .Include(t => t.AdminType));
             var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(admins);
             return admin;
-
         }
 
         /// <inheritdoc />
