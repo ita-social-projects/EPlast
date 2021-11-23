@@ -433,7 +433,6 @@ namespace EPlast.BLL.Services
             return city.ID;
         }
 
-
         /// <inheritdoc />
         public async Task<IEnumerable<CityForAdministrationDTO>> GetCities()
         {
