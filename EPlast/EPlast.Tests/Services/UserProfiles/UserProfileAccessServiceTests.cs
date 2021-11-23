@@ -260,6 +260,5 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         private readonly User _fakeUser = new User { Id = "1" };
-        private readonly UserDTO _fakeUserDTO = new UserDTO { Id = "1" };
     }
 }
