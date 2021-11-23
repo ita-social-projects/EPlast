@@ -298,7 +298,8 @@ namespace EPlast.BLL.Services
             var cityHeadDeputyId = cityHeadDeputy != null ? cityHeadDeputy.UserId : "No Id";
 
             return $"{cityHeadId},{cityHeadDeputyId}";
-        
+        }
+            
         /// <inheritdoc />
         public async Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId)
         {
