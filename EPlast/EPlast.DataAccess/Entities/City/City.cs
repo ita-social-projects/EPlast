@@ -43,6 +43,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<CityAdministration> CityAdministration { get; set; }
         public ICollection<AnnualReport> AnnualReports { get; set; }
         public ICollection<CityLegalStatus> CityLegalStatuses { get; set; }
+        public ICollection<UserRenewal> UserRenewals { get; set; }
 
         public int RegionId { get; set; }
         public Region Region { get; set; }

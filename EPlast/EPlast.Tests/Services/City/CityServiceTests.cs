@@ -372,6 +372,29 @@ namespace EPlast.Tests.Services.City
         }
 
         [Test]
+        public async Task GetCityByIdAsync_ReturnsCity()
+        {
+            _repoWrapper
+                .Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
+                .ReturnsAsync(new DataAccessCity.City());
+            _mapper
+                .Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new CityDTO());
+
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration>());
+
+            // Act
+            var result = await _cityService.GetCityByIdAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<CityDTO>(result);
+        }
+
+        [Test]
         public async Task GetCityProfileAsync_ReturnsCityProfile()
         {
             // Arrange
@@ -552,6 +575,35 @@ namespace EPlast.Tests.Services.City
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetCityAdminsIdsAsync_ReturnsCityAdminsIds()
+        {
+            // Arrange
+            CityService cityService = CreateCityService();
+
+            // Act
+            var result = await cityService.GetCityAdminsIdsAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<string>(result);
+        }
+
+        [Test]
+        public async Task GetCityAdminsIdsAsync_ReturnsNull()
+        {
+            // Arrange
+            CityService cityService = CreateCityService();
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDTO)null);
+
+            // Act
+            var result = await cityService.GetCityAdminsIdsAsync(Id);
+
+            // Assert
+            Assert.Null(result);
         }
 
         [Test]

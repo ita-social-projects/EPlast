@@ -388,6 +388,43 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetAdminsIds_ReturnsOkObject()
+        {
+            //Arrange
+            _cityService
+                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
+                .ReturnsAsync("Id1,Id2");
+            CitiesController controller = CreateCityController;
+
+            //Act
+            var result = await controller.GetAdminsIds(It.IsAny<int>());
+            var resultValue = (result as OkObjectResult).Value;
+
+            //Assert
+            _cityService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+        }
+
+        [Test]
+        public async Task GetAdminsIds_ReturnsNotFound()
+        {
+            //Arrange
+            _cityService
+                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
+                .ReturnsAsync(()=>null);
+            CitiesController controller = CreateCityController;
+
+            //Act
+            var result = await controller.GetAdminsIds(It.IsAny<int>());
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
         public async Task GetAllAdministrationStatuses_Valid_Test()
         {
             // Arrange
