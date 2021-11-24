@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _userAccessService.GetUserDistinctionAccessAsync(userId));
         }
 
-         [HttpGet("GetUserAnnualReportAccess/{userId}/{reportType?}/{reportId?}")]
+        [HttpGet("GetUserAnnualReportAccess/{userId}/{reportType?}/{reportId?}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAnnualReportAccess(string userId, int?reportType = null, int? reportId = null)
         {

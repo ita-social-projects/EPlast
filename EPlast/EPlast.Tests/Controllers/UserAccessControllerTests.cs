@@ -129,37 +129,17 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetUserCertainAnnualReportAccesses_ReturnsAccessList()
-        {
-            //Arrange
-            Dictionary<string, bool> dict = new Dictionary<string, bool>();
-            dict.Add("action", It.IsAny<bool>());
-            _userAccessService
-                .Setup(x => x.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>(),It.IsAny<int>()))
-                .ReturnsAsync(dict);
-
-            //Act
-            var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
-            var resultValue = (result as ObjectResult)?.Value;
-
-            //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
-            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
-        }
-
-        [Test]
         public async Task GetUserAnnualReportAccesses_ReturnsAccessList()
         {
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
             _userAccessService
-                .Setup(x => x.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<User>(), null, null))
+                .Setup(x => x.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int?>(),It.IsAny<int?>()))
                 .ReturnsAsync(dict);
 
             //Act
-            var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>());
+            var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>());
             var resultValue = (result as ObjectResult)?.Value;
 
             //Assert
