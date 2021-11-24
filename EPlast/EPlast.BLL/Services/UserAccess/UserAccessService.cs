@@ -94,13 +94,13 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-        public async Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, int? cityReportId=null)
+        public async Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, User user, int? reportType=null, int? reportId=null)
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            if (cityReportId != null)
+            if (reportType!= null && reportId != null)
             {
-                userAccess["EditReport"] = await _annualReportAccessService.CanEditCityReportAsync(userId, (int)cityReportId);
+                userAccess["EditReport"] = await _annualReportAccessService.CanEditReportAsync(user, (int)reportType, (int)reportId);
             }
             return userAccess;
         }

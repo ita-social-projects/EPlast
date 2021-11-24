@@ -160,7 +160,7 @@ namespace EPlast.Tests.Services.UserAccess
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
-            var result = await _userAccessService.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<int>());
+            var result = await _userAccessService.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>(), It.IsAny<int>());
 
             //Assert
             Assert.IsNotEmpty(result);

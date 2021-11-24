@@ -55,11 +55,11 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _userAccessService.GetUserDistinctionAccessAsync(userId));
         }
 
-        [HttpGet("GetUserAnnualReportAccess/{userId}/{cityReportId?}")]
+         [HttpGet("GetUserAnnualReportAccess/{userId}/{reportType?}/{reportId?}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUserAnnualReportAccess(string userId, int? cityReportId = null)
+        public async Task<IActionResult> GetUserAnnualReportAccess(string userId, int?reportType = null, int? reportId = null)
         {
-            return Ok(await _userAccessService.GetUserAnnualReportAccessAsync(userId, cityReportId));
+            return Ok(await _userAccessService.GetUserAnnualReportAccessAsync(userId, await _userManager.GetUserAsync(User), reportType, reportId));
         }
 
         [HttpGet("GetUserStatisticsAccess/{userId}")]
