@@ -17,16 +17,16 @@ namespace EPlast.BLL.Services
 
         public async Task<bool> CanEditReportAsync(User user, int reportType, int reportId)
         {
-            var myReportType = (reportType) reportType;
+            var myReportType = (ReportType) reportType;
 
-            if (myReportType == AnnualReportAccessService.reportType.City)
+            if (myReportType == AnnualReportAccessService.ReportType.City)
             {
                 var annualReport =
                     await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(x =>
                         x.CreatorId == user.Id && x.ID == reportId);
                 return annualReport != null;
             }
-            else if (myReportType == AnnualReportAccessService.reportType.Club)
+            else if (myReportType == AnnualReportAccessService.ReportType.Club)
             {
                 var clubAnnualReport =
                     await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services
                     : null;
                 return clubAnnualReportClubAdministration != null;
             }
-            else if (myReportType == AnnualReportAccessService.reportType.Region)
+            else if (myReportType == AnnualReportAccessService.ReportType.Region)
             {
                 var regionAnnualReport =
                     await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
@@ -54,7 +54,7 @@ namespace EPlast.BLL.Services
             return false;
         }
 
-        private enum reportType
+        private enum ReportType
         {
             City = 0,
             Club = 1,

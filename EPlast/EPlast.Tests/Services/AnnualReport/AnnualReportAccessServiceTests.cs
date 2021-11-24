@@ -104,7 +104,7 @@ namespace EPlast.Tests.Services
             var result = await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), 3, It.IsAny<int>());
 
             //Assert
-            Assert.AreEqual(result, false);
+            Assert.AreEqual(false, result);
         }
     }
 }
