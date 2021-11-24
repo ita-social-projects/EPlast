@@ -77,7 +77,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAnnualReport>, IIncludableQueryable<ClubAnnualReport, object>>>()))
-                .ReturnsAsync(new ClubAnnualReport() { ClubId = 1 });
+                .ReturnsAsync((ClubAnnualReport)null);
             _repositoryWrapper
                 .Setup(x => x.ClubAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
@@ -118,7 +118,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
-                .ReturnsAsync(new RegionAnnualReport() { ID = 1 });
+                .ReturnsAsync((RegionAnnualReport)null);
             _repositoryWrapper
                 .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
