@@ -12,7 +12,7 @@ namespace EPlast.WebApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
+    [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)]
     public class UserRenewalController : ControllerBase
     {
         private readonly IUserRenewalService _userRenewalService;
