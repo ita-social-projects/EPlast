@@ -19,14 +19,14 @@ namespace EPlast.BLL.Services
         {
             var myReportType = (ReportType) reportType;
 
-            if (myReportType == AnnualReportAccessService.ReportType.City)
+            if (myReportType == ReportType.City)
             {
                 var annualReport =
                     await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(x =>
                         x.CreatorId == user.Id && x.ID == reportId);
                 return annualReport != null;
             }
-            else if (myReportType == AnnualReportAccessService.ReportType.Club)
+            else if (myReportType == ReportType.Club)
             {
                 var clubAnnualReport =
                     await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services
                     : null;
                 return clubAnnualReportClubAdministration != null;
             }
-            else if (myReportType == AnnualReportAccessService.ReportType.Region)
+            else if (myReportType == ReportType.Region)
             {
                 var regionAnnualReport =
                     await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
@@ -52,13 +52,6 @@ namespace EPlast.BLL.Services
             }
 
             return false;
-        }
-
-        private enum ReportType
-        {
-            City = 0,
-            Club = 1,
-            Region = 2
         }
     }
 }
