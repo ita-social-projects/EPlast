@@ -10,33 +10,21 @@ namespace EPlast.BLL.Services.UserAccess
 {
     public class UserAccessWrapper : IUserAccessWrapper
     {
-        private readonly IClubAccessService _clubAccessService;
-        private readonly ICityAccessService _cityAccessService;
-        private readonly IRegionAccessService _regionAccessService;
-        private readonly IAnnualReportAccessService _annualReportAccessService;
-        private readonly IUserProfileAccessService _userProfileAccessService;
-        private readonly IEventUserAccessService _eventAccessService;
-
         public IClubAccessService ClubAccessService { get => _clubAccessService; }
-
         public ICityAccessService CityAccessService { get => _cityAccessService; }
-
         public IRegionAccessService RegionAccessService { get => _regionAccessService; }
-
         public IAnnualReportAccessService AnnualReportAccessService { get => _annualReportAccessService; }
-
         public IUserProfileAccessService UserProfileAccessService { get => _userProfileAccessService; }
-
         public IEventUserAccessService EventAccessService { get => _eventAccessService; }
 
         public UserAccessWrapper(
-            IClubAccessService clubAccessService,
-            ICityAccessService cityAccessService,
-            IRegionAccessService regionAccessService,
-            IAnnualReportAccessService annualReportAccessService,
-            IUserProfileAccessService userProfileAccessService,
-            IEventUserAccessService eventAccessService
-            )
+           IClubAccessService clubAccessService,
+           ICityAccessService cityAccessService,
+           IRegionAccessService regionAccessService,
+           IAnnualReportAccessService annualReportAccessService,
+           IUserProfileAccessService userProfileAccessService,
+           IEventUserAccessService eventAccessService
+           )
         {
             _cityAccessService = cityAccessService;
             _clubAccessService = clubAccessService;
@@ -45,5 +33,12 @@ namespace EPlast.BLL.Services.UserAccess
             _userProfileAccessService = userProfileAccessService;
             _eventAccessService = eventAccessService;
         }
+
+        private readonly IClubAccessService _clubAccessService;
+        private readonly ICityAccessService _cityAccessService;
+        private readonly IRegionAccessService _regionAccessService;
+        private readonly IAnnualReportAccessService _annualReportAccessService;
+        private readonly IUserProfileAccessService _userProfileAccessService;
+        private readonly IEventUserAccessService _eventAccessService;
     }
 }
