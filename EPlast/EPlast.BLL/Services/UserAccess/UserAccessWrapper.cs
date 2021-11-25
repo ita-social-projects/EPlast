@@ -10,12 +10,12 @@ namespace EPlast.BLL.Services.UserAccess
 {
     public class UserAccessWrapper : IUserAccessWrapper
     {
-        private IClubAccessService _clubAccessService;
-        private ICityAccessService _cityAccessService;
-        private IRegionAccessService _regionAccessService;
-        private IAnnualReportAccessService _annualReportAccessService;
-        private IUserProfileAccessService _userProfileAccessService;
-        private IEventUserAccessService _eventAccessService;
+        private readonly IClubAccessService _clubAccessService;
+        private readonly ICityAccessService _cityAccessService;
+        private readonly IRegionAccessService _regionAccessService;
+        private readonly IAnnualReportAccessService _annualReportAccessService;
+        private readonly IUserProfileAccessService _userProfileAccessService;
+        private readonly IEventUserAccessService _eventAccessService;
 
         public IClubAccessService ClubAccessService { get => _clubAccessService; }
 
