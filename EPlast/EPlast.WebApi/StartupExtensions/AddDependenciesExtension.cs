@@ -173,6 +173,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<IUserProfileAccessService, UserProfileAccessService>();
             services.AddScoped<StatisticsServiceSettings>();
+            services.AddScoped<IUserAccessWrapper, UserAccessWrapper>();
             services.AddScoped<IAboutBaseSectionService, AboutBaseSectionService>();
             services.AddScoped<IAboutBaseSubsectionService, AboutBaseSubsectionService>();
             services.AddScoped<ISecurityModel, SecurityModel>();
