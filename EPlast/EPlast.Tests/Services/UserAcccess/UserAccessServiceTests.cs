@@ -3,6 +3,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserAccess;
@@ -27,6 +28,7 @@ namespace EPlast.Tests.Services.UserAccess
         private Mock<IRegionAccessService> _regionAccessService;
         private Mock<IUserProfileAccessService> _userProfileAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
+        private Mock<IUserAccessWrapper> _userAccessWrapper;
 
         private UserAccessService _userAccessService;
 
@@ -42,8 +44,14 @@ namespace EPlast.Tests.Services.UserAccess
             _regionAccessService = new Mock<IRegionAccessService>();
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
             _userProfileAccessService = new Mock<IUserProfileAccessService>();
-
-            _userAccessService = new UserAccessService(_clubAccessService.Object, _cityAccessService.Object, _regionAccessService.Object, _annualReportAccessService.Object, _userProfileAccessService.Object, _eventAccessService.Object, _userManager.Object, _securityModel.Object);
+            _userAccessWrapper = new Mock<IUserAccessWrapper>();
+            _userAccessWrapper.Setup(x => x.CityAccessService).Returns(_cityAccessService.Object);
+            _userAccessWrapper.Setup(x => x.ClubAccessService).Returns(_clubAccessService.Object);
+            _userAccessWrapper.Setup(x => x.AnnualReportAccessService).Returns(_annualReportAccessService.Object);
+            _userAccessWrapper.Setup(x => x.UserProfileAccessService).Returns(_userProfileAccessService.Object);
+            _userAccessWrapper.Setup(x => x.EventAccessService).Returns(_eventAccessService.Object);
+            _userAccessWrapper.Setup(x => x.RegionAccessService).Returns(_regionAccessService.Object);
+            _userAccessService = new UserAccessService(_userAccessWrapper.Object, _userManager.Object, _securityModel.Object);
         }
 
         [Test]
