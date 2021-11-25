@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Services.Interfaces;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services.EventUser
 {
