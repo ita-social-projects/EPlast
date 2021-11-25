@@ -11,6 +11,8 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BLL.Services.EventUser;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using NUnit.Framework;
 using Moq;
@@ -25,7 +27,7 @@ namespace EPlast.Tests.Services.Event
         private Mock<IEventCategoryManager> _eventCategoryManager;
         private Mock<IEventStatusManager> _eventStatusManager;
         private Mock<IEventAdministrationTypeManager> _eventAdministrationTypeManager;
-        private Mock<IUserManagerService> _userManagerService;
+        private Mock<UserManager<User>> _userManager;
         private EventUserManager _service;
 
         [SetUp]
@@ -36,10 +38,11 @@ namespace EPlast.Tests.Services.Event
             _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventStatusManager = new Mock<IEventStatusManager>();
             _eventAdministrationTypeManager = new Mock<IEventAdministrationTypeManager>();
-            _userManagerService = new Mock<IUserManagerService>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             _service = new EventUserManager(_repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManagerService.Object);
+                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManager.Object);
         }
 
         [Test]
