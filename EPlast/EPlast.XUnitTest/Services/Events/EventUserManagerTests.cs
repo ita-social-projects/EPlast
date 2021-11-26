@@ -8,13 +8,12 @@ using EPlast.BLL.Services.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.Services.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
