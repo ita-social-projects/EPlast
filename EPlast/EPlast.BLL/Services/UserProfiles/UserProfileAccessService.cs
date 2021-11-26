@@ -38,7 +38,6 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-
             return false;
         }
 
@@ -51,11 +50,10 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-            if ((roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy)) && _userService.IsUserSameClub(currentUser, focusUser))
+            if (roles.Contains(Roles.KurinHead) && _userService.IsUserSameClub(currentUser, focusUser))
             {
                 return true;
             }
-
             return false;
         }
 
@@ -100,7 +98,6 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-
             return false;
         }
     }

@@ -18,12 +18,12 @@ namespace EPlast.BLL.Services.UserAccess
         public IEventUserAccessService EventAccessService { get => _eventAccessService; }
 
         public UserAccessWrapper(
-           IClubAccessService clubAccessService,
-           ICityAccessService cityAccessService,
-           IRegionAccessService regionAccessService,
-           IAnnualReportAccessService annualReportAccessService,
-           IUserProfileAccessService userProfileAccessService,
-           IEventUserAccessService eventAccessService
+            IClubAccessService clubAccessService,
+            ICityAccessService cityAccessService,
+            IRegionAccessService regionAccessService,
+            IAnnualReportAccessService annualReportAccessService,
+            IUserProfileAccessService userProfileAccessService,
+            IEventUserAccessService eventAccessService
            )
         {
             _cityAccessService = cityAccessService;
