@@ -25,7 +25,7 @@ namespace EPlast.BLL.Services.UserProfiles
             _userService = userService;
         }
 
-        public async Task<bool> ApproveAsCityHead(User user, string focusUserId)
+        public async Task<bool> CanApproveAsHead(User user, string focusUserId, string role)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
@@ -34,15 +34,16 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-            if ((roles.Contains(Roles.CityHead) && _userService.IsUserSameCity(currentUser, focusUser)))
-            {
-                return true;
-            }
 
-            return false;
+            return role switch
+            {
+                Roles.CityHead => (roles.Contains(Roles.CityHead) && _userService.IsUserSameCity(currentUser, focusUser)) || (roles.Contains(Roles.OkrugaHead) && _userService.IsUserSameRegion(currentUser, focusUser)),
+                Roles.KurinHead => (roles.Contains(Roles.KurinHead) && _userService.IsUserSameClub(currentUser, focusUser)),
+                _ => false,
+            };
         }
 
-        public async Task<bool> ApproveAsClubHead(User user, string focusUserId)
+        public async Task<bool> CanEditUserProfile(User user, string focusUserId)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
@@ -51,15 +52,13 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-            if ((roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy)) && _userService.IsUserSameClub(currentUser, focusUser))
-            {
-                return true;
-            }
-
-            return false;
+            return
+                ((roles.Contains(Roles.OkrugaHead)) && _userService.IsUserSameRegion(currentUser, focusUser)) ||
+                ((roles.Contains(Roles.CityHead)) && _userService.IsUserSameCity(currentUser, focusUser)) ||
+                ((roles.Contains(Roles.KurinHead)) && _userService.IsUserSameClub(currentUser, focusUser));
         }
 
-        public async Task<bool> EditUserProfile(User user, string focusUserId)
+        public async Task<bool> CanViewFullProfile(User user, string focusUserId)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
@@ -68,40 +67,10 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-            if ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && _userService.IsUserSameRegion(currentUser, focusUser))
-            {
-                return true;
-            }
-            if ((roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)) && _userService.IsUserSameCity(currentUser, focusUser))
-            {
-                return true;
-            }
-            if ((roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy)) && _userService.IsUserSameClub(currentUser, focusUser))
-            {
-                return true;
-            }
-            return false;
-        }
+            return
+                (_userService.IsUserSameCity(currentUser, focusUser) || _userService.IsUserSameClub(currentUser, focusUser)) ||
+                ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && _userService.IsUserSameRegion(currentUser, focusUser));
 
-        public async Task<bool> ViewFullProfile(User user, string focusUserId)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            var currentUser = await _userService.GetUserAsync(user.Id);
-            var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (await IsAdminAsync(user))
-            {
-                return true;
-            }
-            if (_userService.IsUserSameCity(currentUser, focusUser) || _userService.IsUserSameClub(currentUser, focusUser))
-            {
-                return true;
-            }
-            if ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && _userService.IsUserSameRegion(currentUser, focusUser))
-            {
-                return true;
-            }
-
-            return false;
         }
     }
 }

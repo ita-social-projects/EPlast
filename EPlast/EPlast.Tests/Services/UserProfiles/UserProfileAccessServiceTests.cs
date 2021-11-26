@@ -35,7 +35,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ApproveAsCityHead(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -49,7 +49,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = false;
 
             //Act
-            var result = await _userProfileAccessService.ApproveAsCityHead(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -64,7 +64,22 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ApproveAsCityHead(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
+
+            //Assert
+            Assert.AreEqual(result, expected);
+        }
+
+        [Test]
+        public async Task ApproveAsCityHead_AsRegionHead_ReturnsTrue()
+        {
+            //Arrange
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.OkrugaHead });
+            _mockUserService.Setup(u => u.IsUserSameRegion(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            var expected = true;
+
+            //Act
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -78,7 +93,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ViewFullProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -93,7 +108,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ViewFullProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -108,7 +123,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ViewFullProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -123,7 +138,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ViewFullProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -137,7 +152,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = false;
 
             //Act
-            var result = await _userProfileAccessService.ViewFullProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -151,7 +166,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = false;
 
             //Act
-            var result = await _userProfileAccessService.EditUserProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -165,7 +180,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.EditUserProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -180,7 +195,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.EditUserProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -195,7 +210,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.EditUserProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -210,7 +225,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.EditUserProfile(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -225,7 +240,22 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ApproveAsClubHead(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
+
+            //Assert
+            Assert.AreEqual(result, expected);
+        }
+
+        [Test]
+        public async Task ApproveAsClubHead_AsClubHead_NotInjgSameClub_ReturnsFalse()
+        {
+            //Arrange
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
+            _mockUserService.Setup(u => u.IsUserSameClub(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(false);
+            var expected = false;
+
+            //Act
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -239,7 +269,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = false;
 
             //Act
-            var result = await _userProfileAccessService.ApproveAsClubHead(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
 
             //Assert
             Assert.AreEqual(result, expected);
@@ -253,7 +283,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var expected = true;
 
             //Act
-            var result = await _userProfileAccessService.ApproveAsClubHead(_fakeUser, It.IsAny<string>());
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
 
             //Assert
             Assert.AreEqual(result, expected);

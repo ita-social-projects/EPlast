@@ -5,9 +5,8 @@ namespace EPlast.BLL.Interfaces.UserProfiles
 {
     public interface IUserProfileAccessService
     {
-        Task<bool> ViewFullProfile(User user, string focusUserId);
-        Task<bool> ApproveAsClubHead(User user, string focusUserId);
-        Task<bool> ApproveAsCityHead(User user, string focusUserId);
-        Task<bool> EditUserProfile(User user, string focusUserId);
+        Task<bool> CanViewFullProfile(User user, string focusUserId);
+        Task<bool> CanApproveAsHead(User user, string focusUserId, string role);
+        Task<bool> CanEditUserProfile(User user, string focusUserId);
     }
 }
