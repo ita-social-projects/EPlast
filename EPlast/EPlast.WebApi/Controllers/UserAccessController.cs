@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -57,7 +58,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("GetUserAnnualReportAccess/{userId}/{reportType?}/{reportId?}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUserAnnualReportAccess(string userId, int?reportType = null, int? reportId = null)
+        public async Task<IActionResult> GetUserAnnualReportAccess(string userId, ReportType? reportType = null, int? reportId = null)
         {
             return Ok(await _userAccessService.GetUserAnnualReportAccessAsync(userId, await _userManager.GetUserAsync(User), reportType, reportId));
         }
