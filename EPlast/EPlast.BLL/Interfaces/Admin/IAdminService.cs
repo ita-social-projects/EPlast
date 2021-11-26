@@ -1,11 +1,12 @@
 ﻿using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
 
 namespace EPlast.BLL.Services.Interfaces
 {
@@ -63,6 +64,27 @@ namespace EPlast.BLL.Services.Interfaces
 
         Task<int> GetUsersCountAsync();
 
-        Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string roles, bool include, Func<IEnumerable<string>, IEnumerable<string>, bool> checkIntersectedRoles);
+        /// <summary>
+        /// Get all users that match the condition and roles in delegate
+        /// </summary>
+        /// <param name="rolesString">String that represents roles groups divided by '|' and roles by ','</param>
+        /// <param name="include">Boolean variable that indicates whether include or exclude user by roles</param>
+        /// <returns>Users that have the roles</returns>
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>> filterRoles);
+
+        /// <summary>
+        /// Get users which have any role of the specified roles
+        /// </summary>
+        Task<IEnumerable<ShortUserInformationDTO>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+
+        /// <summary>
+        /// Get users which have all the specified roles
+        /// </summary>
+        Task<IEnumerable<ShortUserInformationDTO>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+
+        /// <summary>
+        /// Get users which have only the specified roles
+        /// </summary>
+        Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
     }
 }
