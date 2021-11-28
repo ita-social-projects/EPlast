@@ -9,7 +9,6 @@ namespace EPlast.BLL.Services.UserProfiles
 {
     public class UserProfileAccessService : IUserProfileAccessService
     {
-
         private readonly IUserService _userService;
         private readonly UserManager<DatabaseEntities.User> _userManager;
 
@@ -66,6 +65,10 @@ namespace EPlast.BLL.Services.UserProfiles
             if (await IsAdminAsync(user))
             {
                 return true;
+            }
+            if( roles.Contains(Roles.RegisteredUser) || roles.Contains(Roles.Supporter))
+            {
+                return false;
             }
             return
                 (_userService.IsUserSameCity(currentUser, focusUser) || _userService.IsUserSameClub(currentUser, focusUser)) ||
