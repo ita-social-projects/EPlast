@@ -166,11 +166,11 @@ namespace EPlast.Tests.Services.UserAccess
         {
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
-            dict.Add("action", It.IsAny<bool>());
+            dict.Add("EditReport", It.IsAny<bool>());
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act
-            var result = await _userAccessService.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<int>());
+            var result = await _userAccessService.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<ReportType?>(), It.IsAny<int?>());
 
             //Assert
             Assert.IsNotEmpty(result);
