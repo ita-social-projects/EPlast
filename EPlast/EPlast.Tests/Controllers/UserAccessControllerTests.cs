@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -135,11 +136,11 @@ namespace EPlast.Tests.Controllers
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
             dict.Add("action", It.IsAny<bool>());
             _userAccessService
-                .Setup(x => x.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<int>()))
+                .Setup(x => x.GetUserAnnualReportAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<ReportType?>(),It.IsAny<int?>()))
                 .ReturnsAsync(dict);
 
             //Act
-            var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>(), It.IsAny<int>());
+            var result = await _userAccessController.GetUserAnnualReportAccess(It.IsAny<string>(), It.IsAny<ReportType?>(), It.IsAny<int?>());
             var resultValue = (result as ObjectResult)?.Value;
 
             //Assert
