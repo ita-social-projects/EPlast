@@ -1,5 +1,6 @@
 {
   "Admin": {
+    "IsAdmin": true,
     "ViewAnnualReportsTable": true,
     "FindEveryAnnualReportInSearch": true,
     "ViewEveryAnnualReport": true,
@@ -18,7 +19,7 @@
     "SubmitCityReport": false,
     "SubmitClubReport": false,
     "SubmitRegionReport": true,
-    "EditReport": true,
+    "EditReport": false,
     "ChangeReportStatus": false,
     "DeleteReport": false
   },
@@ -30,7 +31,7 @@
     "SubmitCityReport": false,
     "SubmitClubReport": false,
     "SubmitRegionReport": true,
-    "EditReport": true,
+    "EditReport": false,
     "ChangeReportStatus": false,
     "DeleteReport": false
   },
@@ -66,7 +67,7 @@
     "SubmitCityReport": false,
     "SubmitClubReport": true,
     "SubmitRegionReport": false,
-    "EditReport": true,
+    "EditReport": false,
     "ChangeReportStatus": false,
     "DeleteReport": false
   },
@@ -78,7 +79,7 @@
     "SubmitCityReport": false,
     "SubmitClubReport": true,
     "SubmitRegionReport": false,
-    "EditReport": true,
+    "EditReport": false,
     "ChangeReportStatus": false,
     "DeleteReport": false
   },
