@@ -135,8 +135,7 @@ namespace EPlast.BLL.Services.EventUser
         public async Task EditEventAsync(EventCreateDTO model)
         {
             await GetAdministrationTypeId();
-                
-
+            
             var eventToEdit = mapper.Map<EventCreationDTO, Event>(model.Event);
 
             eventToEdit.EventAdministrations = new List<EventAdministration>
