@@ -24,6 +24,7 @@ namespace EPlast.Tests.Controllers
         private EventsController _eventsController;
         private Mock<UserManager<User>> _userManager;
         private Mock<IEventCategoryManager> _eventCategoryManager;
+        private Mock<IEventStatusManager> _eventStatusManager;
 
         [SetUp]
         public void SetUp()
@@ -32,9 +33,11 @@ namespace EPlast.Tests.Controllers
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _eventCategoryManager = new Mock<IEventCategoryManager>();
+            _eventStatusManager = new Mock<IEventStatusManager>();
             _eventsController = new EventsController(
                 _actionManager.Object,
                 _userManager.Object,
+                _eventStatusManager.Object,
                 _eventCategoryManager.Object);
         }
 
@@ -250,6 +253,23 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.IsNotNull(actual);
+        }
+
+        [Test]
+        public async Task GetEventStatusId_ReturnsOkObjectResult()
+        {
+            // Arrange
+            const int ID = 1;
+            _eventStatusManager
+                .Setup((x) => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(ID);
+
+            // Act
+            var result = await _eventsController.GetEventStatusId(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
