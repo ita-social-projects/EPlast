@@ -175,7 +175,7 @@ namespace EPlast.WebApi.Controllers
         /// Get status id of event.
         /// </summary>
         /// <returns>A detailed information about specific event.</returns>
-        /// <param name="id">The status</param>
+        /// <param name="status">The status</param>
         /// <response code="200">Id of event</response>
         /// <response code="400">Server could not understand the request due to invalid syntax</response> 
         /// <response code="404">Status does not exist</response> 
