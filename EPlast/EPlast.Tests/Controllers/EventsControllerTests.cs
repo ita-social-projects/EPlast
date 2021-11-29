@@ -277,7 +277,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.EstimateEventAsync(It.IsAny<int>(), It.IsAny<User>(), It.IsAny<double>()))
+                .Setup(x => x.EstimateEventAsync(It.IsAny<int>(), It.IsAny<User>(), It.IsAny<double>()))
                 .ReturnsAsync(200);
 
             // Act
