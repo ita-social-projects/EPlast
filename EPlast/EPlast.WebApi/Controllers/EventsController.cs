@@ -176,9 +176,6 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>A detailed information about specific event.</returns>
         /// <param name="status">The status</param>
-        /// <response code="200">Id of event</response>
-        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
-        /// <response code="404">Status does not exist</response> 
         [HttpGet("{status}/statusId")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEventStatusId(string status)
