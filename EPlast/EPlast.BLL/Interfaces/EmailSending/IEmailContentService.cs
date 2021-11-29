@@ -124,5 +124,12 @@ namespace EPlast.BLL.Interfaces
         /// <param name="userId">User id</param>
         /// <returns>Email content</returns>
         Task<EmailModel> GetGreetingForNewPlastMemberEmailAsync(string userId);
+
+        /// <summary>
+        /// Gets email to inform Former-Member user about account renewal
+        /// </summary>
+        /// <param name="cityName">User id</param>
+        /// <returns>Email content</returns>
+        EmailModel GetUserRenewalConfirmationEmail(string cityName);
     }
 }
