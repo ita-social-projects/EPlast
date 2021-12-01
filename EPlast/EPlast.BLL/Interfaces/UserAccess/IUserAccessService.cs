@@ -1,7 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
-using System;
+using EPlast.Resources;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.UserAccess
@@ -30,9 +29,13 @@ namespace EPlast.BLL.Interfaces.UserAccess
 
         /// <summary>
         /// Returns dictionary with user accesses for annual reports
-        /// cityReportId is optional if we want to check user access for certain city report
+        /// report type and report id is optional (check access to edit certain report)
+        /// report type
+        /// 0 - city
+        /// 1 - club
+        /// 2 - region
         /// </summary>
-        Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, int? cityReportId = null);
+        Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, User user, ReportType? reportType = null, int? reportId = null);
 
         /// <summary>
         /// Returns dictionary with user accesses for statistics

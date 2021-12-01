@@ -1,0 +1,112 @@
+{
+  "Admin": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": true,
+    "CanCityStatisticsChooseYears": true,
+    "CanCityStatisticsChooseIndicators": true,
+    "CanCityStatisticsFormReport": true,
+    "CanRegionStatisticsChooseRegion": true,
+    "CanRegionStatisticsСhooseYears": true,
+    "CanRegionStatisticsChooseIndicators": true,
+    "CanRegionStatisticsFormReport": true
+  },
+  "Голова Округи": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": true,
+    "CanCityStatisticsChooseYears": true,
+    "CanCityStatisticsChooseIndicators": true,
+    "CanCityStatisticsFormReport": true,
+    "CanRegionStatisticsChooseRegion": true,
+    "CanRegionStatisticsСhooseYears": true,
+    "CanRegionStatisticsChooseIndicators": true,
+    "CanRegionStatisticsFormReport": true
+  },
+  "Заступник Голови Округи": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": true,
+    "CanCityStatisticsChooseYears": true,
+    "CanCityStatisticsChooseIndicators": true,
+    "CanCityStatisticsFormReport": true,
+    "CanRegionStatisticsChooseRegion": true,
+    "CanRegionStatisticsСhooseYears": true,
+    "CanRegionStatisticsChooseIndicators": true,
+    "CanRegionStatisticsFormReport": true
+  },
+  "Голова Станиці": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": true,
+    "CanCityStatisticsChooseYears": true,
+    "CanCityStatisticsChooseIndicators": true,
+    "CanCityStatisticsFormReport": true,
+    "CanRegionStatisticsChooseRegion": true,
+    "CanRegionStatisticsСhooseYears": true,
+    "CanRegionStatisticsChooseIndicators": true,
+    "CanRegionStatisticsFormReport": true
+  },
+  "Заступник Голови Станиці": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": true,
+    "CanCityStatisticsChooseYears": true,
+    "CanCityStatisticsChooseIndicators": true,
+    "CanCityStatisticsFormReport": true,
+    "CanRegionStatisticsChooseRegion": true,
+    "CanRegionStatisticsСhooseYears": true,
+    "CanRegionStatisticsChooseIndicators": true,
+    "CanRegionStatisticsFormReport": true
+  },
+  "Голова Куреня": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": false,
+    "CanCityStatisticsChooseYears": false,
+    "CanCityStatisticsChooseIndicators": false,
+    "CanCityStatisticsFormReport": false,
+    "CanRegionStatisticsChooseRegion": false,
+    "CanRegionStatisticsСhooseYears": false,
+    "CanRegionStatisticsChooseIndicators": false,
+    "CanRegionStatisticsFormReport": false
+  },
+  "Заступник Голови Куреня": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": false,
+    "CanCityStatisticsChooseYears": false,
+    "CanCityStatisticsChooseIndicators": false,
+    "CanCityStatisticsFormReport": false,
+    "CanRegionStatisticsChooseRegion": false,
+    "CanRegionStatisticsСhooseYears": false,
+    "CanRegionStatisticsChooseIndicators": false,
+    "CanRegionStatisticsFormReport": false
+  },
+  "Прихильник": {
+    "IsAdmin": false,
+    "CanCityStatisticsChooseCity": false,
+    "CanCityStatisticsChooseYears": false,
+    "CanCityStatisticsChooseIndicators": false,
+    "CanCityStatisticsFormReport": false,
+    "CanRegionStatisticsChooseRegion": false,
+    "CanRegionStatisticsСhooseYears": false,
+    "CanRegionStatisticsChooseIndicators": false,
+    "CanRegionStatisticsFormReport": false
+  },
+  "Дійсний член організації": {
+    "IsAdmin": false,
+    "CanCityStatisticsChooseCity": false,
+    "CanCityStatisticsChooseYears": false,
+    "CanCityStatisticsChooseIndicators": false,
+    "CanCityStatisticsFormReport": false,
+    "CanRegionStatisticsChooseRegion": false,
+    "CanRegionStatisticsСhooseYears": false,
+    "CanRegionStatisticsChooseIndicators": false,
+    "CanRegionStatisticsFormReport": false
+  },
+  "Зареєстрований користувач": {
+    "IsAdmin": false,
+    "CanCityStatisticsChooseCity": false,
+    "CanCityStatisticsChooseYears": false,
+    "CanCityStatisticsChooseIndicators": false,
+    "CanCityStatisticsFormReport": false,
+    "CanRegionStatisticsChooseRegion": false,
+    "CanRegionStatisticsСhooseYears": false,
+    "CanRegionStatisticsChooseIndicators": false,
+    "CanRegionStatisticsFormReport": false
+  }
+}

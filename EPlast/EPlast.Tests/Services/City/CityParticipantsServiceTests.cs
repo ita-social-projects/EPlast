@@ -780,6 +780,7 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify();
         }
 
+
         [Test]
         public async Task RemoveMemberAsync_Valid_Test()
         {
@@ -888,11 +889,38 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync((null as CityMembers));
+                .ReturnsAsync(null as CityMembers);
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
             //Assert
             Assert.IsNull(result);
+            _repoWrapper.Verify();
+        }
+
+
+        [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnTrue()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers()
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = true,
+                    City = new DataAccess.Entities.City
+                    {
+                        ID = 1,
+                        Name = "city name"
+                    },
+                    CityId = 1
+                });
+            // Act
+            var result = await _cityParticipantsService.CheckIsUserApproved(1);
+            //Assert
+            Assert.AreEqual(result, true);
             _repoWrapper.Verify();
         }
 
@@ -918,7 +946,6 @@ namespace EPlast.Tests.Services.City
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
             //Assert
-            Assert.IsNull(result);
             _repoWrapper.Verify();
         }
 
