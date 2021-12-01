@@ -430,6 +430,11 @@ namespace EPlast.WebApi.Controllers
             return Ok(member);
         }
 
+        /// <summary>
+        /// Returns either given user is approved or not
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>True if given user is approved, otherwise false</returns>
         [HttpGet("IsUserApproved/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<bool> IsUserApproved(int userId)
@@ -437,6 +442,7 @@ namespace EPlast.WebApi.Controllers
             var isApproved = await _cityParticipantsService.IsUserApproved(userId);
             return isApproved;
         }
+
         /// <summary>
         /// City name only for approved member
         /// </summary>

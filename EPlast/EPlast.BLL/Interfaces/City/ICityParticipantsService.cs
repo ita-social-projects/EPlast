@@ -75,6 +75,12 @@ namespace EPlast.BLL.Interfaces.City
         /// See <see cref="ICityMembersService.AddFollowerAsync(int, string)"/> to add user by id
         Task<CityMembersDTO> AddFollowerAsync(int cityId, User user);
 
+        /// <summary>
+        /// Returns either given user is approved or not
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>True if given user is approved, otherwise false</returns>
+        /// See<see cref="ICityMembersService.IsUserApproved(int)"/> to check if user is approved
         Task<bool> IsUserApproved(int userId);
 
         /// <summary>

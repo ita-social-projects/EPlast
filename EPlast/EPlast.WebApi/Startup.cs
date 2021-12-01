@@ -95,7 +95,6 @@ namespace EPlast.WebApi
             };
 
             services.AddServices(Configuration);
-
         }
     }
 }
