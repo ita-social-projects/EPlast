@@ -897,6 +897,20 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify();
         }
 
+        [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnNull()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(null as CityMembers);
+            // Act
+            var result = await _cityParticipantsService.CheckIsUserApproved(1);
+            //Assert
+            Assert.AreEqual(result, false);
+            _repoWrapper.Verify();
+        }
 
         [Test]
         public async Task CheckIsUserApproved_UserId_ReturnTrue()
