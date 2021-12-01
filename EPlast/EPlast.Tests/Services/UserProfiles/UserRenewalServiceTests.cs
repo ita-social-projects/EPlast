@@ -330,7 +330,7 @@ namespace EPlast.Tests.Services.UserProfiles
             CityId = 13,
             Approved = true,
             UserId = "660c4f26-760d-46f9-b780-5b5c7c153b25",
-            RequestDate = DateTime.Parse("11/15/2021")
+            RequestDate = DateTime.Parse("15/11/2021")
         };
 
         private static IEnumerable<UserRenewal> GetAllRenewalsForUserByIdTest(string id)
@@ -359,7 +359,7 @@ namespace EPlast.Tests.Services.UserProfiles
                     CityId = 13, 
                     Approved = false, 
                     UserId = "660c4f26-760d-46f9-b780-5b5c7c153b25", 
-                    RequestDate = DateTime.Parse("09/15/2021")
+                    RequestDate = DateTime.Parse("15/09/2021")
                 }
             }.Where(u=>u.UserId==id).ToList().AsEnumerable();
         }
