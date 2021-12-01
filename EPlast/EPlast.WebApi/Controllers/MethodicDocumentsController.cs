@@ -3,6 +3,7 @@ using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.WebApi.Models.MethodicDocument;
 using Microsoft.AspNetCore.Authorization;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -130,6 +131,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created MethodicDocument object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
         {
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)

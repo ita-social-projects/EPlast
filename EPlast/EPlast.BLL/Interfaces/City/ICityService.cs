@@ -71,6 +71,13 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns></returns>
         Task<CityDTO> GetByIdAsync(int cityId);
+        
+        /// <summary>
+        /// Gets a specific city without getting regions and documents
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns></returns>
+        Task<CityDTO> GetCityByIdAsync(int cityId);
 
         /// <summary>
         /// Gets an information about a specific city with 6 members per section
@@ -108,6 +115,13 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of followers of a specific city</returns>
         Task<CityProfileDTO> GetCityAdminsAsync(int cityId);
+
+        /// <summary>
+        /// Gets Ids of administrators of a specific city
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <returns>Ids of administrators of a specific city</returns>
+        Task<string> GetCityAdminsIdsAsync(int cityId);
 
         /// <summary>
         /// Gets a list of documents of a specific city
