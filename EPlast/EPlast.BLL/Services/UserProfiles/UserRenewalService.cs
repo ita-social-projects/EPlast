@@ -128,7 +128,6 @@ namespace EPlast.BLL.Services.UserProfiles
             var membershipDates = await _repoWrapper.UserMembershipDates.GetFirstAsync(date => date.UserId == userId);
             membershipDates.DateEntry = DateTime.MinValue;
             membershipDates.DateEnd = DateTime.MinValue;
-            membershipDates.DateOath = DateTime.MinValue;
             _repoWrapper.UserMembershipDates.Update(membershipDates);
             await _repoWrapper.SaveAsync();
         }
