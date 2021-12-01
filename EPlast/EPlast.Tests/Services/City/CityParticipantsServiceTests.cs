@@ -946,6 +946,7 @@ namespace EPlast.Tests.Services.City
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
             //Assert
+            Assert.IsNull(result);
             _repoWrapper.Verify();
         }
 
