@@ -90,6 +90,23 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task IsUserApproved_UserId_ReturnsOk()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(x => x.CheckIsUserApproved(It.IsAny<int>()))
+                .ReturnsAsync(new bool());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.IsUserApproved(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task AddDocument_Valid_Test()
         {
             // Arrange

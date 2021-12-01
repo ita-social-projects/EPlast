@@ -321,12 +321,14 @@ namespace EPlast.BLL.Services.City
             return cityMemberDto;
         }
 
-        public async Task<bool> IsUserApproved(int userId)
+        public async Task<bool> CheckIsUserApproved(int userId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
-                .GetFirstOrDefaultAsync(u => u.ID == userId,
-                                        m => m.Include(u => u.User)
-                                              .Include(u => u.City));
+                .GetFirstOrDefaultAsync(u => u.ID == userId);
+            if (cityMember == null)
+            {
+                return false;
+            }
             return cityMember.IsApproved;
         }
 
@@ -337,7 +339,9 @@ namespace EPlast.BLL.Services.City
                                         m => m.Include(u => u.City));
 
             if (cityMember == null)
+            {
                 return null;
+            }
             if (cityMember.IsApproved)
             {
                 return cityMember.City.Name;

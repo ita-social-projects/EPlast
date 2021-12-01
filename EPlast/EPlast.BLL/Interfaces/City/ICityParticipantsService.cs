@@ -80,8 +80,8 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="userId">The id of the user</param>
         /// <returns>True if given user is approved, otherwise false</returns>
-        /// See<see cref="ICityMembersService.IsUserApproved(int)"/> to check if user is approved
-        Task<bool> IsUserApproved(int userId);
+        /// See<see cref="ICityMembersService.CheckIsUserApproved(int)"/> to check if user is approved
+        Task<bool> CheckIsUserApproved(int userId);
 
         /// <summary>
         /// Toggle approve status of a specific member
