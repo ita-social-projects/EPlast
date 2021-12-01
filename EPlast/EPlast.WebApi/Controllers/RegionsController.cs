@@ -83,7 +83,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
             await _regionService.AddRegionAsync(region);
-
+            await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
+            await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
             return Ok();
         }
 
@@ -143,7 +144,8 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
         {
             await _regionService.EditRegionAsync(regId, region);
-
+            await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
+            await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
             return Ok();
         }
 
@@ -521,7 +523,7 @@ namespace EPlast.WebApi.Controllers
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
                 }
-                await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);  
+                await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
             }              
             return StatusCode(StatusCodes.Status200OK, new { regions = regionsTuple.Item1, total = regionsTuple.Item2});
         }
