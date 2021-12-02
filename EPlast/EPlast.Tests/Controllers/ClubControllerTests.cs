@@ -167,6 +167,23 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task IsUserApproved_UserId_ReturnsOk()
+        {
+            // Arrange
+            _clubParticipantsService
+                .Setup(x => x.CheckIsUserApproved(It.IsAny<int>()))
+                .ReturnsAsync(new bool());
+            ClubController controller = CreateClubController;
+
+            // Act
+            var result = await controller.IsUserApproved(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task GetClubUsers_CityId_ReturnsOk()
         {
             // Arrange

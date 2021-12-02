@@ -780,7 +780,6 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify();
         }
 
-
         [Test]
         public async Task RemoveMemberAsync_Valid_Test()
         {
