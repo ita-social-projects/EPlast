@@ -625,5 +625,24 @@ namespace EPlast.WebApi.Controllers
             return Ok((userAdmins));
         }
 
+        /// <summary>
+        /// Get admin ids of a specific city
+        /// </summary>
+        /// <param name="cityId">An id of a city</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Not found</response>
+        /// <returns>Admin ids of a city</returns>
+        [HttpGet("AdminsIds/{cityId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAdminsIds(int cityId)
+        {
+            var cityAdminsIds = await _cityService.GetCityAdminsIdsAsync(cityId);
+            if (cityAdminsIds == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cityAdminsIds);
+        }
     }
 }

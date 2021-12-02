@@ -21,12 +21,14 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IActionManager _actionManager;
         private readonly UserManager<User> _userManager;
+        private readonly IEventStatusManager _eventStatusManager;
         private readonly IEventCategoryManager _eventCategoryManager;
 
-        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventCategoryManager eventCategoryManager)
+        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventStatusManager eventStatusManager, IEventCategoryManager eventCategoryManager)
         {
             _actionManager = actionManager;
             _userManager = userManager;
+            _eventStatusManager = eventStatusManager;
             _eventCategoryManager = eventCategoryManager;
         }
 
@@ -167,6 +169,18 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetEventDetail(int id)
         {
             return Ok(await _actionManager.GetEventInfoAsync(id, await _userManager.GetUserAsync(User)));
+        }
+
+        /// <summary>
+        /// Get status id of event.
+        /// </summary>
+        /// <returns>A detailed information about specific event.</returns>
+        /// <param name="status">The status</param>
+        [HttpGet("{status}/statusId")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetEventStatusId(string status)
+        {
+            return Ok(await _eventStatusManager.GetStatusIdAsync(status));
         }
 
         /// <summary>

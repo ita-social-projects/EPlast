@@ -224,6 +224,17 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
+        [TestCase("cityName")]
+        public void GetUserRenewalConfirmationEmail_ReturnsEmailModel (string cityName)
+        {
+            // Act
+            var result = _emailContentService.GetUserRenewalConfirmationEmail(cityName);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EmailModel>(result);
+        }
+
         [SetUp]
         public void SetUp()
         {
