@@ -320,6 +320,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(value:new List<RegionAdministration>());
             _repoWrapper
                 .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
 
@@ -874,8 +875,10 @@ namespace EPlast.Tests.Services.City
                     },
                     CityId = 1
                 });
+
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+
             //Assert
             Assert.IsNotNull(result);
             _repoWrapper.Verify();
@@ -889,8 +892,10 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(null as CityMembers);
+
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+
             //Assert
             Assert.IsNull(result);
             _repoWrapper.Verify();
@@ -904,10 +909,13 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(null as CityMembers);
+            bool expected = false;
+
             // Act
             var result = await _cityParticipantsService.CheckIsUserApproved(1);
+
             //Assert
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(expected, result);
             _repoWrapper.Verify();
         }
 
@@ -930,10 +938,13 @@ namespace EPlast.Tests.Services.City
                     },
                     CityId = 1
                 });
+            bool expected = true;
+
             // Act
             var result = await _cityParticipantsService.CheckIsUserApproved(1);
+
             //Assert
-            Assert.AreEqual(true, result);
+            Assert.AreEqual(expected, result);
             _repoWrapper.Verify();
         }
 
@@ -956,8 +967,10 @@ namespace EPlast.Tests.Services.City
                     },
                     CityId = 1
                 });
+
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+
             //Assert
             Assert.IsNull(result);
             _repoWrapper.Verify();

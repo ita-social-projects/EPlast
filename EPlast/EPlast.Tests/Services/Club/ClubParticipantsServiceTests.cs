@@ -118,10 +118,13 @@ namespace EPlast.Tests.Services.Club
                 .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(null as ClubMembers);
+            bool expected = false;
+
             // Act
             var result = await _clubParticipantsService.CheckIsUserApproved(1);
+
             //Assert
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(expected, result);
             _repoWrapper.Verify();
         }
 
@@ -144,10 +147,13 @@ namespace EPlast.Tests.Services.Club
                     },
                     ClubId = 1
                 });
+            bool expected = true;
+
             // Act
             var result = await _clubParticipantsService.CheckIsUserApproved(1);
+
             //Assert
-            Assert.AreEqual(true, result);
+            Assert.AreEqual(expected, result);
             _repoWrapper.Verify();
         }
 
@@ -163,8 +169,8 @@ namespace EPlast.Tests.Services.Club
 
             //Act
             var result = await _clubParticipantsService.AddAdministratorAsync(clubAdmDTONullDate);
-            //Assert
 
+            //Assert
             Assert.IsInstanceOf<ClubAdministrationDTO>(result);
         }
 
