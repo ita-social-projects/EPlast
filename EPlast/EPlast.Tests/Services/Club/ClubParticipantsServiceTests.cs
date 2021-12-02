@@ -163,8 +163,8 @@ namespace EPlast.Tests.Services.Club
 
             //Act
             var result = await _clubParticipantsService.AddAdministratorAsync(clubAdmDTONullDate);
-
             //Assert
+
             Assert.IsInstanceOf<ClubAdministrationDTO>(result);
         }
 
