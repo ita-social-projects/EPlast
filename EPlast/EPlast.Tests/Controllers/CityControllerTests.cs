@@ -120,7 +120,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
