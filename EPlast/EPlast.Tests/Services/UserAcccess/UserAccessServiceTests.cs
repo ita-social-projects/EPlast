@@ -166,7 +166,7 @@ namespace EPlast.Tests.Services.UserAccess
         {
             //Arrange
             Dictionary<string, bool> dict = new Dictionary<string, bool>();
-            dict.Add("EditReport", It.IsAny<bool>());
+            dict.Add("CanEditReport", It.IsAny<bool>());
             _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
 
             //Act

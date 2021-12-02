@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            userAccess["EditReport"] = await _annualReportAccessService.CanEditReportAsync(user, userAccess["EditReport"], reportType, reportId);
+            userAccess["CanEditReport"] = await _annualReportAccessService.CanEditReportAsync(user, userAccess["CanEditReport"], reportType, reportId);
             return userAccess;
         }
 
