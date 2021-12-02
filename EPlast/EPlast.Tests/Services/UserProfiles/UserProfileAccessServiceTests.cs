@@ -232,7 +232,7 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         [Test]
-        public async Task ApproveAsClubHead_AsClubHead_NotInjgSameClub_ReturnsFalse()
+        public async Task ApproveAsClubHead_AsClubHead_NotInSameClub_ReturnsFalse()
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
