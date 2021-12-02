@@ -111,6 +111,48 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnNull()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(null as ClubMembers);
+            // Act
+            var result = await _clubParticipantsService.CheckIsUserApproved(1);
+            //Assert
+            Assert.AreEqual(false, result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnTrue()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers()
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = true,
+                    Club = new DataAccess.Entities.Club
+                    {
+                        ID = 1,
+                        Name = "club name"
+                    },
+                    ClubId = 1
+                });
+            // Act
+            var result = await _clubParticipantsService.CheckIsUserApproved(1);
+            //Assert
+            Assert.AreEqual(true, result);
+            _repoWrapper.Verify();
+        }
+
+
+        [Test]
         public async Task AddAdministratorAsync_NullEndDate_ReturnsAdministrator()
         {
             //Arrange
