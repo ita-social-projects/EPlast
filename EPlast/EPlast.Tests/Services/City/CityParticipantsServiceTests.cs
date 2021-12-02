@@ -908,7 +908,7 @@ namespace EPlast.Tests.Services.City
             // Act
             var result = await _cityParticipantsService.CheckIsUserApproved(1);
             //Assert
-            Assert.AreEqual(result, false);
+            Assert.AreEqual(false, result);
             _repoWrapper.Verify();
         }
 
@@ -934,7 +934,7 @@ namespace EPlast.Tests.Services.City
             // Act
             var result = await _cityParticipantsService.CheckIsUserApproved(1);
             //Assert
-            Assert.AreEqual(result, true);
+            Assert.AreEqual(true, result);
             _repoWrapper.Verify();
         }
 
