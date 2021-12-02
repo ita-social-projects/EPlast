@@ -98,7 +98,6 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
-
         public async Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, User user, ReportType? reportType=null, int? reportId=null)
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
