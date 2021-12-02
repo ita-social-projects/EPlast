@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 return true;
             }
-            if( roles.Contains(Roles.RegisteredUser) || roles.Contains(Roles.Supporter))
+            if (roles.Contains(Roles.RegisteredUser) || roles.Contains(Roles.Supporter))
             {
                 return false;
             }
