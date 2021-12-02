@@ -909,13 +909,12 @@ namespace EPlast.Tests.Services.City
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
                 .ReturnsAsync(null as CityMembers);
-            bool expected = false;
 
             // Act
             var result = await _cityParticipantsService.CheckIsUserApproved(1);
 
             //Assert
-            Assert.AreEqual(expected, result);
+            Assert.Null(result);
             _repoWrapper.Verify();
         }
 
