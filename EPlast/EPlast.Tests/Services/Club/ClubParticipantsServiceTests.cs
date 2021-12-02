@@ -118,13 +118,12 @@ namespace EPlast.Tests.Services.Club
                 .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
                 .ReturnsAsync(null as ClubMembers);
-            bool expected = false;
 
             // Act
             var result = await _clubParticipantsService.CheckIsUserApproved(1);
 
             //Assert
-            Assert.AreEqual(expected, result);
+            Assert.Null(result);
             _repoWrapper.Verify();
         }
 
