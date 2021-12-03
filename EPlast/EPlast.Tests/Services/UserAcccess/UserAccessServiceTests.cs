@@ -1,6 +1,8 @@
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
@@ -25,6 +27,7 @@ namespace EPlast.Tests.Services.UserAccess
         private Mock<ICityAccessService> _cityAccessService;
         private Mock<IRegionAccessService> _regionAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
+        private Mock<IActionManager> _actionManager;
 
         private UserAccessService _userAccessService;
 
@@ -39,8 +42,9 @@ namespace EPlast.Tests.Services.UserAccess
             _cityAccessService = new Mock<ICityAccessService>();
             _regionAccessService = new Mock<IRegionAccessService>();
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
+            _actionManager = new Mock<IActionManager>();
 
-            _userAccessService = new UserAccessService(_clubAccessService.Object, _eventAccessService.Object, _userManager.Object, _cityAccessService.Object, _regionAccessService.Object, _annualReportAccessService.Object, _securityModel.Object);
+            _userAccessService = new UserAccessService(_clubAccessService.Object, _eventAccessService.Object, _userManager.Object, _cityAccessService.Object, _regionAccessService.Object, _annualReportAccessService.Object, _securityModel.Object, _actionManager.Object);
         }
 
         [Test]
@@ -72,6 +76,7 @@ namespace EPlast.Tests.Services.UserAccess
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
             _eventAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), (int)eventId))
                 .ReturnsAsync(It.IsAny<bool>());
+            _actionManager.Setup(x => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>())).ReturnsAsync(CreateFakeEvent());
 
             //Act
             var result = await _userAccessService.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), eventId);
@@ -183,5 +188,16 @@ namespace EPlast.Tests.Services.UserAccess
             Assert.IsNotEmpty(result);
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
         }
+
+        private EventDTO CreateFakeEvent()
+            => new EventDTO()
+            {
+                Event = new EventInfoDTO()
+                {
+                    EventId = 0,
+                    EventName = "SomeEventName",
+                },
+
+            };
     }
 }
