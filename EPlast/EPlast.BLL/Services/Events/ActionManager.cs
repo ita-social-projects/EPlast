@@ -300,7 +300,7 @@ namespace EPlast.BLL.Services.Events
             int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
             int approvedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Затверджено");
             int finishedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Завершено");
-            int notApprovedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Не затвердженo");
+            int notApprovedEvent = await _eventWrapper.EventStatusManager.GetStatusIdAsync("Не затверджено");
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var eventAdmins = await _repoWrapper.EventAdministration.GetAllAsync();
