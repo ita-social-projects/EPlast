@@ -1,4 +1,4 @@
-using EPlast.BLL.DTO.Events;
+﻿using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
@@ -65,6 +65,30 @@ namespace EPlast.Tests.Services.UserAccess
 
         [Test]
         public async Task GetUserEventAccesses_EventIdNotNullAndRolePlastMember_FunctionHasAccessAsyncCalled_And_ReturnsListOfEventAccesses()
+        {
+            //Arrange
+            int? eventId = 1;
+
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
+            _eventAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), (int)eventId))
+                .ReturnsAsync(It.IsAny<bool>());
+            _actionManager.Setup(x => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>())).ReturnsAsync(CreateFakeEvent());
+
+            //Act
+            var result = await _userAccessService.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), eventId);
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+            _eventAccessService.Verify(v => v.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()), Times.Once());
+        }
+
+        [Test]
+        public async Task GetUserEventAccesses_EventIdNotNullAndRoleAdminAndEventIsFinished_FunctionHasAccessAsyncCalled_And_ReturnsListOfEventAccesses()
         {
             //Arrange
             int? eventId = 1;
@@ -196,6 +220,7 @@ namespace EPlast.Tests.Services.UserAccess
                 {
                     EventId = 0,
                     EventName = "SomeEventName",
+                    EventStatus = "Завершено"
                 },
 
             };
