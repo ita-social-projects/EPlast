@@ -128,5 +128,12 @@ namespace EPlast.BLL
             var eduStaff = (await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == EduStaffId));
             return eduStaff.UserId;
         }
+
+        /// <inheritdoc />
+        public IEnumerable<EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData,
+            int page, int pageSize)
+        {
+            return _repositoryWrapper.KVs.GetEducatorsStaff(kadraType, searchedData, page, pageSize);
+        }
     }
 }
