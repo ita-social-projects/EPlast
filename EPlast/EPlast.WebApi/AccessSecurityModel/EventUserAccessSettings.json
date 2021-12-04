@@ -29,6 +29,16 @@
     "SeeUserTable": true,
     "ApproveParticipant": true
   },
+  "Заступник Голови Станиці": {
+    "ApproveEvent": false,
+    "CreateEvent": true,
+    "EditEvent": true,
+    "DeleteEvent": true,
+    "SubscribeOnEvent": true,
+    "AddPhotos": true,
+    "SeeUserTable": true,
+    "ApproveParticipant": true
+  },
   "Дійсний член організації": {
     "ApproveEvent": false,
     "CreateEvent": true,

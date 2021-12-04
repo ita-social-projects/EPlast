@@ -105,6 +105,14 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
+        public async Task<bool?> CheckIsUserApproved(int userId)
+        {
+            var clubMember = await _repositoryWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.ID == userId);
+            return clubMember?.IsApproved;
+        }
+
+        /// <inheritdoc />
         public async Task<ClubAdministrationDTO> EditAdministratorAsync(ClubAdministrationDTO adminDTO)
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);

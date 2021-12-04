@@ -107,7 +107,22 @@ namespace EPlast.WebApi.Controllers
             return Ok(citiesViewModel);
         }
 
-        
+        /// <summary>
+        /// Returns either given user is approved or not
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>True if given user is approved, otherwise false. BadRequest if user doesn't exist</returns>
+        [HttpGet("IsUserApproved/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> IsUserApproved(int userId)
+        {
+            var isApproved = await _clubParticipantsService.CheckIsUserApproved(userId);
+            if (isApproved == null)
+            {
+                return BadRequest();
+            }
+            return Ok(isApproved);
+        }
 
         /// <summary>
         /// Get id and name from all clubs that the user has access to
