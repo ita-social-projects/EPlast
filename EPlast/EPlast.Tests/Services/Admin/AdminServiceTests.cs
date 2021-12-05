@@ -4,15 +4,9 @@ using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.BLL.Interfaces.GoverningBodies.Sector;
-using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.FormerMember;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.GoverningBody;
-using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -37,166 +31,27 @@ namespace EPlast.Tests.Services
             Roles.Supporter,
             Roles.FormerPlastMember
         };
-        private Mock<ICityParticipantsService> _cityParticipantsService;
-        private Mock<IClubParticipantsService> _clubParticipants;
         private Mock<IMapper> _mapper;
-        private Mock<IRegionAdministrationService> _regionService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<RoleManager<IdentityRole>> _roleManager;
         private Mock<IRoleStore<IdentityRole>> _store;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
-        private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
-        private Mock<ISectorAdministrationService> _sectorAdministrationService;
         private AdminService service;
+        private Mock<IFormerMemberService> _formerMemberService;
 
         [Test]
         public void ChangeAsync_ReturnsCorrect()
         {
             // Arrange
-            _userManager
-                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
-            _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
-            _repoWrapper
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                It.IsAny<Func<IQueryable<CityMembers>,
-                IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
-            _cityParticipantsService
-                .Setup(x => x.RemoveMemberAsync(It.IsAny<CityMembers>()));
-            _repoWrapper
-               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<ClubMembers>,
-               IIncludableQueryable<ClubMembers, object>>>()))
-               .ReturnsAsync(new ClubMembers());
-            _clubParticipants
-                .Setup(x => x.RemoveMemberAsync(It.IsAny<ClubMembers>()));
-            _repoWrapper
-               .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-               It.IsAny<Func<IQueryable<RegionAdministration>,
-               IIncludableQueryable<RegionAdministration, object>>>()))
-               .ReturnsAsync(new RegionAdministration());
-            _regionService
-                .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
-            _userManager
-                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), Roles.FormerPlastMember));
+            _formerMemberService.Setup(x => x.MakeUserFormerMeberAsync(It.IsAny<string>()));        
 
             // Act
             var result = service.ChangeAsync(It.IsAny<string>());
 
             // Assert
-            _userManager.Verify();
-            _repoWrapper.Verify();
-            _cityParticipantsService.Verify();
-            _clubParticipants.Verify();
+            _formerMemberService.Verify();
             Assert.NotNull(result);
-        }
-
-        [Test]
-        public void ChangeAsync_Valid_FewRoles_Test()
-        {
-            // Arrange
-            _userManager
-                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User() { FirstName = "James", LastName = "Bond" });
-            roles.Add("First role");
-            _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(roles);
-            _userManager
-                .Setup(x => x.RemoveFromRolesAsync(It.IsAny<User>(),
-                                                   It.IsAny<IEnumerable<string>>()));
-            _repoWrapper
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-                It.IsAny<Func<IQueryable<CityMembers>,
-                IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync(new CityMembers());
-            _cityParticipantsService
-                .Setup(x => x.RemoveMemberAsync(It.IsAny<CityMembers>()));
-            _repoWrapper
-               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<ClubMembers>,
-               IIncludableQueryable<ClubMembers, object>>>()))
-               .ReturnsAsync(new ClubMembers());
-            _clubParticipants
-                .Setup(x => x.RemoveMemberAsync(It.IsAny<ClubMembers>()));
-            _repoWrapper
-               .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-               It.IsAny<Func<IQueryable<RegionAdministration>,
-               IIncludableQueryable<RegionAdministration, object>>>()))
-               .ReturnsAsync(new RegionAdministration());
-            _regionService
-                .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
-            _userManager
-                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), "Колишній член пласту"));
-
-            // Act
-            var result = service.ChangeAsync(It.IsAny<string>());
-
-            // Assert
-            _userManager.Verify();
-            _repoWrapper.Verify();
-            _cityParticipantsService.Verify();
-            _clubParticipants.Verify();
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public async Task ChangeCurrentRoleAsync_AddInterested_CaseFormer_ReturnsCorrectAsync()
-        {
-            // Arrange
-            string plastun = Roles.PlastMember;
-            string formerMember = Roles.FormerPlastMember;
-
-            _userManager
-                .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User());
-            _userManager
-              .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-              .ReturnsAsync(new List<string>() { formerMember });
-            _userManager
-                .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), plastun));
-
-            _repoWrapper
-                .Setup(x => x.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
-               It.IsAny<Func<IQueryable<UserMembershipDates>,
-               IIncludableQueryable<UserMembershipDates, object>>>()))
-                .ReturnsAsync(new UserMembershipDates() { DateEntry = default });
-            _repoWrapper
-                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<CityMembers>,
-               IIncludableQueryable<CityMembers, object>>>())).ReturnsAsync(new CityMembers() { IsApproved = true });
-            _repoWrapper
-               .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
-               It.IsAny<Func<IQueryable<ClubMembers>,
-               IIncludableQueryable<ClubMembers, object>>>()))
-               .ReturnsAsync(new ClubMembers());
-            _repoWrapper
-               .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-               It.IsAny<Func<IQueryable<RegionAdministration>,
-               IIncludableQueryable<RegionAdministration, object>>>()))
-               .ReturnsAsync(new RegionAdministration());
-            _repoWrapper
-               .Setup(x => x.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
-               It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
-               IIncludableQueryable<GoverningBodyAdministration, object>>>()))
-               .ReturnsAsync(new GoverningBodyAdministration());
-            _repoWrapper
-               .Setup(x => x.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
-               It.IsAny<Func<IQueryable<SectorAdministration>,
-               IIncludableQueryable<SectorAdministration, object>>>()))
-               .ReturnsAsync(new SectorAdministration());
-            _regionService
-                .Setup(x => x.DeleteAdminByIdAsync(It.IsAny<int>()));
-            _userManager
-                .Setup(x => x.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
-
-            // Act
-            await service.ChangeCurrentRoleAsync("id", formerMember);
-            // Assert
-            _userManager.Verify();
         }
 
         [Test]
@@ -659,21 +514,14 @@ namespace EPlast.Tests.Services
                _store.Object, It.IsAny<IEnumerable<IRoleValidator<IdentityRole>>>(),
                It.IsAny<ILookupNormalizer>(), It.IsAny<IdentityErrorDescriber>(), It.IsAny<ILogger<RoleManager<IdentityRole>>>());
             _mapper = new Mock<IMapper>();
-            _cityParticipantsService = new Mock<ICityParticipantsService>();
-            _clubParticipants = new Mock<IClubParticipantsService>();
-            _regionService = new Mock<IRegionAdministrationService>();
-            _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
-            _sectorAdministrationService = new Mock<ISectorAdministrationService>();
+            _formerMemberService = new Mock<IFormerMemberService>();
             service = new AdminService(
                 _repoWrapper.Object,
+                _formerMemberService.Object,
                 _userManager.Object,
                 _mapper.Object,
-                _roleManager.Object,
-                _clubParticipants.Object,
-                _regionService.Object,
-                _cityParticipantsService.Object,
-                _governingBodyAdministrationService.Object,
-                _sectorAdministrationService.Object
+                _roleManager.Object
+              
 
             );
         }
