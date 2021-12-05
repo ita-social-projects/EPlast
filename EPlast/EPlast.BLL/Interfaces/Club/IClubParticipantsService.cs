@@ -36,6 +36,12 @@ namespace EPlast.BLL.Interfaces.Club
         Task RemoveAdministratorAsync(int adminId);
 
         /// <summary>
+        /// Removes Administration roles of user in the Club
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        Task RemoveAdminRolesByUserIdAsync(string userId);
+
+        /// <summary>
         /// Removes roles from previous administrators
         /// </summary>
         Task ContinueAdminsDueToDate();
@@ -98,10 +104,10 @@ namespace EPlast.BLL.Interfaces.Club
 
 
         /// <summary>
-        /// Remove a specific follower from the Club
+        /// Remove a specific member from the Club
         /// </summary>
-        /// <param name="member">The member of the club</param>
-        Task RemoveMemberAsync(ClubMembers member);
+        /// <param name="userId">The Id of the member</param>
+        Task RemoveMemberAsync(string userId);
 
         /// <summary>
         /// Add  follower from the Club to history table

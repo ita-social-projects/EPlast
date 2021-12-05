@@ -116,6 +116,15 @@ namespace EPlast.BLL.Services.GoverningBodies
             await _repositoryWrapper.SaveAsync();
         }
 
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach(var role in roles)
+            {
+                await RemoveAdministratorAsync(role.Id);
+            }
+        }
+
         private async Task CheckGoverningBodyHasAdmin(int governingBodyId, string adminTypeName)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);

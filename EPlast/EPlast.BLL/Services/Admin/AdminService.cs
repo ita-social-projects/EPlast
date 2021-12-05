@@ -3,9 +3,6 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -17,98 +14,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Interfaces.FormerMember;
 
 namespace EPlast.BLL.Services
 {
     public class AdminService : IAdminService
     {
-        private readonly ICityParticipantsService _cityParticipants;
-        private readonly IClubParticipantsService _clubParticipants;
         private readonly IMapper _mapper;
-        private readonly IRegionAdministrationService _regionService;
-        private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
-        private readonly ISectorAdministrationService _sectorAdministrationService;
         private readonly IRepositoryWrapper _repoWrapper;
+        public readonly IFormerMemberService _formerMemberService;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
 
         public AdminService(IRepositoryWrapper repoWrapper,
+                            IFormerMemberService formerMemberService,
                             UserManager<User> userManager,
                             IMapper mapper,
-                            RoleManager<IdentityRole> roleManager,
-                            IClubParticipantsService clubParticipants,
-                            IRegionAdministrationService regionService,
-                            ICityParticipantsService cityParticipants,
-                            IGoverningBodyAdministrationService governingBodyAdministrationService,
-                            ISectorAdministrationService sectorAdministrationService)
+                            RoleManager<IdentityRole> roleManager)
         {
             _repoWrapper = repoWrapper;
+            _formerMemberService = formerMemberService;
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
-            _clubParticipants = clubParticipants;
-            _regionService = regionService;
-            _cityParticipants = cityParticipants;
-            _governingBodyAdministrationService = governingBodyAdministrationService;
-            _sectorAdministrationService = sectorAdministrationService;
         }
-
-        /// <inheritdoc />
         public async Task ChangeAsync(string userId)
         {
-            User user = await _userManager.FindByIdAsync(userId);
-
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            if (currentRoles.Count > 0)
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, userRoles);
-            }
-
-            var cityMember = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
-
-            if (cityMember != null)
-            {
-                await _cityParticipants.RemoveMemberAsync(cityMember);
-            }
-
-            var clubMember = await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
-            if (clubMember != null)
-            {
-                await _clubParticipants.RemoveMemberAsync(clubMember);
-            }
-
-            var regionAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId);
-            if (regionAdmin != null)
-            {
-                await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
-            }
-
-            var governingBodyAdmin = await _repoWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
-            if (governingBodyAdmin != null)
-            {
-                await _governingBodyAdministrationService.RemoveAdministratorAsync(governingBodyAdmin.Id);
-            }
-
-            var sectorAdmin = await _repoWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
-            if (sectorAdmin != null)
-            {
-                await _sectorAdministrationService.RemoveAdministratorAsync(sectorAdmin.Id);
-            }
-
-            var membershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(m => m.UserId == userId);
-            if (membershipDates != null)
-            {
-                membershipDates.DateEnd = DateTime.Now;
-                _repoWrapper.UserMembershipDates.Update(membershipDates);
-                await _repoWrapper.SaveAsync();
-            }
-
-            await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
+            await _formerMemberService.MakeUserFormerMeberAsync(userId);
         }
-
         public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
             const string supporter = Roles.Supporter;
@@ -193,22 +126,18 @@ namespace EPlast.BLL.Services
                 GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
                             include: x => x.Include(i => i.Region).ThenInclude(r => r.RegionAdministration).ThenInclude(a => a.AdminType)
                                            .Include(c => c.CityAdministration).ThenInclude(c => c.AdminType));
-
-            foreach (var city in cities)
+            cities.Select(city => city.Region.RegionAdministration.Where(r =>
             {
-                city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
+                if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
                 {
-                    if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
-                    {
-                        r.Region = null;
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }).ToList();
-            }
+                    r.Region = null;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }).ToList());
 
             var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
 
