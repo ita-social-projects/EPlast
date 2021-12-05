@@ -1,4 +1,4 @@
-using EPlast.BLL.Interfaces;
+﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
@@ -8,10 +8,8 @@ using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.UserAccess
 {
@@ -19,7 +17,6 @@ namespace EPlast.BLL.Services.UserAccess
     {
         private readonly IClubAccessService _clubAccessService;
         private readonly IEventUserAccessService _eventAccessService;
-        private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly ICityAccessService _cityAccessService;
         private readonly IRegionAccessService _regionAccessService;
         private readonly IAnnualReportAccessService _annualReportAccessService;
@@ -65,21 +62,9 @@ namespace EPlast.BLL.Services.UserAccess
         public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null)
         {
             _securityModel.SetSettingsFile(EventUserSecuritySettingsFile);
-            var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            var roles = await _userManager.GetRolesAsync(user);
-            if (eventId != null)
-            {
-                bool access = await _eventAccessService.HasAccessAsync(user, (int)eventId);
-                if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
-                {
-                    FunctionalityWithSpecificAccessForEvents.functionalities.ForEach(i => userAccess[i] = access);
-                }
-                if (access)
-                {
-                    userAccess["SubscribeOnEvent"] = false;
-                }
-            }
-            return userAccess;
+            var defaultUserAccesses = await _securityModel.GetUserAccessAsync(userId);
+            var userAccesses = await _eventAccessService.RedefineAccessesAsync(defaultUserAccesses, user, eventId);
+            return userAccesses;
         }
 
         public async Task<Dictionary<string, bool>> GetUserCityAccessAsync(int cityId, string userId, User user)
