@@ -32,11 +32,10 @@ namespace EPlast.BLL.Services.UserAccess
         private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
         private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
 
-        public UserAccessService(IUserAccessWrapper userAccessWrapper, UserManager<DatabaseEntities.User> userManager, ISecurityModel securityModel)
+        public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
             _clubAccessService = userAccessWrapper.ClubAccessService;
             _eventAccessService = userAccessWrapper.EventAccessService;
-            _userManager = userManager;
             _cityAccessService = userAccessWrapper.CityAccessService;
             _regionAccessService = userAccessWrapper.RegionAccessService;
             _annualReportAccessService = userAccessWrapper.AnnualReportAccessService;

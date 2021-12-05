@@ -47,9 +47,7 @@ namespace EPlast.Tests.Services.UserAccess
             _userAccessWrapper.Setup(x => x.UserProfileAccessService).Returns(_userProfileAccessService.Object);
             _userAccessWrapper.Setup(x => x.EventAccessService).Returns(_eventAccessService.Object);
             _userAccessWrapper.Setup(x => x.RegionAccessService).Returns(_regionAccessService.Object);
-            _userAccessService = new UserAccessService(_userAccessWrapper.Object, _userManager.Object, _securityModel.Object);
-
-            _userAccessService = new UserAccessService(_clubAccessService.Object, _eventAccessService.Object, _cityAccessService.Object, _regionAccessService.Object, _annualReportAccessService.Object, _securityModel.Object);
+            _userAccessService = new UserAccessService(_userAccessWrapper.Object, _securityModel.Object);
         }
 
         [Test]
