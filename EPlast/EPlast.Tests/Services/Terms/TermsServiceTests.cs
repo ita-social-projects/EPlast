@@ -109,7 +109,7 @@ namespace EPlast.Tests.Services.Terms
         }
 
         [Test]
-        public async Task GetAllUsers_IfNotAdmin_WorksCorrectly()
+        public void GetAllUsers_IfNotAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
