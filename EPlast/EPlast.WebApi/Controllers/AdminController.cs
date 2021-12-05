@@ -83,23 +83,58 @@ namespace EPlast.WebApi.Controllers
             return NotFound();
         }
 
+        /// <summary>
+        /// Get users which have all the specified roles
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <param name="include">Boolean variable that indicates whether include or exclude user by roles</param>
+        /// <returns>User with roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Roles are null</response>
         [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
             if (ModelState.IsValid)
             { 
-                var users = await _adminService.GetUsersByRolesAsync(roles, include, (x, y) => x.SequenceEqual(y));
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, _adminService.FilterByAllRoles);
                 return Ok(users);
             }
             return BadRequest();
         }
 
+        /// <summary>
+        /// Get users which have any role of the specified roles
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <param name="include">Boolean variable that indicates whether include or exclude user by roles</param>
+        /// <returns>User with roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Roles are null</response>
         [HttpGet("GetUsersByAnyRole/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAnyRole([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
             if (ModelState.IsValid)
             {
-                var users = await _adminService.GetUsersByRolesAsync(roles, include, (x, y) => x.Any());
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, _adminService.FilterByAnyRoles);
+                return Ok(users);
+            }
+            return BadRequest();
+        }
+
+        /// <summary>
+        /// Get users which have only the specified roles
+        /// </summary>
+        /// <param name="roles"></param>
+        /// <param name="include">Boolean variable that indicates whether include or exclude user by roles</param>
+        /// <returns>User with roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Roles are null</response>
+        [HttpGet("GetUsersByExactRoles/{roles}/{include}")]
+        public async Task<IActionResult> GetUsersByExactRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
+        {
+            if (ModelState.IsValid)
+            {
+                var users = await _adminService.GetUsersByRolesAsync(roles, include, _adminService.FilterByExactRoles);
                 return Ok(users);
             }
             return BadRequest();

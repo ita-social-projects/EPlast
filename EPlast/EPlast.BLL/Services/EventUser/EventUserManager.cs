@@ -5,9 +5,12 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
@@ -20,17 +23,19 @@ namespace EPlast.BLL.Services.EventUser
         private readonly IEventCategoryManager eventCategoryManager;
         private readonly IEventStatusManager eventStatusManager;
         private readonly IEventAdministrationTypeManager eventAdministrationTypeManager;
+        private readonly UserManager<User> _userManager;
 
 
         public EventUserManager(IRepositoryWrapper repoWrapper, IMapper mapper,
             IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager,
-            IEventAdministrationTypeManager eventAdministrationTypeManager)
+            IEventAdministrationTypeManager eventAdministrationTypeManager, UserManager<User> _userManager)
         {
             this.repoWrapper = repoWrapper;
             this.mapper = mapper;
             this.eventCategoryManager = eventCategoryManager;
             this.eventStatusManager = eventStatusManager;
             this.eventAdministrationTypeManager = eventAdministrationTypeManager;
+            this._userManager = _userManager;
         }
 
         private int commandantTypeId;
@@ -40,9 +45,12 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<EventCreateDTO> InitializeEventCreateDTOAsync()
         {
+            var allUsers = await repoWrapper.User.GetAllAsync();
+
             return new EventCreateDTO()
             {
-                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(await repoWrapper.User.GetAllAsync()),
+                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(allUsers.Where(u =>
+                    (_userManager.GetRolesAsync(u).Result).Intersect(AllowedRolesToBeAdminOfEvent.roles).Any())),
                 EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDTO>>(await repoWrapper.EventType.GetAllAsync()),
                 EventCategories = await eventCategoryManager.GetDTOAsync()
             };
@@ -51,7 +59,7 @@ namespace EPlast.BLL.Services.EventUser
         public async Task<int> CreateEventAsync(EventCreateDTO model)
         {
             await GetAdministrationTypeId();
-            model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджені");
+            model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджено");
 
             var eventToCreate = mapper.Map<EventCreationDTO, Event>(model.Event);
 
@@ -127,8 +135,7 @@ namespace EPlast.BLL.Services.EventUser
         public async Task EditEventAsync(EventCreateDTO model)
         {
             await GetAdministrationTypeId();
-            model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджені");
-
+            
             var eventToEdit = mapper.Map<EventCreationDTO, Event>(model.Event);
 
             eventToEdit.EventAdministrations = new List<EventAdministration>

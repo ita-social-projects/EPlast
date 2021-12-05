@@ -179,6 +179,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ITermsService, TermsService>();
             services.AddScoped<ISecurityModel, SecurityModel>();
             services.AddScoped<IUserAccessService, UserAccessService>();
+            services.AddTransient<IUserRenewalService, UserRenewalService>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();

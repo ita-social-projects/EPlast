@@ -63,7 +63,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.Admin });
+                .ReturnsAsync(new List<string> { Roles.PlastMember });
             var testSectorAdmin = new SectorAdministrationDTO()
             {
                 AdminType = new AdminTypeDTO() { AdminTypeName = "test" }
@@ -147,7 +147,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new AdminTypeDTO() { ID = 2 });
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.Admin });
+                .ReturnsAsync(new List<string> { Roles.PlastMember });
             var testSectorAdmin = new SectorAdministrationDTO()
             {
                 AdminType = new AdminTypeDTO() { AdminTypeName = "test" }

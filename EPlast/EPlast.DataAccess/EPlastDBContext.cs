@@ -1,4 +1,5 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using System;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
@@ -56,6 +57,9 @@ namespace EPlast.DataAccess
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
         public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
         public DbSet<Terms> Terms { get; set; }
+        public DbSet<UserRenewal> UserRenewals { get; set; }
+        public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
+        public DbSet<EducatorsStaffTableObject> EducatorsStaffTableObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -70,7 +74,29 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<DecisionTableObject>().HasNoKey();
             modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
+            modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
+            modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
+            modelBuilder.Entity<UserRenewal>(entity =>
+            {
+                entity.HasKey(e => e.Id);
 
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserRenewals)
+                    .HasForeignKey(d => d.UserId)
+                    .IsRequired();
+
+                entity.HasOne(d => d.City)
+                    .WithMany(p => p.UserRenewals)
+                    .HasForeignKey(d => d.CityId)
+                    .IsRequired();
+
+                entity.Property(e => e.RequestDate)
+                    .IsRequired();
+
+                entity.Property(e => e.Approved)
+                    .HasDefaultValue(false);
+            });
+                
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 

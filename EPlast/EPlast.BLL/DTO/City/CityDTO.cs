@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.Region;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.DTO.City
 {
@@ -49,5 +50,6 @@ namespace EPlast.BLL.DTO.City
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
         public IEnumerable<CityLegalStatusDTO> CityLegalStatuses { get; set; }
+        public IEnumerable<UserRenewalDTO> UserRenewals { get; set; }
     }
 }
