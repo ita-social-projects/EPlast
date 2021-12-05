@@ -92,6 +92,19 @@ namespace EPlast.BLL.Services
                         .ThenInclude(u => u.User));
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
+        
+        /// <inheritdoc />
+        public async Task<CityDTO> GetCityByIdAsync(int cityId)
+        {
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
+                predicate: c => c.ID == cityId,
+                include: source => source
+                    .Include(c => c.CityAdministration)
+                    .ThenInclude(t => t.AdminType)
+                    .Include(k => k.CityAdministration)
+                    .ThenInclude(a => a.User));
+            return _mapper.Map<DataAccessCity.City, CityDTO>(city);
+        }
 
         public CityAdministrationDTO GetCityHead(CityDTO city)
         {
@@ -270,6 +283,24 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task<string> GetCityAdminsIdsAsync(int cityId)
+        {
+            var city = await GetCityByIdAsync(cityId);
+            if (city == null)
+            {
+                return null;
+            }
+
+            var cityHead = GetCityHead(city);
+            var cityHeadDeputy = GetCityHeadDeputy(city);
+
+            var cityHeadId = cityHead != null ? cityHead.UserId : "No Id";
+            var cityHeadDeputyId = cityHeadDeputy != null ? cityHeadDeputy.UserId : "No Id";
+
+            return $"{cityHeadId},{cityHeadDeputyId}";
+        }
+
+        /// <inheritdoc />
         public async Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId)
         {
             var admins = await _repoWrapper.CityAdministration.GetAllAsync(d => d.CityId == cityId && d.Status,
@@ -401,7 +432,6 @@ namespace EPlast.BLL.Services
 
             return city.ID;
         }
-
 
         /// <inheritdoc />
         public async Task<IEnumerable<CityForAdministrationDTO>> GetCities()

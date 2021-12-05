@@ -766,7 +766,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "1" });
 
             //Acts
-            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.SequenceEqual(y))).ToList();
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAllRoles)).ToList();
 
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
@@ -789,11 +789,35 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = "1" });
 
             //Acts
-            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, (x, y) => x.Any())).ToList();
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAnyRoles)).ToList();
 
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
         }
+
+        [Test]
+        public async Task GetUsersByExactRoles_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            string[] roles = new string[] { "Role2", "Role1" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByExactRoles)).ToList();
+
+            //Assert
+            Assert.AreEqual(res[0].ID, user.Id);
+        }
+
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>

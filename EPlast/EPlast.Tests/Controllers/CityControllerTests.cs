@@ -90,6 +90,40 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task IsUserApproved_UserId_ReturnsOk()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(x => x.CheckIsUserApproved(It.IsAny<int>()))
+                .ReturnsAsync(new bool());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.IsUserApproved(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task IsUserApproved_UserId_ReturnsBadRequest()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(x => x.CheckIsUserApproved(It.IsAny<int>()))
+                .ReturnsAsync(new bool?());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.IsUserApproved(1);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
         public async Task AddDocument_Valid_Test()
         {
             // Arrange
@@ -417,6 +451,43 @@ namespace EPlast.Tests.Controllers
             _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetAdminsIds_ReturnsOkObject()
+        {
+            //Arrange
+            _cityService
+                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
+                .ReturnsAsync("Id1,Id2");
+            CitiesController controller = CreateCityController;
+
+            //Act
+            var result = await controller.GetAdminsIds(It.IsAny<int>());
+            var resultValue = (result as OkObjectResult).Value;
+
+            //Assert
+            _cityService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<string>(resultValue);
+        }
+
+        [Test]
+        public async Task GetAdminsIds_ReturnsNotFound()
+        {
+            //Arrange
+            _cityService
+                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
+                .ReturnsAsync(()=>null);
+            CitiesController controller = CreateCityController;
+
+            //Act
+            var result = await controller.GetAdminsIds(It.IsAny<int>());
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]

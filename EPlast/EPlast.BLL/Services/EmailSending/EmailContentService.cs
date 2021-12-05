@@ -317,6 +317,19 @@ namespace EPlast.BLL.Services.EmailSending
                           + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
             };
         }
-        
+
+        /// <inheritdoc />
+        public EmailModel GetUserRenewalConfirmationEmail(string cityName)
+        {
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = "Відновлення статусу",
+                Message = "<h3>СКОБ!</h3>"
+                          + "<p>Доступ до Вашого аккаунту відновлено.</p>"
+                          + $"<p>Відтепер Ви є прихильником станиці {cityName}.</p>"
+                          + "<p>Ласкаво просимо до Пласту!</p>"
+            };
+        }
     }
 }

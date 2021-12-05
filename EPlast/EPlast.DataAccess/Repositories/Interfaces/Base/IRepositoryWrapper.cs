@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
+using EPlast.DataAccess.Repositories.Interfaces.User;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -92,6 +93,7 @@ namespace EPlast.DataAccess.Repositories
         IWorkRepository Work { get; }
         ISectionRepository AboutBaseSection { get; }
         ISubsectionRepository AboutBaseSubsection { get; }
+        IUserRenewalRepository UserRenewal { get; }
 
         void Save();
 

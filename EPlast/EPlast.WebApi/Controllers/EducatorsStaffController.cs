@@ -205,5 +205,21 @@ namespace EPlast.WebApi.Controllers
             string UserId = await _kvService.GetUserByEduStaff(EduStaffId);
             return UserId;
         }
+
+        /// <summary>
+        /// Get all EducatorsStaff
+        /// </summary>
+        /// <param name="kadraType">Type of Kadra</param>
+        /// <param name="searchedData">Searched Data</param>
+        /// <param name="page">Current page on pagination</param>
+        /// <param name="pageSize">Number of records per page</param>
+        /// <returns>List of EducatorsStaffTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("EducatorsStaffForTable")]
+        public IActionResult GetEducatorsStaffForTable(int kadraType, string searchedData, int page, int pageSize)
+        {
+            var educatorsStaff = _kvService.GetEducatorsStaffTableObject(kadraType, searchedData, page, pageSize);
+            return Ok(educatorsStaff);
+        }
     }
 }
