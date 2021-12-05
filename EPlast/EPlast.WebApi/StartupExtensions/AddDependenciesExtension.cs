@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AboutBase;
+using EPlast.BLL.Interfaces.Terms;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -27,6 +28,7 @@ using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.SecurityModel;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.AboutBase;
+using EPlast.BLL.Services.TermsOfUse;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
 using EPlast.BLL.Services.Auth;
@@ -174,6 +176,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<StatisticsServiceSettings>();
             services.AddScoped<IAboutBaseSectionService, AboutBaseSectionService>();
             services.AddScoped<IAboutBaseSubsectionService, AboutBaseSubsectionService>();
+            services.AddScoped<ITermsService, TermsService>();
             services.AddScoped<ISecurityModel, SecurityModel>();
             services.AddScoped<IUserAccessService, UserAccessService>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

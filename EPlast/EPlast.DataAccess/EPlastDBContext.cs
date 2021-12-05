@@ -55,6 +55,7 @@ namespace EPlast.DataAccess
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
         public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
+        public DbSet<Terms> Terms { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,7 +70,6 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<DecisionTableObject>().HasNoKey();
             modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
-
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
