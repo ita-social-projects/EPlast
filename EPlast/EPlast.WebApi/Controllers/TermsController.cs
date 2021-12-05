@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>First record</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">User not found</response>
+        /// <response code="404">Data not found</response>
         [HttpGet("Data")]
         [AllowAnonymous]
         public async Task<IActionResult> GetFirstTermsOfUse()
@@ -57,11 +57,11 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Edit current terms of use
         /// </summary>
-        /// <param name="termsDTO">The id of the user</param>
+        /// <param name="termsDTO">Terms model(dto)</param>
         /// <returns>Answer from backend</returns>
-        /// <response code="204">An instance of decision was created</response>
-        /// <response code="404">User not found</response>
-        /// <response code="400">The id and decision id are not same</response>
+        /// <response code="204">Terms was updated</response>
+        /// <response code="404">Terms not found</response>
+        /// <response code="400">Terms model is not valid</response>
         [HttpPut("Data/{id}")]
         public async Task<IActionResult> EditTerms(TermsDTO termsDTO)
         {
@@ -83,11 +83,11 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Creates new terms by id
         /// </summary>
-        /// <param name="termsDTO">Decision wrapper</param>
+        /// <param name="termsDTO">Terms model(dto)</param>
         /// <returns>Answer from backend</returns>
-        /// <response code="204">An instance of decision was created</response>
-        /// <response code="404">User not found</response>
-        /// <response code="400">The id and decision id are not same</response>
+        /// <response code="204">Terms was created</response>
+        /// <response code="404">Terms not found</response>
+        /// <response code="400">Terms model is not valid</response>
         [HttpPost("Data/{id}")]
         public async Task<IActionResult> AddTerms(TermsDTO termsDTO)
         {

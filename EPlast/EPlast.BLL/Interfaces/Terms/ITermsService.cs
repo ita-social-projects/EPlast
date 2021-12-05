@@ -16,23 +16,22 @@ namespace EPlast.BLL.Interfaces.Terms
         /// <summary>
         /// Get all user Id
         /// </summary>
-        /// <param name="user">The id of the user</param>
+        /// <param name="user">Authorized user</param>
         /// <returns>All users Id</returns>
         Task<IEnumerable<string>> GetAllUsersIdAsync(User user);
 
         /// <summary>
-        /// Edit new terms of use by Id
+        /// Edit terms of use by Id
         /// </summary>
-        /// <param name="termsDTO">An information about terms of use</param>
-        /// <param name="user">The id of the user</param>
-        /// <returns>Annual report model</returns>
+        /// <param name="termsDTO">Terms model(dto)</param>
+        /// <param name="user">Authorized user</param>
         Task ChangeTermsAsync(TermsDTO termsDTO, User user);
 
         /// <summary>
-        /// Add new terms of use by Id
+        /// Add terms of use by Id
         /// </summary>
-        /// <param name="termsDTO">An information about terms of use</param>
-        /// <param name="user">The id of the user</param>
+        /// <param name="termsDTO">Terms model(dto)</param>
+        /// <param name="user">Authorized user</param>
         Task AddTermsAsync(TermsDTO termsDTO, User user);
     }
 }

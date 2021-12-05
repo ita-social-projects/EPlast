@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services.TermsOfUse
         /// <summary>
         /// Check if user is admin
         /// </summary>
-        /// <param name="user">The id of the user</param>
+        /// <param name="user">Authorized user</param>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to edit terms</exception>
         public async Task CheckIfAdminAsync(User user)
         {
