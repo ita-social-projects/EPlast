@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
+﻿using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
@@ -13,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -24,6 +23,7 @@ namespace EPlast.Tests.Controllers
         private EventsController _eventsController;
         private Mock<UserManager<User>> _userManager;
         private Mock<IEventCategoryManager> _eventCategoryManager;
+        private Mock<IEventStatusManager> _eventStatusManager;
 
         [SetUp]
         public void SetUp()
@@ -32,9 +32,11 @@ namespace EPlast.Tests.Controllers
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _eventCategoryManager = new Mock<IEventCategoryManager>();
+            _eventStatusManager = new Mock<IEventStatusManager>();
             _eventsController = new EventsController(
                 _actionManager.Object,
                 _userManager.Object,
+                _eventStatusManager.Object,
                 _eventCategoryManager.Object);
         }
 
@@ -253,11 +255,28 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetEventStatusId_ReturnsOkObjectResult()
+        {
+            // Arrange
+            const int ID = 1;
+            _eventStatusManager
+                .Setup((x) => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(ID);
+
+            // Act
+            var result = await _eventsController.GetEventStatusId(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull((result as ObjectResult).Value);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task EstimateEvent_OkObjectResult_ReturnsOkObjectResult()
         {
             // Arrange
             _actionManager
-                .Setup((x) => x.EstimateEventAsync(It.IsAny<int>(), It.IsAny<User>(), It.IsAny<double>()))
+                .Setup(x => x.EstimateEventAsync(It.IsAny<int>(), It.IsAny<User>(), It.IsAny<double>()))
                 .ReturnsAsync(200);
 
             // Act

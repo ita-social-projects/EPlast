@@ -17,6 +17,8 @@ using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
+using EPlast.DataAccess.Repositories.Interfaces.User;
+using EPlast.DataAccess.Repositories.Realizations.User;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -109,6 +111,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
         private TermsRepository _termsRepository;
+        private UserRenewalRepository _userRenewalRepository;
 
         public IEducatorsStaffTypesRepository KVTypes
         {
@@ -901,6 +904,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public IUserRenewalRepository UserRenewal
+        {
+            get
+            {
+                if (_userRenewalRepository == null)
+                {
+                    _userRenewalRepository = new UserRenewalRepository(_dbContext);
+                }
+
+                return _userRenewalRepository;
+            }
+        }
 
         public ISectionRepository AboutBaseSection
         {
