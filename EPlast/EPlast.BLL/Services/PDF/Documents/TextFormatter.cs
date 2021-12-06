@@ -270,7 +270,8 @@ namespace PdfSharpCore.Drawing.Layout
         {
             if (idx < length - 1 && Text[idx + 1] == Chars.LF)
             {
-                return ++idx;
+                var index = idx + 1;
+                return index;
             }
             return idx;
         }
