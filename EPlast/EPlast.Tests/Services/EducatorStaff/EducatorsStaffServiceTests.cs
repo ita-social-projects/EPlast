@@ -81,9 +81,7 @@ namespace EPlast.Tests.Services.EducatorStaff
         [Test]
         public void Addkadra_UserHasRestrictedRoles_ThrowsArgumentException_Test()
         {
-            _repositoryWrapper.
-              Setup(x => x.KVs.CreateAsync(It.IsAny<EducatorsStaff>()));
-            _repositoryWrapper.Setup(x => x.SaveAsync());
+            
             //Arrange
           
             _userManager
