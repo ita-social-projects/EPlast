@@ -34,13 +34,10 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<IEnumerable<CityDTO>> GetCitiesAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _cityAccessGetters.Keys)
+            foreach (var key in _cityAccessGetters.Keys.Where(x => roles.Contains(x)))
             {
-                if (roles.Contains(key))
-                {
-                    var cities = await _cityAccessGetters[key].GetCities(user.Id);
-                    return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(cities);
-                }
+                var cities = await _cityAccessGetters[key].GetCities(user.Id);
+                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(cities);
             }
             return Enumerable.Empty<CityDTO>();
         }

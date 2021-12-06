@@ -373,11 +373,11 @@ namespace EPlast.WebApi.Controllers
                     && await _userService.IsApprovedCityMember(userId)),
                 CurrentUserId = approverId
             };
-            foreach (var item in model.ConfirmedUsers)
+            foreach (var item in model.ConfirmedUsers.Select(x => x.Approver))
             {
-                item.Approver.User.ImagePath = await _userService.GetImageBase64Async(item.Approver.User.ImagePath);
+                item.User.ImagePath = await _userService.GetImageBase64Async(item.User.ImagePath);
             }
-
+           
             if (model.ClubApprover != null)
             {
                 model.ClubApprover.Approver.User.ImagePath = await _userService.GetImageBase64Async(model?.ClubApprover?.Approver?.User.ImagePath);
