@@ -77,6 +77,24 @@ namespace EPlast.Tests.Services.EducatorStaff
             Assert.IsNotNull(result);
             Assert.IsAssignableFrom<EducatorsStaffDTO>(result);
         }
+        [Test]
+        public void Addkadra_UserHasRestrictedRoles_ThrowsArgumentException()
+        {
+            _repositoryWrapper.
+              Setup(x => x.KVs.CreateAsync(It.IsAny<EducatorsStaff>()));
+            _repositoryWrapper.Setup(x => x.SaveAsync());
+            //Arrange
+          
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.RegisteredUser });
+            _mapper. Setup(x => x.Map<EducatorsStaffDTO, EducatorsStaff>
+                          (It.IsAny<EducatorsStaffDTO>())).
+                          Returns(new EducatorsStaff());
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _educatorsStaffService.CreateKadra(new EducatorsStaffDTO() {UserId = "test"}));
+        }
 
         [Test]
         public async Task DeleteKadra_KadraDoesNotExist_ReturnsFalse()
