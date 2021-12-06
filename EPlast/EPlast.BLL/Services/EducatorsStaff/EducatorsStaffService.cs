@@ -12,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Services
+namespace EPlast.BLL
 {
     public class EducatorsStaffService : IEducatorsStaffService
     {
