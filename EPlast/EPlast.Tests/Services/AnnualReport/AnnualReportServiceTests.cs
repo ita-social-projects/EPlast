@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -155,6 +156,24 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.IsNull(res);
+        }
+
+        [Test]
+        public void GetAnnualReportTableObject_ReturnsAnnualReportTableObject()
+        {
+            //Arrange
+            _repositoryWrapper
+                .Setup(r => r.AnnualReports.GetAnnualReportsAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>()))
+                .ReturnsAsync(new List<AnnualReportTableObject>());
+
+            //Act
+            var result = _annualReportService.GetAllAsync(It.IsAny<User>(),  It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<AnnualReportTableObject>>(result);
         }
     }
 }
