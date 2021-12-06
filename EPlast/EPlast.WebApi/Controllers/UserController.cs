@@ -373,9 +373,9 @@ namespace EPlast.WebApi.Controllers
                     && await _userService.IsApprovedCityMember(userId)),
                 CurrentUserId = approverId
             };
-            foreach (var item in model.ConfirmedUsers.Select(x => x.Approver))
+            foreach (var item in model.ConfirmedUsers.Select(x => x.Approver.User))
             {
-                item.User.ImagePath = await _userService.GetImageBase64Async(item.User.ImagePath);
+                item.ImagePath = await _userService.GetImageBase64Async(item.ImagePath);
             }
            
             if (model.ClubApprover != null)

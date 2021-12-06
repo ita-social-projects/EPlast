@@ -268,10 +268,10 @@ namespace PdfSharpCore.Drawing.Layout
 
         int TreatCR(int idx, int length)
         {
-            int index = idx;
-            if (index < length - 1 && Text[idx + 1] == Chars.LF)
-            {           
-                return ++index;
+            if (idx < length - 1 && Text[idx + 1] == Chars.LF)
+            {
+                var index = idx + 1;
+                return index;
             }
             return idx;
         }

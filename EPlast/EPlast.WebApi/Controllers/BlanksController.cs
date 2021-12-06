@@ -46,7 +46,8 @@ namespace EPlast.WebApi.Controllers
             var roles = await _userManager.GetRolesAsync(currentUser);
             if (currentUser.Id == userId)
                 return true;
-            foreach (var role in roles.Where(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(x)))
+            var role = roles.Where(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(x)).FirstOrDefault();
+            if(role != null)
             {
                 return true;
             }
