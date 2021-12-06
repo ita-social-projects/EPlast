@@ -1,12 +1,12 @@
 ﻿using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.Interfaces.Terms;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.WebApi.Controllers
 {
