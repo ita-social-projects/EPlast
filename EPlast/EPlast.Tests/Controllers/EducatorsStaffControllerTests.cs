@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 
 namespace EPlast.Tests.Controllers
 {
@@ -416,6 +417,28 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             _educatorsStaffService.Verify(x => x.GetKadraById(It.IsAny<int>()), Times.AtLeastOnce());
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public void GetEducatorsStaffForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _educatorsStaffService
+                .Setup(x => x.GetEducatorsStaffTableObject(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .Returns(new List<EducatorsStaffTableObject>());
+
+            //Act
+            var result = _educatorsStaffController.GetEducatorsStaffForTable(It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _educatorsStaffService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<EducatorsStaffTableObject>>(resultValue);
         }
 
         private List<EducatorsStaffDTO> CreateFakeEducatorsStaffDTO()

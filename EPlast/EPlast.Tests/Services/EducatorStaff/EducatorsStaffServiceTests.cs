@@ -388,6 +388,24 @@ namespace EPlast.Tests.Services.EducatorStaff
             _repositoryWrapper.VerifyAll();
         }
 
+        [Test]
+        public void GetEducatorsStaffTableObject_ReturnsEducatorsStaffTableObject()
+        {
+            //Arrange
+            _repositoryWrapper
+                .Setup(r => r.KVs.GetEducatorsStaff(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .Returns(new List<EducatorsStaffTableObject>());
+
+            //Act
+            var result = _educatorsStaffService.GetEducatorsStaffTableObject(It.IsAny<int>(), It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<List<EducatorsStaffTableObject>>(result);
+        }
+
         private IEnumerable<EducatorsStaffDTO> GetTestEducatorsStaffDTO()
         {
             return new List<EducatorsStaffDTO>
