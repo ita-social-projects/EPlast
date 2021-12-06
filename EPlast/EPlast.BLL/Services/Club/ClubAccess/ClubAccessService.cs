@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         public async Task<IEnumerable<ClubDTO>> GetClubsAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var key = _clubAccessGetters.Keys.Where(x => roles.Contains(x)).FirstOrDefault();
+            var key = _clubAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
             if(key != null)
             {
                 var cities = await _clubAccessGetters[key].GetClubs(user.Id);
@@ -50,7 +50,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             var clubsId =
                 (await _repositoryWrapper.ClubAnnualReports.GetAllAsync(predicate: x => x.Date.Year == DateTime.Now.Year))
                 .Select(x => x.ClubId).ToList();
-            var key = _clubAccessGetters.Keys.Where(x => roles.Contains(x)).FirstOrDefault();
+            var key = _clubAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
             if(key != null)
             {
                 options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
@@ -73,7 +73,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var key = roles.Where(x => Roles.HeadsAndHeadDeputiesAndAdmin.Contains(x)).FirstOrDefault();
+            var key = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdmin.Contains(x));
             if(key != null)
             {
                 return true;

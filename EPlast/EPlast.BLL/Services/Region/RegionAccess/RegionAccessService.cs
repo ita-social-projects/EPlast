@@ -31,7 +31,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess
         public async Task<IEnumerable<RegionDTO>> GetRegionsAsync(DatabaseEntities.User claimsPrincipal)
         {
             var roles = await _userManager.GetRolesAsync(claimsPrincipal);
-            var key = _regionAccessGetters.Keys.Where(x => roles.Contains(x)).FirstOrDefault();
+            var key = _regionAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
             if(key != null)
             {
                 var regions = await _regionAccessGetters[key].GetRegionAsync(claimsPrincipal.Id);
@@ -52,7 +52,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             var roles = await _userManager.GetRolesAsync(user);
             var reports = await _repositoryWrapper.RegionAnnualReports.GetAllAsync();
             IEnumerable<(int regionId, int year)> regionsId = reports.Select(x => (x.RegionId, x.Date.Year)).ToList();
-            var key = _regionAccessGetters.Keys.Where(x => roles.Contains(x)).FirstOrDefault();
+            var key = _regionAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
             if(key != null)
             {
                 options = _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionForAdministrationDTO>>(

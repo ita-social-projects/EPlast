@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<IEnumerable<CityDTO>> GetCitiesAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            var key = _cityAccessGetters.Keys.Where(x => roles.Contains(x)).FirstOrDefault();
+            var key = _cityAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
             if(key != null)
             {
                 var cities = await _cityAccessGetters[key].GetCities(user.Id);
@@ -73,10 +73,10 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
+            var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdmin.Contains(x));
+            if(role != null)
             {
-                if (Roles.HeadsAndHeadDeputiesAndAdmin.Contains(role))
-                    return true;
+                return true;
             }
             return false;
         }
