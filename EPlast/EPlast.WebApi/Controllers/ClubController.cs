@@ -350,7 +350,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPut("EditClub/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditClub)]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
             if (!ModelState.IsValid)
