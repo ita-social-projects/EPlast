@@ -32,14 +32,9 @@ namespace EPlast.BLL
         public async Task<EducatorsStaffDTO> CreateKadra(EducatorsStaffDTO kadrasDTO)
         {
             var user = await _userManager.FindByIdAsync(kadrasDTO.UserId);
-            var restrictedRoles = new List<string>
-            {
-                Roles.RegisteredUser,
-            };
-
             var roles = await _userManager.GetRolesAsync(user);
 
-            if (roles.Intersect(restrictedRoles).Any())
+            if (roles.Contains(Roles.RegisteredUser))
             {
                 throw new ArgumentException("Can't add with the restricted roles");
             }
