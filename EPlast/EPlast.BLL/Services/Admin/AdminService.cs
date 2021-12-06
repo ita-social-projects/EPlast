@@ -126,18 +126,21 @@ namespace EPlast.BLL.Services
                 GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
                             include: x => x.Include(i => i.Region).ThenInclude(r => r.RegionAdministration).ThenInclude(a => a.AdminType)
                                            .Include(c => c.CityAdministration).ThenInclude(c => c.AdminType));
-            cities.Select(city => city.Region.RegionAdministration.Where(r =>
+            foreach (var region in cities.Select(x => x.Region))
             {
-                if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
+                region.RegionAdministration = region.RegionAdministration.Where(r =>
                 {
-                    r.Region = null;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }).ToList());
+                    if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
+                    {
+                        r.Region = null;
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }).ToList();
+            }
 
             var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
 
