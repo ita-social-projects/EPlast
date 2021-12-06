@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EPlast.Tests.Services
+namespace EPlast.Tests.Services.EducatorStaff
 {
     [TestFixture]
     class EducatorsStaffServiceTests
@@ -79,7 +79,7 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
-        public void Addkadra_UserHasRestrictedRoles_ThrowsArgumentException()
+        public void Addkadra_UserHasRestrictedRoles_ThrowsArgumentException_Test()
         {
             _repositoryWrapper.
               Setup(x => x.KVs.CreateAsync(It.IsAny<EducatorsStaff>()));
