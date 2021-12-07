@@ -297,17 +297,16 @@ namespace EPlast.BLL.Services.Club
             var clubHeadDeputy = club.ClubAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
                     && a.Status);
+            var clubAdmins = club.ClubAdministration?
+                .Where(a => a.Status)
+                .ToList();
 
             var clubProfileDto = new ClubProfileDTO
             {
                 Club = club,
-                Admins = await setMembersCityName(club.ClubAdministration
-                        .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
-                            && a.Status).ToList()) as
-                    List<ClubAdministrationDTO>,
-                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHead })).FirstOrDefault() as ClubAdministrationDTO,
-                HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHeadDeputy })).FirstOrDefault() as ClubAdministrationDTO
+                Admins = clubAdmins,
+                Head = clubHead,
+                HeadDeputy = clubHeadDeputy
             };
 
             return clubProfileDto;
