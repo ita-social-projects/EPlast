@@ -691,6 +691,36 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetClubAdminsAsyncTest()
+        {
+            // Arrange
+            ClubService ClubService = CreateClubService();
+
+            // Act
+            var result = await ClubService.GetClubAdminsAsync(Id);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ClubProfileDTO>(result);
+        }
+
+        [Test]
+        public async Task GetClubAdminsAsync_ReturnsNull()
+        {
+            // Arrange
+            ClubService ClubService = CreateClubService();
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDTO)null);
+
+            // Act
+            var result = await ClubService.GetClubAdminsAsync(Id);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+
+        [Test]
         public async Task GetClubFollowersAsync_WithClubIsNull_ReturnsNull()
         {
             // Arrange
