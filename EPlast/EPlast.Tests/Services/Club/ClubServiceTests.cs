@@ -719,7 +719,6 @@ namespace EPlast.Tests.Services.Club
             Assert.Null(result);
         }
 
-
         [Test]
         public async Task GetClubFollowersAsync_WithClubIsNull_ReturnsNull()
         {
