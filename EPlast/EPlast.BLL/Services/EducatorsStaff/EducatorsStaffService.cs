@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,13 +17,14 @@ namespace EPlast.BLL
     public class EducatorsStaffService : IEducatorsStaffService
     {
 
+        private readonly UserManager<User> _userManager;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
 
 
-        public EducatorsStaffService(IRepositoryWrapper repositoryWrapper, IMapper mapper)
+        public EducatorsStaffService(IRepositoryWrapper repositoryWrapper, UserManager<User> userManager, IMapper mapper)
         {
-
+            _userManager = userManager;
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
 
@@ -27,6 +32,13 @@ namespace EPlast.BLL
 
         public async Task<EducatorsStaffDTO> CreateKadra(EducatorsStaffDTO kadrasDTO)
         {
+            var user = await _userManager.FindByIdAsync(kadrasDTO.UserId);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains(Roles.RegisteredUser))
+            {
+                throw new ArgumentException("Can't add with the restricted roles");
+            }
             var newKV = _mapper.Map<EducatorsStaffDTO, EducatorsStaff>(kadrasDTO);
             await _repositoryWrapper.KVs.CreateAsync(newKV);
             await _repositoryWrapper.SaveAsync();
