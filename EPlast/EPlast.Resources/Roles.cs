@@ -53,6 +53,7 @@ namespace EPlast.Resources
             + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodySectorHead;
         public const string CanEditCity = Admin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," + GoverningBodyHead;
         public const string CanEditClub = Admin + "," + RegionBoardHead + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
+        public const string CanCreateClub = Admin + "," + RegionBoardHead + "," + GoverningBodyHead;
 
         public static List<string> ListOfRoles = new List<string>
         {
