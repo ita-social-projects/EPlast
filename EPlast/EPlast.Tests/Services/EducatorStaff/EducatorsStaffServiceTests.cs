@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
-using EPlast.BLL;
+using EPlast.BLL.Services.EducatorsStaff;
 using EPlast.BLL.DTO.EducatorsStaff;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -20,17 +23,21 @@ namespace EPlast.Tests.Services.EducatorStaff
     {
         private Mock<IRepositoryWrapper> _repositoryWrapper;
         private Mock<IMapper> _mapper;
+        private Mock<UserManager<User>> _userManager;
 
         private EducatorsStaffService _educatorsStaffService;
 
         [SetUp]
         public void SetUp()
         {
+            var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
 
             _educatorsStaffService = new EducatorsStaffService(
                 _repositoryWrapper.Object,
+                _userManager.Object,
                 _mapper.Object);
         }
 
@@ -38,6 +45,10 @@ namespace EPlast.Tests.Services.EducatorStaff
         public async Task CreateKadra_Test()
         {
             // Arange
+            _userManager
+              .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
+              .ReturnsAsync(new User());
+
             _mapper.
                 Setup(x => x.Map<EducatorsStaffDTO, EducatorsStaff>
                 (It.IsAny<EducatorsStaffDTO>())).
@@ -49,14 +60,38 @@ namespace EPlast.Tests.Services.EducatorStaff
                 Setup(x => x.Map<EducatorsStaff, EducatorsStaffDTO>
                 (It.IsAny<EducatorsStaff>())).
                 Returns(new EducatorsStaffDTO());
-
+            _userManager
+             .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.Admin });
+            var kadrasDTO = new EducatorsStaffDTO()
+            {
+                UserId = "test"
+            };
             // Act
             var result = await _educatorsStaffService.
-                CreateKadra(It.IsAny<EducatorsStaffDTO>());
+                CreateKadra(kadrasDTO);
 
             // Assert
             Assert.IsNotNull(result);
             Assert.IsAssignableFrom<EducatorsStaffDTO>(result);
+        }
+
+        [Test]
+        public void Addkadra_UserHasRestrictedRoles_ThrowsArgumentException_Test()
+        {
+            //Arrange
+
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.RegisteredUser });
+            _mapper.Setup(x => x.Map<EducatorsStaffDTO, EducatorsStaff>
+                         (It.IsAny<EducatorsStaffDTO>())).
+                          Returns(new EducatorsStaff());
+
+            //Act  //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _educatorsStaffService.CreateKadra(new EducatorsStaffDTO() { UserId = "test" }));
         }
 
         [Test]
