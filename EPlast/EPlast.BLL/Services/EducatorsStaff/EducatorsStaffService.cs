@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Services.EducatorsStaff
+namespace EPlast.BLL.Services.EducatorStaff
 {
     public class EducatorsStaffService : IEducatorsStaffService
     {
