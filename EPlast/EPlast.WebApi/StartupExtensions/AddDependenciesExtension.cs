@@ -38,6 +38,7 @@ using EPlast.BLL.Services.City.CityAccess;
 using EPlast.BLL.Services.Club;
 using EPlast.BLL.Services.Club.ClubAccess;
 using EPlast.BLL.Services.Distinctions;
+using EPlast.BLL.Services.EducatorsStaff;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.BLL.Services.Events;
 using EPlast.BLL.Services.EventUser;
