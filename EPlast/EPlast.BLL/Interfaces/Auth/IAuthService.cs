@@ -165,11 +165,6 @@ namespace EPlast.BLL.Interfaces
         Task<SignInResult> SignInAsync(LoginDto loginDto);
 
         /// <summary>
-        /// Delete users without confirmed email
-        /// </summary>
-        Task DeleteUserIfEmailNotConfirmedAsync();
-
-        /// <summary>
         /// Logout in system
         /// </summary>
         void SignOutAsync();

@@ -14,11 +14,10 @@ using System.Globalization;
 using EPlast.BLL.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using NLog.Extensions.Logging;
-using Microsoft.EntityFrameworkCore.Query;
+
 
 namespace EPlast.Tests.Services.Auth
 {
@@ -241,21 +240,6 @@ namespace EPlast.Tests.Services.Auth
             Assert.IsNotNull(result);
         }
 
-        [Test]
-        public async Task DeleteUsers_EmailNotConfirmed()
-        {
-            //Arrange
-            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                    It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
-                    .ReturnsAsync(FakeListOfUsers());
-
-            //Act
-            await _authService.DeleteUserIfEmailNotConfirmedAsync();
-
-            //Assert
-            _repoWrapper.Verify();
-        }
-
         [SetUp]
         public void SetUp()
         {
@@ -324,40 +308,6 @@ namespace EPlast.Tests.Services.Auth
                 EmailSendedOnForgotPassword = timeEmailSended,
                 EmailSendedOnRegister = timeEmailSended
             };
-        }
-
-        private IEnumerable<User> FakeListOfUsers()
-        {
-            return new List<User>
-            {
-                new User()
-                {
-                    FirstName = "Mykola",
-                    EmailConfirmed = true,
-                    RegistredOn = new DateTime(1999, 09, 05, 09, 09, 09)
-                },
-
-                new User()
-                {
-                    FirstName = "Illia",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now
-                },
-
-                new User()
-                {
-                    FirstName = "Liuba",
-                    EmailConfirmed = false,
-                    RegistredOn = DateTime.Now
-                },
-
-                new User()
-                {
-                    FirstName = "Yurii",
-                    EmailConfirmed = false,
-                    RegistredOn = new DateTime(1999, 09, 05, 09, 09, 09)
-                }
-            }.Where(c => c.EmailConfirmed == false);
         }
     }
 }
