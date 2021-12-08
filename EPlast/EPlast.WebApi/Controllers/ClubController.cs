@@ -309,7 +309,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateClub")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanCreateClub)]
         public async Task<IActionResult> Create(ClubViewModel club)
         {
             if (ModelState.IsValid)
