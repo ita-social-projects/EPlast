@@ -11,7 +11,6 @@ namespace EPlast.BLL.Services.Redis
     public class RedisCacheService : ICacheService
     {
         private readonly IDatabase _db;
-        private readonly IServer _server;
         private readonly IConfiguration _configuration;
         private readonly IConnectionMultiplexer _connectionMultiplexer;
 
@@ -71,7 +70,7 @@ namespace EPlast.BLL.Services.Redis
             try
             {
                 var server = _connectionMultiplexer.GetServer(_configuration.GetConnectionString("Redis"));
-                var keys = _server.Keys(pattern: pattern + "*", pageSize: 1000);
+                var keys = server.Keys(pattern: pattern + "*", pageSize: 1000);
                 foreach (var key in keys)
                 {
                     await _db.KeyDeleteAsync(key);
