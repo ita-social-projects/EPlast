@@ -205,12 +205,9 @@ namespace EPlast.BLL.Services.City
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );
 
-            foreach (var admin in admins)
+            foreach (var admin in admins.Where(x => x.City != null))
             {
-                if (admin.City != null)
-                {
-                    admin.City.CityAdministration = null;
-                }
+                admin.City.CityAdministration = null;
             }
 
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);

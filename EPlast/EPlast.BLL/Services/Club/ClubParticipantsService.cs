@@ -184,12 +184,9 @@ namespace EPlast.BLL.Services.Club
                  source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  );
 
-            foreach (var admin in admins)
+            foreach (var admin in admins.Where(x => x.Club != null))
             {
-                if (admin.Club != null)
-                {
-                    admin.Club.ClubAdministration = null;
-                }
+                admin.Club.ClubAdministration = null;
             }
 
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
