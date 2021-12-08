@@ -2,7 +2,6 @@
 using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.EducatorsStaff
 {
     public class EducatorsStaffService : IEducatorsStaffService
     {
@@ -39,10 +38,10 @@ namespace EPlast.BLL
             {
                 throw new ArgumentException("Can't add with the restricted roles");
             }
-            var newKV = _mapper.Map<EducatorsStaffDTO, EducatorsStaff>(kadrasDTO);
+            var newKV = _mapper.Map<EducatorsStaffDTO, DataAccess.Entities.EducatorsStaff.EducatorsStaff>(kadrasDTO);
             await _repositoryWrapper.KVs.CreateAsync(newKV);
             await _repositoryWrapper.SaveAsync();
-            return _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(newKV);
+            return _mapper.Map<DataAccess.Entities.EducatorsStaff.EducatorsStaff, EducatorsStaffDTO>(newKV);
         }
 
         public async Task DeleteKadra(int kadra_id)
@@ -59,14 +58,14 @@ namespace EPlast.BLL
 
         public async Task<IEnumerable<EducatorsStaffDTO>> GetAllKVsAsync()
         {
-            return _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(
+            return _mapper.Map<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(
                  await _repositoryWrapper.KVs.GetAllAsync());
 
         }
 
         public async Task<EducatorsStaffDTO> GetKadraById(int KadraID)
         {
-            var KV = _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstAsync(c => c.ID == KadraID,
+            var KV = _mapper.Map<DataAccess.Entities.EducatorsStaff.EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstAsync(c => c.ID == KadraID,
                 include:
                 source => source.Include(c => c.User)));
             return KV;
@@ -74,20 +73,20 @@ namespace EPlast.BLL
 
         public async Task<EducatorsStaffDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber)
         {
-            var KV = _mapper.Map<EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.NumberInRegister == KadrasRegisterNumber));
+            var KV = _mapper.Map<DataAccess.Entities.EducatorsStaff.EducatorsStaff, EducatorsStaffDTO>(await _repositoryWrapper.KVs.GetFirstOrDefaultAsync(c => c.NumberInRegister == KadrasRegisterNumber));
             return KV;
         }
 
         public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsOfGivenUser(string UserId)
         {
-            var Kadras = _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == UserId));
+            var Kadras = _mapper.Map<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.UserId == UserId));
             return Kadras;
         }
 
         public async Task<IEnumerable<EducatorsStaffDTO>> GetKVsWithKVType(int kvTypeId)
         {
 
-            var KVs = _mapper.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KadraVykhovnykivType.ID == kvTypeId,
+            var KVs = _mapper.Map<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>(await _repositoryWrapper.KVs.GetAllAsync(c => c.KadraVykhovnykivType.ID == kvTypeId,
                 include:
                 source => source.Include(c => c.User)));
             return KVs;
@@ -142,7 +141,7 @@ namespace EPlast.BLL
         }
 
         /// <inheritdoc />
-        public IEnumerable<EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData,
+        public IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData,
             int page, int pageSize)
         {
             return _repositoryWrapper.KVs.GetEducatorsStaff(kadraType, searchedData, page, pageSize);
