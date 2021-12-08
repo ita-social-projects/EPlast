@@ -302,10 +302,10 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task DeleteUserIfEmailNotConfirmedAsync()
         {
-            var users = await _repoWrapper.User.GetAllAsync(x => x.EmailConfirmed == false);
+            var users = await _repoWrapper.User.GetAllAsync(x => !x.EmailConfirmed);
             foreach (var user in users)
             {
-                if (!((DateTime.Now - user.RegistredOn).TotalHours > 12)) continue;
+                if ((DateTime.Now - user.RegistredOn).TotalHours <= 12) continue;
                 _repoWrapper.User.Delete(user);
                 await _repoWrapper.SaveAsync();
             }
