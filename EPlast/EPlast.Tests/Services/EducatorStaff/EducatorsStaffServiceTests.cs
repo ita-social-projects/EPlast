@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using EPlast.BLL.Services.EducatorStaff;
+using EPlast.BLL.Services.EducatorsStaff;
 using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
