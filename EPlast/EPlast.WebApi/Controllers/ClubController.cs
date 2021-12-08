@@ -84,10 +84,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetActiveClubs(int page, int pageSize, string clubName = null)
         {
-            var cities = await _clubService.GetAllActiveClubsAsync(clubName);
-            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
+            var isArchive = true;
+            var clubsTuple = await _clubService.GetAllClubsByPageAndIsArchiveAsync(page, pageSize, clubName, isArchive);
 
-            return Ok(citiesViewModel);
+            return Ok(new {clubs = clubsTuple.Item1, rows = clubsTuple.Item2});
         }
 
         /// <summary>
@@ -101,10 +101,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveClubs(int page, int pageSize, string clubName = null)
         {
-            var cities = await _clubService.GetAllNotActiveClubsAsync(clubName);
-            var citiesViewModel = new ClubsViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
-
-            return Ok(citiesViewModel);
+            bool isArchive = false;
+            var clubsTuple = await _clubService.GetAllClubsByPageAndIsArchiveAsync(page, pageSize,clubName, isArchive);
+            
+            return Ok(new { clubs = clubsTuple.Item1, rows = clubsTuple.Item2 });
         }
 
         /// <summary>

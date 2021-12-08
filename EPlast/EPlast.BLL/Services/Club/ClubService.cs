@@ -107,8 +107,6 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(clubName));
         }
 
-
-
         /// <inheritdoc />
         public async Task<ClubDTO> GetByIdAsync(int clubId)
         {
@@ -615,6 +613,15 @@ namespace EPlast.BLL.Services.Club
             club.IsActive = true;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive)
+        {
+            var tuple = await _repoWrapper.Club.GetClubsObjects(page, pageSize, clubName, isArchive);
+            var clubs = tuple.Item1;
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessClub.ClubObject>, IEnumerable<ClubObjectDTO>>(clubs), rows);
         }
     }
 }
