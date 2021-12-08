@@ -100,8 +100,8 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
             _clubService
-                .Setup(c => c.GetAllActiveClubsAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetClubsBySearch());
+                .Setup(c => c.GetAllClubsByPageAndIsArchiveAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(CreateTuple);
 
             // Act
             var result = await clubcon.GetActiveClubs(page, pageSize, clubName);
@@ -109,8 +109,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
-                .Clubs.Where(c => c.Name.Equals("Курінь")));
         }
 
         [TestCase(1, 1, "Курінь")]
@@ -128,8 +126,8 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
             _clubService
-                .Setup(c => c.GetAllNotActiveClubsAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetClubsBySearch());
+                .Setup(c => c.GetAllClubsByPageAndIsArchiveAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(CreateTuple);
 
             // Act
             var result = await clubcon.GetNotActiveClubs(page, pageSize, clubName);
@@ -137,8 +135,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
-                .Clubs.Where(c => c.Name.Equals("Курінь")));
         }
 
         [Test]
@@ -1094,6 +1090,19 @@ namespace EPlast.Tests.Controllers
                 }
             };
         }
+
+        private List<ClubObjectDTO> GetClubsByPage()
+        {
+            return new List<ClubObjectDTO>()
+            {
+                new ClubObjectDTO()
+                {
+                    Name = "Курінь",
+                }
+            };
+        }
+
+        private Tuple<IEnumerable<ClubObjectDTO>, int> CreateTuple => new Tuple<IEnumerable<ClubObjectDTO>, int>(GetClubsByPage(), 100);
 
         private IEnumerable<ClubForAdministrationDTO> GetFakeClubsForAdministration()
         {

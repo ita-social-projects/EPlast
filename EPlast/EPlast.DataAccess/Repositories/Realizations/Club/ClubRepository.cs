@@ -15,7 +15,7 @@ namespace EPlast.DataAccess.Repositories
         {
         }
 
-        public async Task<Tuple<IEnumerable<ClubObject>, int>> GetClubsObjects(int pageNum, int pageSize, string searchData, bool isArchive)
+        public async Task<Tuple<IEnumerable<ClubObject>, int>> GetClubsByPage(int pageNum, int pageSize, string searchData, bool isArchive)
         {
             var items = EPlastDBContext.Set<Club>()
                 .Where(c => (string.IsNullOrEmpty(searchData) && c.IsActive == isArchive) || (c.IsActive == isArchive && c.Name.Contains(searchData)))

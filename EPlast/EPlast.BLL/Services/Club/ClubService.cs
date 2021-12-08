@@ -612,11 +612,12 @@ namespace EPlast.BLL.Services.Club
 
         public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive)
         {
-            var tuple = await _repoWrapper.Club.GetClubsObjects(page, pageSize, clubName, isArchive);
+            var tuple = await _repoWrapper.Club.GetClubsByPage(page, pageSize, clubName, isArchive);
             var clubs = tuple.Item1;
             var rows = tuple.Item2;
 
             return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessClub.ClubObject>, IEnumerable<ClubObjectDTO>>(clubs), rows);
+        }
 
         public async Task<ClubAdministrationDTO> GetClubHeadAsync(int clubId)
         {
