@@ -107,8 +107,6 @@ namespace EPlast.BLL.Services.Club
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(clubName));
         }
 
-
-
         /// <inheritdoc />
         public async Task<ClubDTO> GetByIdAsync(int clubId)
         {
@@ -291,23 +289,16 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
 
-            var clubHead = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
-                    && a.Status);
-            var clubHeadDeputy = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
-                    && a.Status);
+            var clubHead = await GetClubHeadAsync(clubId);
+            var clubHeadDeputy = await GetClubHeadDeputyAsync(clubId);
+            var clubAdmins = await GetAdminsAsync(clubId);
 
             var clubProfileDto = new ClubProfileDTO
             {
                 Club = club,
-                Admins = await setMembersCityName(club.ClubAdministration
-                        .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
-                            && a.Status).ToList()) as
-                    List<ClubAdministrationDTO>,
-                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHead })).FirstOrDefault() as ClubAdministrationDTO,
-                HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHeadDeputy })).FirstOrDefault() as ClubAdministrationDTO
+                Admins = clubAdmins,
+                Head = clubHead,
+                HeadDeputy = clubHeadDeputy
             };
 
             return clubProfileDto;
@@ -609,12 +600,37 @@ namespace EPlast.BLL.Services.Club
             };
             return clubProfileDto;
         }
+
         public async Task UnArchiveAsync(int clubId)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && !c.IsActive);
             club.IsActive = true;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<ClubAdministrationDTO> GetClubHeadAsync(int clubId)
+        {
+            var club = await GetByIdAsync(clubId);
+            return club.ClubAdministration?
+                   .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
+                       && a.Status);
+        }
+
+        public async Task<ClubAdministrationDTO> GetClubHeadDeputyAsync(int clubId)
+        {
+            var club = await GetByIdAsync(clubId);
+            return club.ClubAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
+                    && a.Status);
+        }
+
+        public async Task<List<ClubAdministrationDTO>> GetAdminsAsync(int clubId)
+        {
+            var club = await GetByIdAsync(clubId);
+            return club.ClubAdministration?
+                .Where(a => a.Status)
+                .ToList();
         }
     }
 }
