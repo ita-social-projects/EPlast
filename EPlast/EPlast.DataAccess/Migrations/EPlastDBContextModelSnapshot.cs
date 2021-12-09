@@ -15,7 +15,7 @@ namespace EPlast.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.6")
+                .HasAnnotation("ProductVersion", "3.1.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -2368,6 +2368,29 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Subsections");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Terms", b =>
+                {
+                    b.Property<int>("TermsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("DatePublication")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TermsText")
+                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(40000);
+
+                    b.Property<string>("TermsTitle")
+                        .HasColumnType("nvarchar(255)")
+                        .HasMaxLength(255);
+
+                    b.HasKey("TermsId");
+
+                    b.ToTable("Terms");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UpuDegree", b =>

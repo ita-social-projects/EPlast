@@ -192,6 +192,39 @@ namespace EPlast.Tests.Services.GoverningBody
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task RemoveAdminRolesByUserIdAsync_ValidTest()
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+               .ReturnsAsync(new List<GoverningBodyAdministration>() { new GoverningBodyAdministration() { Id = 1 } });
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(GoverningBodyAdmin);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.Update(It.IsAny<GoverningBodyAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+             await _governingBodyAdministrationService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+
+            //Assert
+            _repoWrapper.Verify();
+            _adminTypeService.Verify();
+        }
+
         private const int FakeId = 3;
 
         private static readonly AdminTypeDTO AdminType = new AdminTypeDTO
