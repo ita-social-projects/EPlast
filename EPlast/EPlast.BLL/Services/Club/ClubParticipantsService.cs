@@ -325,10 +325,14 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task RemoveMemberAsync(ClubMembers member)
+        public async Task RemoveMemberAsync(string userId)
         {
-            _repositoryWrapper.ClubMembers.Delete(member);
-            await _repositoryWrapper.SaveAsync();
+            var clubMember = await _repositoryWrapper.ClubMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (clubMember != null)
+            {
+                _repositoryWrapper.ClubMembers.Delete(clubMember);
+                await _repositoryWrapper.SaveAsync();
+            }
         }
 
         public async Task AddFollowerInHistoryAsync(int clubId, string userId)
@@ -388,6 +392,15 @@ namespace EPlast.BLL.Services.Club
 
              _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
             await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach(var role in roles)
+            {
+                await RemoveAdministratorAsync(role.ID);
+            }
         }
     }
 }

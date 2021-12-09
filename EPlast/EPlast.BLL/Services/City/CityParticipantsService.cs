@@ -290,10 +290,15 @@ namespace EPlast.BLL.Services.City
             await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City);
         }
 
-        public async Task RemoveMemberAsync(CityMembers member)
+        public async Task RemoveMemberAsync(string userId)
         {
-            _repositoryWrapper.CityMembers.Delete(member);
-            await _repositoryWrapper.SaveAsync();
+            var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
+
+            if (cityMember != null)
+            {
+                _repositoryWrapper.CityMembers.Delete(cityMember);
+                await _repositoryWrapper.SaveAsync();
+            }
         }
 
         /// <inheritdoc />
@@ -432,6 +437,15 @@ namespace EPlast.BLL.Services.City
             var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
+        }
+
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach (var role in roles)
+            {
+                await RemoveAdministratorAsync(role.ID);
+            }    
         }
     }
 }
