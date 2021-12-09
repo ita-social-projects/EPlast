@@ -14,12 +14,9 @@ namespace EPlast.BLL.Services.Statistics.StatisticsItems.Interfaces
 
         public void RemoveMinors(Dictionary<StatisticsItemIndicator, IStatisticsItem> minorStatisticsItems)
         {
-            foreach (var statisticsItemIndicator in minorStatisticsIndicators)
+            foreach (var statisticsItemIndicator in minorStatisticsIndicators.Where(x => minorStatisticsItems.ContainsKey(x)))
             {
-                if (minorStatisticsItems.ContainsKey(statisticsItemIndicator))
-                {
-                    minorStatisticsItems.Remove(statisticsItemIndicator);
-                }
+                minorStatisticsItems.Remove(statisticsItemIndicator);
             }
         }
     }

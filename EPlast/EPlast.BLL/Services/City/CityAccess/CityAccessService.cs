@@ -34,13 +34,11 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<IEnumerable<CityDTO>> GetCitiesAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _cityAccessGetters.Keys)
+            var key = _cityAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
+            if(key != null)
             {
-                if (roles.Contains(key))
-                {
-                    var cities = await _cityAccessGetters[key].GetCities(user.Id);
-                    return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(cities);
-                }
+                var cities = await _cityAccessGetters[key].GetCities(user.Id);
+                return _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityDTO>>(cities);
             }
             return Enumerable.Empty<CityDTO>();
         }
@@ -75,10 +73,10 @@ namespace EPlast.BLL.Services.City.CityAccess
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var role in roles)
+            var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdmin.Contains(x));
+            if(role != null)
             {
-                if (Roles.HeadsAndHeadDeputiesAndAdmin.Contains(role))
-                    return true;
+                return true;
             }
             return false;
         }

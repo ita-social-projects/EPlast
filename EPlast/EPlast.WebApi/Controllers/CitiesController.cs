@@ -342,7 +342,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPut("EditCity/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditCity)]
         public async Task<IActionResult> Edit(CityViewModel city)
         {
             if (!ModelState.IsValid)
@@ -462,6 +462,23 @@ namespace EPlast.WebApi.Controllers
             _logger.LogInformation($"Status of member with ID {{{memberId}}} was changed.");
 
             return Ok(member);
+        }
+
+        /// <summary>
+        /// Returns either given user is approved or not
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>True if given user is approved, otherwise false. BadRequest if user doesn't exist</returns>
+        [HttpGet("IsUserApproved/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> IsUserApproved(int userId)
+        {
+            var isApproved = await _cityParticipantsService.CheckIsUserApproved(userId);
+            if(isApproved==null)
+            {
+                return BadRequest();
+            }
+            return Ok(isApproved);
         }
 
         /// <summary>
@@ -656,7 +673,7 @@ namespace EPlast.WebApi.Controllers
         {
             var userAdmins = await _cityParticipantsService.GetAdministrationStatuses(UserId);
 
-            return Ok((userAdmins));
+            return Ok(userAdmins);
         }
 
         /// <summary>

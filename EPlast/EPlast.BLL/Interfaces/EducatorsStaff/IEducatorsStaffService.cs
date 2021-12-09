@@ -1,6 +1,7 @@
 ﻿using EPlast.BLL.DTO.EducatorsStaff;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 
 namespace EPlast.BLL.Interfaces.EducatorsStaff
 {
@@ -29,5 +30,15 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
 
         Task<string> GetUserByEduStaff(int EduStaffId);
         Task DeleteKadra(int kadra_id);
+
+        /// <summary>
+        /// Returns EducatorsStaff with params
+        /// </summary>
+        /// <param name="kadraType">Type of Kadra</param>
+        /// <param name="searchedData">Search string</param>
+        /// <param name="page">Current page</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns>EducatorsStaff</returns>
+        IEnumerable<EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData, int page, int pageSize);
     }
 }
