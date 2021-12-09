@@ -1,5 +1,6 @@
 {
   "Admin": {
+    "IsSuperAdmin": true,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -12,6 +13,7 @@
     "CanDeleteReport": true
   },
   "Голова Округи": {
+    "IsSuperAdmin": false,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -24,6 +26,7 @@
     "CanDeleteReport": false
   },
   "Заступник Голови Округи": {
+    "IsSuperAdmin": false,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -36,6 +39,7 @@
     "CanDeleteReport": false
   },
   "Голова Станиці": {
+    "IsSuperAdmin": false,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -48,6 +52,7 @@
     "CanDeleteReport": false
   },
   "Заступник Голови Станиці": {
+    "IsSuperAdmin": false,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -60,6 +65,7 @@
     "CanDeleteReport": false
   },
   "Голова Куреня": {
+    "IsSuperAdmin": false,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -72,6 +78,7 @@
     "CanDeleteReport": false
   },
   "Заступник Голови Куреня": {
+    "IsSuperAdmin": false,
     "IsAdmin": true,
     "CanViewAnnualReportsTable": true,
     "CanFindEveryAnnualReportInSearch": true,
@@ -84,6 +91,7 @@
     "CanDeleteReport": false
   },
   "Прихильник": {
+    "IsSuperAdmin": false,
     "IsAdmin": false,
     "CanViewAnnualReportsTable": false,
     "CanFindEveryAnnualReportInSearch": false,
@@ -96,6 +104,7 @@
     "CanDeleteReport": false
   },
   "Дійсний член організації": {
+    "IsSuperAdmin": false,
     "IsAdmin": false,
     "CanViewAnnualReportsTable": false,
     "CanFindEveryAnnualReportInSearch": false,
@@ -108,6 +117,7 @@
     "CanDeleteReport": false
   },
   "Зареєстрований користувач": {
+    "IsSuperAdmin": false,
     "IsAdmin": false,
     "CanViewAnnualReportsTable": false,
     "CanFindEveryAnnualReportInSearch": false,
