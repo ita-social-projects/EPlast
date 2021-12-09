@@ -64,7 +64,7 @@ namespace EPlast.WebApi.StartupExtensions
             recurringJobManager.AddOrUpdate("Delete users without confirmed email every hour",
                                             () => serviceProvider.GetService<IAuthService>()
                                                                  .DeleteUserIfEmailNotConfirmedAsync(),
-                                            "* 1 * * *", TimeZoneInfo.Local);
+                                            "0 1 * * *", TimeZoneInfo.Local);
         }
 
         private static async Task CreateRolesAsync(IServiceProvider serviceProvider, IConfiguration Configuration)
