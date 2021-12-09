@@ -212,7 +212,7 @@ namespace EPlast.BLL.Interfaces.City
         Task<bool> PlastMemberCheck(string userId);
 
         /// <summary>
-        /// Get all Regions by page
+        /// Get all Cities by page
         /// </summary>
         /// <param name="page">number of page</param>
         /// <param name="pageSize">size of page</param>
