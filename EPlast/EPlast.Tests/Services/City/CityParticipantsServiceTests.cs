@@ -320,6 +320,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(value:new List<RegionAdministration>());
             _repoWrapper
                 .Setup(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
+
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());
 
@@ -744,6 +745,42 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task RemoveAdminRolesByUserIdAsync_Valid_Test()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration()
+                {
+                    ID = fakeId,
+                    City = new DataAccess.Entities.City ()
+                } });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(cityAdm);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            // Act
+            await _cityParticipantsService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+
+            // Assert
+            _repoWrapper.Verify();
+        }
+
         [TestCase("email", "CityName")]
         public async Task RemoveFollowerAsync_Valid_Test(string email, string cityName)
         {
@@ -790,7 +827,7 @@ namespace EPlast.Tests.Services.City
                .Setup(x => x.SaveAsync());
 
             // Act
-            await _cityParticipantsService.RemoveMemberAsync(new CityMembers());
+            await _cityParticipantsService.RemoveMemberAsync(It.IsAny<string>());
 
             // Assert
             _repoWrapper.Verify();
@@ -874,8 +911,10 @@ namespace EPlast.Tests.Services.City
                     },
                     CityId = 1
                 });
+
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+
             //Assert
             Assert.IsNotNull(result);
             _repoWrapper.Verify();
@@ -888,11 +927,59 @@ namespace EPlast.Tests.Services.City
             _repoWrapper
                 .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
-                .ReturnsAsync((null as CityMembers));
+                .ReturnsAsync(null as CityMembers);
+
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+
             //Assert
             Assert.IsNull(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnNull()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(null as CityMembers);
+
+            // Act
+            var result = await _cityParticipantsService.CheckIsUserApproved(1);
+
+            //Assert
+            Assert.Null(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnTrue()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new CityMembers()
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = true,
+                    City = new DataAccess.Entities.City
+                    {
+                        ID = 1,
+                        Name = "city name"
+                    },
+                    CityId = 1
+                });
+            bool expected = true;
+
+            // Act
+            var result = await _cityParticipantsService.CheckIsUserApproved(1);
+
+            //Assert
+            Assert.AreEqual(expected, result);
             _repoWrapper.Verify();
         }
 
@@ -915,8 +1002,10 @@ namespace EPlast.Tests.Services.City
                     },
                     CityId = 1
                 });
+
             //Act
             var result = await _cityParticipantsService.CityOfApprovedMember("123v");
+
             //Assert
             Assert.IsNull(result);
             _repoWrapper.Verify();

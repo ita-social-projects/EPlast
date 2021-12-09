@@ -107,7 +107,22 @@ namespace EPlast.WebApi.Controllers
             return Ok(citiesViewModel);
         }
 
-        
+        /// <summary>
+        /// Returns either given user is approved or not
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>True if given user is approved, otherwise false. BadRequest if user doesn't exist</returns>
+        [HttpGet("IsUserApproved/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> IsUserApproved(int userId)
+        {
+            var isApproved = await _clubParticipantsService.CheckIsUserApproved(userId);
+            if (isApproved == null)
+            {
+                return BadRequest();
+            }
+            return Ok(isApproved);
+        }
 
         /// <summary>
         /// Get id and name from all clubs that the user has access to
@@ -294,7 +309,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateClub")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanCreateClub)]
         public async Task<IActionResult> Create(ClubViewModel club)
         {
             if (ModelState.IsValid)
@@ -335,7 +350,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPut("EditClub/{ClubId}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditClub)]
         public async Task<IActionResult> Edit(ClubViewModel club)
         {
             if (!ModelState.IsValid)

@@ -105,6 +105,14 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
+        public async Task<bool?> CheckIsUserApproved(int userId)
+        {
+            var clubMember = await _repositoryWrapper.ClubMembers
+                .GetFirstOrDefaultAsync(u => u.ID == userId);
+            return clubMember?.IsApproved;
+        }
+
+        /// <inheritdoc />
         public async Task<ClubAdministrationDTO> EditAdministratorAsync(ClubAdministrationDTO adminDTO)
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
@@ -176,12 +184,9 @@ namespace EPlast.BLL.Services.Club
                  source => source.Include(c => c.User).Include(a => a.Club).Include(c => c.AdminType)
                  );
 
-            foreach (var admin in admins)
+            foreach (var admin in admins.Where(x => x.Club != null))
             {
-                if (admin.Club != null)
-                {
-                    admin.Club.ClubAdministration = null;
-                }
+                admin.Club.ClubAdministration = null;
             }
 
             return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
@@ -320,10 +325,14 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task RemoveMemberAsync(ClubMembers member)
+        public async Task RemoveMemberAsync(string userId)
         {
-            _repositoryWrapper.ClubMembers.Delete(member);
-            await _repositoryWrapper.SaveAsync();
+            var clubMember = await _repositoryWrapper.ClubMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (clubMember != null)
+            {
+                _repositoryWrapper.ClubMembers.Delete(clubMember);
+                await _repositoryWrapper.SaveAsync();
+            }
         }
 
         public async Task AddFollowerInHistoryAsync(int clubId, string userId)
@@ -383,6 +392,15 @@ namespace EPlast.BLL.Services.Club
 
              _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
             await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach(var role in roles)
+            {
+                await RemoveAdministratorAsync(role.ID);
+            }
         }
     }
 }

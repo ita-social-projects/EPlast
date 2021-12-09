@@ -95,6 +95,15 @@ namespace EPlast.BLL.Services.ActiveMembership
             return false;
         }
 
-
+        public async Task EndUserMembership(string userId)
+        {
+            var membershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (membershipDates != null)
+            {
+                membershipDates.DateEnd = DateTime.Now;
+                _repoWrapper.UserMembershipDates.Update(membershipDates);
+                await _repoWrapper.SaveAsync();
+            }
+        }
     }
 }
