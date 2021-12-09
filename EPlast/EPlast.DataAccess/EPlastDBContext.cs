@@ -56,6 +56,7 @@ namespace EPlast.DataAccess
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
         public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
+        public DbSet<Terms> Terms { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
         public DbSet<EducatorsStaffTableObject> EducatorsStaffTableObjects { get; set; }
@@ -75,7 +76,6 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
             modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
             modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
-
             modelBuilder.Entity<UserRenewal>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -97,7 +97,6 @@ namespace EPlast.DataAccess
                     .HasDefaultValue(false);
             });
                 
-
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 
