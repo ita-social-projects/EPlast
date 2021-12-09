@@ -745,6 +745,42 @@ namespace EPlast.Tests.Services.City
             Assert.NotNull(result);
         }
 
+        [Test]
+        public async Task RemoveAdminRolesByUserIdAsync_Valid_Test()
+        {
+            // Arrange
+            _repoWrapper
+               .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new List<CityAdministration> { new CityAdministration()
+                {
+                    ID = fakeId,
+                    City = new DataAccess.Entities.City ()
+                } });
+            _repoWrapper
+                .Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>,
+                    IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(cityAdm);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.CityAdministration.Update(It.IsAny<CityAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            // Act
+            await _cityParticipantsService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+
+            // Assert
+            _repoWrapper.Verify();
+        }
+
         [TestCase("email", "CityName")]
         public async Task RemoveFollowerAsync_Valid_Test(string email, string cityName)
         {
@@ -791,7 +827,7 @@ namespace EPlast.Tests.Services.City
                .Setup(x => x.SaveAsync());
 
             // Act
-            await _cityParticipantsService.RemoveMemberAsync(new CityMembers());
+            await _cityParticipantsService.RemoveMemberAsync(It.IsAny<string>());
 
             // Assert
             _repoWrapper.Verify();

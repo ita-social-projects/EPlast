@@ -104,9 +104,15 @@ namespace EPlast.BLL.Interfaces.City
         Task RemoveFollowerAsync(int followerId);
 
         /// <summary>
-        /// Remove a specific follower from the city
+        /// Remove a specific member from the city
         /// </summary>
-        /// <param name="member">Member of the city</param>
-        Task RemoveMemberAsync(CityMembers member);
+        /// <param name="userId">The Id of the member</param>
+        Task RemoveMemberAsync(string userId);
+
+        /// <summary>
+        /// Removes Administration roles of user in the City
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        Task RemoveAdminRolesByUserIdAsync(string userId);
     }
 }

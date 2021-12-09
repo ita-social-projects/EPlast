@@ -10,5 +10,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
         Task<SectorAdministrationDTO> EditSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto);
 
         Task RemoveAdministratorAsync(int adminId);
+
+        Task RemoveAdminRolesByUserIdAsync(string userId);
     }
 }
