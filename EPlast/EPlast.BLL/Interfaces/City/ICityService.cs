@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.City;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -71,7 +72,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns></returns>
         Task<CityDTO> GetByIdAsync(int cityId);
-        
+
         /// <summary>
         /// Gets a specific city without getting regions and documents
         /// </summary>
@@ -209,5 +210,15 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="userId">The id of the user</param>
         Task<bool> PlastMemberCheck(string userId);
+
+        /// <summary>
+        /// Get all Regions by page
+        /// </summary>
+        /// <param name="page">number of page</param>
+        /// <param name="pageSize">size of page</param>
+        /// <param name="name">name of City</param>
+        /// <param name="isArchive">check if City is archive</param>
+        Task<Tuple<IEnumerable<CityObjectDTO>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize,
+            string name, bool isArchive);
     }
 }
