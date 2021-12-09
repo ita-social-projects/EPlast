@@ -130,6 +130,16 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
+        {
+            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
+                include: source => source
+                    .Include(t => t.User));
+            var users = cityMembers.Select(x => x.User);
+            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDTO>>(users);
+        }
+
+        /// <inheritdoc />
         public async Task<CityProfileDTO> GetCityProfileAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
@@ -177,16 +187,6 @@ namespace EPlast.BLL.Services
             };
 
             return cityProfileDto;
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
-        {
-            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
-                include: source => source
-                    .Include(t => t.User));
-            var users = cityMembers.Select(x => x.User);
-            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDTO>>(users);
         }
 
         /// <inheritdoc />

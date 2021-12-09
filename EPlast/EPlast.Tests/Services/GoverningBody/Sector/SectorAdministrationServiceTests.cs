@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.Admin;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Services.GoverningBodies.Sector;
@@ -94,6 +95,32 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _service.AddSectorAdministratorAsync(new SectorAdministrationDTO() { AdminType = new AdminTypeDTO()}));
+        }
+
+        [Test]
+        public async Task RemoveAdminRolesByUserIdAsync_ValidTest()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(x => x.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>,
+                        IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new SectorAdministration());
+            _adminTypeService
+               .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>()))
+               .ReturnsAsync(new AdminTypeDTO());
+            _repoWrapper
+                .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration>() { new SectorAdministration() { Id = 1 } });
+
+            //Act
+            await _service.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+
+            //Assert
+            _repoWrapper.Verify();
+            _adminTypeService.Verify();
         }
 
         [Test]
