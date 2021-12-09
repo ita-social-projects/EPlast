@@ -38,6 +38,12 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <param name="userId">User id</param>
         /// <returns>true if user has membership</returns>
         public Task<bool> UserHasMembership(string userId);
+
+        /// <summary>
+        /// Changes user memberships end dates to now
+        /// </summary>
+        /// <param name="userId">User id</param>
+        public Task EndUserMembership(string userId);
     }
 
 

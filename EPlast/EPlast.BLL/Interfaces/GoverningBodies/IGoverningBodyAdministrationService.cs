@@ -24,5 +24,11 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// </summary>
         /// <param name="adminId">Governing Body Administration object</param>
         Task RemoveAdministratorAsync(int adminId);
+
+        /// <summary>
+        /// Removes Administration roles of user in Governing Body
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        Task RemoveAdminRolesByUserIdAsync(string userId);
     }
 }

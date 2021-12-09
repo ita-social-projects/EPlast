@@ -283,7 +283,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             AdminController adminController = CreateAdminController;
-
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(username);
 
