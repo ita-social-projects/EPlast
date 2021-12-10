@@ -55,30 +55,16 @@ namespace EPlast.BLL.Services.Redis
 
         public async Task RemoveRecordAsync(string recordId)
         {
-            try
-            {
-                await _db.KeyDeleteAsync(recordId);
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"Can not delete keys from redis, because {ex}");
-            }
+            await _db.KeyDeleteAsync(recordId);
         }
 
         public async Task RemoveRecordsByPatternAsync(string pattern)
         {
-            try
+            var server = _connectionMultiplexer.GetServer(_configuration.GetConnectionString("Redis"));
+            var keys = server.Keys(pattern: pattern + "*", pageSize: 1000);
+            foreach (var key in keys)
             {
-                var server = _connectionMultiplexer.GetServer(_configuration.GetConnectionString("Redis"));
-                var keys = server.Keys(pattern: pattern + "*", pageSize: 1000);
-                foreach (var key in keys)
-                {
-                    await _db.KeyDeleteAsync(key);
-                }
-            }
-            catch(Exception ex) 
-            {
-                Console.WriteLine($"Can not get server for redis instance, because {ex}");
+                await _db.KeyDeleteAsync(key);
             }
         }
 

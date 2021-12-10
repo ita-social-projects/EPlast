@@ -376,7 +376,8 @@ namespace EPlast.Tests.Services.Club
         {
             //Arrange
             _repoWrapper
-              .Setup(x => x.Club.GetClubsByPage(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+              .Setup(x => x.Club.GetRange(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), 
+              It.IsAny<Expression<Func<DataAccessClub.Club, DataAccessClub.Club>>>(), It.IsAny<Expression<Func<DataAccessClub.Club, Object>>>(), It.IsAny<int>(), It.IsAny<int>()))
               .ReturnsAsync(CreateTuple);
 
             //Act
@@ -1635,17 +1636,17 @@ namespace EPlast.Tests.Services.Club
             };
         }
 
-        private List<ClubObject> GetClubsByPage()
+        private List<DataAccessClub.Club> GetClubsByPage()
         {
-            return new List<ClubObject>()
+            return new List<DataAccessClub.Club>()
             {
-                new ClubObject()
+                new DataAccessClub.Club()
                 {
                     Name = "Курінь",
                 }
             };
         }
 
-        private Tuple<IEnumerable<ClubObject>, int> CreateTuple => new Tuple<IEnumerable<ClubObject>, int>(GetClubsByPage(), 100);
+        private Tuple<IEnumerable<DataAccessClub.Club>, int> CreateTuple => new Tuple<IEnumerable<DataAccessClub.Club>, int>(GetClubsByPage(), 100);
     }
 }
