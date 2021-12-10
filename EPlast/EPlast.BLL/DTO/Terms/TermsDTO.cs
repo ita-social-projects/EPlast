@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace EPlast.BLL.DTO.Terms
+{
+    public class TermsDTO
+    {
+        public int TermsId { get; set; }
+        public string TermsTitle { get; set; }
+        [AllowHtml]
+        public string TermsText { get; set; }
+        public DateTime DatePublication { get; set; }
+    }
+}

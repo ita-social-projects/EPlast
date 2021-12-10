@@ -960,7 +960,6 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
-
             _regionController.ControllerContext.HttpContext = mockHttpContext.Object;
 
             // Act
