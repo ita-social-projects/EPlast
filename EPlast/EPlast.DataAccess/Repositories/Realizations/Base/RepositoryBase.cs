@@ -104,13 +104,13 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetQuery(predicate, include).SingleOrDefaultAsync();
         }
 
-        public async Task<Tuple<IEnumerable<T>, int>> GetRange(Expression<Func<T, bool>> filter = null,
+        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
                                                        Expression<Func<T, object>> sorting = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null)
         {
-            return await this.GetRangQuery(filter, selector, sorting, pageNumber, pageSize);
+            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize);
         }
 
         private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
@@ -127,7 +127,7 @@ namespace EPlast.DataAccess.Repositories
             return query;
         }
 
-        private async Task<Tuple<IEnumerable<T>,int>> GetRangQuery(Expression<Func<T, bool>> filter = null,
+        private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
                                                        Expression<Func<T, object>> sorting = null,
                                                        int? pageNumber = null,
@@ -155,7 +155,6 @@ namespace EPlast.DataAccess.Repositories
                 query = query.Skip((int)(pageSize * (pageNumber - 1)))
                     .Take((int)pageSize);
             }
-
 
             return new Tuple<IEnumerable<T>, int>(query, TotalRecords);
         }

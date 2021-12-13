@@ -649,11 +649,11 @@ namespace EPlast.BLL.Services.Club
 
         private Expression<Func<DataAccessClub.Club, bool>> GetFilter(string clubName, bool isArchive)
         {
-            var clubNameExists = string.IsNullOrEmpty(clubName);
-            Expression<Func<DataAccessClub.Club, bool>> expr = (clubNameExists) switch
+            var clubNameEmty = string.IsNullOrEmpty(clubName);
+            Expression<Func<DataAccessClub.Club, bool>> expr = (clubNameEmty) switch
             {
-                (true) => x => x.IsActive == isArchive,
-                (false) => x => x.Name.Contains(clubName) && x.IsActive == isArchive
+                true => x => x.IsActive == isArchive,
+                false => x => x.Name.Contains(clubName) && x.IsActive == isArchive
             };
             return expr;
         }

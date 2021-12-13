@@ -40,16 +40,12 @@ namespace EPlast.BLL.Services.Redis
             try
             {
                 var jsonData = await _db.StringGetAsync(recordId);
-                if (!jsonData.HasValue)
-                {
-                    return default(T);
-                }
-                return JsonConvert.DeserializeObject<T>(jsonData);
+                return jsonData.HasValue ? JsonConvert.DeserializeObject<T>(jsonData) : default;
             }
             catch(Exception ex)
             {
                 Console.WriteLine($"Can not get records from redis, because {ex}");
-                return default(T);
+                return default;
             }
         }
 

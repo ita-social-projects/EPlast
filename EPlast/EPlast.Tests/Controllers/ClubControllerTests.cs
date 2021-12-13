@@ -1079,6 +1079,10 @@ namespace EPlast.Tests.Controllers
         {
             return "FileName";
         }
+        private int GetFakeClubNumber()
+        {
+            return 100;
+        }
 
         private List<ClubDTO> GetClubsBySearch()
         {
@@ -1102,7 +1106,7 @@ namespace EPlast.Tests.Controllers
             };
         }
 
-        private Tuple<IEnumerable<ClubObjectDTO>, int> CreateTuple => new Tuple<IEnumerable<ClubObjectDTO>, int>(GetClubsByPage(), 100);
+        private Tuple<IEnumerable<ClubObjectDTO>, int> CreateTuple => new Tuple<IEnumerable<ClubObjectDTO>, int>(GetClubsByPage(), GetFakeClubNumber());
 
         private IEnumerable<ClubForAdministrationDTO> GetFakeClubsForAdministration()
         {
