@@ -128,7 +128,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [TestCase]
-        public async Task UsersTableAsync_NullInput_ReturnsIEnumerableUserTableDTO()
+        public async Task GetAllRegionsByPageAndIsArchiveAsync_NullInput_ReturnsIEnumerableRegionObjectDTO()
         {
             // Arrange
             _repoWrapper
