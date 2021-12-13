@@ -616,7 +616,7 @@ namespace EPlast.BLL.Services.Club
             var filter = GetFilter(clubName, isArchive);
             var order = GetOrder();
             var selector = GetSelector();
-            var tuple = await _repoWrapper.Club.GetRange(filter, selector, order, page, pageSize);
+            var tuple = await _repoWrapper.Club.GetRangeAsync(filter, selector, order, page, pageSize);
             var clubs = tuple.Item1;
             var rows = tuple.Item2;
 
