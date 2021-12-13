@@ -8,7 +8,7 @@ namespace EPlast.DataAccess.Entities
     {
         public int ID { get; set; }
 
-        [Required(ErrorMessage = "Назва рішення не заповнена.")]
+        [Required(ErrorMessage = "Назва рішення не заповнена."), MaxLength(60, ErrorMessage = "Назва рішення не має перевищувати 60 символів")]
         public string Name { get; set; }
 
         [Required(ErrorMessage = "Назва рішення не заповнена.")]
@@ -20,7 +20,7 @@ namespace EPlast.DataAccess.Entities
         [Required(ErrorMessage = "Тематика рішення не заповнена.")]
         public DecesionTarget DecesionTarget { get; set; }
 
-        [Required(ErrorMessage = "Опис рішення не заповнено.")]
+        [Required(ErrorMessage = "Текст рішення не заповнено."), MaxLength(1000, ErrorMessage = "Текст рішення не має перевищувати 1000 символів")]
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Дата рішення не заповнена.")]
