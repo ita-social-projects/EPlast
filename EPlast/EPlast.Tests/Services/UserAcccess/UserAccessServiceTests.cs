@@ -84,7 +84,6 @@ namespace EPlast.Tests.Services.UserAccess
             //Assert
             Assert.IsNotEmpty(result);
             Assert.IsInstanceOf<Dictionary<string, bool>>(result);
-            _eventAccessService.Verify(v => v.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()), Times.Once());
         }
 
         [Test]
