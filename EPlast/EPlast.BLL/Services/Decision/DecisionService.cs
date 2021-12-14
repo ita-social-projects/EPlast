@@ -149,15 +149,19 @@ namespace EPlast.BLL.Services
                 .Map<IEnumerable<DecisionDTO>>(decisions)
                     .Select(decision => new DecisionWrapperDTO { Decision = decision });
         }
-
-        private async Task<DecisionTargetDTO> CreateDecisionTargetAsync(string DecisionTargetName)
+       
+        public async Task<DecisionTargetDTO> CreateDecisionTargetAsync(string decisionTargetName)
         {
-            DecisionTargetDTO decisionTargetDto = _mapper.Map<DecisionTargetDTO>(await _repoWrapper.DecesionTarget.GetFirstOrDefaultAsync(x => x.TargetName == DecisionTargetName));
+            if(decisionTargetName == "")
+            {
+                throw new ArgumentException("DecisionTargetName cant`t be empty");
+            }
+            DecisionTargetDTO decisionTargetDto = _mapper.Map<DecisionTargetDTO>(await _repoWrapper.DecesionTarget.GetFirstOrDefaultAsync(x => x.TargetName == decisionTargetName));
 
             if (decisionTargetDto == null)
             {
                 decisionTargetDto = new DecisionTargetDTO();
-                decisionTargetDto.TargetName = DecisionTargetName;
+                decisionTargetDto.TargetName = decisionTargetName;
             }
 
             return decisionTargetDto;

@@ -72,7 +72,12 @@ namespace EPlast.Tests.Services.Decision
             Assert.IsNotNull(decision);
             Assert.IsInstanceOf<DecisionWrapperDTO>(decision);
         }
-
+        [Test]
+        public void CreateDecisionTargetAsync_ThrowsArgumentException_Test()
+        {
+            //Arrange  //Act  //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _decisionService.CreateDecisionTargetAsync(""));
+        }
         [Test]
         public async Task GetDecisionTest_ReturnsObj()
         {

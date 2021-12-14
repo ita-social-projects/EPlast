@@ -90,5 +90,12 @@ namespace EPlast.BLL
         /// <param name="fileName">File name</param>
         /// <returns>File as base64</returns>
         Task<string> DownloadDecisionFileFromBlobAsync(string fileName);
+
+        /// <summary>
+        /// DecisionTargetDTO
+        /// </summary>
+        /// <param name="decisionTargetName">File name</param>
+        /// <returns>DecisionTargetDTO</returns>
+        Task<DecisionTargetDTO> CreateDecisionTargetAsync(string decisionTargetName);
     }
 }
