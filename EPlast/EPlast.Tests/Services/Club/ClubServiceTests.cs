@@ -372,6 +372,23 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task GetAllClubsByPageAndIsArchiveAsync_ReturnsTupleWithClubObjectDtoAndIntRows()
+        {
+            //Arrange
+            _repoWrapper
+              .Setup(x => x.Club.GetRangeAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), 
+              It.IsAny<Expression<Func<DataAccessClub.Club, DataAccessClub.Club>>>(), It.IsAny<Expression<Func<DataAccessClub.Club, Object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _clubService.GetAllClubsByPageAndIsArchiveAsync(1, 2, null, false);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<ClubObjectDTO>, int>>(result);
+        }
+
+        [Test]
         public async Task GetAllAsync_ReturnsClubsByName()
         {
             // Arrange
@@ -1618,5 +1635,18 @@ namespace EPlast.Tests.Services.Club
                 Description = "Lviv region"
             };
         }
+
+        private List<DataAccessClub.Club> GetClubsByPage()
+        {
+            return new List<DataAccessClub.Club>()
+            {
+                new DataAccessClub.Club()
+                {
+                    Name = "Курінь",
+                }
+            };
+        }
+
+        private Tuple<IEnumerable<DataAccessClub.Club>, int> CreateTuple => new Tuple<IEnumerable<DataAccessClub.Club>, int>(GetClubsByPage(), 100);
     }
 }
