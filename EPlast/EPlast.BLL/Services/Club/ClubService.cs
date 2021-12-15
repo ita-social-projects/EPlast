@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using System.Linq.Expressions;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -609,6 +610,19 @@ namespace EPlast.BLL.Services.Club
             await _repoWrapper.SaveAsync();
         }
 
+
+        public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive)
+        {
+            var filter = GetFilter(clubName, isArchive);
+            var order = GetOrder();
+            var selector = GetSelector();
+            var tuple = await _repoWrapper.Club.GetRangeAsync(filter, selector, order, page, pageSize);
+            var clubs = tuple.Item1;
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubObjectDTO>>(clubs), rows);
+        }
+
         public async Task<ClubAdministrationDTO> GetClubHeadAsync(int clubId)
         {
             var club = await GetByIdAsync(clubId);
@@ -631,6 +645,31 @@ namespace EPlast.BLL.Services.Club
             return club.ClubAdministration?
                 .Where(a => a.Status)
                 .ToList();
+        }
+
+        private Expression<Func<DataAccessClub.Club, bool>> GetFilter(string clubName, bool isArchive)
+        {
+            var clubNameEmty = string.IsNullOrEmpty(clubName);
+            Expression<Func<DataAccessClub.Club, bool>> expr = (clubNameEmty) switch
+            {
+                true => x => x.IsActive == isArchive,
+                false => x => x.Name.Contains(clubName) && x.IsActive == isArchive
+            };
+            return expr;
+        }
+
+        private Expression<Func<DataAccessClub.Club, object>> GetOrder()
+        {
+
+            Expression<Func<DataAccessClub.Club, object>> expr = x => x.ID;
+            return expr;
+        }
+
+        private Expression<Func<DataAccessClub.Club, DataAccessClub.Club>> GetSelector()
+        {
+
+            Expression<Func<DataAccessClub.Club, DataAccessClub.Club>> expr = x => new DataAccessClub.Club { ID = x.ID, Logo = x.Logo, Name = x.Name };
+            return expr;
         }
     }
 }
