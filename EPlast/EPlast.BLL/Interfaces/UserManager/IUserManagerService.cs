@@ -69,7 +69,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// Checks whether target user is in specified role or not
         /// </summary>
         /// <param name="user">The user whose role you want to check</param>
-        /// <param name="role">The roles to check</param>
+        /// <param name="role">The role to check</param>
         /// <returns>Is this user in specified role</returns>
         Task<bool> IsUserInRoleAsync(User user, string role);
     }
