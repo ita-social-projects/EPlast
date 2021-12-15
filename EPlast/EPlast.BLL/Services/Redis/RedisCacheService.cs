@@ -11,39 +11,54 @@ namespace EPlast.BLL.Services.Redis
     public class RedisCacheService : ICacheService
     {
         private readonly IDatabase _db;
-        private readonly IServer _server;
+        private readonly IConfiguration _configuration;
+        private readonly IConnectionMultiplexer _connectionMultiplexer;
 
-        public RedisCacheService(IConnectionMultiplexer connectionMultiplexer, IConfiguration Configuration)
+        public RedisCacheService(IConnectionMultiplexer connectionMultiplexer, IConfiguration configuration)
         {
             _db = connectionMultiplexer.GetDatabase();
-            _server = connectionMultiplexer.GetServer(Configuration.GetConnectionString("Redis"));
+            _configuration = configuration;
+            _connectionMultiplexer = connectionMultiplexer;
         }
 
         public async Task<bool> CheckIfKeyExistsAsync(string recordId)
         {
-            return await _db.KeyExistsAsync(recordId);
+            try
+            {
+                return await _db.KeyExistsAsync(recordId);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Can not get keys from redis, because {ex}");
+                return false;
+            }
+
         }
 
         public async Task<T> GetRecordByKeyAsync<T>(string recordId)
         {
-            var jsonData = await _db.StringGetAsync(recordId);
-            if (!jsonData.HasValue)
+            try
             {
-                return default(T);
+                var jsonData = await _db.StringGetAsync(recordId);
+                return jsonData.HasValue ? JsonConvert.DeserializeObject<T>(jsonData) : default;
             }
-
-            return JsonConvert.DeserializeObject<T>(jsonData);
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Can not get records from redis, because {ex}");
+                return default;
+            }
         }
 
         public async Task RemoveRecordAsync(string recordId)
         {
-           await _db.KeyDeleteAsync(recordId);
+            await _db.KeyDeleteAsync(recordId);
         }
 
         public async Task RemoveRecordsByPatternAsync(string pattern)
         {
-            var keys = _server.Keys(pattern: pattern + "*", pageSize: 1000);
-            foreach(var key in keys)
+            var server = _connectionMultiplexer.GetServer(_configuration.GetConnectionString("Redis"));
+            var keys = server.Keys(pattern: pattern + "*", pageSize: 1000);
+            foreach (var key in keys)
             {
                 await _db.KeyDeleteAsync(key);
             }
@@ -54,8 +69,14 @@ namespace EPlast.BLL.Services.Redis
             var jsonData = JsonConvert.SerializeObject(data);
 
             absoluteExpireTime = absoluteExpireTime ?? TimeSpan.FromHours(1);
-
-            await _db.StringSetAsync(recordId, jsonData, absoluteExpireTime);
+            try
+            {
+                await _db.StringSetAsync(recordId, jsonData, absoluteExpireTime);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Can not set data, because {ex}");
+            }
         }
     }
 }

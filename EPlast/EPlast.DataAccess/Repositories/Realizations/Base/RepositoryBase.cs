@@ -104,6 +104,15 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetQuery(predicate, include).SingleOrDefaultAsync();
         }
 
+        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
+                                                       Expression<Func<T, T>> selector = null,
+                                                       Expression<Func<T, object>> sorting = null,
+                                                       int? pageNumber = null,
+                                                       int? pageSize = null)
+        {
+            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize);
+        }
+
         private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
@@ -116,6 +125,38 @@ namespace EPlast.DataAccess.Repositories
                 query = query.Where(predicate);
             }
             return query;
+        }
+
+        private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
+                                                       Expression<Func<T, T>> selector = null,
+                                                       Expression<Func<T, object>> sorting = null,
+                                                       int? pageNumber = null,
+                                                       int? pageSize = null)
+        {
+            var query = this.EPlastDBContext.Set<T>().AsNoTracking();
+
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
+            if(selector != null)
+            {
+                query = query.Select(selector);
+            }
+
+            var TotalRecords = await query.CountAsync();
+
+            if(sorting != null)
+            {
+                query = query.OrderBy(sorting);
+            }
+            if(pageNumber != null && pageSize != null)
+            {
+                query = query.Skip((int)(pageSize * (pageNumber - 1)))
+                    .Take((int)pageSize);
+            }
+
+            return new Tuple<IEnumerable<T>, int>(query, TotalRecords);
         }
     }
 }
