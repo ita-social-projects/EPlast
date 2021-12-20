@@ -647,7 +647,47 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<BadRequestResult>(res);
         }
 
-   
+        [Test]
+        public async Task GetUserAdministrationsForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _governingBodiesService
+                .Setup(g => g.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .ReturnsAsync(new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>(), It.IsAny<int>()));
+            _mapper
+                .Setup(m =>
+                    m.Map<IEnumerable<GoverningBodyAdministrationDTO>, IEnumerable<GoverningBodyTableViewModel>>(
+                        It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>()));
+
+            //Act
+            var result = await _governingBodiesController.GetUserAdministrationsForTable(It.IsAny<string>(),
+                It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            _governingBodiesService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserAdministrationsForTable_ReturnsBadRequestResult()
+        {
+            //Arrange
+            _governingBodiesService
+                .Setup(g => g.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
+            
+            //Act
+            var result = await _governingBodiesController.GetUserAdministrationsForTable(It.IsAny<string>(),
+                It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            _governingBodiesService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
 
         private const int TestId = 3;
 
