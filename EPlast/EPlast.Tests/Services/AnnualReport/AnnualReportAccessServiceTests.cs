@@ -50,6 +50,30 @@ namespace EPlast.Tests.Services
         }
 
         [Test]
+        public async Task CanEditCityUndefinedReportAsync_ReturnsBool()
+        {
+            //Arrange
+            _repositoryWrapper
+                .Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+                .ReturnsAsync((AnnualReport) null);
+            _repositoryWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration());
+
+            //Act
+            var result =
+                await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), false, ReportType.City,
+                    It.IsAny<int>());
+
+            //Assert
+            Assert.IsInstanceOf<bool>(result);
+        }
+
+        [Test]
         public async Task CanEditClubReportAsync_ReturnsBool()
         {
             //Arrange
