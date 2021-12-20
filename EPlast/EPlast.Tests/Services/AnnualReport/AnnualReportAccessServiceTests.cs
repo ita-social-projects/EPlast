@@ -33,7 +33,12 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<AnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .ReturnsAsync(new AnnualReport {ID = 1});
+                .ReturnsAsync(new AnnualReport { CityId = 1 });
+            _repositoryWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration());
 
             //Act
             var result =
