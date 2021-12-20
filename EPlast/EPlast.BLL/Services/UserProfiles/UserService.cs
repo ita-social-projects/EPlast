@@ -264,7 +264,7 @@ namespace EPlast.BLL.Services.UserProfiles
         private async Task<string> UploadPhotoAsyncFromBase64(string userId, string imageBase64)
         {
             var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
-            if (!string.IsNullOrWhiteSpace(imageBase64) && imageBase64.Length > 0)
+            if (!string.IsNullOrWhiteSpace(imageBase64))
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
