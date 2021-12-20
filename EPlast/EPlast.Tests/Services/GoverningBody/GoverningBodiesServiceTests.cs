@@ -401,6 +401,79 @@ namespace EPlast.Tests.Services.GoverningBody
             Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDTO>>(result);
         }
 
+        [Test]
+        public async Task GetAdministrationForTableAsync_ReturnsDataForTable()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(g => g.GoverningBodyAdministration.GetAllAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new List<GoverningBodyAdministration>());
+            _mapper
+                .Setup(m =>
+                    m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                        It.IsAny<IEnumerable<GoverningBodyAdministration>>()))
+                .Returns(new List<GoverningBodyAdministrationDTO>());
+            //Act
+            var result = await _governingBodiesService.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>>(result);
+        }
+
+        [Test]
+        public async Task ContinueGoverningBodyAdminsDueToDateAsync_UpdatesDates()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(g => g.GoverningBodyAdministration.GetAllAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(GetGoverningBodyAdministrationsForUpdate());
+
+            //Act
+            await _governingBodiesService.ContinueGoverningBodyAdminsDueToDateAsync();
+
+            //Assert
+            _repoWrapper.Verify();
+        }
+
+        private static IEnumerable<GoverningBodyAdministration> GetGoverningBodyAdministrationsForUpdate()
+        {
+            return new List<GoverningBodyAdministration>
+            {
+                new GoverningBodyAdministration
+                {
+                    Id = 1,
+                    EndDate = new DateTime(2001, 09, 11, 15, 46, 01),
+                    Status = true
+                },
+                new GoverningBodyAdministration
+                {
+                    Id = 2,
+                    EndDate = new DateTime(2001, 09, 11, 15, 46, 01),
+                    Status = true
+                },
+                new GoverningBodyAdministration
+                {
+                    Id = 3,
+                    EndDate = new DateTime(2001, 09, 11, 15, 46, 01),
+                    Status = false
+                },
+                new GoverningBodyAdministration
+                {
+                    Id = 4,
+                    EndDate = null,
+                    Status = true
+                }
+            }.Where(s=>s.Status);
+        }
+
         private IEnumerable<GoverningBodyAdministrationDTO> GetTestGoverningBodyAdministration()
         {
             return new List<GoverningBodyAdministrationDTO>
