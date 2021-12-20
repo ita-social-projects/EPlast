@@ -21,10 +21,15 @@ namespace EPlast.BLL.Services
             switch (reportType)
             {
                 case ReportType.City:
-                    var annualReport =
-                        await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(x =>
-                            x.CreatorId == user.Id && x.ID == reportId);
-                    return annualReport != null;
+                    var cityAnnualReport =
+                        await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
+                    var cityAnnualReportCityAdministration = cityAnnualReport != null
+                        ? await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(x =>
+                            x.CityId == cityAnnualReport.CityId && x.UserId == user.Id &&
+                            x.AdminType.AdminTypeName != null &&
+                            Roles.AdminAndCityHeadAndCityHeadDeputy.Contains(x.AdminType.AdminTypeName))
+                        : null;
+                    return cityAnnualReportCityAdministration != null;
                 case ReportType.Club:
                     var clubAnnualReport =
                         await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
@@ -40,7 +45,7 @@ namespace EPlast.BLL.Services
                         await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
                     var regionAnnualReportRegionAdministration = regionAnnualReport != null
                         ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
-                            x.RegionId == regionAnnualReport.ID && x.UserId == user.Id &&
+                            x.RegionId == regionAnnualReport.RegionId && x.UserId == user.Id &&
                             x.AdminType.AdminTypeName != null &&
                             Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
                         : null;
