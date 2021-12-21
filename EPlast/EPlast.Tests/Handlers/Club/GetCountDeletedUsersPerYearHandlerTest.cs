@@ -39,7 +39,7 @@ namespace EPlast.Tests.Handlers.Club
             // Assert
             Assert.NotNull(responce);
             Assert.IsInstanceOf<int>(responce);
-            Assert.AreEqual(responce, 0);
+            Assert.AreEqual(0 , responce);
         }
     }
 }

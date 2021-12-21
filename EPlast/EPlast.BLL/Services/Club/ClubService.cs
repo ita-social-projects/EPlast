@@ -48,22 +48,6 @@ namespace EPlast.BLL.Services.Club
             _userManager = userManager;
             _uniqueId = uniqueId;
         }
-
-
-        //public async Task ArchiveAsync(int clubId)
-        //{
-        //    var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && c.IsActive);
-        //    if (club.ClubMembers is null && club.ClubAdministration is null)
-        //    {
-        //        club.IsActive = false;
-        //        _repoWrapper.Club.Update(club);
-        //        await _repoWrapper.SaveAsync();
-        //    }
-        //    else
-        //    {
-        //        throw new InvalidOperationException();
-        //    }
-        //}
  
         /// <inheritdoc />
         public async Task<ClubDTO> GetByIdAsync(int clubId)
