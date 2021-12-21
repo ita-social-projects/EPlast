@@ -78,26 +78,6 @@ namespace EPlast.XUnitTest.Services.ClubTests
         }
 
         [Fact]
-        public async Task GetAllTest()
-        {
-            ClubService ClubService = CreateClubService();
-
-            var result = await ClubService.GetAllAsync();
-
-            Assert.NotNull(result);
-        }
-
-        [Fact]
-        public async Task GetAllDtoTest()
-        {
-            ClubService ClubService = CreateClubService();
-
-            var result = await ClubService.GetAllClubsAsync(null);
-
-            Assert.NotNull(result);
-        }
-
-        [Fact]
         public async Task GetByIdTest()
         {
             ClubService ClubService = CreateClubService();
