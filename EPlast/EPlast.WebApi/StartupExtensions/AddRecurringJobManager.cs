@@ -63,7 +63,7 @@ namespace EPlast.WebApi.StartupExtensions
                                             () => serviceProvider.GetService<INewPlastMemberEmailGreetingService>()
                                                                  .NotifyNewPlastMembersAndCityAdminsAsync(),
                                             Cron.Daily(), TimeZoneInfo.Local);
-            recurringJobManager.AddOrUpdate("Delete users without confirmed email every hour",
+            recurringJobManager.AddOrUpdate("Delete unconfirmed users every hour",
                                             () => serviceProvider.GetService<IAuthService>()
                                                                  .DeleteUserIfEmailNotConfirmedAsync(),
                                             "0 */1 * * *", TimeZoneInfo.Local);
