@@ -1,0 +1,107 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+- group: EPlast
+  # Container registry service connection established during pipeline creation
+- name: dockerRegistryServiceConnection
+  value: '5aab2e73-307d-46b2-8421-8ac50de15018'
+- name: imageRepository
+  value: 'eplastweb'
+- name: containerRegistry
+  value: 'eplast.azurecr.io'
+- name: dockerfilePath
+  value: '**/Dockerfile'
+- name: tag
+  value: '$(Build.BuildId)'
+- name: imagePullSecret
+  value: 'eplast1348122b-auth'
+
+  # Agent VM image name
+- name: vmImageName
+  value: 'ubuntu-latest'
+  
+  # Name of the new namespace being created to deploy the PR changes.
+- name: k8sNamespaceForPR
+  value: 'review-app-$(System.PullRequest.PullRequestId)'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - bash: |
+        # Write your commands here
+        cat > src/config.ts << EOF
+        const BASE_URL = "https://eplast.westeurope.cloudapp.azure.com/api/";
+        export default BASE_URL;
+        EOF
+        cat src/config.ts
+      displayName: 'Update API URL'
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+          
+    - upload: manifests
+      artifact: manifests
+
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'EPlast.eplast'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/manifests
+              targetFiles: '**/*.yml'
+              keepToken: true
+              tokenPrefix: ___
+              tokenSuffix: ___             
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+                $(Pipeline.Workspace)/manifests/ingress-prod.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
