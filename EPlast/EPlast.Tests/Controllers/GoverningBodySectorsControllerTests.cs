@@ -467,6 +467,51 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        [Test]
+        public async Task GetUserAdministrationsForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _sectorService
+                .Setup(s => s.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .ReturnsAsync(
+                    new Tuple<IEnumerable<SectorAdministrationDTO>, int>(
+                        It.IsAny<IEnumerable<SectorAdministrationDTO>>(), It.IsAny<int>()));
+            _mapper
+                .Setup(m =>
+                    m.Map<IEnumerable<SectorAdministrationDTO>, IEnumerable<SectorTableViewModel>>(
+                        It.IsAny<IEnumerable<SectorAdministrationDTO>>()));
+
+            //Act
+            var result = await _controller.GetUserAdministrationsForTable(It.IsAny<string>(),
+                It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            _sectorService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserAdministrationsForTable_ReturnsBadRequestResult()
+        {
+            //Arrange
+            _sectorService
+                .Setup(s => s.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .ThrowsAsync(new Exception());
+
+            //Act
+            var result = await _controller.GetUserAdministrationsForTable(It.IsAny<string>(),
+                It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            _sectorService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
         private SectorDTO CreateSectorDto()
         {
             return new SectorDTO()

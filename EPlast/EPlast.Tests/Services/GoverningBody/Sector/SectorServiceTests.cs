@@ -429,6 +429,80 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             Assert.IsInstanceOf<IEnumerable<SectorAdministrationDTO>>(result);
         }
 
+        [Test]
+        public async Task GetAdministrationForTableAsync_ReturnsDataForTable()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(g => g.GoverningBodySectorAdministration.GetAllAsync(
+                    It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>,
+                        IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration>());
+            _mapper
+                .Setup(m =>
+                    m.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(
+                        It.IsAny<IEnumerable<SectorAdministration>>()))
+                .Returns(new List<SectorAdministrationDTO>());
+
+            //Act
+            var result = await _service.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(),
+                It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<SectorAdministrationDTO>, int>>(result);
+        }
+
+        [Test]
+        public async Task ContinueSectorAdminsDueToDateAsync_UpdatesDates()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(g => g.GoverningBodySectorAdministration.GetAllAsync(
+                    It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>,
+                        IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(GetSectorAdministrationsForUpdate());
+
+            //Act
+            await _service.ContinueSectorAdminsDueToDateAsync();
+
+            //Assert
+            _repoWrapper.Verify();
+        }
+
+        private static IEnumerable<SectorAdministration> GetSectorAdministrationsForUpdate()
+        {
+            return new List<SectorAdministration>
+            {
+                new SectorAdministration
+                {
+                    Id = 1,
+                    EndDate = new DateTime(2001, 09, 11, 15, 46, 01),
+                    Status = true
+                },
+                new SectorAdministration
+                {
+                    Id = 2,
+                    EndDate = new DateTime(2001, 09, 11, 15, 46, 01),
+                    Status = true
+                },
+                new SectorAdministration
+                {
+                    Id = 3,
+                    EndDate = new DateTime(2001, 09, 11, 15, 46, 01),
+                    Status = false
+                },
+                new SectorAdministration
+                {
+                    Id = 4,
+                    EndDate = null,
+                    Status = true
+                }
+            }.Where(s=>s.Status);
+        }
+
         private SectorDTO CreateSectorDTO()
         {
             return new SectorDTO()
