@@ -172,14 +172,14 @@
     <value>Пароль має містити цифри та літери, мінімальна довжина повинна складати 8</value>
   </data>
   <data name="Register-RegisteredUser" xml:space="preserve">
-    <value>Користувач з введеною електронною поштою вже зареєстрований в системі, можливо він не підтвердив свою реєстрацію</value>
+    <value>Користувач з введеною електронною поштою не підтвердив свою реєстрацію. При виникненні труднощів, повторна реєстрація буде доступна через 12 годин.</value>
   </data>
   <data name="Reset-NotRegisteredUser" xml:space="preserve">
     <value>Користувача із заданою електронною поштою немає в системі або він не підтвердив свою реєстрацію</value>
   </data>
   <data name="Reset-PasswordProblems" xml:space="preserve">
     <value>Проблеми зі скиданням пароля або введений новий пароль повинен вміщати 8 символів, включаючи літери та цифри</value>
-  </data>
+  </data>   
   <data name="ResetPasswordConfirmation" xml:space="preserve">
     <value>Ваш пароль успішно скинутий.</value>
   </data>
