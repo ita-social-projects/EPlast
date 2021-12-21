@@ -237,5 +237,41 @@ namespace EPlast.BLL.Services.GoverningBodies
             admins.Where(x => x.GoverningBody != null).ForAll(x => x.GoverningBody.GoverningBodyAdministration = null);
             return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins).Reverse();
         }
+        
+        /// <inheritdoc />
+        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetAdministrationForTableAsync(
+            string userId, bool isActive, int pageNumber, int pageSize)
+        {
+            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(
+                predicate: g => g.UserId == userId && g.Status == isActive,
+                include: source => source
+                    .OrderBy(o => o.StartDate)
+                    .Include(u => u.User)
+                    .Include(a => a.AdminType)
+                    .Include(b => b.GoverningBody));
+
+            var rowCount = admins.Count();
+
+            admins = admins.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+
+            return new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>(
+                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                    admins), rowCount);
+        }
+
+        /// <inheritdoc />
+        public async Task ContinueGoverningBodyAdminsDueToDateAsync()
+        {
+            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(x => x.Status);
+
+            foreach (var admin in admins)
+            {
+                if (admin.EndDate == null || DateTime.Compare((DateTime) admin.EndDate, DateTime.Now) >= 0) continue;
+                admin.EndDate = admin.EndDate.Value.AddYears(1);
+                _repoWrapper.GoverningBodyAdministration.Update(admin);
+            }
+
+            await _repoWrapper.SaveAsync();
+        }
     }
 }
