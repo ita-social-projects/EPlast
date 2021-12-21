@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -70,6 +71,11 @@ namespace EPlast.WebApi.StartupExtensions
             recurringJobManager.AddOrUpdate("Changes status of GoverningBody admins when the date expires",
                                             () => serviceProvider.GetService<IGoverningBodiesService>()
                                                                 .ContinueGoverningBodyAdminsDueToDateAsync(),
+                                            "59 23 * * *", TimeZoneInfo.Local);
+
+            recurringJobManager.AddOrUpdate("Changes status of Sector admins when the date expires",
+                                            () => serviceProvider.GetService<ISectorService>()
+                                                                .ContinueSectorAdminsDueToDateAsync(),
                                             "59 23 * * *", TimeZoneInfo.Local);
         }
 
