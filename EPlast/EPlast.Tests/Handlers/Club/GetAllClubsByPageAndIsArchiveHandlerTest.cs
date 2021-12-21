@@ -14,7 +14,7 @@ using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Handlers.Club
 {
-    public class GetNotActiveClubHandlerTest
+    public class GetAllClubsByPageAndIsArchiveHandlerTest
     {
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
