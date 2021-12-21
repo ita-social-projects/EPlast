@@ -32,7 +32,7 @@ namespace EPlast.Tests.Handlers.Club
         }
 
         [Test]
-        public async Task GetNotActiveClubHandlerTest_TupleWithClubObjectDTOListAndInt()
+        public async Task GetNotActiveClubHandlerTest_TupleWithIEnumerableClubObjectDTOAndInt()
         {
             //Arrange
             _repoWrapper
