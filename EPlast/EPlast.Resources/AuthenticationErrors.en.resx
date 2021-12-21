@@ -179,7 +179,7 @@
   </data>
   <data name="Reset-PasswordProblems" xml:space="preserve">
     <value>Проблеми зі скиданням пароля або введений новий пароль повинен вміщати 8 символів, включаючи літери та цифри</value>
-  </data>   
+  </data>
   <data name="ResetPasswordConfirmation" xml:space="preserve">
     <value>Ваш пароль успішно скинутий.</value>
   </data>
