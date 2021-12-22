@@ -171,7 +171,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("GetAllRegionAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,

@@ -57,6 +57,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
         public async Task<IActionResult> Get()
         {
             return StatusCode(StatusCodes.Status200OK, new { annualReports = await _annualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
@@ -71,7 +72,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
-        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
+        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)] 
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -101,6 +102,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of AnnualReportTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("Cities")]
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Get(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -421,6 +423,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
 
         [HttpGet("~/api/Club/ClubAnnualReports")]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> GetAllClubAnnualReports(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -446,6 +449,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
 
         [HttpGet("~/api/Club/GetAllClubAnnualReports")]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> GetAllClubAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK, new { clubAnnualReports = await _clubAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
@@ -461,6 +465,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The club annual report does not exist</response>
 
         [HttpGet("~/api/Club/GetClubAnnualReportById/{id:int}")]
+        [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> GetClubAnnualReportById(int id)
         {
             try

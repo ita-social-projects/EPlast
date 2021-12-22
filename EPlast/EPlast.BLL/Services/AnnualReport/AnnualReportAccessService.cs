@@ -110,7 +110,7 @@ namespace EPlast.BLL.Services
                         await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
                     var regionAnnualReportRegionAdministration = regionAnnualReport != null
                         ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
-                            x.RegionId == regionAnnualReport.ID &&
+                            x.RegionId == regionAnnualReport.RegionId &&
                             x.UserId == user.Id &&
                             x.AdminType.AdminTypeName != null &&
                             Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
