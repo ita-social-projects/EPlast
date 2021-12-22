@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using AutoMapper;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
@@ -238,6 +241,38 @@ namespace EPlast.WebApi.Controllers
             var userAdmins = await _sectorService.GetPreviousAdministrationsOfUserAsync(UserId);
 
             return Ok(userAdmins);
+        }
+
+        /// <summary>
+        /// Get UserAdministrations for table
+        /// </summary>
+        /// <param name="userId">The Id of target user</param>
+        /// <param name="isActive">Active status option</param>
+        /// <param name="pageNumber">Page number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns>UserAdministrations object</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Bad request</response>
+        [HttpGet("GetUserAdminsForTable")]
+        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive,
+            [Required] int pageNumber, [Required] int pageSize)
+        {
+            try
+            {
+                var (item1, item2) =
+                    await _sectorService.GetAdministrationForTableAsync(userId, isActive, pageNumber, pageSize);
+
+                return Ok(new
+                {
+                    admins = _mapper
+                        .Map<IEnumerable<SectorAdministrationDTO>, IEnumerable<SectorTableViewModel>>(item1),
+                    rowCount = item2
+                });
+            }
+            catch
+            {
+                return BadRequest("Error getting UserAdministration");
+            }
         }
     }
 }
