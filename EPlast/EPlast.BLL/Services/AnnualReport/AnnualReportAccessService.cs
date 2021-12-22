@@ -95,6 +95,7 @@ namespace EPlast.BLL.Services
                     : null;
             return certainRegionAdministration;
         }
+
         private async Task<ClubAnnualReport> GetCertainClubAnnualReport(int? reportId)
         {
             var certainClubAnnualReport =
