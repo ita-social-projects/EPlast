@@ -2,6 +2,7 @@
   "Admin": {
     "IsSuperAdmin": true,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": true,
     "CanViewClubReportsTable": true,
     "CanViewRegionReportsTable": true,
@@ -16,6 +17,7 @@
   "Голова Керівного Органу": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": true,
     "CanViewClubReportsTable": true,
     "CanViewRegionReportsTable": true,
@@ -30,6 +32,7 @@
   "Голова Округи": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -44,6 +47,7 @@
   "Заступник Голови Округи": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -58,6 +62,7 @@
   "Голова Станиці": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -72,6 +77,7 @@
   "Заступник Голови Станиці": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -86,6 +92,7 @@
   "Голова Куреня": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -100,6 +107,7 @@
   "Заступник Голови Куреня": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
+    "CanViewReportsPage": true,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -114,6 +122,7 @@
   "Зареєстрований користувач": {
     "IsSuperAdmin": false,
     "IsAdmin": false,
+    "CanViewReportsPage": false,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -128,6 +137,7 @@
   "Прихильник": {
     "IsSuperAdmin": false,
     "IsAdmin": false,
+    "CanViewReportsPage": false,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
@@ -142,6 +152,7 @@
   "Дійсний член організації": {
     "IsSuperAdmin": false,
     "IsAdmin": false,
+    "CanViewReportsPage": false,
     "CanViewCityReportsTable": false,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": false,
