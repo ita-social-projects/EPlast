@@ -32,17 +32,8 @@ namespace EPlast.BLL.Services
                             Roles.AdminAndCityHeadAndCityHeadDeputy.Contains(x.AdminType.AdminTypeName))
                         : null;
 
-                    var cityUnderRegion = cityAnnualReport != null
-                        ? await _repositoryWrapper.RegionFollowers.GetFirstOrDefaultAsync(x => x.ID == cityAnnualReport.CityId)
-                        : null;
-                    var regionOverCityAnnualReportRegionAdministration =
-                        cityUnderRegion != null
-                            ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
-                                x.RegionId == cityUnderRegion.RegionId &&
-                                x.UserId == user.Id &&
-                                x.AdminType.AdminTypeName != null &&
-                                Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
-                            : null;
+                    var regionOverCityAnnualReportRegionAdministration = await GetRegionOverCertainCityAdministration(cityAnnualReport, user);
+
                     return cityAnnualReportCityAdministration != null || regionOverCityAnnualReportRegionAdministration != null;
                 case ReportType.Club:
                     var clubAnnualReport =
@@ -60,7 +51,8 @@ namespace EPlast.BLL.Services
                         await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(x => x.ID == reportId);
                     var regionAnnualReportRegionAdministration = regionAnnualReport != null
                         ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
-                            x.RegionId == regionAnnualReport.RegionId && x.UserId == user.Id &&
+                            x.RegionId == regionAnnualReport.RegionId &&
+                            x.UserId == user.Id &&
                             x.AdminType.AdminTypeName != null &&
                             Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
                         : null;
@@ -68,6 +60,22 @@ namespace EPlast.BLL.Services
                 default:
                     return defaultStatus;
             }
+        }
+
+        private async Task<RegionAdministration> GetRegionOverCertainCityAdministration(AnnualReport cityAnnualReport, User user)
+        {
+            var cityUnderRegion = cityAnnualReport != null
+                ? await _repositoryWrapper.RegionFollowers.GetFirstOrDefaultAsync(x => x.ID == cityAnnualReport.CityId)
+                : null;
+            var regionOverCityAnnualReportRegionAdministration =
+                cityUnderRegion != null
+                    ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
+                        x.RegionId == cityUnderRegion.RegionId &&
+                        x.UserId == user.Id &&
+                        x.AdminType.AdminTypeName != null &&
+                        Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
+                    : null;
+            return regionOverCityAnnualReportRegionAdministration;
         }
 
         public async Task<bool> CanEditReportAsync(User user, bool defaultStatus, ReportType? reportType, int? reportId)
