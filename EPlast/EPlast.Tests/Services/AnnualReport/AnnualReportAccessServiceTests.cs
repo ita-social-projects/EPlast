@@ -187,7 +187,6 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf<bool>(result);
         }
 
-
         [Test]
         public async Task CanViewUndefinedTypeReportDetailsAsync_ReturnsBool()
         {
@@ -206,7 +205,6 @@ namespace EPlast.Tests.Services
             Assert.AreEqual(false, result);
         }
 
-
         [Test]
         public async Task CanViewUndefinedTypeUndefinedIdReportDetailsAsync_ReturnsBool()
         {
@@ -224,9 +222,6 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.AreEqual(false, result);
         }
-
-        //0000000000000000000000000000000000000000000000000000000000000000000
-
 
         [Test]
         public async Task CanEditCityReportAsync_ReturnsBool()
@@ -367,7 +362,6 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf<bool>(result);
         }
 
-
         [Test]
         public async Task CanEditUndefinedTypeReportAsync_ReturnsBool()
         {
@@ -385,7 +379,6 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.AreEqual(false, result);
         }
-
 
         [Test]
         public async Task CanEditUndefinedTypeUndefinedIdReportAsync_ReturnsBool()
