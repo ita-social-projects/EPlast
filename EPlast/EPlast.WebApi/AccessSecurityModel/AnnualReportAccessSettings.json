@@ -10,7 +10,7 @@
     "CanSubmitClubReport": true,
     "CanSubmitRegionReport": true,
     "CanEditReport": true,
-    "CanChangeStatus": true,
+    "CanChangeReportStatus": true,
     "CanDeleteReport": true
   },
   "Голова Керівного Органу": {
@@ -24,7 +24,7 @@
     "CanSubmitClubReport": true,
     "CanSubmitRegionReport": true,
     "CanEditReport": true,
-    "CanChangeStatus": true,
+    "CanChangeReportStatus": true,
     "CanDeleteReport": true
   },
   "Голова Округи": {
@@ -38,7 +38,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": true,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Заступник Голови Округи": {
@@ -52,7 +52,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": true,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Голова Станиці": {
@@ -66,7 +66,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Заступник Голови Станиці": {
@@ -80,7 +80,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Голова Куреня": {
@@ -94,7 +94,7 @@
     "CanSubmitClubReport": true,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Заступник Голови Куреня": {
@@ -108,7 +108,7 @@
     "CanSubmitClubReport": true,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Зареєстрований користувач": {
@@ -122,7 +122,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Прихильник": {
@@ -136,7 +136,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
   "Дійсний член організації": {
@@ -150,7 +150,7 @@
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": false,
     "CanEditReport": false,
-    "CanChangeStatus": false,
+    "CanChangeReportStatus": false,
     "CanDeleteReport": false
   }
 }
