@@ -260,7 +260,18 @@ namespace EPlast.Tests.Services.EducatorStaff
             Assert.NotNull(result);
             Assert.AreEqual(false, result);
         }
+        [Test]
+        public void UpdateKadra_RegisternumberExists_ThrowsArgumentException_Test()
+        {
+            // Arrange
+            _repositoryWrapper.
+                Setup(r => r.KVs.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+                It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>())).
+                ReturnsAsync(new EducatorsStaff());
 
+            //Act  //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _educatorsStaffService.UpdateKadra(new EducatorsStaffDTO() { KadraVykhovnykivTypeId = It.IsAny<int>(), NumberInRegister = It.IsAny<int>() }));
+        }
         [Test]
         public async Task StaffWithRegisternumberExistsEdit_ReturnsTrue()
         {
@@ -293,6 +304,22 @@ namespace EPlast.Tests.Services.EducatorStaff
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public void CreateKadra_UserHasSuchStaff_ThrowsArgumentException_Test()
+        {
+            // Arrange
+            _userManager
+               .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+               .ReturnsAsync(new List<string> { Roles.Admin });
+            _repositoryWrapper.
+                Setup(r => r.KVs.GetAllAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+                It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>())).
+                ReturnsAsync(GetTestEducatorsStaff());
+
+            //Act  //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _educatorsStaffService.CreateKadra(new EducatorsStaffDTO() { UserId = It.IsAny<string>(), KadraVykhovnykivTypeId = It.IsAny<int>() }));
         }
 
         [Test]
