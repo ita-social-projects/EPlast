@@ -38,6 +38,14 @@ namespace EPlast.BLL.Services.EducatorsStaff
             {
                 throw new ArgumentException("Can't add with the restricted roles");
             }
+
+            var userExists = await UserHasSuchStaffEdit(kadrasDTO.UserId, kadrasDTO.KadraVykhovnykivTypeId);
+
+            if (userExists)
+            {
+                throw new ArgumentException("User has such staff");
+            }
+
             var newKV = _mapper.Map<EducatorsStaffDTO, DataAccess.Entities.EducatorsStaff.EducatorsStaff>(kadrasDTO);
             await _repositoryWrapper.KVs.CreateAsync(newKV);
             await _repositoryWrapper.SaveAsync();
@@ -101,6 +109,11 @@ namespace EPlast.BLL.Services.EducatorsStaff
 
         public async Task UpdateKadra(EducatorsStaffDTO kadrasDTO)
         {
+            bool existRegisterNumber = await StaffWithRegisternumberExistsEdit(kadrasDTO.KadraVykhovnykivTypeId, kadrasDTO.NumberInRegister);
+            if (existRegisterNumber)
+            {
+                throw new ArgumentException("Number in register already exists");
+            }
             var editedKadra = await _repositoryWrapper.KVs.GetFirstAsync(x => x.ID == kadrasDTO.ID);
 
             editedKadra.NumberInRegister = kadrasDTO.NumberInRegister;
