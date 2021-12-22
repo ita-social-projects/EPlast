@@ -23,7 +23,7 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// </summary>
         /// <param name="entryAndOathDateDTO"> entryAndOathDateDTO</param>
         /// <returns>bool if changing is successful</returns>
-        public Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDateDTO entryAndOathDateDTO);
+        public Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDTO entryAndOathDatesDTO);
 
         /// <summary>
         /// Returns boolean, if dates is correct and they was added to DB return true, else false

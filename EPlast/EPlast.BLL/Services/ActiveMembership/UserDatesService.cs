@@ -21,20 +21,20 @@ namespace EPlast.BLL.Services.ActiveMembership
             _userManagerService = userManagerService;
         }
 
-        public async Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDateDTO entryAndOathDateDTO)
+        public async Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDTO entryAndOathDatesDTO)
         {
             bool isChanged = false;
-            var userDto = await _userManagerService.FindByIdAsync(entryAndOathDateDTO.UserId);
+            var userDto = await _userManagerService.FindByIdAsync(entryAndOathDatesDTO.UserId);
             if (userDto != null)
             {
                 UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userDto.Id);
                 if (userMembershipDates != null)
                 {
-                    var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > entryAndOathDateDTO.DateOath;
-                    if (userMembershipDates.DateEntry <= entryAndOathDateDTO.DateOath && dateOathIsLowerDateEnd)
+                    var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > entryAndOathDatesDTO.DateOath;
+                    if (userMembershipDates.DateEntry <= entryAndOathDatesDTO.DateOath && dateOathIsLowerDateEnd)
                     {
-                        userMembershipDates.DateOath = entryAndOathDateDTO.DateOath;
-                        userMembershipDates.DateEntry = entryAndOathDateDTO.EntryDate;
+                        userMembershipDates.DateOath = entryAndOathDatesDTO.DateOath;
+                        userMembershipDates.DateEntry = entryAndOathDatesDTO.EntryDate;
                         _repoWrapper.UserMembershipDates.Update(userMembershipDates);
                         await _repoWrapper.SaveAsync();
                         isChanged = true;

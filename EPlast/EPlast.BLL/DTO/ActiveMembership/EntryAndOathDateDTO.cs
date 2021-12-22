@@ -3,7 +3,7 @@ using System;
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public class EntryAndOathDateDTO
+    public class EntryAndOathDatesDTO
     {
         private DateTime _dateOath;
         private DateTime _entryDate;

@@ -138,7 +138,7 @@ namespace EPlast.WebApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         [HttpPost("dates")]
-        public async Task<IActionResult> ChangeUserOathDateAsync(EntryAndOathDateDTO entryAndOathDateDTO)
+        public async Task<IActionResult> ChangeUserOathDateAsync(EntryAndOathDatesDTO entryAndOathDateDTO)
         {
             var focusUser = await _userManager.FindByIdAsync(entryAndOathDateDTO.UserId);
             var roles = await _userManager.GetRolesAsync(focusUser);

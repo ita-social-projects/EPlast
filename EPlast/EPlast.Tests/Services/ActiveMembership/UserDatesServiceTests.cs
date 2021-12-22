@@ -46,7 +46,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             UserDatesService userDatesService = _userDatesService;
 
             //Act
-            var result = await userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDateDTO() {UserId = " " });
+            var result = await userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() {UserId = " " });
             //Assert
             Assert.IsTrue(result);
 
@@ -65,7 +65,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             UserDatesService userDatesService = _userDatesService;
 
             //Act
-            var result = await userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDateDTO() { UserId = " " });
+            var result = await userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " " });
             //Assert
             Assert.IsFalse(result);
             _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()));
@@ -83,7 +83,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             UserDatesService userDatesService = _userDatesService;
 
             //Act
-            var result = await userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDateDTO() { UserId = " " });
+            var result = await userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " " });
             //Assert
             Assert.IsFalse(result);
             _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()));
