@@ -138,18 +138,18 @@ namespace EPlast.WebApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         [HttpPost("dates")]
-        public async Task<IActionResult> ChangeUserOathDateAsync(EntryAndOathDatesDTO entryAndOathDateDTO)
+        public async Task<IActionResult> ChangeUserEntryandOathDatesAsync(EntryAndOathDatesDTO entryAndOathDatesDTO)
         {
-            var focusUser = await _userManager.FindByIdAsync(entryAndOathDateDTO.UserId);
+            var focusUser = await _userManager.FindByIdAsync(entryAndOathDatesDTO.UserId);
             var roles = await _userManager.GetRolesAsync(focusUser);
-            //If user is registered or former member, then we can not change oath date!
-            if(roles.Contains(Roles.RegisteredUser) || roles.Count == 0 || !await HasAccessAsync(entryAndOathDateDTO.UserId))
+            //If user is registered or former member, then we can not change his dates!
+            if(roles.Contains(Roles.RegisteredUser) || roles.Count == 0 || !await HasAccessAsync(entryAndOathDatesDTO.UserId))
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
-            if (await _userDatesService.ChangeUserEntryAndOathDateAsync(entryAndOathDateDTO))
+            if (await _userDatesService.ChangeUserEntryAndOathDateAsync(entryAndOathDatesDTO))
             {
-                return Ok(entryAndOathDateDTO);
+                return Ok(entryAndOathDatesDTO);
             }
             return BadRequest();
         }

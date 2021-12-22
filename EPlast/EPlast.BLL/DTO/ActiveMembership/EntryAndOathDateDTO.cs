@@ -6,7 +6,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
     public class EntryAndOathDatesDTO
     {
         private DateTime _dateOath;
-        private DateTime _entryDate;
+        private DateTime _dateEntry;
 
         public string UserId { get; set; }
         public int Id { get; set; }
@@ -27,19 +27,19 @@ namespace EPlast.BLL.DTO.ActiveMembership
             }
         }
 
-        public DateTime EntryDate
+        public DateTime DateEntry
         {
-            get => _entryDate;
+            get => _dateEntry;
             set
             {
                 if (value == default)
                 {
-                    _entryDate = value;
+                    _dateEntry = value;
                     return;
                 }
                 if (value < AllowedDates.LowLimitDate)
                     throw new ArgumentException($"The entry date cannot be earlier than {AllowedDates.LowLimitDate}");
-                _entryDate = value;
+                _dateEntry = value;
             }
         }
 

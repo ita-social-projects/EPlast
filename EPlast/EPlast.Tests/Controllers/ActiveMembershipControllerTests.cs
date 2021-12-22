@@ -278,7 +278,7 @@ namespace EPlast.Tests.Controllers
                              .ReturnsAsync(successfulChangedDates);
 
             //Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -298,7 +298,7 @@ namespace EPlast.Tests.Controllers
                              .ReturnsAsync(successfulChangedDates);
 
             //Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
@@ -318,7 +318,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             //Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
             var actual = (result as StatusCodeResult).StatusCode;
 
             //Assert
@@ -335,7 +335,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert

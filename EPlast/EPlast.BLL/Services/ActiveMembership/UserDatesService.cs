@@ -31,10 +31,10 @@ namespace EPlast.BLL.Services.ActiveMembership
                 if (userMembershipDates != null)
                 {
                     var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > entryAndOathDatesDTO.DateOath;
-                    if (userMembershipDates.DateEntry <= entryAndOathDatesDTO.DateOath && dateOathIsLowerDateEnd)
+                    if (entryAndOathDatesDTO.DateEntry <= entryAndOathDatesDTO.DateOath && dateOathIsLowerDateEnd)
                     {
                         userMembershipDates.DateOath = entryAndOathDatesDTO.DateOath;
-                        userMembershipDates.DateEntry = entryAndOathDatesDTO.EntryDate;
+                        userMembershipDates.DateEntry = entryAndOathDatesDTO.DateEntry;
                         _repoWrapper.UserMembershipDates.Update(userMembershipDates);
                         await _repoWrapper.SaveAsync();
                         isChanged = true;
