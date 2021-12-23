@@ -266,7 +266,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ChangeUserOathDate_ReturnOK()
+        public async Task ChangeUserEntryAndOathDates_ReturnOK()
         {
             //Arrange
             bool successfulChangedDates = true;
@@ -287,15 +287,15 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ChangeUserOathDate_ReturnBadRequest()
+        public async Task ChangeUserEntryAndOathDates_ReturnBadRequest()
         {
             //Arrange
-            bool successfulChangedDates = false;
+            bool failedChangeDates = false;
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
             _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
             _userDatesService.Setup(cs => cs.ChangeUserEntryAndOathDateAsync(It.IsAny<EntryAndOathDatesDTO>()))
-                             .ReturnsAsync(successfulChangedDates);
+                             .ReturnsAsync(failedChangeDates);
 
             //Act
             var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
@@ -306,7 +306,7 @@ namespace EPlast.Tests.Controllers
 
 
         [Test]
-        public async Task ChangeUserOathDate_NoAccess_Return403Forbidden()
+        public async Task ChangeUserEntryAndOathDates_NoAccess_Return403Forbidden()
         {
             //Arrange
             bool successfulChangedDates = false;
@@ -326,7 +326,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ChangeUserOathDate_Return403Forbidden()
+        public async Task ChangeUserEntryAndOathDates_Return403Forbidden()
         {
             //Arrange
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
