@@ -5,6 +5,7 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <ProjectGuid>{1710D928-0613-4EA4-8497-C71B981C92E8}</ProjectGuid>
     <UserSecretsId>d4a061c0-6742-4abc-9b0c-579b6080fa97</UserSecretsId>
+    <PackOnBuild>true</PackOnBuild>
   </PropertyGroup>
 
   <PropertyGroup>
