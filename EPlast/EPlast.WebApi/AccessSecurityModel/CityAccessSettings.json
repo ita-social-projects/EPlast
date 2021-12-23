@@ -37,9 +37,9 @@
   },
   "Заступник Голови Станиці": {
     "IsAdmin": true,
-    "EditClub": true,
-    "CreateClub": false,
-    "DeleteClub": false,
+    "EditCity": true,
+    "CreateCity": false,
+    "DeleteCity": false,
     "AddCitySecretary": true,
     "AddCityHead": false,
     "DownloadDocument": true
