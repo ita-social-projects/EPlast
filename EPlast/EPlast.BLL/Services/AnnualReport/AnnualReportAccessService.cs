@@ -74,6 +74,7 @@ namespace EPlast.BLL.Services
                 ? await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(x =>
                     x.CityId == cityAnnualReport.CityId &&
                     x.UserId == user.Id &&
+                    x.Status &&
                     x.AdminType.AdminTypeName != null &&
                     Roles.AdminAndCityHeadAndCityHeadDeputy.Contains(x.AdminType.AdminTypeName))
                 : null;
@@ -90,6 +91,7 @@ namespace EPlast.BLL.Services
                     ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
                         x.RegionId == certainCityUnderRegion.RegionId &&
                         x.UserId == user.Id &&
+                        x.Status &&
                         x.AdminType.AdminTypeName != null &&
                         Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
                     : null;
@@ -109,6 +111,7 @@ namespace EPlast.BLL.Services
                 ? await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(x =>
                     x.ClubId == clubAnnualReport.ClubId &&
                     x.UserId == user.Id &&
+                    x.Status &&
                     x.AdminType.AdminTypeName != null &&
                     Roles.AdminAndKurinHeadAndKurinHeadDeputy.Contains(x.AdminType.AdminTypeName))
                 : null;
@@ -129,6 +132,7 @@ namespace EPlast.BLL.Services
                 ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
                     x.RegionId == regionAnnualReport.RegionId &&
                     x.UserId == user.Id &&
+                    x.Status &&
                     x.AdminType.AdminTypeName != null &&
                     Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
                 : null;
