@@ -84,7 +84,7 @@ namespace EPlast.BLL.Services
         private async Task<RegionAdministration> GetRegionOverCertainCityAdministration(AnnualReport cityAnnualReport, User user)
         {
             var certainCityUnderRegion = cityAnnualReport != null
-                ? await _repositoryWrapper.RegionFollowers.GetFirstOrDefaultAsync(x => x.ID == cityAnnualReport.CityId)
+                ? await _repositoryWrapper.City.GetFirstOrDefaultAsync(x => x.ID == cityAnnualReport.CityId)
                 : null;
             var certainRegionAdministration =
                 certainCityUnderRegion != null
