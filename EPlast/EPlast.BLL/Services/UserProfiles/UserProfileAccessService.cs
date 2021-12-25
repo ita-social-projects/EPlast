@@ -36,8 +36,12 @@ namespace EPlast.BLL.Services.UserProfiles
 
             return role switch
             {
-                Roles.CityHead => (roles.Contains(Roles.CityHead) && _userService.IsUserSameCity(currentUser, focusUser)) || (roles.Contains(Roles.OkrugaHead) && _userService.IsUserSameRegion(currentUser, focusUser)),
-                Roles.KurinHead => (roles.Contains(Roles.KurinHead) && _userService.IsUserSameClub(currentUser, focusUser)),
+                Roles.CityHead => 
+                    (roles.Contains(Roles.CityHead) && _userService.IsUserSameCity(currentUser, focusUser)  || 
+                    (roles.Contains(Roles.OkrugaHead) && _userService.IsUserSameRegion(currentUser, focusUser))) && 
+                    await _userService.IsApprovedCityMember(focusUserId),
+                Roles.KurinHead => 
+                    (roles.Contains(Roles.KurinHead) && _userService.IsUserSameClub(currentUser, focusUser) && await _userService.IsApprovedCLubMember(focusUserId)),
                 _ => false,
             };
         }
