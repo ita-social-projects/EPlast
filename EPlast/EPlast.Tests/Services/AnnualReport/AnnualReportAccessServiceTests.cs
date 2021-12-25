@@ -41,10 +41,10 @@ namespace EPlast.Tests.Services
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration());
             _repositoryWrapper
-                .Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
-                    It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
-                .ReturnsAsync(new RegionFollowers());
+                .Setup(x => x.City.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new DataAccess.Entities.City());
             _repositoryWrapper
                 .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
