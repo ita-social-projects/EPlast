@@ -105,6 +105,24 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
+        public async Task ChangeUserMembershipDatesAsync_OathLowerThenEntry_ReturnsFalse()
+        {
+            //Arrange
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            _repoWrapper.Setup(m => m.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+            It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>())).ReturnsAsync(new UserMembershipDates() { DateEnd = new DateTime(2019, 1, 1) });
+
+            //Act
+            var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " ", DateEntry = new DateTime(2021, 1, 1), DateOath = new DateTime(2020, 1, 1) });
+
+            //Assert
+            Assert.IsFalse(result);
+            _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()));
+            _repoWrapper.Verify(f => f.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+            It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>()));
+        }
+
+        [Test]
         public async Task GetUserMembershipDatesAsync_Valid_ReturnsUserMembershipDatesDTO()
         {
             //Arrange
