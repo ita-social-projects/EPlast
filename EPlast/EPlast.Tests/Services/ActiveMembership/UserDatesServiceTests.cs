@@ -43,7 +43,8 @@ namespace EPlast.Tests.Services.ActiveMembership
             _repoWrapper.Setup(m => m.SaveAsync());
 
             //Act
-            var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() {UserId = " " });
+            var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " ", DateEntry = new DateTime(2021, 1, 1) });
+
             //Assert
             Assert.IsTrue(result);
 
@@ -58,7 +59,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             //Arrange
             _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
-            
+
             //Act
             var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " " });
 
@@ -73,10 +74,28 @@ namespace EPlast.Tests.Services.ActiveMembership
             //Arrange
             _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
             _repoWrapper.Setup(m => m.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
-            It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>())).ReturnsAsync(new UserMembershipDates() { DateEnd =new DateTime(2021,1,1)});
+            It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>())).ReturnsAsync(new UserMembershipDates() { DateEnd = new DateTime(2021, 1, 1) });
 
             //Act
-            var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " ", DateOath = new DateTime(2022,1,1) });
+            var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " ", DateOath = new DateTime(2022, 1, 1) });
+
+            //Assert
+            Assert.IsFalse(result);
+            _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()));
+            _repoWrapper.Verify(f => f.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+            It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>()));
+        }
+
+        [Test]
+        public async Task ChangeUserMembershipDatesAsync_EntryDateDefault_ReturnsFalse()
+        {
+            //Arrange
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            _repoWrapper.Setup(m => m.UserMembershipDates.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserMembershipDates, bool>>>(),
+            It.IsAny<Func<IQueryable<UserMembershipDates>, IIncludableQueryable<UserMembershipDates, object>>>())).ReturnsAsync((UserMembershipDates)null);
+
+            //Act
+            var result = await _userDatesService.ChangeUserEntryAndOathDateAsync(new EntryAndOathDatesDTO() { UserId = " ", DateEntry = default });
 
             //Assert
             Assert.IsFalse(result);
@@ -98,6 +117,7 @@ namespace EPlast.Tests.Services.ActiveMembership
 
             //Act
             var result = await _userDatesService.GetUserMembershipDatesAsync(" ");
+
             //Assert
             Assert.IsInstanceOf<UserMembershipDatesDTO>(result);
 
