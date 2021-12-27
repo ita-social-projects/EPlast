@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Validators
 {
-    public class BitrhdayDateAttribute: ValidationAttribute
+    public class BirthdayDateAttribute: ValidationAttribute
     {
         public override bool IsValid(object value)
         {

@@ -1,5 +1,6 @@
 using EPlast.BLL.DTO.Club;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -59,6 +60,16 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="clubName">Optional param to find not active club by name</param>
         /// <returns>All not active cities of type ClubDTO</returns>
         Task<IEnumerable<ClubDTO>> GetAllNotActiveClubsAsync(string clubName = null);
+
+        /// <summary>
+        /// Gets all regions based on page and their archivation status
+        /// </summary>
+        /// <param name="page">Page number</param>
+        /// <param name="pageSize">Size of the page</param>
+        /// /// <param name="clubName">Search string to find club by name</param>
+        /// /// <param name="isArchive">Archivation status of the club</param>
+        /// <returns>All not active cities of type ClubDTO</returns>
+        Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive);
 
         /// <summary>
         /// Gets a specific Club
