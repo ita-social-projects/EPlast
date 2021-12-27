@@ -114,6 +114,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
 
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
+        private TermsRepository _termsRepository;
         private UserRenewalRepository _userRenewalRepository;
 
         public IEducatorsStaffTypesRepository KVTypes
@@ -980,7 +981,17 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _subsectionRepository;
             }
         }
-
+        public ITermsRepository TermsOfUse
+        {
+            get
+            {
+                if (_termsRepository == null)
+                {
+                    _termsRepository = new TermsRepository(_dbContext);
+                }
+                return _termsRepository;
+            }
+        }
 
 
         public IMembersStatisticsRepository MembersStatistics

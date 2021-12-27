@@ -205,12 +205,9 @@ namespace EPlast.BLL.Services.City
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.City)
                  );
 
-            foreach (var admin in admins)
+            foreach (var admin in admins.Where(x => x.City != null))
             {
-                if (admin.City != null)
-                {
-                    admin.City.CityAdministration = null;
-                }
+                admin.City.CityAdministration = null;
             }
 
             return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
@@ -293,10 +290,15 @@ namespace EPlast.BLL.Services.City
             await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City);
         }
 
-        public async Task RemoveMemberAsync(CityMembers member)
+        public async Task RemoveMemberAsync(string userId)
         {
-            _repositoryWrapper.CityMembers.Delete(member);
-            await _repositoryWrapper.SaveAsync();
+            var cityMember = await _repositoryWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
+
+            if (cityMember != null)
+            {
+                _repositoryWrapper.CityMembers.Delete(cityMember);
+                await _repositoryWrapper.SaveAsync();
+            }
         }
 
         /// <inheritdoc />
@@ -321,6 +323,13 @@ namespace EPlast.BLL.Services.City
             return cityMemberDto;
         }
 
+        public async Task<bool?> CheckIsUserApproved(int userId)
+        {
+            var cityMember = await _repositoryWrapper.CityMembers
+                .GetFirstOrDefaultAsync(u => u.ID == userId);
+            return cityMember?.IsApproved;
+        }
+
         public async Task<string> CityOfApprovedMember(string memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
@@ -328,7 +337,9 @@ namespace EPlast.BLL.Services.City
                                         m => m.Include(u => u.City));
 
             if (cityMember == null)
+            {
                 return null;
+            }
             if (cityMember.IsApproved)
             {
                 return cityMember.City.Name;
@@ -426,6 +437,15 @@ namespace EPlast.BLL.Services.City
             var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
+        }
+
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach (var role in roles)
+            {
+                await RemoveAdministratorAsync(role.ID);
+            }    
         }
     }
 }

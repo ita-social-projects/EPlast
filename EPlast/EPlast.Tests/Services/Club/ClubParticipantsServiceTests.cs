@@ -111,6 +111,52 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnNull()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(null as ClubMembers);
+
+            // Act
+            var result = await _clubParticipantsService.CheckIsUserApproved(1);
+
+            //Assert
+            Assert.Null(result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
+        public async Task CheckIsUserApproved_UserId_ReturnTrue()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers()
+                {
+                    ID = 1,
+                    UserId = "123v",
+                    IsApproved = true,
+                    Club = new DataAccess.Entities.Club
+                    {
+                        ID = 1,
+                        Name = "club name"
+                    },
+                    ClubId = 1
+                });
+            bool expected = true;
+
+            // Act
+            var result = await _clubParticipantsService.CheckIsUserApproved(1);
+
+            //Assert
+            Assert.AreEqual(expected, result);
+            _repoWrapper.Verify();
+        }
+
+        [Test]
         public async Task AddAdministratorAsync_NullEndDate_ReturnsAdministrator()
         {
             //Arrange
@@ -380,6 +426,40 @@ namespace EPlast.Tests.Services.Club
             //Assert
             _repoWrapper.Verify();
             Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task RemoveAdminRolesByUserIdAsync_ValidTest()
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(x => x.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
+               .ReturnsAsync(new List<ClubAdministration> { new ClubAdministration() { ID = fakeId, EndDate = new DateTime(2001, 7, 20) } });
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubAdministration>,
+                    IIncludableQueryable<ClubAdministration, object>>>()))
+                .ReturnsAsync(_clubAdministration);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.ClubAdministration.Update(It.IsAny<ClubAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            await _clubParticipantsService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+
+            //Assert
+            _repoWrapper.Verify();
+            _adminTypeService.Verify();
+            _userManager.Verify();
         }
 
         [Test]
@@ -828,12 +908,16 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             _repoWrapper
+                .Setup(r => r.ClubMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<ClubMembers>, IIncludableQueryable<ClubMembers, object>>>()))
+                .ReturnsAsync(new ClubMembers());
+            _repoWrapper
                 .Setup(r => r.ClubMembers.Delete(It.IsAny<ClubMembers>()));
             _repoWrapper
                 .Setup(r => r.SaveAsync());
 
             // Act
-            await _clubParticipantsService.RemoveMemberAsync(It.IsAny<ClubMembers>());
+            await _clubParticipantsService.RemoveMemberAsync(It.IsAny<string>());
 
             // Assert
             _repoWrapper.Verify(r => r.ClubMembers.Delete(It.IsAny<ClubMembers>()), Times.Once());

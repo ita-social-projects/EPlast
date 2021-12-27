@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.Services.CityClub;
 using DataAccessClub = EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using System.Linq.Expressions;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -106,8 +107,6 @@ namespace EPlast.BLL.Services.Club
         {
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubDTO>>(await GetAllAsync(clubName));
         }
-
-
 
         /// <inheritdoc />
         public async Task<ClubDTO> GetByIdAsync(int clubId)
@@ -291,23 +290,16 @@ namespace EPlast.BLL.Services.Club
                 return null;
             }
 
-            var clubHead = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
-                    && a.Status);
-            var clubHeadDeputy = club.ClubAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
-                    && a.Status);
+            var clubHead = await GetClubHeadAsync(clubId);
+            var clubHeadDeputy = await GetClubHeadDeputyAsync(clubId);
+            var clubAdmins = await GetAdminsAsync(clubId);
 
             var clubProfileDto = new ClubProfileDTO
             {
                 Club = club,
-                Admins = await setMembersCityName(club.ClubAdministration
-                        .Where(a => a.AdminType.AdminTypeName != Roles.KurinHead
-                            && a.AdminType.AdminTypeName != Roles.KurinHeadDeputy
-                            && a.Status).ToList()) as
-                    List<ClubAdministrationDTO>,
-                Head = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHead })).FirstOrDefault() as ClubAdministrationDTO,
-                HeadDeputy = (await setMembersCityName(new List<ClubAdministrationDTO>() { clubHeadDeputy })).FirstOrDefault() as ClubAdministrationDTO
+                Admins = clubAdmins,
+                Head = clubHead,
+                HeadDeputy = clubHeadDeputy
             };
 
             return clubProfileDto;
@@ -609,12 +601,75 @@ namespace EPlast.BLL.Services.Club
             };
             return clubProfileDto;
         }
+
         public async Task UnArchiveAsync(int clubId)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == clubId && !c.IsActive);
             club.IsActive = true;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();
+        }
+
+
+        public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive)
+        {
+            var filter = GetFilter(clubName, isArchive);
+            var order = GetOrder();
+            var selector = GetSelector();
+            var tuple = await _repoWrapper.Club.GetRangeAsync(filter, selector, order, page, pageSize);
+            var clubs = tuple.Item1;
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubObjectDTO>>(clubs), rows);
+        }
+
+        public async Task<ClubAdministrationDTO> GetClubHeadAsync(int clubId)
+        {
+            var club = await GetByIdAsync(clubId);
+            return club.ClubAdministration?
+                   .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead
+                       && a.Status);
+        }
+
+        public async Task<ClubAdministrationDTO> GetClubHeadDeputyAsync(int clubId)
+        {
+            var club = await GetByIdAsync(clubId);
+            return club.ClubAdministration?
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHeadDeputy
+                    && a.Status);
+        }
+
+        public async Task<List<ClubAdministrationDTO>> GetAdminsAsync(int clubId)
+        {
+            var club = await GetByIdAsync(clubId);
+            return club.ClubAdministration?
+                .Where(a => a.Status)
+                .ToList();
+        }
+
+        private Expression<Func<DataAccessClub.Club, bool>> GetFilter(string clubName, bool isArchive)
+        {
+            var clubNameEmty = string.IsNullOrEmpty(clubName);
+            Expression<Func<DataAccessClub.Club, bool>> expr = (clubNameEmty) switch
+            {
+                true => x => x.IsActive == isArchive,
+                false => x => x.Name.Contains(clubName) && x.IsActive == isArchive
+            };
+            return expr;
+        }
+
+        private Expression<Func<DataAccessClub.Club, object>> GetOrder()
+        {
+
+            Expression<Func<DataAccessClub.Club, object>> expr = x => x.ID;
+            return expr;
+        }
+
+        private Expression<Func<DataAccessClub.Club, DataAccessClub.Club>> GetSelector()
+        {
+
+            Expression<Func<DataAccessClub.Club, DataAccessClub.Club>> expr = x => new DataAccessClub.Club { ID = x.ID, Logo = x.Logo, Name = x.Name };
+            return expr;
         }
     }
 }

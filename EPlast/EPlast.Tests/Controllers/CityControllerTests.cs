@@ -14,7 +14,9 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Cache;
 using EPlast.Resources;
 
 namespace EPlast.Tests.Controllers
@@ -27,6 +29,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ICityService> _cityService;
         private readonly Mock<ILoggerService<CitiesController>> _logger;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<ICacheService> _cache;
         private readonly Mock<Microsoft.AspNetCore.Identity.UserManager<User>> _userManager;
 
         public CityControllerTests()
@@ -37,6 +40,7 @@ namespace EPlast.Tests.Controllers
             _mapper = new Mock<IMapper>();
             _logger = new Mock<ILoggerService<CitiesController>>();
             _cityDocumentsService = new Mock<ICityDocumentsService>();
+            _cache = new Mock<ICacheService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<Microsoft.AspNetCore.Identity.UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
         }
@@ -47,7 +51,8 @@ namespace EPlast.Tests.Controllers
              _cityDocumentsService.Object,
            _cityAccessService.Object,
            _userManager.Object,
-        _cityParticipantsService.Object
+        _cityParticipantsService.Object,
+             _cache.Object
           );
 
         [Test]
@@ -87,6 +92,40 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task IsUserApproved_UserId_ReturnsOk()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(x => x.CheckIsUserApproved(It.IsAny<int>()))
+                .ReturnsAsync(new bool());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.IsUserApproved(GetFakeID());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task IsUserApproved_UserId_ReturnsBadRequest()
+        {
+            // Arrange
+            _cityParticipantsService
+                .Setup(x => x.CheckIsUserApproved(It.IsAny<int>()))
+                .ReturnsAsync(new bool?());
+            CitiesController controller = CreateCityController;
+
+            // Act
+            var result = await controller.IsUserApproved(1);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -501,60 +540,101 @@ namespace EPlast.Tests.Controllers
                 .Cities.Where(c => c.Name.Equals("Львів")));
         }
 
-        [TestCase(1, 1, "Львів")]
-        public async Task GetActiveCities_Valid_Test(int page, int pageSize, string cityName)
+        [Test]
+        public async Task GetActiveCities_PagePageSizeName_ReturnsStatusCodeOKAsync()
         {
             // Arrange
-            CitiesController citycon = CreateCityController;
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            citycon.ControllerContext = context;
+            int page = 1;
+            int pageSize = 2;
+            string name = "Lviv";
+            bool isArchive = false;
             _cityService
-                .Setup(c => c.GetAllActiveCitiesAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetCitiesBySearch());
+                .Setup(u => u.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
+            CreateCityController.ControllerContext.HttpContext = mockHttpContext.Object;
 
             // Act
-            var result = await citycon.GetActiveProfile(page, pageSize, cityName);
+            var result = await CreateCityController.GetActiveCities(page, pageSize, name);
+            var actual = (result as ObjectResult).StatusCode;
 
             // Assert
+            _cityService.Verify((u => u.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive)));
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
-                .Cities.Where(c => c.Name.Equals("Львів")));
+            Assert.AreEqual(expected, actual);
         }
 
-        [TestCase(1, 1, "Львів")]
-        public async Task GetNotActiveCities_Valid_Test(int page, int pageSize, string cityName)
+        [Test]
+        public async Task GetActiveCities_PagePageSize_ReturnsStatusCodeOKAsync()
         {
             // Arrange
-            CitiesController citycon = CreateCityController;
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            citycon.ControllerContext = context;
+            int page = 1;
+            int pageSize = 2;
+            string name = null;
+            bool isArchive = false;
             _cityService
-                .Setup(c => c.GetAllNotActiveCitiesAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetCitiesBySearch());
+                .Setup(u => u.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
+            var mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(m => m.User).Returns(new ClaimsPrincipal());
 
             // Act
-            var result = await citycon.GetNotActiveProfile(page, pageSize, cityName);
+            var result = await CreateCityController.GetActiveCities(page, pageSize, name);
+            var actual = (result as ObjectResult).StatusCode;
 
             // Assert
+            _cityService.Verify((u => u.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive)));
             Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
-                .Cities.Where(c => c.Name.Equals("Львів")));
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetNotActiveCities_PagePageSizeName_StatusCodesStatus200OKAsync()
+        {
+            // Arrange
+            int page = 1;
+            int pageSize = 2;
+            string name = "Lviv";
+            bool isArchive = true;
+            _cityService
+                .Setup(u => u.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
+
+            // Act
+            var result = await CreateCityController.GetNotActiveCities(page, pageSize, name);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            _cityService.Verify();
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetNotActiveCities_PagePageSize_StatusCodesStatus200OKAsync()
+        {
+            // Arrange
+            int page = 1;
+            int pageSize = 2;
+            string name = null;
+            bool isArchive = true;
+            _cityService
+                .Setup(u => u.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive))
+                .ReturnsAsync(CreateTuple);
+            var expected = StatusCodes.Status200OK;
+
+            // Act
+            var result = await CreateCityController.GetNotActiveCities(page, pageSize, name);
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            _cityService.Verify();
+            Assert.NotNull(result);
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -1026,6 +1106,14 @@ namespace EPlast.Tests.Controllers
         {
             return 1;
         }
+
+        private Tuple<IEnumerable<CityObjectDTO>, int> CreateTuple => new Tuple<IEnumerable<CityObjectDTO>, int>(CreateCityObjects, 100);
+
+        private IEnumerable<CityObjectDTO> CreateCityObjects => new List<CityObjectDTO>()
+        {
+            new CityObjectDTO(),
+            new CityObjectDTO()
+        };
 
         private IEnumerable<CityAdministrationGetDTO> GetAdmins()
         {

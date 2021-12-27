@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -29,10 +30,10 @@ namespace EPlast.WebApi.Controllers
         private async Task<bool> HasAccessAsync()
         {
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
-            foreach (var role in roles)
+            var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(x));
+            if(role != null)
             {
-                if (Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(role))
-                    return true;
+                return true;
             }
 
             return false;

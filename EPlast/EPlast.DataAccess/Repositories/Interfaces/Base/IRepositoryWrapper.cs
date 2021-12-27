@@ -96,6 +96,7 @@ namespace EPlast.DataAccess.Repositories
         IWorkRepository Work { get; }
         ISectionRepository AboutBaseSection { get; }
         ISubsectionRepository AboutBaseSubsection { get; }
+        ITermsRepository TermsOfUse { get; }
         IUserRenewalRepository UserRenewal { get; }
 
         void Save();

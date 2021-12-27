@@ -17,7 +17,7 @@ namespace EPlast.BLL.Services
 
         public async Task<bool> CanEditReportAsync(User user, bool defaultStatus, ReportType? reportType, int? reportId)
         {
-            if (reportType == null || reportId == null) return defaultStatus;
+            if (defaultStatus || reportType == null || reportId == null) return defaultStatus;
             switch (reportType)
             {
                 case ReportType.City:

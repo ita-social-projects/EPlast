@@ -59,7 +59,7 @@ namespace EPlast.BLL.Services.EventUser
         public async Task<int> CreateEventAsync(EventCreateDTO model)
         {
             await GetAdministrationTypeId();
-            model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджені");
+            model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджено");
 
             var eventToCreate = mapper.Map<EventCreationDTO, Event>(model.Event);
 

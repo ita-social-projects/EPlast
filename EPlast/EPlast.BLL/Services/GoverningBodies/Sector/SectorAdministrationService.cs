@@ -112,6 +112,15 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             await _repositoryWrapper.SaveAsync();
         }
 
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach(var role in roles)
+            {
+                await RemoveAdministratorAsync(role.Id);
+            }
+        }
+
         private async Task RemoveSectorAdminIfPresent(int sectorId, string adminTypeName)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
