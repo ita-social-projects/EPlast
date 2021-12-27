@@ -1,18 +1,20 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
-using Hangfire;
 using EPlast.Resources;
+using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.StartupExtensions
 {
@@ -61,10 +63,20 @@ namespace EPlast.WebApi.StartupExtensions
                                             () => serviceProvider.GetService<INewPlastMemberEmailGreetingService>()
                                                                  .NotifyNewPlastMembersAndCityAdminsAsync(),
                                             Cron.Daily(), TimeZoneInfo.Local);
-            recurringJobManager.AddOrUpdate("Delete users without confirmed email every hour",
+            recurringJobManager.AddOrUpdate("Delete unconfirmed users every hour",
                                             () => serviceProvider.GetService<IAuthService>()
                                                                  .DeleteUserIfEmailNotConfirmedAsync(),
-                                            "0 1 * * *", TimeZoneInfo.Local);
+                                            "0 */1 * * *", TimeZoneInfo.Local);
+
+            recurringJobManager.AddOrUpdate("Changes status of GoverningBody admins when the date expires",
+                                            () => serviceProvider.GetService<IGoverningBodiesService>()
+                                                                .ContinueGoverningBodyAdminsDueToDateAsync(),
+                                            "59 23 * * *", TimeZoneInfo.Local);
+
+            recurringJobManager.AddOrUpdate("Changes status of Sector admins when the date expires",
+                                            () => serviceProvider.GetService<ISectorService>()
+                                                                .ContinueSectorAdminsDueToDateAsync(),
+                                            "59 23 * * *", TimeZoneInfo.Local);
         }
 
         private static async Task CreateRolesAsync(IServiceProvider serviceProvider, IConfiguration Configuration)

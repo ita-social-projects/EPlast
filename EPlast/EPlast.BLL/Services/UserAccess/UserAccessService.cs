@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -19,6 +20,7 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly ICityAccessService _cityAccessService;
         private readonly IRegionAccessService _regionAccessService;
         private readonly IAnnualReportAccessService _annualReportAccessService;
+        private readonly IUserProfileAccessService _userProfileAccessService;
         private readonly ISecurityModel _securityModel;
 
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
@@ -28,19 +30,16 @@ namespace EPlast.BLL.Services.UserAccess
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
         private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
+        private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
 
-        public UserAccessService(IClubAccessService clubAccessService,
-                                IEventUserAccessService eventAccessService,
-                                ICityAccessService cityAccessService, 
-                                IRegionAccessService regionAccessService, 
-                                IAnnualReportAccessService annualReportAccessService,
-                                ISecurityModel securityModel)
+        public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
-            _clubAccessService = clubAccessService;
-            _eventAccessService = eventAccessService;
-            _cityAccessService = cityAccessService;
-            _regionAccessService = regionAccessService;
-            _annualReportAccessService = annualReportAccessService;
+            _clubAccessService = userAccessWrapper.ClubAccessService;
+            _eventAccessService = userAccessWrapper.EventAccessService;
+            _cityAccessService = userAccessWrapper.CityAccessService;
+            _regionAccessService = userAccessWrapper.RegionAccessService;
+            _annualReportAccessService = userAccessWrapper.AnnualReportAccessService;
+            _userProfileAccessService = userAccessWrapper.UserProfileAccessService;
             _securityModel = securityModel;
         }
 
@@ -87,7 +86,19 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            userAccess["CanViewReportDetails"] = await _annualReportAccessService.CanViewReportDetailsAsync(user, userAccess["CanViewReportDetails"], reportType, reportId);
             userAccess["CanEditReport"] = await _annualReportAccessService.CanEditReportAsync(user, userAccess["CanEditReport"], reportType, reportId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId, User user)
+        {
+            _securityModel.SetSettingsFile(UserProfileAccessSettings);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            userAccess["CanViewUserFullProfile"] = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
+            userAccess["CanApproveAsClubHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            userAccess["CanApproveAsCityHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
+            userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             return userAccess;
         }
 
