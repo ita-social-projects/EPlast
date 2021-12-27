@@ -40,7 +40,7 @@ namespace EPlast.WebApi.Models.UserModels
         [DataType(DataType.Date)]
         [Display(Name = "Дата народження")]
         [Required(ErrorMessage = "Поле 'Дата народження' є обов'язковим")]
-        [BitrhdayDate(ErrorMessage = "Birthday must be greater than 01.01.1900")]
+        [BirthdayDate(ErrorMessage = "Birthday must be greater than 01.01.1900")]
         public DateTime Birthday { get; set; }
         public EducationViewModel Education { get; set; }
         public DegreeViewModel Degree { get; set; }

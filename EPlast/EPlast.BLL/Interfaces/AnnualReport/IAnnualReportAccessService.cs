@@ -7,5 +7,6 @@ namespace EPlast.BLL.Services.Interfaces
     public interface IAnnualReportAccessService
     {
         Task<bool> CanEditReportAsync(User user, bool defaultStatus, ReportType? reportType, int? reportId);
+        Task<bool> CanViewReportDetailsAsync(User user, bool defaultStatus, ReportType? reportType, int? reportId);
     }
 }

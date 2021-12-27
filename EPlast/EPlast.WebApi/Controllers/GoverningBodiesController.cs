@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -361,5 +363,36 @@ namespace EPlast.WebApi.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Get UserAdministrations for table
+        /// </summary>
+        /// <param name="userId">The Id of target user</param>
+        /// <param name="isActive">Active status option</param>
+        /// <param name="pageNumber">Page number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns>UserAdministrations object</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Bad request</response>
+        [HttpGet("GetUserAdminsForTable")]
+        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive, 
+            [Required] int pageNumber, [Required] int pageSize)
+        {
+            try
+            {
+                var (item1, item2) =
+                    await _governingBodiesService.GetAdministrationForTableAsync(userId, isActive, pageNumber, pageSize);
+
+                return Ok(new
+                {
+                    admins = _mapper
+                        .Map<IEnumerable<GoverningBodyAdministrationDTO>, IEnumerable<GoverningBodyTableViewModel>>(item1),
+                    rowCount = item2
+                });
+            }
+            catch
+            {
+                return BadRequest("Error getting UserAdministration");
+            }
+        }
     }
 }
