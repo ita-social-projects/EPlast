@@ -73,6 +73,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
             services.AddScoped<CityAccessSettings, CityAccessSettings>();
             services.AddScoped<ClubAccessSettings, ClubAccessSettings>();
+            services.AddScoped<IAboutBasePicturesManager, AboutBasePicturesManager>();
+            services.AddScoped<IAboutBaseWrapper, AboutBaseWrapper>();
             services.AddScoped<IAccessLevelService, AccessLevelService>();
             services.AddScoped<IActionManager, ActionManager>();
             services.AddScoped<IAdminService, AdminService>();
@@ -151,6 +153,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IParticipantManager, ParticipantManager>();
             services.AddScoped<IParticipantStatusManager, ParticipantStatusManager>();
             services.AddScoped<IPdfService, PdfService>();
+            services.AddScoped<IPicturesManager, PicturesManager>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
             services.AddScoped<IPrecautionService, PrecautionService>();
             services.AddScoped<IRegionAccessService, RegionAccessService>();
@@ -174,6 +177,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<StatisticsServiceSettings>();
             services.AddScoped<IAboutBaseSectionService, AboutBaseSectionService>();
             services.AddScoped<IAboutBaseSubsectionService, AboutBaseSubsectionService>();
+            services.AddScoped<IAboutBaseBlobStorageRepository, AboutBaseBlobStorageRepository>();
             services.AddScoped<ISecurityModel, SecurityModel>();
             services.AddScoped<IUserAccessService, UserAccessService>();
             services.AddTransient<IUserRenewalService, UserRenewalService>();

@@ -72,8 +72,11 @@ namespace EPlast.DataAccess.Repositories
         ISectorAdministrationRepository GoverningBodySectorAdministration { get; }
         ISectorDocumentsRepository GoverningBodySectorDocuments { get; }
         ISectorDocumentTypeRepository GoverningBodySectorDocumentType { get; }
+        ISubsectionRepository Subsection { get; }
+        ISubsectionPicturesRepository SubsectionPictures { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
+        IPicturesRepository Pictures { get;  }
         IPlastDegreeRepository PlastDegrees { get; }
         IPrecautionRepository Precaution { get; }
         IRegionRepository Region { get; }

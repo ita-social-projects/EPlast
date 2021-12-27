@@ -1,5 +1,6 @@
 ﻿using System;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
@@ -47,6 +48,8 @@ namespace EPlast.DataAccess
         public DbSet<RegionNamesObject> RegionNamesObjects { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Subsection> Subsections { get; set; }
+        public DbSet<SubsectionPictures> SubsectionsPictures { get; set; }
+        public DbSet<Pictures> Pictures { get; set; }
         public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
         public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
         public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
@@ -94,7 +97,25 @@ namespace EPlast.DataAccess
                 entity.Property(e => e.Approved)
                     .HasDefaultValue(false);
             });
-                
+
+            modelBuilder.Entity<Pictures>()
+                .HasKey(x => x.ID);
+
+            modelBuilder.Entity<SubsectionPictures>()
+                .HasKey(x => new { x.SubsectionID, x.PictureID });
+
+            modelBuilder.Entity<SubsectionPictures>()
+                .HasOne(x => x.Subsection)
+                .WithMany(m => m.SubsectionsPictures)
+                .HasForeignKey(x => x.SubsectionID);
+
+            modelBuilder.Entity<SubsectionPictures>()
+                .HasOne(x => x.Pictures)
+                .WithMany(e => e.Subsections)
+                .HasForeignKey(x => x.PictureID);
+
+            modelBuilder.Entity<Subsection>()
+                .HasKey(x => x.Id);
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);

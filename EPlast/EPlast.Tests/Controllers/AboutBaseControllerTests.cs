@@ -23,6 +23,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IAboutBaseSectionService> _sectionService;
         private Mock<IAboutBaseSubsectionService> _subsectionSercive;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IPicturesManager> _picturesManager;
 
         private AboutBaseController _aboutbaseController;
 
@@ -33,11 +34,13 @@ namespace EPlast.Tests.Controllers
             _subsectionSercive = new Mock<IAboutBaseSubsectionService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _picturesManager = new Mock<IPicturesManager>();
 
             _aboutbaseController = new AboutBaseController(
                 _sectionService.Object,
                 _subsectionSercive.Object,
-                _userManager.Object);
+                _userManager.Object,
+                _picturesManager.Object);
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(u => u.User.IsInRole(Roles.Admin))
@@ -154,6 +157,90 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task FillEventGallery_ReturnsOkObjectResult()
+        {
+            // Arrange
+            const int expectedCount = 2;
+            _picturesManager
+                .Setup((x) => x.FillSubsectionPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ReturnsAsync(CreateListOfFakeSubsectionPictures());
+
+            // Act
+            var result = await _aboutbaseController.FillSubsectionPictures(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
+            var resultObject = (result as ObjectResult).Value as IList<SubsectionPicturesDTO>;
+
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotNull(resultObject);
+            Assert.AreEqual(expectedCount, resultObject.Count);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task FillEventGallery_ListOfTwoItems_ReturnsListOfTwoItems()
+        {
+            // Arrange
+            var expectedCount = 2;
+
+            _picturesManager
+                .Setup((x) => x.FillSubsectionPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
+                .ReturnsAsync(CreateListOfFakeSubsectionPictures());
+
+            // Act
+            var result = await _aboutbaseController.FillSubsectionPictures(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
+
+            var actual = ((result as ObjectResult).Value as List<SubsectionPicturesDTO>).Count;
+
+            // Assert
+            Assert.AreEqual(expectedCount, actual);
+        }
+
+        [Test]
+        public async Task GetPictures_ReturnsOkObjectResult_GetTwoPicture()
+        {
+            // Arrange
+            _picturesManager
+                .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
+                .ReturnsAsync(CreateListOfFakeSubsectionPictures());
+            const int countPicture = 2;
+
+            // Act
+            var result = await _aboutbaseController.GetPictures(It.IsAny<int>());
+            var okResult = result as ObjectResult;
+            var pictures = okResult.Value as IEnumerable<SubsectionPicturesDTO>;
+            var picturesAsList = pictures as IList<SubsectionPicturesDTO>;
+
+
+
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(okResult);
+            Assert.NotNull(pictures);
+            Assert.NotNull(picturesAsList);
+            Assert.AreEqual(countPicture, picturesAsList.Count);
+        }
+
+        [Test]
+        public async Task GetPictures_ListOfTwoItems_ReturnsListOfTwoItems()
+        {
+            // Arrange
+            const int expectedCount = 2;
+
+            _picturesManager
+                .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
+                .ReturnsAsync(CreateListOfFakeSubsectionPictures());
+
+            // Act
+            var result = await _aboutbaseController.GetPictures(It.IsAny<int>());
+
+            var actual = ((result as ObjectResult).Value as List<SubsectionPicturesDTO>).Count;
+
+            // Assert
+            Assert.AreEqual(expectedCount, actual);
+        }
+
+        [Test]
         public async Task DeleteAboutBaseSubsection_ReturnsNoContentResult()
         {
             //Arrange
@@ -194,7 +281,45 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
-        
+
+        [Test]
+        public async Task DeletePicture_Status200OK_ReturnsStatus200OK()
+        {
+            // Arrange
+            _picturesManager
+                .Setup((x) => x.DeletePictureAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
+
+            var expected = StatusCodes.Status200OK;
+
+            // Act
+            var result = await _aboutbaseController.DeletePicture(It.IsAny<int>());
+
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task DeletePicture_Status400BadRequest_ReturnsStatus400BadRequest()
+        {
+            // Arrange
+            _picturesManager
+                .Setup((x) => x.DeletePictureAsync(It.IsAny<int>()))
+                .ReturnsAsync(StatusCodes.Status400BadRequest);
+
+            var expected = StatusCodes.Status400BadRequest;
+
+            // Act
+            var result = await _aboutbaseController.DeletePicture(It.IsAny<int>());
+
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
         [Test]
         public async Task AddAboutBaseSection_ReturnsNoContentResult()
         {
@@ -431,5 +556,21 @@ namespace EPlast.Tests.Controllers
             //Assert   
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
+
+        private List<SubsectionPicturesDTO> CreateListOfFakeSubsectionPictures()
+            => new List<SubsectionPicturesDTO>()
+            {
+                new SubsectionPicturesDTO()
+                {
+                    PictureId = 1,
+                    FileName = "SomeFilenameID1"
+                },
+                new SubsectionPicturesDTO()
+                {
+                    PictureId = 2,
+                    FileName = "SomeFilenameID2"
+                },
+
+            };
     }
 }
