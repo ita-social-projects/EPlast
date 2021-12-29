@@ -21,19 +21,21 @@ namespace EPlast.BLL.Services.ActiveMembership
             _userManagerService = userManagerService;
         }
 
-        public async Task<bool> ChangeUserOathDateAsync(UserOathDateDTO userOathDateDTO)
+        public async Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDTO entryAndOathDatesDTO)
         {
             bool isChanged = false;
-            var userDto = await _userManagerService.FindByIdAsync(userOathDateDTO.UserId);
+            var userDto = await _userManagerService.FindByIdAsync(entryAndOathDatesDTO.UserId);
             if (userDto != null)
             {
                 UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userDto.Id);
-                if (userMembershipDates != null)
+                if (userMembershipDates != null && entryAndOathDatesDTO.DateEntry != default)
                 {
-                    var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > userOathDateDTO.DateOath;
-                    if (userMembershipDates.DateEntry <= userOathDateDTO.DateOath && dateOathIsLowerDateEnd)
+                    var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > entryAndOathDatesDTO.DateOath;
+                    var dateEntryIsLowerOathDate = entryAndOathDatesDTO.DateOath == default || entryAndOathDatesDTO.DateOath > entryAndOathDatesDTO.DateEntry;
+                    if (dateEntryIsLowerOathDate && dateOathIsLowerDateEnd)
                     {
-                        userMembershipDates.DateOath = userOathDateDTO.DateOath;
+                        userMembershipDates.DateOath = entryAndOathDatesDTO.DateOath;
+                        userMembershipDates.DateEntry = entryAndOathDatesDTO.DateEntry;
                         _repoWrapper.UserMembershipDates.Update(userMembershipDates);
                         await _repoWrapper.SaveAsync();
                         isChanged = true;
