@@ -1,5 +1,6 @@
 {
   "Admin": {
+    "AddAnnouncement": true,
     "ViewInfo": true,
     "AddDecision": true,
     "EditGB": true,
@@ -17,6 +18,7 @@
     "ViewDocument": true
   },
   "Голова Керівного Органу": {
+    "AddAnnouncement": true,
     "ViewInfo": true,
     "AddDecision": true,
     "EditGB": true,
@@ -34,6 +36,7 @@
     "ViewDocument": true
   },
   "Голова Округи": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -51,6 +54,7 @@
     "ViewDocument": true
   },
   "Голова Станиці": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -68,6 +72,7 @@
     "ViewDocument": true
   },
   "Голова Куреня": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -85,6 +90,7 @@
     "ViewDocument": true
   },
   "Прихильник": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -102,6 +108,7 @@
     "ViewDocument": true
   },
   "Дійсний член організації": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
@@ -119,6 +126,7 @@
     "ViewDocument": true
   },
   "Зареєстрований користувач": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "AddDecision": false,
     "EditGB": false,
