@@ -16,7 +16,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
 
         public async Task<Unit> Handle(UnArchiveCommand request, CancellationToken cancellationToken)
         {
-            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == request.CLubId && !c.IsActive);
+            var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(c => c.ID == request.ClubId && !c.IsActive);
             club.IsActive = true;
             _repoWrapper.Club.Update(club);
             await _repoWrapper.SaveAsync();
