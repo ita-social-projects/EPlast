@@ -49,14 +49,12 @@ namespace EPlast.BLL.Handlers.ClubHandlers
 
         private Expression<Func<Club, object>> GetOrder()
         {
-
             Expression<Func<Club, object>> expr = x => x.ID;
             return expr;
         }
 
         private Expression<Func<Club, Club>> GetSelector()
         {
-
             Expression<Func<Club, Club>> expr = x => new Club { ID = x.ID, Logo = x.Logo, Name = x.Name };
             return expr;
         }

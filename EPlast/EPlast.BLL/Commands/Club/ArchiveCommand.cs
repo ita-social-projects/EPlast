@@ -7,10 +7,10 @@ namespace EPlast.BLL.Commands.Club
 {
     public class ArchiveCommand : IRequest
     {
-        public int CLubId { get; set; }
+        public int ClubId { get; set; }
         public ArchiveCommand(int cLubId)
         {
-            CLubId = cLubId;
+            ClubId = cLubId;
         }
     }
 }

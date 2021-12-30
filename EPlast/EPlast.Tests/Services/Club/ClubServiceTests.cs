@@ -45,39 +45,6 @@ namespace EPlast.Tests.Services.Club
 
         private string StringId => "1";
 
-        //[Test]
-        //public async Task ArchiveAsync_WithModel_ReturnsClubArchived()
-        //{
-        //    // Arrange
-        //    ClubService clubService = CreateClubService();
-        //    _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()));
-        //    _repoWrapper.Setup(r => r.SaveAsync());
-
-        //    // Act
-        //    await clubService.ArchiveAsync(Id);
-
-        //    // Assert
-        //    _repoWrapper.Verify(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()), Times.Once);
-        //    _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
-        //}
-
-        //[Test]
-        //public void ArchiveAsync_ClubIsNotEmpty_ThrowsInvalidOperationException()
-        //{
-        //    // Arrange
-        //    _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
-        //       .ReturnsAsync(new DataAccessClub.Club()
-        //       {
-        //           ClubAdministration = new List<ClubAdministration>(),
-        //           ClubMembers = new List<ClubMembers>()
-        //       });
-        //    _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()));
-        //    _repoWrapper.Setup(r => r.SaveAsync());
-
-        //    //Act // Assert
-        //    Assert.ThrowsAsync<InvalidOperationException>(async () => await _clubService.ArchiveAsync(Id));
-        //}
-
         [Test]
         public void CreateAsync_InvalidOperationException()
         {
@@ -910,43 +877,6 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Verify(r => r.Club.Delete(It.IsAny<DataAccessClub.Club>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.AtMost(2));
         }
-
-        //[Test]
-        //public async Task GetClubHistoryFollowers_Tests()
-        //{
-        //    // Arrange
-        //    _repoWrapper
-        //        .Setup(r => r.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-        //        .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>());
-        //    _mapper
-        //        .Setup(m => m.Map<IEnumerable<DataAccessClub.ClubMemberHistory>,
-        //                          IEnumerable<ClubMemberHistoryDTO>>
-        //              (It.IsAny<IEnumerable<DataAccessClub.ClubMemberHistory>>()))
-        //        .Returns(new List<ClubMemberHistoryDTO>());
-
-        //    // Act
-        //    var result = await _clubService.GetClubHistoryFollowers(Id);
-
-        //    // Assert
-        //    Assert.NotNull(result);
-        //    Assert.IsInstanceOf<List<ClubMemberHistoryDTO>>(result);
-        //}
-
-        //[Test]
-        //public async Task GetClubAdministrations_Tests()
-        //{
-        //    // Arrange
-        //    _repoWrapper
-        //        .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubAdministration, bool>>>(), null))
-        //        .ReturnsAsync(new List<DataAccessClub.ClubAdministration>());
-
-        //    // Act
-        //    var result = await _clubService.GetClubAdministrations(Id);
-
-        //    // Assert
-        //    Assert.NotNull(result);
-        //    Assert.IsInstanceOf<DataAccessClub.ClubAdministration[]>(result);
-        //}
 
         [Test]
         public async Task GetClubHead_ReturnsClubHead()

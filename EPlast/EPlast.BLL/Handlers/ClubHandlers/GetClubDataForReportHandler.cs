@@ -29,6 +29,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(
                predicate: c => c.ID == request.ClubId);
+
             if (club == null)
             {
                 return default;
@@ -36,14 +37,11 @@ namespace EPlast.BLL.Handlers.ClubHandlers
 
             var clubAdmins = await _mediator.Send(new GetClubAdministrationsQuery(request.ClubId));
             var clubDto = _mapper.Map<Club, ClubDTO>(club);
-
             var clubHead = clubAdmins.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead);
             var head = _mapper.Map<ClubAdministration, ClubReportAdministrationDTO>(clubHead);
             var clubAdminsDto = _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>(clubAdmins);
-
             var clubHistoryFollowersDTO = await _mediator.Send(new GetClubHistoryFollowersQuery(request.ClubId));
             var clubHistoryMembersDTO = await _mediator.Send(new GetClubHistoryMembersQuery(request.ClubId));
-
 
             var clubProfileDto = new ClubReportDataDTO
             {
@@ -59,6 +57,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
                 ClubURL = club.ClubURL,
                 Slogan = club.Slogan
             };
+
             return clubProfileDto;
         }
     }

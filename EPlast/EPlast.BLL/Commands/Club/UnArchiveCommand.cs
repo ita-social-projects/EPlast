@@ -8,10 +8,10 @@ namespace EPlast.BLL.Commands.Club
 {
     public class UnArchiveCommand : IRequest
     {
-        public int CLubId { get; set; }
+        public int ClubId { get; set; }
         public UnArchiveCommand(int cLubId)
         {
-            CLubId = cLubId;
+            ClubId = cLubId;
         }
     }
 }
