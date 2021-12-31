@@ -119,7 +119,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(_resources.ResourceForErrors["Register-InCorrectData"]);
             }
             var registeredUser = await _authService.FindByEmailAsync(registerDto.Email);
-            if (registeredUser != null && registeredUser.EmailConfirmed==true)
+            if (registeredUser != null && registeredUser.EmailConfirmed)
             {
                 return BadRequest(_resources.ResourceForErrors["Register-RegisteredUserExists"]);
             }
