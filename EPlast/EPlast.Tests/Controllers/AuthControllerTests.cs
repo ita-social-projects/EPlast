@@ -539,6 +539,34 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task Test_RegisterPost_RegisterRegisteredUserExists()
+        {
+            //Arrange
+            var (mockAuthService,
+                _,
+                _,
+                mockResources,
+                _,
+                AuthController) = CreateAuthController();
+
+            mockAuthService
+                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetTestUserDtoWithAllFieldsEmailConfirmed());
+
+            mockResources
+                .Setup(s => s.ResourceForErrors["Register-RegisteredUserExists"])
+                .Returns(GetRegisterRegisteredUser());
+
+            //Act
+            var result = await AuthController.Register(GetTestRegisterDto()) as BadRequestObjectResult;
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+            Assert.AreEqual(GetRegisterRegisteredUser().ToString(), result.Value.ToString());
+            Assert.NotNull(result);
+        }
+
+        [Test]
         public async Task Test_RegisterPost_RegisterRegisteredUser()
         {
             //Arrange
@@ -551,7 +579,7 @@ namespace EPlast.Tests.Controllers
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetTestUserDtoWithAllFields());
+                .ReturnsAsync(GetTestUserDtoWithAllFieldsEmailNotConfirmed());
 
             mockResources
                 .Setup(s => s.ResourceForErrors["Register-RegisteredUser"])
@@ -630,6 +658,30 @@ namespace EPlast.Tests.Controllers
                 FirstName = "Andrii",
                 LastName = "Shainoha",
                 EmailConfirmed = true,
+                SocialNetworking = true
+            };
+        }
+
+        private UserDTO GetTestUserDtoWithAllFieldsEmailConfirmed()
+        {
+            return new UserDTO()
+            {
+                UserName = "yurii@gmail.com",
+                FirstName = "Yurii",
+                LastName = "Ivanov",
+                EmailConfirmed = true,
+                SocialNetworking = true
+            };
+        }
+
+        private UserDTO GetTestUserDtoWithAllFieldsEmailNotConfirmed()
+        {
+            return new UserDTO()
+            {
+                UserName = "yurii@gmail.com",
+                FirstName = "Yurii",
+                LastName = "Ivanov",
+                EmailConfirmed = false,
                 SocialNetworking = true
             };
         }
