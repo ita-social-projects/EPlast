@@ -144,7 +144,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
         {
             await _regionService.EditRegionAsync(regId, region);
-            await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
+            await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);     
             await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
             return Ok();
         }
