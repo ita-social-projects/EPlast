@@ -306,9 +306,9 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
 
-                return Ok();
+                return Ok(id);
             }
             return BadRequest(ModelState);
         }
