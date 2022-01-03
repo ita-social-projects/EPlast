@@ -56,11 +56,18 @@ namespace EPlast.BLL.Services.Redis
 
         public async Task RemoveRecordsByPatternAsync(string pattern)
         {
-            var server = _connectionMultiplexer.GetServer(_configuration.GetConnectionString("Redis"));
-            var keys = server.Keys(pattern: pattern + "*", pageSize: 1000);
-            foreach (var key in keys)
+            try
             {
-                await _db.KeyDeleteAsync(key);
+                var server = _connectionMultiplexer.GetServer(_configuration.GetConnectionString("Redis"));
+                var keys = server.Keys(pattern: pattern + "*", pageSize: 1000);
+                foreach (var key in keys)
+                {
+                    await _db.KeyDeleteAsync(key);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Can not get server, because {ex}");
             }
         }
 
