@@ -31,7 +31,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task ApproveAsCityHead_AsAdmin_ReturnsTrue()
         {
             //Arrange
-            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Supporter });
+            _mockUserManager.Setup(u => u.GetRolesAsync(_fakeUser)).ReturnsAsync(new List<string>() { Roles.Admin });
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
@@ -59,6 +60,7 @@ namespace EPlast.Tests.Services.UserProfiles
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.CityHead });
             _mockUserService.Setup(u => u.IsUserSameCity(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            _mockUserService.Setup(u => u.IsApprovedCityMember(It.IsAny<string>())).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
@@ -73,6 +75,7 @@ namespace EPlast.Tests.Services.UserProfiles
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.OkrugaHead });
             _mockUserService.Setup(u => u.IsUserSameRegion(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            _mockUserService.Setup(u => u.IsApprovedCityMember(It.IsAny<string>())).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
@@ -223,6 +226,7 @@ namespace EPlast.Tests.Services.UserProfiles
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
             _mockUserService.Setup(u => u.IsUserSameClub(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            _mockUserService.Setup(u => u.IsApprovedCLubMember(It.IsAny<string>())).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
@@ -262,7 +266,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task ApproveAsClubHead_AsAdmin_ReturnsTrue()
         {
             //Arrange
-            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Supporter });
+            _mockUserManager.Setup(u => u.GetRolesAsync(_fakeUser)).ReturnsAsync(new List<string>() { Roles.Admin });
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
