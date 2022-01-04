@@ -60,12 +60,12 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<string>());
 
             //Assert
-            Assert.IsNotNull(result);
+            Assert.IsNull(result);
             Assert.DoesNotThrowAsync(async () => { await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<string>()); });
         }
 
         [Test]
-        public async Task AddAnnouncementAsync_TextIsNull_ReturnsFalse()
+        public async Task AddAnnouncementAsync_TextIsNull_ReturnsNull()
         {
             //Arrange
             _mapper
@@ -77,10 +77,10 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
 
             //Act
-            bool result = await _governingBodyAnnouncementService.AddAnnouncementAsync(null);
+            int? result = await _governingBodyAnnouncementService.AddAnnouncementAsync(null);
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.IsNull(result);
         }
 
         [TestCase("aaa")]
@@ -100,7 +100,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .Returns(new ClaimsPrincipal());
 
             //Act
-            bool result = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+            int? result = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
 
             //Assert
             _userManager.Verify(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()));
@@ -108,7 +108,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.CreateAsync(governingBody));
             _repoWrapper.Verify(x => x.SaveAsync());
 
-            Assert.IsTrue(result);
+            Assert.IsInstanceOf<int?>(result);
         }
 
         [Test]
