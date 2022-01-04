@@ -240,23 +240,15 @@ namespace EPlast.BLL.Services.EmailSending
         }
 
         /// <inheritdoc />
-        public async Task<EmailModel> GetGreetingForNewPlastMemberEmailAsync(string userId)
+        public EmailModel GetGreetingForNewPlastMemberEmailAsync(string cityName)
         {
-            var userGender = await _userService.GetUserGenderAsync(userId);
-            var friend = userGender switch
-            {
-                UserGenders.Male => "Друже",
-                UserGenders.Female => "Подруго",
-                _ => "Друже/подруго"
-            };
-
             return new EmailModel
             {
                 Title = "EPlast",
-                Subject = "Випробувальний термін завершився!",
-                Message = "<h3>СКОБ!</h3>"
-                          + $"<p>{friend}, сьогодні завершився Твій випробувальний період в Пласт!"
-                          + "<p>Будь тією зміною, яку хочеш бачити у світі!</p>"
+                Subject = "Вітаємо з заваршенням випробувального терміну!",
+                Message = "<p>Вітаємо! У тебе закінчився випробувальний термін. Переконайся, " +
+                          "що усі вимоги виконано та звернись до відповідального по роботі з " +
+                          $"прихильниками у своєму осередку: {cityName}.</p>"
             };
         }
 
@@ -329,6 +321,23 @@ namespace EPlast.BLL.Services.EmailSending
                           + "<p>Доступ до Вашого аккаунту відновлено.</p>"
                           + $"<p>Відтепер Ви є прихильником станиці {cityName}.</p>"
                           + "<p>Ласкаво просимо до Пласту!</p>"
+            };
+        }
+
+        /// <inheritdoc />
+        public UserNotification GetGreetingForNewPlastMemberMessageAsync(string userId, string cityName, int notificationType, int cityId)
+        {
+            return new UserNotification()
+            {
+                OwnerUserId = userId,
+                NotificationTypeId = notificationType,
+                SenderLink = $"cities/{cityId}",
+                SenderName = cityName,
+                CreatedAt = DateTime.Now,
+                Message = "Вітаємо! У тебе закінчився випробувальний термін. " +
+                          "Переконайся, що усі вимоги виконано та звернись до " +
+                          "відповідального по роботі з прихильниками у своєму " +
+                          "осередку:"
             };
         }
     }

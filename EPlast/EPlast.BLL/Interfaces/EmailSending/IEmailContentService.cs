@@ -121,9 +121,19 @@ namespace EPlast.BLL.Interfaces
         /// <summary>
         /// Get email to greet new plast members
         /// </summary>
-        /// <param name="userId">User id</param>
+        /// <param name="cityName">User id</param>
         /// <returns>Email content</returns>
-        Task<EmailModel> GetGreetingForNewPlastMemberEmailAsync(string userId);
+        EmailModel GetGreetingForNewPlastMemberEmailAsync(string cityName);
+
+        /// <summary>
+        /// Get notification to greet new plast members
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <param name="cityName">User id</param>
+        /// <param name="notificationType">Notification type</param>
+        /// <param name="cityId">City id</param>
+        /// <returns>Message content</returns>
+        UserNotification GetGreetingForNewPlastMemberMessageAsync(string userId, string cityName, int notificationType, int cityId);
 
         /// <summary>
         /// Gets email to inform Former-Member user about account renewal
