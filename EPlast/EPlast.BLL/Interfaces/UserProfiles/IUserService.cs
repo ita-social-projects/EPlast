@@ -75,6 +75,13 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         Task<string> GetImageBase64Async(string fileName);
 
         /// <summary>
+        /// Get a profile image by specifying user id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns>Profile image in format base64</returns>
+        Task<string> GetProfileImageAsync(string userId);
+
+        /// <summary>
         /// Update profile img
         /// </summary>
         /// <param name="userid">Id of user</param>

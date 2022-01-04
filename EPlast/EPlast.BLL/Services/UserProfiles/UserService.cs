@@ -405,5 +405,12 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
         }
 
+        /// <inheritdoc/>
+        public async Task<string> GetProfileImageAsync(string userId)
+        {
+            var user = await _repoWrapper.User.GetFirstAsync(i => i.Id == userId);
+            var image = await GetImageBase64Async(user.ImagePath);
+            return image;
+        }
     }
 }

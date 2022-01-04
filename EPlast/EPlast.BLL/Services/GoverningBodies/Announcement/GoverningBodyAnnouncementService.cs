@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using EPlast.BLL.Interfaces.UserProfiles;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Announcement
@@ -18,14 +18,17 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
     public class GoverningBodyAnnouncementService : IGoverningBodyAnnouncementService
     {
         private readonly IRepositoryWrapper _repoWrapper;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _context;
         private readonly UserManager<User> _userManager;
 
         public GoverningBodyAnnouncementService(IRepositoryWrapper repositoryWrapper,
-            IMapper mapper, IHttpContextAccessor context, UserManager<User> userManager)
+            IUserService userService, IMapper mapper, 
+            IHttpContextAccessor context, UserManager<User> userManager)
         {
             _repoWrapper = repositoryWrapper;
+            _userService = userService;
             _mapper = mapper;
             _context = context;
             _userManager = userManager;
@@ -64,6 +67,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             foreach (GoverningBodyAnnouncementUserDTO announcement in announcements)
             {
                 announcement.User = _mapper.Map<UserDTO>(await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId));
+                announcement.ProfileImageBase64 = await _userService.GetProfileImageAsync(announcement.UserId);
             }
             return announcements.OrderByDescending(d => d.Date);
         }
@@ -72,7 +76,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         {
             var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
             announcement.User = _mapper.Map<UserDTO>(await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId));
-
+            announcement.ProfileImageBase64 = await _userService.GetProfileImageAsync(announcement.UserId);
             return announcement;
         }
 
