@@ -28,10 +28,11 @@ namespace EPlast.BLL.Services.ActiveMembership
             if (userDto != null)
             {
                 UserMembershipDates userMembershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(umd => umd.UserId == userDto.Id);
-                if (userMembershipDates != null)
+                if (userMembershipDates != null && entryAndOathDatesDTO.DateEntry != default)
                 {
                     var dateOathIsLowerDateEnd = userMembershipDates.DateEnd == default || userMembershipDates.DateEnd > entryAndOathDatesDTO.DateOath;
-                    if (entryAndOathDatesDTO.DateEntry <= entryAndOathDatesDTO.DateOath && dateOathIsLowerDateEnd)
+                    var dateEntryIsLowerOathDate = entryAndOathDatesDTO.DateOath == default || entryAndOathDatesDTO.DateOath > entryAndOathDatesDTO.DateEntry;
+                    if (dateEntryIsLowerOathDate && dateOathIsLowerDateEnd)
                     {
                         userMembershipDates.DateOath = entryAndOathDatesDTO.DateOath;
                         userMembershipDates.DateEntry = entryAndOathDatesDTO.DateEntry;
