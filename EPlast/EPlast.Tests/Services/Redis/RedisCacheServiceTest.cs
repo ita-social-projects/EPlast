@@ -103,6 +103,20 @@ namespace EPlast.Tests.Services.Redis
         }
 
         [Test]
+        public async Task RemoveRecordByPatternAsync_ThrowsNullException()
+        {
+            //Arrange
+            _connectionMultiplexer.Setup(x => x.GetServer(It.IsAny<string>(), It.IsAny<object>()))
+                .Throws(It.IsAny<ArgumentNullException>());
+
+            //Act
+            await _redisCacheService.RemoveRecordsByPatternAsync(Key);
+
+            //Assert
+            _db.Verify(x => x.KeyDeleteAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()), Times.Never);
+        }
+
+        [Test]
         public async Task SetCacheRecordAsync_ReturnsCorrect()
         {
             //Arrange
