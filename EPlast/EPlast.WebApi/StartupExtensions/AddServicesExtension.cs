@@ -1,8 +1,10 @@
-﻿using EPlast.BLL.Services.Jwt;
+﻿using EPlast.BLL;
+using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using Hangfire;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +26,7 @@ namespace EPlast.WebApi.StartupExtensions
                     .AddEntityFrameworkStores<EPlastDBContext>()
                     .AddDefaultTokenProviders();
             services.AddCors();
+            services.AddMediatR(typeof(MediatrEntryPoint));
             services.AddSwagger();
             
             services.AddControllers()
