@@ -193,10 +193,6 @@ namespace EPlast.Tests.Services.EmailSending
         [TestCase("Тернопіль")]
         public void GetGreetingForNewPlastMemberEmail_ReturnsEmailModel(string cityName)
         {
-            // Arrange
-            //_mockUserService.Setup(x => x.GetUserGenderAsync(It.IsAny<string>()))
-            //    .ReturnsAsync(cityName);
-
             // Act
             var result = _emailContentService.GetGreetingForNewPlastMemberEmailAsync(cityName);
 
