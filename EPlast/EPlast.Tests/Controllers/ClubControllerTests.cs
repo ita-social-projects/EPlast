@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using EPlast.BLL.Commands.Club;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Queries.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Club;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -26,6 +30,7 @@ namespace EPlast.Tests.Controllers
     {
         private readonly Mock<IClubService> _clubService;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IMediator> _mediator;
         private readonly Mock<ILoggerService<ClubController>> _logger;
         private readonly Mock<IClubParticipantsService> _clubParticipantsService;
         private readonly Mock<IClubAccessService> _clubAccessService;
@@ -38,6 +43,7 @@ namespace EPlast.Tests.Controllers
             _clubAccessService = new Mock<IClubAccessService>();
             _clubService = new Mock<IClubService>();
             _mapper = new Mock<IMapper>();
+            _mediator = new Mock<IMediator>();
             _logger = new Mock<ILoggerService<ClubController>>();
             _clubParticipantsService = new Mock<IClubParticipantsService>();
             _clubDocumentsService = new Mock<IClubDocumentsService>();
@@ -52,38 +58,9 @@ namespace EPlast.Tests.Controllers
            _clubParticipantsService.Object,
            _clubDocumentsService.Object,
            _clubAccessService.Object,
-           _userManager.Object
+           _userManager.Object,
+             _mediator.Object
           );
-
-        [TestCase(1, 1, "Курінь")]
-        public async Task GetCities_Valid_Test(int page, int pageSize, string cityName)
-        {
-            // Arrange
-            ClubController controller = CreateClubController;
-            var httpContext = new Mock<HttpContext>();
-            httpContext
-                .Setup(m => m.User.IsInRole(Roles.Admin))
-                .Returns(true);
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-
-            controller.ControllerContext = context;
-            _clubService
-                .Setup(c => c.GetAllClubsAsync(It.IsAny<string>()))
-
-                .ReturnsAsync(GetClubsBySearch());
-
-            // Act
-            var result = await controller.GetClubs(page, pageSize, cityName);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as ClubsViewModel)
-                .Clubs.Where(c => c.Name.Equals("Курінь")));
-        }
 
         [TestCase(1, 1, "Курінь")]
         public async Task GetActivClub_Valid_Test(int page, int pageSize, string clubName)
@@ -99,8 +76,8 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
-            _clubService
-                .Setup(c => c.GetAllClubsByPageAndIsArchiveAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+            _mediator
+                .Setup(m => m.Send(It.IsAny<GetAllClubsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
 
             // Act
@@ -125,9 +102,9 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             clubcon.ControllerContext = context;
-            _clubService
-                .Setup(c => c.GetAllClubsByPageAndIsArchiveAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
-                .ReturnsAsync(CreateTuple);
+            _mediator
+               .Setup(m => m.Send(It.IsAny<GetAllClubsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
+               .ReturnsAsync(CreateTuple);
 
             // Act
             var result = await clubcon.GetNotActiveClubs(page, pageSize, clubName);
@@ -276,9 +253,10 @@ namespace EPlast.Tests.Controllers
         public async Task GetClubMembersInfo_Valid_Test(int id)
         {
 
-            _clubService.Setup(c => c.GetClubDataForReport(It.IsAny<int>()))
-                .ReturnsAsync(new ClubReportDataDTO());
-
+            // Arrange
+            _mediator
+                 .Setup(m => m.Send(It.IsAny<GetClubDataForReportQuery>(), It.IsAny<CancellationToken>()))
+                 .ReturnsAsync(new ClubReportDataDTO());
             ClubController controller = CreateClubController;
 
             // Act
@@ -516,8 +494,8 @@ namespace EPlast.Tests.Controllers
         public async Task Details_Invalid_Test()
         {
             // Arrange
-            _clubService
-                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+            _mediator.Setup(m => m
+            .Send(It.IsAny<GetByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
             _mapper
                 .Setup(m => m.Map<ClubDTO, ClubViewModel>(It.IsAny<ClubDTO>()))
@@ -867,8 +845,8 @@ namespace EPlast.Tests.Controllers
         public async Task ArchiveClub_valid_Test()
         {
             //Arrange
-            _clubService
-                .Setup(c => c.ArchiveAsync(It.IsAny<int>()));
+            _mediator
+                .Setup(m => m.Send(It.IsAny<ArchiveCommand>(), It.IsAny<CancellationToken>()));
             ClubController Clubcon = CreateClubController;
 
             //Act
@@ -883,8 +861,8 @@ namespace EPlast.Tests.Controllers
         public async Task UnArchiveClub_valid_Test()
         {
             //Arrange
-            _clubService
-                .Setup(c => c.UnArchiveAsync(It.IsAny<int>()));
+            _mediator
+               .Setup(m => m.Send(It.IsAny<UnArchiveCommand>(), It.IsAny<CancellationToken>()));
             ClubController Clubcon = CreateClubController;
 
             //Act

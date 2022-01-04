@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
+using MediatR;
+using EPlast.BLL.Queries.Club;
+using EPlast.BLL.Commands.Club;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -27,6 +30,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IClubDocumentsService _clubDocumentsService;
         private readonly IClubAccessService _clubAccessService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
         public ClubController(ILoggerService<ClubController> logger,
             IMapper mapper,
@@ -34,7 +38,8 @@ namespace EPlast.WebApi.Controllers
             IClubParticipantsService clubParticipantsService,
             IClubDocumentsService clubDocumentsService,
             IClubAccessService clubAccessService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
             _logger = logger;
             _mapper = mapper;
@@ -43,6 +48,7 @@ namespace EPlast.WebApi.Controllers
             _clubDocumentsService = clubDocumentsService;
             _clubAccessService = clubAccessService;
             _userManager = userManager;
+            _mediator = mediator;
         }
         /// <summary>
         /// Get all clubs 
@@ -57,23 +63,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get a specific number of Clubs 
-        /// </summary>
-        /// <param name="page">A number of the page</param>
-        /// <param name="pageSize">A count of Clubs to display</param>
-        /// <param name="clubName">Optional param to find Clubs by name</param>
-        /// <returns>A specific number of Clubs</returns>
-        [HttpGet("Profiles/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetClubs(int page, int pageSize, string clubName = null)
-        {
-            var clubs = await _clubService.GetAllClubsAsync(clubName);
-            var clubsViewModel = new ClubsViewModel(page, pageSize, clubs, User.IsInRole(Roles.Admin));
-
-            return Ok(clubsViewModel);
-        }
-
-        /// <summary>
         /// Get a specific number of active clubs 
         /// </summary>
         /// <param name="page">A number of the page</param>
@@ -84,10 +73,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetActiveClubs(int page, int pageSize, string clubName = null)
         {
-            var isArchive = true;
-            var clubsTuple = await _clubService.GetAllClubsByPageAndIsArchiveAsync(page, pageSize, clubName, isArchive);
+            bool isArchived = true;
+            var query = new GetAllClubsByPageAndIsArchiveQuery(page, pageSize, clubName, isArchived);
+            var clubsTuple = await _mediator.Send(query);
 
-            return Ok(new {clubs = clubsTuple.Item1, rows = clubsTuple.Item2});
+            return Ok(new { clubs = clubsTuple.Item1, rows = clubsTuple.Item2 });
         }
 
         /// <summary>
@@ -101,9 +91,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveClubs(int page, int pageSize, string clubName = null)
         {
-            bool isArchive = false;
-            var clubsTuple = await _clubService.GetAllClubsByPageAndIsArchiveAsync(page, pageSize,clubName, isArchive);
-            
+            bool isArchived = false;
+            var query = new GetAllClubsByPageAndIsArchiveQuery(page, pageSize, clubName, isArchived);
+            var clubsTuple = await _mediator.Send(query);
+
             return Ok(new { clubs = clubsTuple.Item1, rows = clubsTuple.Item2 });
         }
 
@@ -168,7 +159,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetClubMembersInfo(int clubId)
         {
-            var clubProfileDto = await _clubService.GetClubDataForReport(clubId);
+            var clubProfileDto = await _mediator.Send(new GetClubDataForReportQuery(clubId));
 
 
             if (clubProfileDto == null)
@@ -478,7 +469,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Archive(int clubId)
         {
-            await _clubService.ArchiveAsync(clubId);
+            await _mediator.Send(new ArchiveCommand(clubId));
             return Ok();
         }
 
@@ -490,7 +481,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> UnArchive(int clubId)
         {
-            await _clubService.UnArchiveAsync(clubId);
+            await _mediator.Send(new UnArchiveCommand(clubId));
             return Ok();
         }
 
