@@ -12,71 +12,7 @@ namespace EPlast.BLL.Interfaces.Club
     ///  Implement  operations for work with clubs
     /// </summary>
     public interface IClubService
-    {
-        /// <summary>
-        /// Archives a specific club
-        /// </summary>
-        /// <param name="clubId">The id of the club</param>
-        Task ArchiveAsync(int clubId);
-
-        /// <summary>
-        /// Gets all cities
-        /// </summary>
-        /// <param name="clubName">Optional param to find club by name</param>
-        /// <returns>All clubs of type Club</returns>
-        Task<IEnumerable<DataAccessClub.Club>> GetAllAsync(string clubName = null);
-
-        /// <summary>
-        /// Gets all clubs
-        /// </summary>
-        /// <param name="clubName">Optional param to find club by name</param>
-        /// <returns>All active clubs of type Club</returns>
-        Task<IEnumerable<DataAccessClub.Club>> GetAllActiveAsync(string clubName = null);
-
-        /// <summary>
-        /// Gets all clubs
-        /// </summary>
-        /// <param name="clubName">Optional param to find club by name</param>
-        /// <returns>All not active clubs of type Club</returns>
-        Task<IEnumerable<DataAccessClub.Club>> GetAllNotActiveAsync(string clubName = null);
-
-        /// <summary>
-        /// Gets all clubs
-        /// </summary>
-        /// <param name="clubName">Optional param to find club by name</param>
-        /// <returns>All cities of type ClubDTO</returns>
-        Task<IEnumerable<ClubDTO>> GetAllClubsAsync(string clubName = null);
-
-        /// <summary>
-        /// Gets all active clubs
-        /// </summary>
-        /// <param name="clubName">Optional param to find active club by name</param>
-        /// <returns>All active cities of type ClubDTO</returns>
-        Task<IEnumerable<ClubDTO>> GetAllActiveClubsAsync(string clubName = null);
-
-        /// <summary>
-        /// Gets all not active clubs
-        /// </summary>
-        /// <param name="clubName">Optional param to find not active club by name</param>
-        /// <returns>All not active cities of type ClubDTO</returns>
-        Task<IEnumerable<ClubDTO>> GetAllNotActiveClubsAsync(string clubName = null);
-
-        /// <summary>
-        /// Gets all regions based on page and their archivation status
-        /// </summary>
-        /// <param name="page">Page number</param>
-        /// <param name="pageSize">Size of the page</param>
-        /// /// <param name="clubName">Search string to find club by name</param>
-        /// /// <param name="isArchive">Archivation status of the club</param>
-        /// <returns>All not active cities of type ClubDTO</returns>
-        Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive);
-
-        /// <summary>
-        /// Gets a specific Club
-        /// </summary>
-        /// <param name="clubId">The id of the Club</param>
-        /// <returns></returns>
-        Task<ClubDTO> GetByIdAsync(int clubId);
+    { 
 
         /// <summary>
         /// Gets an information about a specific Club with 6 members per section
@@ -185,44 +121,6 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <returns>All clubs</returns>
         Task<IEnumerable<ClubForAdministrationDTO>> GetClubs();
-
-        /// <summary>
-        /// Gets all data for report clubs
-        /// </summary>
-        Task<ClubReportDataDTO> GetClubDataForReport(int clubId);
-
-        /// <summary>
-        /// Gets all club followers from history
-        /// </summary>
-        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryFollowers(int clubId);
-
-        /// <summary>
-        ///  Gets all club members from history
-        /// </summary>
-        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubHistoryMembers(int clubId);
-
-        /// <summary>
-        /// Gets all club administrations
-        /// </summary>
-        Task<IEnumerable<DataAccessClub.ClubAdministration>> GetClubAdministrations(int clubId);
-
-        /// <summary>
-        /// Gets count of users per year
-        /// </summary>
-        /// <returns>count of users</returns>
-        Task<int> GetCountUsersPerYear(int clubId);
-
-        /// <summary>
-        /// Gets count of deleted users 
-        /// </summary>
-        /// <returns>count of deletet users</returns>
-        Task<int> GetCountDeletedUsersPerYear(int clubId);
-
-        /// <summary>
-        /// Unarchives a specific club
-        /// </summary>
-        /// <param name="clubId">The id of the club</param>
-        Task UnArchiveAsync(int clubId);
 
         /// <summary>
         /// Get all users of a specific club

@@ -188,17 +188,13 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
-        [TestCase("userId", UserGenders.Male)]
-        [TestCase("userId", UserGenders.Female)]
-        [TestCase("userId", UserGenders.Undefined)]
-        public async Task GetGreetingForNewPlastMemberEmailAsync_ReturnsEmailModel(string userId, string userGender)
+        [TestCase("Вінниця")]
+        [TestCase("Бар")]
+        [TestCase("Тернопіль")]
+        public void GetGreetingForNewPlastMemberEmail_ReturnsEmailModel(string cityName)
         {
-            // Arrange
-            _mockUserService.Setup(x => x.GetUserGenderAsync(It.IsAny<string>()))
-                .ReturnsAsync(userGender);
-
             // Act
-            var result = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            var result = _emailContentService.GetGreetingForNewPlastMemberEmailAsync(cityName);
 
             // Assert
             Assert.NotNull(result);
@@ -233,6 +229,19 @@ namespace EPlast.Tests.Services.EmailSending
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<EmailModel>(result);
+        }
+
+        [TestCase("userId", "Вінниця", 0, 210)]
+        [TestCase("userId", "Бар", 0, 244)]
+        [TestCase("userId", "Тернопіль", 0, 280)]
+        public void GetGreetingForNewPlastMemberMessage_ReturnsUserNotificationModel(string userId, string cityName, int notificationType, int cityId)
+        {
+            // Act
+            var result = _emailContentService.GetGreetingForNewPlastMemberMessageAsync(userId, cityName, notificationType, cityId);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<UserNotification>(result);
         }
 
         [SetUp]
