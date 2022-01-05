@@ -175,7 +175,20 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userService.GetImageBase64Async(imageName));
         }
-
+/*
+        /// <summary>
+        /// Get profile image by specifying user id
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>Profile image in format base64</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("getProfileImage/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetProfileImage(string userId)
+        {
+            return Ok(await _userService.GetProfileImageBase64Async(userId));
+        }
+*/
         /// <summary>
         /// Get specify model for edit user
         /// </summary>

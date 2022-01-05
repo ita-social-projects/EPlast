@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Entities;
@@ -12,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPlast.BLL.Interfaces.UserProfiles;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace EPlast.BLL.Services.GoverningBodies.Announcement
 {
@@ -61,22 +61,36 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             await _repoWrapper.SaveAsync();
         }
 
+        [Obsolete("This method is obsolete. Use GetAnnouncementsByPageAsync method to provide better performance")]
         public async Task<IEnumerable<GoverningBodyAnnouncementUserDTO>> GetAllAnnouncementAsync()
         {
             var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(await _repoWrapper.GoverningBodyAnnouncement.GetAllAsync());
             foreach (GoverningBodyAnnouncementUserDTO announcement in announcements)
             {
-                announcement.User = _mapper.Map<UserDTO>(await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId));
-                announcement.ProfileImageBase64 = await _userService.GetProfileImageAsync(announcement.UserId);
+                var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
+                announcement.User = _mapper.Map<UserDTO>(user);
             }
             return announcements.OrderByDescending(d => d.Date);
+        }
+
+        /// <inheritdoc/>
+        public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize)
+        {
+            var order = GetOrder();
+            var selector = GetSelector();
+            var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(null, selector, order, pageNumber, pageSize, true);
+            var clubs = tuple.Item1;
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>(_mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(clubs), rows);
         }
 
         public async Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id)
         {
             var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
-            announcement.User = _mapper.Map<UserDTO>(await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId));
-            announcement.ProfileImageBase64 = await _userService.GetProfileImageAsync(announcement.UserId);
+
+            var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
+            announcement.User = _mapper.Map<UserDTO>(user);
             return announcement;
         }
 
@@ -104,6 +118,29 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             _repoWrapper.GoverningBodyAnnouncement.Update(updatedAnnouncement);
             await _repoWrapper.SaveAsync();
             return updatedAnnouncement.Id;
+        }
+
+        private Expression<Func<GoverningBodyAnnouncement, object>> GetOrder()
+        {
+            Expression<Func<GoverningBodyAnnouncement, object>> expr = x => x.Date;
+            return expr;
+        }
+        private Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>> GetSelector()
+        {
+
+            Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>> expr = x => 
+            new GoverningBodyAnnouncement { 
+                Id = x.Id,
+                UserId = x.UserId,
+                Text = x.Text, 
+                User = new User
+                {
+                    FirstName = x.User.FirstName,
+                    LastName = x.User.LastName,
+                    ImagePath = x.User.ImagePath
+                }, 
+                Date = x.Date };
+            return expr;
         }
     }
 }

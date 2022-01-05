@@ -12,6 +12,5 @@ namespace EPlast.BLL.DTO.GoverningBody.Announcement
         public string UserId { get; set; }
         public DateTime Date { get; set; }
         public UserDTO User { get; set; }
-        public string ProfileImageBase64 { get; set; }
     }
 }

@@ -108,9 +108,10 @@ namespace EPlast.DataAccess.Repositories
                                                        Expression<Func<T, T>> selector = null,
                                                        Expression<Func<T, object>> sorting = null,
                                                        int? pageNumber = null,
-                                                       int? pageSize = null)
+                                                       int? pageSize = null, 
+                                                       bool sortDesc = false)
         {
-            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize);
+            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize, sortDesc);
         }
 
         private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
@@ -131,7 +132,8 @@ namespace EPlast.DataAccess.Repositories
                                                        Expression<Func<T, T>> selector = null,
                                                        Expression<Func<T, object>> sorting = null,
                                                        int? pageNumber = null,
-                                                       int? pageSize = null)
+                                                       int? pageSize = null,
+                                                       bool sortDesc = false)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
 
@@ -148,7 +150,10 @@ namespace EPlast.DataAccess.Repositories
 
             if(sorting != null)
             {
-                query = query.OrderBy(sorting);
+                if(!sortDesc)
+                    query = query.OrderBy(sorting);
+                else
+                    query = query.OrderByDescending(sorting);
             }
             if(pageNumber != null && pageSize != null)
             {

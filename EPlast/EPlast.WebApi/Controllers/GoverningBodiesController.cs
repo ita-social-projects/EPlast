@@ -346,6 +346,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyAnnouncementUserDTO);
         }
 
+        [Obsolete("This action is obsolete. Use GetAnnouncementsByPage action to provide better performance")]
         [HttpGet("GetAllAnnouncements")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetAllAnnouncement()
@@ -354,6 +355,23 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(announcements);
         }
+
+        /// <summary>
+        /// Get specified by page number and page size list of announcements
+        /// </summary>
+        /// <param name="pageNumber">Number of the page</param>
+        /// <param name="pageSize">Size of one page</param>
+        /// <returns>Specified by page number and page size list of announcements</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Could not get requested announcements</response>
+        [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize)
+        {
+            var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
+            return Ok(announcements);
+        }
+
 
         [HttpGet("GetAllUsersId")]
         public async Task<IActionResult> GetAllUserId()
