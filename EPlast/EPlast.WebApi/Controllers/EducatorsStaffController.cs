@@ -114,7 +114,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         ///  <response code="404"> no types yet in database</response>
         [HttpGet("kvTypes")]
-        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> GetKVTypes()
         {
             var Types = await _kvTypeService.GetAllKVTypesAsync();
@@ -131,7 +130,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         ///  <response code="404"> no kadras yet in database</response>
         [HttpGet("kadras")]
-        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> GetAllKVs()
         {
             var KVs = await _kvService.GetAllKVsAsync();
