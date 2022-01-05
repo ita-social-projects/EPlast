@@ -487,29 +487,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task CreatePdf_ReturnsOkObjectResult()
-        {
-            //Arrange
-            byte[] bytesReturn = new byte[3] { 0, 2, 3 };
-            _pdfService
-                .Setup(x => x.AnnualReportCreatePDFAsync(It.IsAny<int>()))
-                .ReturnsAsync(bytesReturn);
-            AnnualReportController annualController = CreateAnnualReportController;
-
-            //Act
-            var result = await annualController.CreatePdf(It.IsAny<int>());
-            var resultValue = (result as ObjectResult).Value;
-
-            //Assert
-            _pdfService.Verify();
-            Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<string>(resultValue);
-            Assert.AreNotEqual(string.Empty, resultValue);
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
         public async Task Confirm_Invalid_NullReferenceException_Test()
         {
             _annualReportService.Setup(a => a.ConfirmAsync(It.IsAny<User>(), It.IsAny<int>()))
