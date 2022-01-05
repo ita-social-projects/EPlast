@@ -101,6 +101,9 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             userAccess["CanSeeAddDeleteUserExtractUPU"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             userAccess["CanAddUserDistionction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDeleteUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDownloadUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanViewDownloadUserBiography"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             return userAccess;
         }
 
