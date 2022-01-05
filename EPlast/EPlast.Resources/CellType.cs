@@ -4,6 +4,6 @@
     {
         City,
         Region,
-        Hovel
+        Club
     }
 }

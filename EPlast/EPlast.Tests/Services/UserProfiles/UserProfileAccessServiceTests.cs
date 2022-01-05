@@ -210,7 +210,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
-            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Hovel)).ReturnsAsync(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Club)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
@@ -224,7 +224,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
-            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Hovel)).ReturnsAsync(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Club)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);
@@ -272,6 +272,20 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             Assert.IsTrue(result);
+        }
+
+        [Test]
+        public async Task ApproveWrongRoleName_ReturnsFalse()
+        {
+            //Arrange
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Supporter });
+            _mockUserManager.Setup(u => u.GetRolesAsync(_fakeUser)).ReturnsAsync(new List<string>() { Roles.KurinHead });
+
+            //Act
+            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), "Fake role here");
+
+            //Assert
+            Assert.IsFalse(result);
         }
 
         private readonly User _fakeUser = new User { Id = "1" };

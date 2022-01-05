@@ -1,5 +1,4 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.UserProfiles;
+﻿using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -36,7 +35,7 @@ namespace EPlast.BLL.Services.UserProfiles
                     (roles.Contains(Roles.CityHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.City)) ||
                     (roles.Contains(Roles.OkrugaHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Region)),
                 Roles.KurinHead =>
-                    (roles.Contains(Roles.KurinHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Hovel)),
+                    (roles.Contains(Roles.KurinHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Club)),
                 _ => false,
             };
         }
@@ -51,9 +50,9 @@ namespace EPlast.BLL.Services.UserProfiles
                 return true;
             }
             return
-                ((roles.Contains(Roles.OkrugaHead)) && await _userService.IsUserInSameCell(currentUser, focusUser,CellType.Region)) ||
+                ((roles.Contains(Roles.OkrugaHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Region)) ||
                 ((roles.Contains(Roles.CityHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.City)) ||
-                ((roles.Contains(Roles.KurinHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Hovel));
+                ((roles.Contains(Roles.KurinHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Club));
         }
 
         public async Task<bool> CanViewFullProfile(User user, string focusUserId)
@@ -72,7 +71,6 @@ namespace EPlast.BLL.Services.UserProfiles
             return
                 (_userService.IsUserSameCity(currentUser, focusUser) || _userService.IsUserSameClub(currentUser, focusUser)) ||
                 ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && _userService.IsUserSameRegion(currentUser, focusUser));
-
         }
 
         private async Task<bool> IsAdminAsync(User user)
