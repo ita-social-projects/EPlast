@@ -105,19 +105,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
 
             return userIds;
         }
-        public async Task<int> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        public async Task EditAnnouncement(int id, string text)
         {
-            GoverningBodyAnnouncement updatedAnnouncement = new GoverningBodyAnnouncement()
-            {
-                Id = announcement.Id,
-                Date = announcement.Date,
-                UserId = announcement.UserId,
-                User = _mapper.Map<UserDTO, User>(announcement.User),
-                Text = announcement.Text
-            };
+            GoverningBodyAnnouncement updatedAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstOrDefaultAsync(x=>x.Id == id);
+            updatedAnnouncement.Text = text;
             _repoWrapper.GoverningBodyAnnouncement.Update(updatedAnnouncement);
             await _repoWrapper.SaveAsync();
-            return updatedAnnouncement.Id;
         }
 
         private Expression<Func<GoverningBodyAnnouncement, object>> GetOrder()

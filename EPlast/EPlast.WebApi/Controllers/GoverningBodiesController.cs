@@ -313,13 +313,13 @@ namespace EPlast.WebApi.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPut("EditAnnouncement/{id:int}")]
+        [HttpPatch("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementUserDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
+                await _governingBodyAnnouncementService.EditAnnouncement(announcement.Id, announcement.Text);
                 return Ok();
             }
             return BadRequest();
