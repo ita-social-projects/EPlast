@@ -220,5 +220,12 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="isArchive">check if City is archive</param>
         Task<Tuple<IEnumerable<CityObjectDTO>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize,
             string name, bool isArchive);
+
+        /// <summary>
+        /// Finds city id by user id
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>The id of a city by user id</returns>
+        Task<int> GetCityIdByUserIdAsync(string userId);
     }
 }

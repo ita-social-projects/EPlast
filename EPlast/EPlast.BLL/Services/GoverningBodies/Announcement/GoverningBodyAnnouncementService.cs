@@ -31,11 +31,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             _userManager = userManager;
         }
 
-        public async Task<bool> AddAnnouncementAsync(string text)
+        public async Task<int?> AddAnnouncementAsync(string text)
         {
             if (text == null)
             {
-                return false;
+                return null;
             }
             var governingBodyAnnouncementDTO = new GoverningBodyAnnouncementDTO();
             governingBodyAnnouncementDTO.Text = text;
@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             announcement.Date = DateTime.Now;
             await _repoWrapper.GoverningBodyAnnouncement.CreateAsync(announcement);
             await _repoWrapper.SaveAsync();
-            return true;
+            return announcement.Id;
         }
 
         public async Task DeleteAnnouncementAsync(int id)
