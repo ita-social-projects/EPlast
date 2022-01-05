@@ -59,8 +59,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.CityHead });
-            _mockUserService.Setup(u => u.IsUserSameCity(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
-            _mockUserService.Setup(u => u.IsApprovedCityMember(It.IsAny<string>())).ReturnsAsync(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.City)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
@@ -74,8 +73,8 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.OkrugaHead });
-            _mockUserService.Setup(u => u.IsUserSameRegion(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
-            _mockUserService.Setup(u => u.IsApprovedCityMember(It.IsAny<string>())).ReturnsAsync(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Region)).ReturnsAsync(true);
+
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
@@ -183,7 +182,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.CityHead });
-            _mockUserService.Setup(u => u.IsUserSameCity(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.City)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
@@ -197,7 +196,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.OkrugaHead });
-            _mockUserService.Setup(u => u.IsUserSameRegion(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Region)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
@@ -211,7 +210,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
-            _mockUserService.Setup(u => u.IsUserSameClub(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Hovel)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
@@ -225,8 +224,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
-            _mockUserService.Setup(u => u.IsUserSameClub(It.IsAny<UserDTO>(), It.IsAny<UserDTO>())).Returns(true);
-            _mockUserService.Setup(u => u.IsApprovedCLubMember(It.IsAny<string>())).ReturnsAsync(true);
+            _mockUserService.Setup(u => u.IsUserInSameCell(It.IsAny<UserDTO>(), It.IsAny<UserDTO>(), CellType.Hovel)).ReturnsAsync(true);
 
             //Act
             var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.KurinHead);

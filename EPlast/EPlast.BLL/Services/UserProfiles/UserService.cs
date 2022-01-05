@@ -405,5 +405,15 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
         }
 
+        public async Task<bool> IsUserInSameCell(UserDTO currentUser, UserDTO focusUser, CellType cellType)
+        {
+            return cellType switch
+            {
+                CellType.City => IsUserSameCity(currentUser, focusUser) && await IsApprovedCityMember(focusUser.Id),
+                CellType.Region => IsUserSameRegion(currentUser, focusUser) && await IsApprovedCityMember(focusUser.Id),
+                CellType.Hovel => IsUserSameClub(currentUser, focusUser) && await IsApprovedCLubMember(focusUser.Id),
+                _ => false,
+            };
+        }
     }
 }
