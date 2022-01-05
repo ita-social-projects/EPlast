@@ -29,7 +29,6 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
         private readonly UserManager<User> _userManager;
-        private readonly IPdfService _pdfService;
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
@@ -38,7 +37,6 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AnnualReportController> loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
             UserManager<User> userManager,
-            IPdfService pdfService,
             IClubAnnualReportService clubAnnualReportService, 
             IMapper mapper)
         {
@@ -46,7 +44,6 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _localizer = localizer;
             _userManager = userManager;
-            _pdfService = pdfService;
             _clubAnnualReportService = clubAnnualReportService;
             _mapper = mapper;
         }
