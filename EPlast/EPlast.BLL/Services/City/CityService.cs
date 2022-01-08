@@ -106,7 +106,6 @@ namespace EPlast.BLL.Services
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
 
-        [Obsolete("Moved method to CityHelpers")]
         public CityAdministrationDTO GetCityHead(CityDTO city)
         {
             var cityHead = city.CityAdministration?
@@ -114,7 +113,6 @@ namespace EPlast.BLL.Services
             return cityHead;
         }
 
-        [Obsolete("Moved method to CityHelpers")]
         public CityAdministrationDTO GetCityHeadDeputy(CityDTO city)
         {
             var cityHeadDeputy = city.CityAdministration?
@@ -123,7 +121,6 @@ namespace EPlast.BLL.Services
             return cityHeadDeputy;
         }
 
-        [Obsolete("Moved method to CityHelpers")]
         public List<CityAdministrationDTO> GetCityAdmins(CityDTO city)
         {
             var cityAdmins = city.CityAdministration
