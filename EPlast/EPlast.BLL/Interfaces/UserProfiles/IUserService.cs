@@ -67,7 +67,6 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <returns>Can the user approve</returns>
         bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isAdmin=false);
 
-
         /// <summary>
         /// Get a image
         /// </summary>
@@ -99,7 +98,6 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="cellType">Type of cell (City, Region , Hovel)</param>
         /// <returns></returns>
         Task<bool> IsUserInSameCell(UserDTO currentUser, UserDTO focusUser, CellType cellType);
-      
 
         Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser);
         Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser);
