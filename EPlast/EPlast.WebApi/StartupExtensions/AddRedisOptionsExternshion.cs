@@ -12,7 +12,12 @@ namespace EPlast.WebApi.StartupExtensions
     {
         public static IServiceCollection AddRedisOptionExtenshion(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")));
+            ConfigurationOptions options = new ConfigurationOptions
+            {
+                AbortOnConnectFail = false,
+                EndPoints = { configuration.GetConnectionString("Redis") }
+            };
+            services.AddSingleton<IConnectionMultiplexer>(x => ConnectionMultiplexer.Connect(options));
             return services;
         }
     }
