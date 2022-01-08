@@ -18,17 +18,14 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
     public class GoverningBodyAnnouncementService : IGoverningBodyAnnouncementService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _context;
         private readonly UserManager<User> _userManager;
 
         public GoverningBodyAnnouncementService(IRepositoryWrapper repositoryWrapper,
-            IUserService userService, IMapper mapper, 
-            IHttpContextAccessor context, UserManager<User> userManager)
+            IMapper mapper, IHttpContextAccessor context, UserManager<User> userManager)
         {
             _repoWrapper = repositoryWrapper;
-            _userService = userService;
             _mapper = mapper;
             _context = context;
             _userManager = userManager;
@@ -102,15 +99,16 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             {
                 userIds.Add(user.Id);
             }
-
             return userIds;
         }
-        public async Task EditAnnouncement(int id, string text)
+        public async Task<int?> EditAnnouncement(int id, string text)
         {
             GoverningBodyAnnouncement updatedAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstOrDefaultAsync(x=>x.Id == id);
+            if (updatedAnnouncement == null) return null;
             updatedAnnouncement.Text = text;
             _repoWrapper.GoverningBodyAnnouncement.Update(updatedAnnouncement);
             await _repoWrapper.SaveAsync();
+            return updatedAnnouncement.Id;
         }
 
         private Expression<Func<GoverningBodyAnnouncement, object>> GetOrder()

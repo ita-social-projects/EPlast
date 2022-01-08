@@ -319,10 +319,11 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.EditAnnouncement(announcement.Id, announcement.Text);
-                return Ok();
+                var id = await _governingBodyAnnouncementService.EditAnnouncement(announcement.Id, announcement.Text);
+                if(id == null) return BadRequest();
+                return Ok(id);
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [HttpDelete("DeleteAnnouncement/{id:int}")]
@@ -369,9 +370,9 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize)
         {
             var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
+
             return Ok(announcements);
         }
-
 
         [HttpGet("GetAllUsersId")]
         public async Task<IActionResult> GetAllUserId()

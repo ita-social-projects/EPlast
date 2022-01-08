@@ -559,7 +559,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService.Setup(a => a.GetAllAnnouncementAsync())
-                .ReturnsAsync((new List<GoverningBodyAnnouncementUserDTO>()).AsEnumerable());
+                .ReturnsAsync(new List<GoverningBodyAnnouncementUserDTO>().AsEnumerable());
 
             //Act
             var result = await _governingBodiesController.GetAllAnnouncement();
@@ -568,7 +568,20 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
-        
+
+        [TestCase(1, 5)]
+        public async Task GetAnnouncementsByPage_Valid(int page, int pageSize)
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementsByPageAsync(page, pageSize));
+
+            //Act
+            var result = await _governingBodiesController.GetAnnouncementsByPage(page, pageSize);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         [Test]
         public async Task GetAllUsers_Valid()
         {
@@ -621,14 +634,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService
-                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .Setup(x => x.EditAnnouncement(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(1);
 
             //Act
             var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
 
             //Assert
-            Assert.IsInstanceOf<OkResult>(res);
+            Assert.IsInstanceOf<OkObjectResult>(res);
         }
 
         [Test]
@@ -637,14 +650,14 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _governingBodiesController.ModelState.AddModelError("key", "error message");
             _governingBodyAnnouncementService
-                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementUserDTO>()))
+                .Setup(x => x.EditAnnouncement(It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(1);
 
             //Act
             var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(res);
+            Assert.IsInstanceOf<BadRequestObjectResult>(res);
         }
 
         [Test]
