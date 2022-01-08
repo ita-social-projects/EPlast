@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.UserEntities;
+using System;
 
 namespace EPlast.BLL
 {
@@ -24,6 +25,6 @@ namespace EPlast.BLL
         /// <param name="page">Current page</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Searched Precautions</returns>
-        IEnumerable<UserPrecautionsTableObject> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize);
+        Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(string searchedData, int page, int pageSize);
     }
 }

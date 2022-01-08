@@ -107,10 +107,11 @@ namespace EPlast.DataAccess.Repositories
         public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
                                                        Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null)
         {
-            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize);
+            return await this.GetRangeQuery(filter, selector, sorting, include, pageNumber, pageSize);
         }
 
         private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
@@ -130,6 +131,7 @@ namespace EPlast.DataAccess.Repositories
         private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
                                                        Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null)
         {
@@ -142,6 +144,10 @@ namespace EPlast.DataAccess.Repositories
             if(selector != null)
             {
                 query = query.Select(selector);
+            }
+            if (include != null)
+            {
+                query = include(query);
             }
 
             var TotalRecords = await query.CountAsync();

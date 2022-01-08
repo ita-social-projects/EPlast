@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -70,10 +71,12 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersPrecautionsForTable")]
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
-        public IActionResult GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
         {
-            var distinctions = _precautionService.GetUsersPrecautionsForTable(searchedData, page, pageSize);
-            return Ok(distinctions);
+            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(searchedData, page, pageSize);
+            var allInfoPrecautions = precautions.Item1.ToList();
+            allInfoPrecautions.ForEach(u => u.Total = precautions.Item2);
+            return Ok(allInfoPrecautions);
         }
 
         /// <summary>

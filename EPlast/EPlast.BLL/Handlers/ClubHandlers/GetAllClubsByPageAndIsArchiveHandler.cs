@@ -29,7 +29,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
             var filter = GetFilter(request.ClubName, request.IsArchived);
             var order = GetOrder();
             var selector = GetSelector();
-            var tuple = await _repositoryWrapper.Club.GetRangeAsync(filter, selector, order, request.Page, request.PageSize);
+            var tuple = await _repositoryWrapper.Club.GetRangeAsync(filter, selector, order,null, request.Page, request.PageSize);
             var clubs = tuple.Item1;
             var rows = tuple.Item2;
 

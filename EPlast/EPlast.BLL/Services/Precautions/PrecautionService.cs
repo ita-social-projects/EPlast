@@ -4,9 +4,14 @@ using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace EPlast.BLL.Services
 {
@@ -67,9 +72,69 @@ namespace EPlast.BLL.Services
                 throw new UnauthorizedAccessException();
         }
 
-        public IEnumerable<UserPrecautionsTableObject> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
+        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(string searchedData, int page, int pageSize)
         {
-            return _repoWrapper.UserPrecaution.GetUsersPrecautions(searchedData, page, pageSize);
+            var filter = GetFilter(searchedData);
+            var order = GetOrder();
+            var selector = GetSelector();
+            var include = GetInclude();
+            var tuple = await _repoWrapper.UserPrecaution.GetRangeAsync(filter, selector, order, include, page, pageSize);
+            var precautions = tuple.Item1;
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(_mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionsTableObject>>(precautions), rows);
         }
+
+        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData)
+        {
+            var searchedDataEmty = string.IsNullOrEmpty(searchedData);
+            Expression<Func<UserPrecaution, bool>> expr = (searchedDataEmty) switch
+            {
+                true => x => true,
+                false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
+                || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
+                //|| (x.Date.Day.ToString()+"."+ x.Date.Month.ToString() + "." +x.Date.Year.ToString()).Contains(searchedData)
+                //|| (x.EndDate.Day.ToString() + "." + x.EndDate.Month.ToString() + "." + x.EndDate.Year.ToString()).Contains(searchedData) 
+
+                || x.Date.ToString("dd.MM.yyyy").Contains(searchedData) || x.EndDate.ToString("dd.MM.yyyy").Contains(searchedData)
+
+                //|| x.Date.ToString().Contains(searchedData) || x.EndDate.ToString().Contains(searchedData)
+                || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
+                || x.Precaution.Name.Contains(searchedData)
+                //"dd.MM.yyyy"
+            };
+            return expr;
+        }
+        private Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>> GetInclude()
+        {
+            Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>> expr = x => x.Include(i => i.User).Include(c => c.Precaution);
+            return expr;
+        }
+
+        private Expression<Func<UserPrecaution, object>> GetOrder()
+        {
+
+            Expression<Func<UserPrecaution, object>> expr = x => x.Id;
+            return expr;
+        }
+
+        private Expression<Func<UserPrecaution, UserPrecaution>> GetSelector()
+        {
+
+            Expression<Func<UserPrecaution, UserPrecaution>> expr = x => x;
+            return expr;
+        }
+
+        /*public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive)
+        {
+            var filter = GetFilter(clubName, isArchive);
+            var order = GetOrder();
+            var selector = GetSelector();
+            var tuple = await _repoWrapper.Club.GetRangeAsync(filter, selector, order, page, pageSize);
+            var clubs = tuple.Item1;
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubObjectDTO>>(clubs), rows);
+        }*/
     }
 }
