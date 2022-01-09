@@ -300,9 +300,9 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
-        [HttpPost("AddAnnouncement/{text}")]
+        [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAnnouncement(string text)
+        public async Task<IActionResult> AddAnnouncement([FromBody] string text)
         {
             if (ModelState.IsValid)
             {
