@@ -37,6 +37,6 @@ namespace EPlast.DataAccess.Repositories
         Task<T> GetSingleAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
 
         Task<T> GetSingleOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null);
-        Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> predicate = null, Expression<Func<T, T>> selector = null, Expression<Func<T, object>> sorting = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, int? pageNumber = null, int? pageSize = null);
+        Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> predicate = null, Expression<Func<T, T>> selector = null, Func<IQueryable<T>, IQueryable<T>> sorting = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, int? pageNumber = null, int? pageSize = null);
     }
 }

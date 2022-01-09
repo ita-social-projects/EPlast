@@ -6,6 +6,7 @@ using EPlast.DataAccess.Repositories;
 using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
@@ -47,9 +48,9 @@ namespace EPlast.BLL.Handlers.ClubHandlers
             return expr;
         }
 
-        private Expression<Func<Club, object>> GetOrder()
+        private Func<IQueryable<Club>, IQueryable<Club>> GetOrder()
         {
-            Expression<Func<Club, object>> expr = x => x.ID;
+            Func<IQueryable<Club>, IQueryable<Club>> expr = x => x.OrderBy(e => e.ID);
             return expr;
         }
 

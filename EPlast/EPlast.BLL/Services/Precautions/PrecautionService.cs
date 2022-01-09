@@ -72,10 +72,10 @@ namespace EPlast.BLL.Services
                 throw new UnauthorizedAccessException();
         }
 
-        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(string searchedData, int page, int pageSize)
+        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(IEnumerable<string> sortByOrder, IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter, string searchedData, int page, int pageSize)
         {
-            var filter = GetFilter(searchedData);
-            var order = GetOrder();
+            var filter = GetFilter(searchedData, statusSorter, precautionNameSorter, dateSorter);
+            var order = GetOrder(sortByOrder);
             var selector = GetSelector();
             var include = GetInclude();
             var tuple = await _repoWrapper.UserPrecaution.GetRangeAsync(filter, selector, order, include, page, pageSize);
@@ -85,7 +85,7 @@ namespace EPlast.BLL.Services
             return new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(_mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionsTableObject>>(precautions), rows);
         }
 
-        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData)
+        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter)
         {
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
             Expression<Func<UserPrecaution, bool>> expr = (searchedDataEmty) switch
@@ -110,31 +110,48 @@ namespace EPlast.BLL.Services
             Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>> expr = x => x.Include(i => i.User).Include(c => c.Precaution);
             return expr;
         }
-
-        private Expression<Func<UserPrecaution, object>> GetOrder()
+        /*private Expression<Func<UserPrecaution, object>> GetOrder(IEnumerable<string> sortByOrder)
         {
-
             Expression<Func<UserPrecaution, object>> expr = x => x.Id;
             return expr;
+        }*/
+        private Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>> GetOrder(IEnumerable<string> sortByOrder)
+        {
+            Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>> expr;
+            if (sortByOrder.Contains("number"))
+            {
+                if (sortByOrder.Contains("ascend"))
+                    expr = x => x.OrderBy(x => x.Number);
+                else if (sortByOrder.Contains("descend"))
+                    expr = x => x.OrderByDescending(x => x.Number);
+                else
+                    expr = x => x;
+            }
+            else if (sortByOrder.Contains("userName"))
+            {
+                if (sortByOrder.Contains("ascend"))
+                    expr = x => x.OrderBy(x => x.User.FirstName + " " + x.User.LastName);
+                else if (sortByOrder.Contains("descend"))
+                    expr = x => x.OrderByDescending(x => x.User.FirstName + " " + x.User.LastName);
+                else
+                    expr = x => x;
+            }
+            else
+            {
+                if (sortByOrder.Contains("ascend"))
+                    expr = x => x.OrderBy(x => x.EndDate);
+                else if (sortByOrder.Contains("descend"))
+                    expr = x => x.OrderByDescending(x => x.EndDate);
+                else
+                    expr = x => x;
+            }
+            return expr;
         }
-
         private Expression<Func<UserPrecaution, UserPrecaution>> GetSelector()
         {
 
             Expression<Func<UserPrecaution, UserPrecaution>> expr = x => x;
             return expr;
         }
-
-        /*public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> GetAllClubsByPageAndIsArchiveAsync(int page, int pageSize, string clubName, bool isArchive)
-        {
-            var filter = GetFilter(clubName, isArchive);
-            var order = GetOrder();
-            var selector = GetSelector();
-            var tuple = await _repoWrapper.Club.GetRangeAsync(filter, selector, order, page, pageSize);
-            var clubs = tuple.Item1;
-            var rows = tuple.Item2;
-
-            return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubObjectDTO>>(clubs), rows);
-        }*/
     }
 }

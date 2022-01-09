@@ -1,5 +1,7 @@
 ﻿using EPlast.BLL;
+using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -64,16 +66,14 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get all Users Precautions
         /// </summary>
-        /// <param name="searchedData">Searched Data</param>
-        /// <param name="page">Current page on pagination</param>
-        /// <param name="pageSize">Number of records per page</param>
+        /// <param name="tableSettings">data of table filters, page, search data, page size</param>
         /// <returns>List of UserPrecautionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersPrecautionsForTable")]
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
         {
-            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(searchedData, page, pageSize);
+            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(tableSettings.SortByOrder, tableSettings.StatusSorter, tableSettings.PrecautionNameSorter, tableSettings.DateSorter, tableSettings.SearchedData, tableSettings.Page, tableSettings.PageSize);            
             var allInfoPrecautions = precautions.Item1.ToList();
             allInfoPrecautions.ForEach(u => u.Total = precautions.Item2);
             return Ok(allInfoPrecautions);

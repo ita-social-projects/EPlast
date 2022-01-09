@@ -106,7 +106,7 @@ namespace EPlast.DataAccess.Repositories
 
         public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
-                                                       Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
                                                        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null)
@@ -130,7 +130,7 @@ namespace EPlast.DataAccess.Repositories
 
         private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
-                                                       Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
                                                        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null)
@@ -152,11 +152,12 @@ namespace EPlast.DataAccess.Repositories
 
             var TotalRecords = await query.CountAsync();
 
-            if(sorting != null)
+            if (sorting != null)
             {
-                query = query.OrderBy(sorting);
+                //query = query.OrderBy(sorting);
+                query = sorting(query);
             }
-            if(pageNumber != null && pageSize != null)
+            if (pageNumber != null && pageSize != null)
             {
                 query = query.Skip((int)(pageSize * (pageNumber - 1)))
                     .Take((int)pageSize);
