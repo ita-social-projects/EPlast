@@ -60,7 +60,7 @@ namespace EPlast.Tests.Services.Terms
                 .Setup(x => x.TermsOfUse.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Terms, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Terms>, IIncludableQueryable<DataAccess.Entities.Terms, object>>>()))
                 .ReturnsAsync(nullTerms);
-            mockMapper.Setup(m => m.Map<TermsDTO>(It.IsAny<Subsection>()))
+            mockMapper.Setup(m => m.Map<TermsDTO>(It.IsAny<DataAccess.Entities.AboutBase.Subsection>()))
                 .Returns(nullTermsDTO);
 
             //Act
