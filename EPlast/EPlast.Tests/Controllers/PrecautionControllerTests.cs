@@ -503,7 +503,6 @@ namespace EPlast.Tests.Controllers
             _userPrecautionService
                 .Setup(x => x.GetUserActivePrecaution(It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(new UserPrecautionDTO());
-            
 
             //Act
             var result = await _PrecautionController.GetUserActivePrecautionEndDate(It.IsAny<string>(), It.IsAny<string>());
