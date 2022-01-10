@@ -86,22 +86,53 @@ namespace EPlast.BLL.Services
         }
 
         private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter)
-        {
+        {            
+            Expression<Func<UserPrecaution, bool>> expr;
+
+            expr = (statusSorter == null) switch
+            {
+                true => x => true,
+                false => x => statusSorter.Contains(x.Status),
+            };
+                
+            if (expr.Equals(true)) { }
+            else
+                return expr;
+            
+            expr = (dateSorter == null) switch
+            {
+                true => x => true,
+                false => x => dateSorter.Contains(x.EndDate.ToString()),
+            };
+
+            if (expr.Equals(true)) { }
+            else
+                return expr;
+
+            expr = (precautionNameSorter == null) switch
+            {
+                true => x => true,
+                false => x => precautionNameSorter.Contains(x.Precaution.Name),
+            };
+
+            if (expr.Equals(true)) { }
+            else
+                return expr;
+            
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
-            Expression<Func<UserPrecaution, bool>> expr = (searchedDataEmty) switch
+            expr = (searchedDataEmty) switch
             {
                 true => x => true,
                 false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
                 || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
+
                 //|| (x.Date.Day.ToString()+"."+ x.Date.Month.ToString() + "." +x.Date.Year.ToString()).Contains(searchedData)
                 //|| (x.EndDate.Day.ToString() + "." + x.EndDate.Month.ToString() + "." + x.EndDate.Year.ToString()).Contains(searchedData) 
-
-                || x.Date.ToString("dd.MM.yyyy").Contains(searchedData) || x.EndDate.ToString("dd.MM.yyyy").Contains(searchedData)
-
+                //|| x.Date.ToString("dd.MM.yyyy").Contains(searchedData) || x.EndDate.ToString("dd.MM.yyyy").Contains(searchedData)
                 //|| x.Date.ToString().Contains(searchedData) || x.EndDate.ToString().Contains(searchedData)
+
                 || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
-                //"dd.MM.yyyy"
             };
             return expr;
         }
@@ -110,11 +141,6 @@ namespace EPlast.BLL.Services
             Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>> expr = x => x.Include(i => i.User).Include(c => c.Precaution);
             return expr;
         }
-        /*private Expression<Func<UserPrecaution, object>> GetOrder(IEnumerable<string> sortByOrder)
-        {
-            Expression<Func<UserPrecaution, object>> expr = x => x.Id;
-            return expr;
-        }*/
         private Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>> GetOrder(IEnumerable<string> sortByOrder)
         {
             Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>> expr;
