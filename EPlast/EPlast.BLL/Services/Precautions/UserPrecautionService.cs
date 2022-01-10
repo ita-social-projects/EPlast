@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services.Precautions
                 throw new ArgumentException("Can`t add precaution with existing number");
             }
             bool isActive = await CheckUserPrecautionsType(userPrecautionDTO.UserId, userPrecautionDTO.Precaution.Name);
-            if(isActive)
+            if (isActive)
             {
                 throw new ArgumentException("User has the same active precaution");
             }
@@ -75,7 +75,7 @@ namespace EPlast.BLL.Services.Precautions
             {
                 throw new ArgumentException("Number in register already exists");
             }
-            
+
             var userPrecaution = new UserPrecaution()
             {
                 Id = userPrecautionDTO.Id,
@@ -176,11 +176,11 @@ namespace EPlast.BLL.Services.Precautions
             return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive);
         }
         public async Task<bool> CheckUserPrecautionsType(string userId, string type)
-        { 
+        {
             return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive && x.Precaution.Name.Equals(type));
         }
 
-        public async Task<UserPrecautionDTO> GetUserActivePrecaution( string userId, string type)
+        public async Task<UserPrecautionDTO> GetUserActivePrecaution(string userId, string type)
         {
             return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
         }

@@ -290,7 +290,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Check was successfull</response>
         [HttpGet("checkUserPrecautionsType/{userId}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> CheckUserPrecautionsType(string userId, string type )
+        public async Task<IActionResult> CheckUserPrecautionsType(string userId, string type)
         {
             bool distNumber = await _userPrecautionService.CheckUserPrecautionsType(userId, type);
             return Ok(distNumber);
