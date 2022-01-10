@@ -180,7 +180,7 @@ namespace EPlast.Tests.Services.Precautions
                 .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns(new UserPrecautionDTO());
             //Act  //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => { await PrecautionService.AddUserPrecautionAsync(userPrecautionDTO, It.IsAny<User>()); });
+            Assert.ThrowsAsync<ArgumentException>(async () => { await PrecautionService.AddUserPrecautionAsync(userPrecautionDTO2, It.IsAny<User>()); });
         }
 
         [Test]
@@ -462,6 +462,23 @@ namespace EPlast.Tests.Services.Precautions
             //Assert
             Assert.True(result);
         }
+        public async Task CheckUserPrecautionsTypeFalse_Test()
+        {
+            //Arrange
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                   It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+               .ReturnsAsync(nulluserPrecautions);
+            mockMapper
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Returns(nulluserPrecautionsDTO);
+
+            //Act 
+            var result = await PrecautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу");
+
+            //Assert
+            Assert.False(result);
+        }
         [Test]
         public async Task GetUserActivePrecaution_IsNotNull()
         {
@@ -479,6 +496,25 @@ namespace EPlast.Tests.Services.Precautions
 
             //Assert
             Assert.IsNotNull(result);
+        }
+
+        [Test]
+        public async Task GetUserActivePrecaution_IsNull()
+        {
+            //Arrange
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                   It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+               .ReturnsAsync(GetTestUserPrecaution());
+            mockMapper
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Returns(GetTestUserPrecautionDTO());
+
+            //Act
+            var result = await PrecautionService.GetUserActivePrecaution("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За славу");
+
+            //Assert
+            Assert.IsNull(result);
         }
 
         readonly UserPrecaution nullPrecaution = null;
@@ -519,6 +555,28 @@ namespace EPlast.Tests.Services.Precautions
         };
 
         private UserPrecautionDTO userPrecautionDTO => new UserPrecautionDTO
+        {
+            Id = 1,
+            Precaution = new PrecautionDTO { Id = 1, Name = "За силу" },
+            UserId = UserId,
+            Date = DateTime.Now,
+            User = new BLL.DTO.City.CityUserDTO
+            {
+                FirstName = "",
+                LastName = "",
+                FatherName = "",
+                Email = "",
+                ID = UserId,
+                ImagePath = "",
+                PhoneNumber = ""
+            },
+            PrecautionId = 1,
+            Number = 1,
+            Reason = "",
+            Reporter = ""
+        };
+
+        private UserPrecautionDTO userPrecautionDTO2 => new UserPrecautionDTO
         {
             Id = 1,
             Precaution = new PrecautionDTO { Id = 1, Name = "За силу" },
