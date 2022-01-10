@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -18,6 +19,7 @@ namespace EPlast.BLL.Services
         private readonly IEmailContentService _emailContentService;
         private readonly ICityService _cityService;
         private readonly IUserService _userService;
+        private readonly INotificationService _notificationService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
 
@@ -25,6 +27,7 @@ namespace EPlast.BLL.Services
                                            UserManager<User> userManager,
                                            IEmailSendingService emailSendingService,
                                            IEmailContentService emailContentService,
+                                           INotificationService notificationService,
                                            ICityService cityService,
                                            IUserService userService)
         {
@@ -32,6 +35,7 @@ namespace EPlast.BLL.Services
             _userManager = userManager;
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
+            _notificationService = notificationService;
             _cityService = cityService;
             _userService = userService;
         }
@@ -42,8 +46,9 @@ namespace EPlast.BLL.Services
             var users = await GetNewPlastMembersAsync();
             foreach (var user in users)
             {
-                tasks.Add(SendEmailGreetingForNewPlastMemberAsync(user.Email, user.Id));
+                tasks.Add(SendEmailGreetingForNewPlastMemberAsync(user.Email, user.CityName));
                 tasks.Add(NotifyCityAdminsAsync(user.Id));
+                tasks.Add(SendMessageGreetingForNewPlastMemberAsync(user.Id, user.CityName));
             }
 
             await Task.WhenAll(tasks);
@@ -92,9 +97,9 @@ namespace EPlast.BLL.Services
             return userRoles.Contains(Roles.Admin);
         }
 
-        private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string userId)
+        private async Task<bool> SendEmailGreetingForNewPlastMemberAsync(string userEmail, string cityName)
         {
-            var emailContent = await _emailContentService.GetGreetingForNewPlastMemberEmailAsync(userId);
+            var emailContent = _emailContentService.GetGreetingForNewPlastMemberEmailAsync(cityName);
             return await _emailSendingService.SendEmailAsync(userEmail, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
         }
@@ -106,6 +111,15 @@ namespace EPlast.BLL.Services
                 _emailContentService.GetCityAdminAboutNewPlastMemberEmail(userFirstName, userLastName, userBirthday);
             return await _emailSendingService.SendEmailAsync(cityAdminEmail, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
+        }
+
+        private async Task SendMessageGreetingForNewPlastMemberAsync(string userId, string cityName)
+        {
+            var cityId = await _cityService.GetCityIdByUserIdAsync(userId);
+            var notificationType = (await _notificationService.GetAllNotificationTypesAsync()).First().Id;
+            var messageContent = _emailContentService.GetGreetingForNewPlastMemberMessageAsync(userId, cityName, notificationType, cityId);
+            await _repoWrapper.UserNotifications.CreateAsync(messageContent);
+            await _repoWrapper.SaveAsync();
         }
     }
 }
