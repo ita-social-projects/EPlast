@@ -462,19 +462,21 @@ namespace EPlast.Tests.Services.Precautions
             //Assert
             Assert.True(result);
         }
-        public async Task CheckUserPrecautionsTypeFalse_Test()
+
+        [Test]
+        public async Task CheckUserPrecautionsType_False_Test()
         {
             //Arrange
             mockRepoWrapper
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-               .ReturnsAsync(nulluserPrecautions);
+               .ReturnsAsync(GetTestUserPrecaution());
             mockMapper
                .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
-               .Returns(nulluserPrecautionsDTO);
+               .Returns(GetTestUserPrecautionDTO());
 
             //Act 
-            var result = await PrecautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу");
+            var result = await PrecautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За славу");
 
             //Assert
             Assert.False(result);
@@ -579,7 +581,7 @@ namespace EPlast.Tests.Services.Precautions
         private UserPrecautionDTO userPrecautionDTO2 => new UserPrecautionDTO
         {
             Id = 1,
-            Precaution = new PrecautionDTO { Id = 1, Name = "За силу" },
+            Precaution = new PrecautionDTO { Id = 1, Name = "За все" },
             UserId = UserId,
             Date = DateTime.Now,
             User = new BLL.DTO.City.CityUserDTO
@@ -592,7 +594,7 @@ namespace EPlast.Tests.Services.Precautions
                 ImagePath = "",
                 PhoneNumber = ""
             },
-            PrecautionId = 1,
+            PrecautionId = 2,
             Number = 1,
             Reason = "",
             Reporter = ""
