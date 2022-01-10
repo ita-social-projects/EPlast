@@ -281,6 +281,38 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Checks if theres already an active Precaution with such type for user
+        /// </summary>
+        /// <param name="userId">User id which checking</param>
+        /// <param name="type">Type which checking</param>
+        /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("checkUserPrecautionsType/{userId}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> CheckUserPrecautionsType(string userId, string type )
+        {
+            bool distNumber = await _userPrecautionService.CheckUserPrecautionsType(userId, type);
+            return Ok(distNumber);
+        }
+
+        /// <summary>
+        /// Get an active Precaution with such type for user
+        /// </summary>
+        /// <param name="userId">User id which checking</param>
+        /// <param name="type">Type which checking</param>
+        /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("getUserActivePrecautionEndDate/{userId}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> GetUserActivePrecautionEndDate(string userId, string type)
+        {
+            string endDate = (await _userPrecautionService.GetUserActivePrecaution(userId, type)).EndDate.ToShortDateString();
+            return Ok(endDate);
+        }
+
+        /// <summary>
         /// Find all users without active precautions
         /// </summary>
         /// <returns>Table of users without active precautions</returns>
