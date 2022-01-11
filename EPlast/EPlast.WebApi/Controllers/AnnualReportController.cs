@@ -284,7 +284,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Cancel(int id)
+        public async Task<IActionResult> Cancel(int id) 
         {
             try
             {
