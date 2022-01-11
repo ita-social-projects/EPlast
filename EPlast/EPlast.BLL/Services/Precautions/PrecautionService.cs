@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using EPlast.BLL.DTO.PrecautionsDTO;
 
 namespace EPlast.BLL.Services
 {
@@ -85,42 +86,31 @@ namespace EPlast.BLL.Services
             return new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(_mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionsTableObject>>(precautions), rows);
         }
 
+        //Function for combine two lambda expressions that separated by logical &&
+        public static Expression<T> Combine<T>(Expression<T> firstExpression, Expression<T> secondExpression)
+        {
+            if (firstExpression is null)
+            {
+                return secondExpression;
+            }
+
+            if (secondExpression is null)
+            {
+                return firstExpression;
+            }
+
+            var invokedExpression = Expression.Invoke(
+                secondExpression,
+                firstExpression.Parameters);
+
+            var combinedExpression = Expression.AndAlso(firstExpression.Body, invokedExpression);
+
+            return Expression.Lambda<T>(combinedExpression, firstExpression.Parameters);
+        }
         private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter)
-        {            
-            Expression<Func<UserPrecaution, bool>> expr;
-
-            expr = (statusSorter == null) switch
-            {
-                true => x => true,
-                false => x => statusSorter.Contains(x.Status),
-            };
-                
-            if (expr.Equals(true)) { }
-            else
-                return expr;
-            
-            expr = (dateSorter == null) switch
-            {
-                true => x => true,
-                false => x => dateSorter.Contains(x.EndDate.ToString()),
-            };
-
-            if (expr.Equals(true)) { }
-            else
-                return expr;
-
-            expr = (precautionNameSorter == null) switch
-            {
-                true => x => true,
-                false => x => precautionNameSorter.Contains(x.Precaution.Name),
-            };
-
-            if (expr.Equals(true)) { }
-            else
-                return expr;
-            
+        {                        
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
-            expr = (searchedDataEmty) switch
+            Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
                 false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
@@ -134,7 +124,30 @@ namespace EPlast.BLL.Services
                 || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
             };
-            return expr;
+
+            Expression<Func<UserPrecaution, bool>> precautionNameSorterExpr = (precautionNameSorter == null) switch
+            {
+                true => x => true,
+                false => x => precautionNameSorter.Contains(x.Precaution.Name),
+            };
+
+            Expression<Func<UserPrecaution, bool>> dateSorterExpr = (dateSorter == null) switch
+            {
+                true => x => true,
+                false => x => dateSorter.Equals(x.EndDate.Year.ToString()),
+            };
+
+            Expression <Func<UserPrecaution, bool>> statusSorterExpr = (statusSorter == null) switch
+            {
+                true => x => true,
+                false => x => statusSorter.Contains(x.Status),
+            };
+
+            Expression<Func<UserPrecaution, bool>> searchAndStatusFilter = Combine(searchedDataExpr, statusSorterExpr);
+            Expression<Func<UserPrecaution, bool>> filtersWithDateFilter = Combine(searchAndStatusFilter, dateSorterExpr);
+            Expression<Func<UserPrecaution, bool>> allFilterByTable = Combine(filtersWithDateFilter, precautionNameSorterExpr);
+
+            return allFilterByTable;
         }
         private Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>> GetInclude()
         {
