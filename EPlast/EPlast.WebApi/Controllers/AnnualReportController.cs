@@ -271,7 +271,7 @@ namespace EPlast.WebApi.Controllers
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
-            }
+            } 
         }
 
         /// <summary>
