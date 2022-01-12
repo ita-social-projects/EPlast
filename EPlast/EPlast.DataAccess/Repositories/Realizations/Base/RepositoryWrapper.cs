@@ -65,6 +65,10 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private ISectorDocumentsRepository _governingBodySectorDocuments;
         private ISectorDocumentTypeRepository _governingBodySectorDocumentType;
 
+        private ISubsectionRepository _subsection;
+        private ISubsectionPicturesRepository _subsectionPictures;
+        private IPicturesRepository _pictures;
+
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
         private ICityDocumentTypeRepository _cityDocumentType;
@@ -286,6 +290,43 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _governingBodySectorDocuments;
+            }
+        }
+
+        public ISubsectionRepository Subsection
+        {
+            get
+            {
+                if (_subsection == null)
+                {
+                    _subsection = new SubsectionRepository(_dbContext);
+                }
+
+                return _subsection;
+            }
+        }
+
+        public IPicturesRepository Pictures
+        {
+            get
+            {
+                if (_pictures == null)
+                {
+                    _pictures = new PicturesRepository(_dbContext);
+                }
+                return _pictures;
+            }
+        }
+
+        public ISubsectionPicturesRepository SubsectionPictures
+        {
+            get
+            {
+                if (_subsectionPictures == null)
+                {
+                    _subsectionPictures = new SubsectionPicturesRepository(_dbContext);
+                }
+                return _subsectionPictures;
             }
         }
 
