@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.DataAccess.Entities
+namespace EPlast.DataAccess.Entities.AboutBase
 {
     public class Subsection
     {
@@ -14,5 +14,7 @@ namespace EPlast.DataAccess.Entities
 
         public string Description { get; set; }
         public string ImagePath { get; set; }
+
+        public ICollection<SubsectionPictures> SubsectionsPictures { get; set; }
     }
 }
