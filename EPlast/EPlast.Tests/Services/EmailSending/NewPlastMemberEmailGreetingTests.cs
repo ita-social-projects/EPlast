@@ -48,7 +48,31 @@ namespace EPlast.Tests.Services.EmailSending
                     },
                     City = new DataAccess.Entities.City()
                     {
-                        Name = "lol"
+                        Name = "Lviv"
+                    }
+                },
+                new CityMembers()
+                {
+                    ID = 25,
+                    User = new User()
+                    {
+                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(368, 8, 45, 12))
+                    },
+                    City = new DataAccess.Entities.City()
+                    {
+                        Name = "Nikopol"
+                    }
+                },
+                new CityMembers()
+                {
+                    ID = 28,
+                    User = new User()
+                    {
+                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(367, 8, 45, 12))
+                    },
+                    City = new DataAccess.Entities.City()
+                    {
+                        Name = "Ternopil"
                     }
                 }
            };
@@ -166,7 +190,14 @@ namespace EPlast.Tests.Services.EmailSending
                 {
                     User = new User()
                     {
-                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
+                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(300, 0, 0, 0))
+                    }
+                },
+                new CityMembers()
+                {
+                    User = new User()
+                    {
+                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(340, 0, 0, 0))
                     }
                 }
             };
