@@ -44,6 +44,7 @@ namespace EPlast.Tests.Services.EmailSending
                     ID = 100,
                     User = new User()
                     {
+                        EmailConfirmed = true,
                         RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
                     },
                     City = new DataAccess.Entities.City()
@@ -56,6 +57,7 @@ namespace EPlast.Tests.Services.EmailSending
                     ID = 25,
                     User = new User()
                     {
+                        EmailConfirmed = true,
                         RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(368, 8, 45, 12))
                     },
                     City = new DataAccess.Entities.City()
@@ -68,6 +70,7 @@ namespace EPlast.Tests.Services.EmailSending
                     ID = 28,
                     User = new User()
                     {
+                        EmailConfirmed = true,
                         RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(367, 8, 45, 12))
                     },
                     City = new DataAccess.Entities.City()
@@ -190,6 +193,7 @@ namespace EPlast.Tests.Services.EmailSending
                 {
                     User = new User()
                     {
+                        EmailConfirmed = false,
                         RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(300, 0, 0, 0))
                     }
                 },
@@ -197,6 +201,7 @@ namespace EPlast.Tests.Services.EmailSending
                 {
                     User = new User()
                     {
+                        EmailConfirmed = false,
                         RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(340, 0, 0, 0))
                     }
                 }
