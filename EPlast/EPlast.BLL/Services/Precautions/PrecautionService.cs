@@ -220,7 +220,7 @@ namespace EPlast.BLL.Services
         }
         private Expression<Func<UserPrecaution, object>> GetOrderByPrecautionName()
         {
-            Expression<Func<UserPrecaution, object>> expr = x => x.User.UserName;
+            Expression<Func<UserPrecaution, object>> expr = x => x.User.FirstName + " " + x.User.LastName;
             return expr;
         }
         private Expression<Func<UserPrecaution, object>> GetOrderByEndDate()

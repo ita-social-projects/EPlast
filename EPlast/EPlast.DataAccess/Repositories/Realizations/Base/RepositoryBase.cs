@@ -136,12 +136,7 @@ namespace EPlast.DataAccess.Repositories
                                                        int? pageSize = null)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
-            
-            if(selector != null)
-            {
-                query = query.Select(selector);
-            }
-            
+
             if (include != null)
             {
                 query = include(query);
@@ -151,6 +146,11 @@ namespace EPlast.DataAccess.Repositories
             {
                 query = query.Where(filter);
             }
+
+            if (selector != null)
+            {
+                query = query.Select(selector);
+            }                                   
 
             if (sorting != null)
             {
