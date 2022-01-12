@@ -135,22 +135,25 @@ namespace EPlast.DataAccess.Repositories
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
 
-            if(filter != null)
+            if (filter != null)
             {
                 query = query.Where(filter);
             }
-            if(selector != null)
+
+            if (selector != null)
             {
                 query = query.Select(selector);
             }
 
-            var TotalRecords = await query.CountAsync();
-
-            if(sorting != null)
+            if (sorting != null)
             {
                 query = query.OrderBy(sorting);
+                //query = sorting(query);
             }
-            if(pageNumber != null && pageSize != null)
+
+            var TotalRecords = await query.CountAsync();
+
+            if (pageNumber != null && pageSize != null)
             {
                 query = query.Skip((int)(pageSize * (pageNumber - 1)))
                     .Take((int)pageSize);
