@@ -141,6 +141,7 @@ namespace EPlast.DataAccess.Repositories
             {
                 query = query.Select(selector);
             }
+            
             if (include != null)
             {
                 query = include(query);
