@@ -95,8 +95,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// </summary>
         /// <param name="currentUser">active user</param>
         /// <param name="focusUser">user which we checking</param>
-        /// <param name="cellType">Type of cell (City, Region , Hovel)</param>
-        /// <returns></returns>
+        /// <param name="cellType">Type of cell (City, Region , Club)</param>
         Task<bool> IsUserInSameCellAsync(UserDTO currentUser, UserDTO focusUser, CellType cellType);
 
         Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser);
