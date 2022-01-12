@@ -699,7 +699,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .ReturnsAsync(cityMembers);
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, CellType.City);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, CellType.City);
 
             //Assert
             Assert.IsTrue(result);
@@ -723,7 +723,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .ReturnsAsync(cityMembers);
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, CellType.City);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, CellType.City);
 
             //Assert
             Assert.IsFalse(result);
@@ -743,7 +743,7 @@ namespace EPlast.Tests.Services.UserProfiles
             _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 2 } }, };
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, CellType.Region);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, CellType.Region);
 
             //Assert
             Assert.IsFalse(result);
@@ -770,7 +770,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .ReturnsAsync(cityMembers);
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, CellType.Region);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, CellType.Region);
 
             //Assert
             Assert.IsTrue(result);
@@ -794,7 +794,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .ReturnsAsync(clubMembers);
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, CellType.Club);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, CellType.Club);
 
             //Assert
             Assert.IsTrue(result);
@@ -818,7 +818,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .ReturnsAsync(clubMembers);
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, CellType.Club);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, CellType.Club);
 
             //Assert
             Assert.IsFalse(result);
@@ -832,7 +832,7 @@ namespace EPlast.Tests.Services.UserProfiles
             Mock<UserDTO> _focusUser = new Mock<UserDTO>();
 
             //Act
-            var result = await _userService.IsUserInSameCell(_currentUser.Object, _focusUser.Object, (CellType)3);
+            var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, (CellType)3);
 
             //Assert
             Assert.IsFalse(result);

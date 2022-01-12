@@ -406,7 +406,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
         }
 
-        public async Task<bool> IsUserInSameCell(UserDTO currentUser, UserDTO focusUser, CellType cellType)
+        public async Task<bool> IsUserInSameCellAsync(UserDTO currentUser, UserDTO focusUser, CellType cellType)
         {
             return cellType switch
             {

@@ -32,10 +32,10 @@ namespace EPlast.BLL.Services.UserProfiles
             return role switch
             {
                 Roles.CityHead =>
-                    (roles.Contains(Roles.CityHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.City)) ||
-                    (roles.Contains(Roles.OkrugaHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Region)),
+                    (roles.Contains(Roles.CityHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)) ||
+                    (roles.Contains(Roles.OkrugaHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Region)),
                 Roles.KurinHead =>
-                    (roles.Contains(Roles.KurinHead) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Club)),
+                    (roles.Contains(Roles.KurinHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Club)),
                 _ => false,
             };
         }
@@ -50,9 +50,9 @@ namespace EPlast.BLL.Services.UserProfiles
                 return true;
             }
             return
-                ((roles.Contains(Roles.OkrugaHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Region)) ||
-                ((roles.Contains(Roles.CityHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.City)) ||
-                ((roles.Contains(Roles.KurinHead)) && await _userService.IsUserInSameCell(currentUser, focusUser, CellType.Club));
+                ((roles.Contains(Roles.OkrugaHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Region)) ||
+                ((roles.Contains(Roles.CityHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)) ||
+                ((roles.Contains(Roles.KurinHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Club));
         }
 
         public async Task<bool> CanViewFullProfile(User user, string focusUserId)
