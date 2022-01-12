@@ -36,14 +36,22 @@ namespace EPlast.Tests.Services.EmailSending
         [Test]
         public async Task NotifyNewPlastMembersAndCityAdminsAsync_Valid_Test()
         {
-            // Arrange
-            var users = new List<User>()
-            {
-                new User()
+            //Arrange
+           var users = new List<CityMembers>()
+           {
+                new CityMembers()
                 {
-                    RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
+                    ID = 100,
+                    User = new User()
+                    {
+                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
+                    },
+                    City = new DataAccess.Entities.City()
+                    {
+                        Name = "lol"
+                    }
                 }
-            };
+           };
 
             var user = new UserDTO
             {
@@ -93,8 +101,8 @@ namespace EPlast.Tests.Services.EmailSending
                 }
             }.AsQueryable<ConfirmedUser>();
             _mockRepoWrapper
-                    .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                                                   It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                    .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                                                   It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
                     .ReturnsAsync(users);
             _mockUserManager
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<User>(),
@@ -132,7 +140,10 @@ namespace EPlast.Tests.Services.EmailSending
             _mockCityService.Setup(x => x.GetCityIdByUserIdAsync(It.IsAny<string>())).ReturnsAsync(240);
             _mockNotificationService.Setup(x => x.GetAllNotificationTypesAsync()).ReturnsAsync(FakeTypeId());
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>()))
                 .Returns(new UserNotification());
             _mockRepoWrapper.Setup(x => x.UserNotifications.CreateAsync(It.IsAny<UserNotification>()));
 
@@ -149,16 +160,19 @@ namespace EPlast.Tests.Services.EmailSending
         public async Task NotifyNewPlastMembersAndCityAdminsAsync_Valid_Empty_Test()
         {
             // Arrange
-            var users = new List<User>()
+            var users = new List<CityMembers>()
             {
-                new User()
+                new CityMembers()
                 {
-                    RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
+                    User = new User()
+                    {
+                        RegistredOn = DateTime.Now.Date.Subtract(new TimeSpan(366, 0, 0, 0))
+                    }
                 }
             };
             _mockRepoWrapper
-                    .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
-                                                   It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>()))
+                    .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                                                   It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
                     .ReturnsAsync(users);
             _mockUserManager
                 .Setup((x) => x.IsInRoleAsync(It.IsAny<User>(),

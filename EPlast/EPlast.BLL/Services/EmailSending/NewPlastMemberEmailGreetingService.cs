@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services
 {
@@ -42,40 +43,40 @@ namespace EPlast.BLL.Services
 
         public async Task NotifyNewPlastMembersAndCityAdminsAsync()
         {
-            var tasks = new List<Task>();
             var users = await GetNewPlastMembersAsync();
             foreach (var user in users)
             {
-                tasks.Add(SendEmailGreetingForNewPlastMemberAsync(user.Email, user.CityName));
-                tasks.Add(NotifyCityAdminsAsync(user.Id));
-                tasks.Add(SendMessageGreetingForNewPlastMemberAsync(user.Id, user.CityName));
+                await SendEmailGreetingForNewPlastMemberAsync(user.User.Email, user.City.Name);
+                await NotifyCityAdminsAsync(user.UserId);
+                await SendMessageGreetingForNewPlastMemberAsync(user.UserId, user.City.Name);
             }
-
-            await Task.WhenAll(tasks);
         }
 
-        private async Task<IEnumerable<User>> GetNewPlastMembersAsync()
+        private async Task<IEnumerable<CityMembers>> GetNewPlastMembersAsync()
         {
-            var role = Roles.PlastMember;
-            var allUsers = await _repoWrapper.User.GetAllAsync(u => u.EmailConfirmed);
-            var newPlastuns = new List<User>();
+            const string role = Roles.PlastMember;
+            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(x=>x.User.EmailConfirmed,
+                c => c.Include(v => v.City)
+                    .Include(x=>x.User));
 
-            foreach (var user in allUsers)
+            var newPlastuns = new List<CityMembers>();
+
+            foreach (var member in cityMembers)
             {
-                if (await _userManager.IsInRoleAsync(user, role) || await IsAdminAsync(user)) continue;
+                if (await _userManager.IsInRoleAsync(member.User, role) || await IsAdminAsync(member.User)) continue;
 
-                var timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
+                var timeToJoinPlast = member.User.RegistredOn.AddYears(1) - DateTime.Now;
                 var halfOfYear = new TimeSpan(182, 0, 0, 0);
-                if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == user.Id).Any(q => q.isClubAdmin))
+                if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == member.UserId).Any(q => q.isClubAdmin))
                 {
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
                 if (timeToJoinPlast <= TimeSpan.Zero)
                 {
-                    var us = await _userManager.FindByIdAsync(user.Id);
+                    var us = await _userManager.FindByIdAsync(member.UserId);
                     await _userManager.AddToRoleAsync(us, role);
                     await _userManager.RemoveFromRoleAsync(us, Roles.Supporter);
-                    newPlastuns.Add(user);
+                    newPlastuns.Add(member);
                 }
             }
             return newPlastuns;
