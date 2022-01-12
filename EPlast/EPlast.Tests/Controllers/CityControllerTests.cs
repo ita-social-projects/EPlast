@@ -15,9 +15,12 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Cache;
+using EPlast.BLL.Queries.City;
 using EPlast.Resources;
+using MediatR;
 
 namespace EPlast.Tests.Controllers
 {
@@ -31,6 +34,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ICacheService> _cache;
         private readonly Mock<Microsoft.AspNetCore.Identity.UserManager<User>> _userManager;
+        private readonly Mock<IMediator> _mockMediator;
 
         public CityControllerTests()
         {
@@ -43,16 +47,18 @@ namespace EPlast.Tests.Controllers
             _cache = new Mock<ICacheService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<Microsoft.AspNetCore.Identity.UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _mockMediator = new Mock<IMediator>();
         }
 
         private CitiesController CreateCityController => new CitiesController(_logger.Object,
-             _mapper.Object,
-           _cityService.Object,
-             _cityDocumentsService.Object,
-           _cityAccessService.Object,
-           _userManager.Object,
-        _cityParticipantsService.Object,
-             _cache.Object
+            _mapper.Object,
+            _cityService.Object,
+            _cityDocumentsService.Object,
+            _cityAccessService.Object,
+            _userManager.Object,
+            _cityParticipantsService.Object,
+            _cache.Object,
+            _mockMediator.Object
           );
 
         [Test]
@@ -80,18 +86,20 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task GetCheckPlastMember_UserId_ReturnOk()
         {
-            // Arrange
-            _cityService
-                .Setup(x => x.PlastMemberCheck(It.IsAny<string>()))
+            //Arrange
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<PlastMemberCheckQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new bool());
-            CitiesController controller = CreateCityController;
 
-            // Act
-            var result = await controller.GetCheckPlastMember(It.IsAny<string>());
+            //Act
+            var result = await CreateCityController.GetCheckPlastMember(It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
 
-            // Assert
-            Assert.NotNull(result);
+            //Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<bool>(resultValue);
         }
 
         [Test]
@@ -154,30 +162,40 @@ namespace EPlast.Tests.Controllers
         public async Task GetCityUsers_CityId_ReturnsOk()
         {
             // Arrange
-            _cityService.Setup(x => x.GetCityUsersAsync(It.IsAny<int>())).ReturnsAsync(new List<CityUserDTO>());
-            int cityID = 1;
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityUsersQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new List<CityUserDTO>());
+            const int cityId = 1;
 
             // Act
-            var result = await CreateCityController.GetCityUsers(cityID);
+            var result = await CreateCityController.GetCityUsers(cityId);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<List<CityUserDTO>>((result as ObjectResult).Value);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<CityUserDTO>>(resultValue);
         }
 
         [Test]
         public async Task GetCityAdmins_CityId_ReturnsOkObjResult()
         {
             // Arrange
-            int id = 2;
-            _cityService.Setup(x => x.GetAdministrationAsync(id)).ReturnsAsync(GetAdmins());
+            const int id = 2;
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetAdministrationQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(GetAdmins());
 
             // Act
             var result = await CreateCityController.GetAdministrations(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<List<CityAdministrationGetDTO>>((result as ObjectResult).Value);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<CityAdministrationGetDTO>>(resultValue);
         }
 
         [Test]
@@ -301,40 +319,40 @@ namespace EPlast.Tests.Controllers
         public async Task Details_Invalid_Test()
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityByIdWthFullInfoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await controller.Details(GetFakeID());
+            var result = await CreateCityController.Details(GetFakeID());
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [Test]
         public async Task Details_Valid_Test()
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetByIdAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityByIdWthFullInfoQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CityDTO());
             _mapper
                 .Setup(m => m.Map<CityDTO, CityViewModel>(It.IsAny<CityDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await controller.Details(GetFakeID());
+            var result = await CreateCityController.Details(GetFakeID());
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<CityViewModel>(resultValue);
         }
 
         [Test]
@@ -422,57 +440,61 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdmins_Invalid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            _mapper.Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
-
+            
             // Act
-            var result = await controller.GetAdmins(id);
+            var result = await CreateCityController.GetAdmins(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [TestCase(2)]
         public async Task GetAdmins_Valid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityAdminsAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CityProfileDTO());
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
+            _userManager
+                .Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _cityAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
 
             // Act
-            var result = await controller.GetAdmins(id);
+            var result = await CreateCityController.GetAdmins(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
         }
 
         [Test]
         public async Task GetAdminsIds_ReturnsOkObject()
         {
             //Arrange
-            _cityService
-                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
-                .ReturnsAsync("Id1,Id2");
-            CitiesController controller = CreateCityController;
+            const string adminsIds = "Id1,Id2";
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityAdminsIdsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(adminsIds);
 
             //Act
-            var result = await controller.GetAdminsIds(It.IsAny<int>());
-            var resultValue = (result as OkObjectResult).Value;
+            var result = await CreateCityController.GetAdminsIds(It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
-            _cityService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
@@ -483,16 +505,18 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdminsIds_ReturnsNotFound()
         {
             //Arrange
-            _cityService
-                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
-                .ReturnsAsync(()=>null);
-            CitiesController controller = CreateCityController;
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityAdminsIdsQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(() => null);
 
             //Act
-            var result = await controller.GetAdminsIds(It.IsAny<int>());
+            var result = await CreateCityController.GetAdminsIds(It.IsAny<int>());
+            var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [Test]
@@ -516,7 +540,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllCities_Valid_Test(int page, int pageSize, string cityName)
         {
             // Arrange
-            CitiesController controller = CreateCityController;
+            var controller = CreateCityController;
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(m => m.User.IsInRole(Roles.Admin))
@@ -526,18 +550,19 @@ namespace EPlast.Tests.Controllers
                     httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
             controller.ControllerContext = context;
-            _cityService
-                .Setup(c => c.GetAllCitiesAsync(It.IsAny<string>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetAllCitiesOrByNameQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(GetCitiesBySearch());
 
             // Act
             var result = await controller.GetCities(page, pageSize, cityName);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as CitiesViewModel)
-                .Cities.Where(c => c.Name.Equals("Львів")));
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<CitiesViewModel>(resultValue);
         }
 
         [Test]
@@ -682,41 +707,45 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocuments_Valid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityDocumentsAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityDocumentsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CityProfileDTO());
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
+            _userManager
+                .Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _cityAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
 
             // Act
-            var result = await controller.GetDocuments(id);
+            var result = await CreateCityController.GetDocuments(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
         }
 
         [Test]
         public async Task GetDocumentsInvalidCheck()
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityDocumentsAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityDocumentsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
-
+            
             // Act
-            var result = await controller.GetDocuments(GetFakeID());
+            var result = await CreateCityController.GetDocuments(GetFakeID());
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [Test]
@@ -758,41 +787,45 @@ namespace EPlast.Tests.Controllers
         public async Task GetFollowers_Invalid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityFollowersQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
 
             // Act
-            var result = await controller.GetFollowers(id);
+            var result = await CreateCityController.GetFollowers(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [TestCase(2)]
         public async Task GetFollowers_Valid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(c => c.GetCityFollowersAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityFollowersQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CityProfileDTO());
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
+            _userManager
+                .Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _cityAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
 
             // Act
-            var result = await controller.GetFollowers(id);
+            var result = await CreateCityController.GetFollowers(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.NotNull(result);
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
         }
 
         [Test]
@@ -813,41 +846,45 @@ namespace EPlast.Tests.Controllers
         public async Task GetMembers_Invalid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityMembersQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController cityController = CreateCityController;
 
             // Act
-            var result = await cityController.GetMembers(id);
+            var result = await CreateCityController.GetMembers(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [TestCase(2)]
         public async Task GetMembers_Valid_Test(int id)
         {
             // Arrange
-            _cityService
-                .Setup(cs => cs.GetCityMembersAsync(It.IsAny<int>()))
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityMembersQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CityProfileDTO());
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController cityController = CreateCityController;
+            _userManager
+                .Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _cityAccessService
+                .Setup(c => c.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(true);
 
             // Act
-            var result = await cityController.GetMembers(id);
+            var result = await CreateCityController.GetMembers(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
             // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.NotNull(result);
+            Assert.IsNotNull(resultValue);
         }
 
         [TestCase("logoName")]
@@ -870,53 +907,44 @@ namespace EPlast.Tests.Controllers
         [TestCase(2)]
         public async Task GetProfile_Invalid_NotFound_Test(int id)
         {
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            //Arrange
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityProfileQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(() => null);
-            _mapper
-                .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
-                .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
 
-            // Act
-            var result = await controller.GetProfile(id);
+            //Act
+            var result = await CreateCityController.GetProfile(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
-            // Assert
-            Assert.NotNull(result);
+            //Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [Test]
-        public async Task GetProfile_Invalid_Test()
-        {
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(() => null);
-            CitiesController controller = CreateCityController;
-
-            // Act
-            var result = await controller.GetProfile(GetFakeID());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<NotFoundResult>(result);
+            Assert.IsNull(resultValue);
         }
 
         [TestCase(2)]
         public async Task GetProfile_Valid_Test(int id)
         {
-            _cityService.Setup(c => c.GetCityProfileAsync(It.IsAny<int>(), It.IsAny<User>()))
+            //Arrange
+            _userManager
+                .Setup(u => u.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _mockMediator
+                .Setup(m => m.Send(It.IsAny<GetCityProfileQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new CityProfileDTO());
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
-            CitiesController controller = CreateCityController;
 
-            // Act
-            var result = await controller.GetProfile(id);
+            //Act
+            var result = await CreateCityController.GetProfile(id);
+            var resultValue = (result as ObjectResult)?.Value;
 
-            // Assert
-            _mapper.Verify(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()));
-            Assert.NotNull(result);
+            //Assert
+            Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<CityViewModel>(resultValue);
         }
 
         [Test]
