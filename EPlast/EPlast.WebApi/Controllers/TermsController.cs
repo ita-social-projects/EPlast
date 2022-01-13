@@ -50,7 +50,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("UsersId")]
         public async Task<IActionResult> GetAllUsersId()
         {
-            var usersId = await _termsOfUse.GetAllUsersIdAsync(await _userManager.GetUserAsync(User));
+            var usersId = await _termsOfUse.GetAllUsersIdWithoutAdminIdAsync(await _userManager.GetUserAsync(User));
             return Ok(usersId);
         }
 

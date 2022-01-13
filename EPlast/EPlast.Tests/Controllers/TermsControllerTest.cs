@@ -85,7 +85,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _termsService
-                .Setup(x => x.GetAllUsersIdAsync(new User()))
+                .Setup(x => x.GetAllUsersIdWithoutAdminIdAsync(new User()))
                 .ReturnsAsync((new List<string>()).AsEnumerable());
 
             //Act

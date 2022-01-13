@@ -34,10 +34,11 @@ namespace EPlast.BLL.Services.TermsOfUse
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<string>> GetAllUsersIdAsync(User user)
+        public async Task<IEnumerable<string>> GetAllUsersIdWithoutAdminIdAsync(User user)
         {
+            var userId = await _userManager.GetUserIdAsync(user);
             await CheckIfAdminAsync(user);
-            var allUsersId = _mapper.Map<IEnumerable<UserProfile>, IEnumerable<UserProfileDTO>>(await _repoWrapper.UserProfile.GetAllAsync())
+            var allUsersId = (await _repoWrapper.UserProfile.GetAllAsync(x=>x.UserID != userId))
                 .Select(c => c.UserID);
             return allUsersId;
         }
