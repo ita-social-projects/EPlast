@@ -513,10 +513,10 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<string>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()));
 
             //Act
-            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
+            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -529,10 +529,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _governingBodiesController.ModelState.AddModelError("text", "is required");
             _governingBodyAnnouncementService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<string>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()));
 
             //Act
-            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<string>());
+            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
 
             //Assert
             _governingBodyAnnouncementService.Verify();
@@ -634,8 +634,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService
-                .Setup(x => x.EditAnnouncement(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(1);
+                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Act
             var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());

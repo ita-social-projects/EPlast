@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
@@ -25,6 +27,8 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         private Mock<IHttpContextAccessor> _context;
         private Mock<UserManager<User>> _userManager;
         private GoverningBodyAnnouncementService _governingBodyAnnouncementService;
+        private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
+        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -40,7 +44,9 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 _repoWrapper.Object,
                 _mapper.Object,
                 _context.Object,
-                _userManager.Object);
+                _blobStorage.Object,
+                _userManager.Object,
+                _uniqueId.Object);
         }
 
         [Test]
@@ -54,11 +60,12 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
 
             //Act
-            var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<string>());
+            var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
 
             //Assert
             Assert.IsNull(result);
-            Assert.DoesNotThrowAsync(async () => { await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<string>()); });
+            Assert.DoesNotThrowAsync(async () => { 
+                await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()); });
         }
 
         [Test]
@@ -80,9 +87,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             Assert.IsNull(result);
         }
 
-        [TestCase("aaa")]
-        [TestCase("string")]
-        public async Task AddAnnouncementAsync_TextNotNull_ReturnsTrue(string text)
+        public async Task AddAnnouncementAsync_TextNotNull_ReturnsTrue()
         {
             //Arrange
             GoverningBodyAnnouncement governingBody = new GoverningBodyAnnouncement();
@@ -97,7 +102,11 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .Returns(new ClaimsPrincipal());
 
             //Act
-            int? result = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+            int? result = await _governingBodyAnnouncementService.AddAnnouncementAsync(
+            new GoverningBodyAnnouncementWithImagesDTO
+            {
+                Text = "Test"
+            });
 
             //Assert
             _userManager.Verify(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()));

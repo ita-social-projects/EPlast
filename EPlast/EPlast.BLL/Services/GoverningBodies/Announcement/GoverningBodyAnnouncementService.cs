@@ -9,9 +9,11 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EPlast.BLL.Interfaces.UserProfiles;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.GoverningBodies.Announcement
 {
@@ -20,27 +22,36 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _context;
+        private readonly IGoverningBodyBlobStorageRepository _blobStorage;
         private readonly UserManager<User> _userManager;
+        private readonly IUniqueIdService _uniqueId;
 
         public GoverningBodyAnnouncementService(IRepositoryWrapper repositoryWrapper,
-            IMapper mapper, IHttpContextAccessor context, UserManager<User> userManager)
+            IMapper mapper, IHttpContextAccessor context,
+            IGoverningBodyBlobStorageRepository blobStorage,
+            UserManager<User> userManager, IUniqueIdService uniqueId)
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
             _context = context;
+            _blobStorage = blobStorage;
             _userManager = userManager;
+            _uniqueId = uniqueId;
         }
 
-        public async Task<int?> AddAnnouncementAsync(string text)
+        public async Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
         {
-            if (text == null)
+            if (announcementDTO == null)
             {
                 return null;
             }
-            var governingBodyAnnouncementDTO = new GoverningBodyAnnouncementDTO();
-            governingBodyAnnouncementDTO.Text = text;
-            governingBodyAnnouncementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
-            var announcement = _mapper.Map<GoverningBodyAnnouncementDTO, GoverningBodyAnnouncement>(governingBodyAnnouncementDTO);
+            announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
+            var announcement = _mapper.Map<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>(announcementDTO);
+            announcement.Images = new List<GoverningBodyAnnouncementImage>();
+            foreach (var image in announcementDTO.ImagesBase64)
+            {
+                announcement.Images.Add(new GoverningBodyAnnouncementImage{ImagePath = await UploadImageAsync(image) });
+            }
             announcement.Date = DateTime.Now;
             await _repoWrapper.GoverningBodyAnnouncement.CreateAsync(announcement);
             await _repoWrapper.SaveAsync();
@@ -49,10 +60,16 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
 
         public async Task DeleteAnnouncementAsync(int id)
         {
-            var announcement = (await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
+            var announcement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
+                d => d.Id == id,
+                src => src.Include(g => g.Images));
             if (announcement == null)
             {
                 throw new ArgumentNullException($"Announcement with {id} not found");
+            }
+            foreach (var image in announcement.Images)
+            {
+                await _blobStorage.DeleteBlobAsync(image.ImagePath);
             }
             _repoWrapper.GoverningBodyAnnouncement.Delete(announcement);
             await _repoWrapper.SaveAsync();
@@ -61,7 +78,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         [Obsolete("This method is obsolete. Use GetAnnouncementsByPageAsync method to provide better performance")]
         public async Task<IEnumerable<GoverningBodyAnnouncementUserDTO>> GetAllAnnouncementAsync()
         {
-            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(await _repoWrapper.GoverningBodyAnnouncement.GetAllAsync());
+            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>
+                (await _repoWrapper.GoverningBodyAnnouncement.GetAllAsync());
             foreach (GoverningBodyAnnouncementUserDTO announcement in announcements)
             {
                 var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
@@ -76,15 +94,24 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             var order = GetOrder();
             var selector = GetSelector();
             var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(null, selector, order, pageNumber, pageSize, true);
-            var clubs = tuple.Item1;
+            var announcements = tuple.Item1;
             var rows = tuple.Item2;
 
-            return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>(_mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(clubs), rows);
+            return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>
+                (_mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(announcements), rows);
         }
 
         public async Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id)
         {
-            var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(d => d.Id == id));
+            var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(
+                await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
+                    d => d.Id == id,
+                    src => src.Include(g=>g.Images)));
+
+            foreach (var image in announcement.Images)
+            {
+                image.ImageBase64 = await GetImageAsync(image.ImagePath);
+            }
 
             var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
             announcement.User = _mapper.Map<UserDTO>(user);
@@ -101,14 +128,57 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             }
             return userIds;
         }
-        public async Task<int?> EditAnnouncement(int id, string text)
+
+        public async Task<int?> EditAnnouncement(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
         {
-            GoverningBodyAnnouncement updatedAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstOrDefaultAsync(x=>x.Id == id);
-            if (updatedAnnouncement == null) return null;
-            updatedAnnouncement.Text = text;
-            _repoWrapper.GoverningBodyAnnouncement.Update(updatedAnnouncement);
+            announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
+            var currentAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
+                    d => d.Id == announcementDTO.Id,
+                    src => src.Include(g => g.Images));
+
+            foreach (var image in currentAnnouncement.Images)
+            {
+                await _blobStorage.DeleteBlobAsync(image.ImagePath);
+                _repoWrapper.GoverningBodyAnnouncementImage.Delete(image);
+            }
             await _repoWrapper.SaveAsync();
-            return updatedAnnouncement.Id;
+            currentAnnouncement.Images = new List<GoverningBodyAnnouncementImage>();
+            foreach (var image in announcementDTO.ImagesBase64)
+            {
+                currentAnnouncement.Images.Add(new GoverningBodyAnnouncementImage
+                {
+                    ImagePath = await UploadImageAsync(image)
+                });
+            }
+            currentAnnouncement.Text = announcementDTO.Text;
+            currentAnnouncement.Date = DateTime.Now;
+            _repoWrapper.GoverningBodyAnnouncement.Update(currentAnnouncement);
+            await _repoWrapper.SaveAsync();
+            return currentAnnouncement.Id;
+        }
+
+        private async Task<string> UploadImageAsync(string imageBase64)
+        {
+            var fileName = "";
+            if (!string.IsNullOrWhiteSpace(imageBase64) && imageBase64.Length > 0)
+            {
+                var logoBase64Parts = imageBase64.Split(',');
+                var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
+
+                if (!string.IsNullOrEmpty(extension))
+                {
+                    extension = (extension[0] == '.' ? "" : ".") + extension;
+                }
+
+                fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                await _blobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
+            }
+            return fileName;
+        }
+
+        private async Task<string> GetImageAsync(string imageName)
+        {
+            return await _blobStorage.GetBlobBase64Async(imageName);
         }
 
         private Expression<Func<GoverningBodyAnnouncement, object>> GetOrder()

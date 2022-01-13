@@ -302,24 +302,24 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAnnouncement([FromBody] string text)
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(announcement);
 
                 return Ok(id);
             }
             return BadRequest(ModelState);
         }
 
-        [HttpPatch("EditAnnouncement/{id:int}")]
+        [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementUserDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                var id = await _governingBodyAnnouncementService.EditAnnouncement(announcement.Id, announcement.Text);
+                var id = await _governingBodyAnnouncementService.EditAnnouncement(announcement);
                 if(id == null) return BadRequest();
                 return Ok(id);
             }

@@ -19,6 +19,7 @@ using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories.Interfaces.User;
 using EPlast.DataAccess.Repositories.Realizations.User;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Announcement;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -107,6 +108,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IRegionAnnualReportsRepository _regionAnnualReports;
         private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
+        private IGoverningBodyAnnouncementImageRepository _governingBodyAnnouncementImage;
 
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
@@ -298,6 +300,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _governingBodyAnnouncement = new GoverningBodyAnnouncementRepository(_dbContext);
                 }
                 return _governingBodyAnnouncement;
+            }
+        }
+
+        public IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage
+        {
+            get
+            {
+                if (_governingBodyAnnouncementImage == null)
+                {
+                    _governingBodyAnnouncementImage = new GoverningBodyAnnouncementImageRepository(_dbContext);
+                }
+                return _governingBodyAnnouncementImage;
             }
         }
 
