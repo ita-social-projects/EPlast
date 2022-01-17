@@ -136,8 +136,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             return userIds;
         }
 
-        public async Task<int?> EditAnnouncement(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
+        public async Task<int?> EditAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
         {
+            if (announcementDTO == null)
+            {
+                return null;
+            }
             announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
             var currentAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                     d => d.Id == announcementDTO.Id,

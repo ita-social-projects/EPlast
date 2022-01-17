@@ -634,11 +634,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService
-                .Setup(x => x.EditAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
-                .ReturnsAsync(new GoverningBodyAnnouncementWithImagesDTO());
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(1);
 
             //Act
-            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
@@ -650,11 +650,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _governingBodiesController.ModelState.AddModelError("key", "error message");
             _governingBodyAnnouncementService
-                .Setup(x => x.EditAnnouncement(It.IsAny<int>(), It.IsAny<string>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
                 .ReturnsAsync(1);
 
             //Act
-            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementUserDTO());
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);

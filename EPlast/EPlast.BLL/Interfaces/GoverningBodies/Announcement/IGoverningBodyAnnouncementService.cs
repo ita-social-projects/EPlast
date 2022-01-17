@@ -13,7 +13,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO);
         Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id);
         Task<List<string>> GetAllUserAsync();
-        Task<int?> EditAnnouncement(GoverningBodyAnnouncementWithImagesDTO announcement);
+        Task<int?> EditAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcement);
 
         /// <summary>
         /// Get specified by page number and page size list of announcements
