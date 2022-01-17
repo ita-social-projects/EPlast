@@ -87,13 +87,13 @@ namespace EPlast.BLL.Services
         private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusSorter, IEnumerable<string> nameSorter, IEnumerable<string> dateSorter)
         {            
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
-            var checkDate = searchedDataEmty ? "" : String.Join("-", searchedData.Split(".").Reverse());
+            var getDate = searchedDataEmty ? "" : String.Join("-", searchedData.Split(".").Reverse());
             Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
                 false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
                 || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)                
-                || x.Date.Date.ToString().Contains(checkDate) || x.EndDate.Date.ToString().Contains(checkDate)
+                || x.Date.Date.ToString().Contains(getDate) || x.EndDate.Date.ToString().Contains(getDate)
                 || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
             };
