@@ -1134,6 +1134,20 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
+        [Test]
+        public async Task GetCityIdByUserIdAsync_ReturnNotNull()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.CityMembers.GetFirstAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null))
+                .ReturnsAsync(new CityMembers());
+
+            // Act
+            var result = await _cityService.GetCityIdByUserIdAsync(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
         private int Id => 1;
         private string stringId => "1";
         private int count => 2;

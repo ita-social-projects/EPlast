@@ -15,6 +15,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.Handlers.CityHandlers;
+using EPlast.BLL.Queries.City;
+using MediatR;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
 
 namespace EPlast.WebApi.Controllers
@@ -31,6 +34,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICityDocumentsService _cityDocumentsService;
         private readonly ICityAccessService _cityAccessService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
         private const string ActiveCitiesCacheKey = "ActiveCities";
         private const string ArchivedCitiesCacheKey = "ArchivedCities";
@@ -40,7 +44,8 @@ namespace EPlast.WebApi.Controllers
             ICityService cityService,
             ICityDocumentsService cityDocumentsService,
             ICityAccessService cityAccessService, UserManager<User> userManager,
-            ICityParticipantsService cityParticipantsService, ICacheService cache)
+            ICityParticipantsService cityParticipantsService, ICacheService cache,
+            IMediator mediator)
         {
             _cache = cache;
             _logger = logger;
@@ -50,6 +55,7 @@ namespace EPlast.WebApi.Controllers
             _cityAccessService = cityAccessService;
             _userManager = userManager;
             _cityParticipantsService = cityParticipantsService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -63,7 +69,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCities(int page, int pageSize, string cityName = null)
         {
-            var cities = await _cityService.GetAllCitiesAsync(cityName);
+            var query = new GetAllCitiesOrByNameQuery(cityName);
+            var cities = await _mediator.Send(query);
             var citiesViewModel = new CitiesViewModel(page, pageSize, cities, User.IsInRole(Roles.Admin));
 
             return Ok(citiesViewModel);
@@ -142,7 +149,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetProfile(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityProfileAsync(cityId, await _userManager.GetUserAsync(User));
+            var query = new GetCityProfileQuery(cityId, await _userManager.GetUserAsync(User));
+            var cityProfileDto = await _mediator.Send(query);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -163,7 +171,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCityUsers(int cityId)
         {
-            var cityUsers = await _cityService.GetCityUsersAsync(cityId);
+            var query = new GetCityUsersQuery(cityId);
+            var cityUsers = await _mediator.Send(query);
 
             return Ok(cityUsers);
         }
@@ -179,7 +188,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetMembers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityMembersAsync(cityId);
+            var query = new GetCityMembersQuery(cityId);
+            var cityProfileDto = await _mediator.Send(query);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -202,7 +212,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetFollowers(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityFollowersAsync(cityId);
+            var query = new GetCityFollowersQuery(cityId);
+            var cityProfileDto = await _mediator.Send(query);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -225,7 +236,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityAdminsAsync(cityId);
+            var query = new GetCityAdminsQuery(cityId);
+            var cityProfileDto = await _mediator.Send(query);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -248,7 +260,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAdministrations(int cityId)
         {
-            var admins = await _cityService.GetAdministrationAsync(cityId);
+            var query = new GetAdministrationQuery(cityId);
+            var admins = await _mediator.Send(query);
             return Ok(admins);
         }
 
@@ -263,7 +276,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetDocuments(int cityId)
         {
-            var cityProfileDto = await _cityService.GetCityDocumentsAsync(cityId);
+            var query = new GetCityDocumentsQuery(cityId);
+            var cityProfileDto = await _mediator.Send(query);
             if (cityProfileDto == null)
             {
                 return NotFound();
@@ -286,7 +300,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> Details(int cityId)
         {
-            var cityDto = await _cityService.GetByIdAsync(cityId);
+            var query = new GetCityByIdWthFullInfoQuery(cityId);
+            var cityDto = await _mediator.Send(query);
             if (cityDto == null)
             {
                 return NotFound();
@@ -654,7 +669,8 @@ namespace EPlast.WebApi.Controllers
 
         public async Task<IActionResult> GetCheckPlastMember(string userId)
         {
-            var check = await _cityService.PlastMemberCheck(userId);
+            var query = new PlastMemberCheckQuery(userId);
+            var check = await _mediator.Send(query);
 
             return Ok(check);
         }
@@ -687,7 +703,8 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetAdminsIds(int cityId)
         {
-            var cityAdminsIds = await _cityService.GetCityAdminsIdsAsync(cityId);
+            var query = new GetCityAdminsIdsQuery(cityId);
+            var cityAdminsIds = await _mediator.Send(query);
             if (cityAdminsIds == null)
             {
                 return NotFound();

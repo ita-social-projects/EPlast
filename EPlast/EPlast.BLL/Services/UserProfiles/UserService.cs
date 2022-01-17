@@ -339,6 +339,7 @@ namespace EPlast.BLL.Services.UserProfiles
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
             return cityMember != null && cityMember.IsApproved;
         }
+
         public async Task<bool> IsApprovedCLubMember(string userId)
         {
             var clubMember = await _repoWrapper.ClubMembers
@@ -403,6 +404,17 @@ namespace EPlast.BLL.Services.UserProfiles
             var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
             bool sameRegion = IsUserSameRegion(currentUser, focusUser);
             return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
+        }
+
+        public async Task<bool> IsUserInSameCellAsync(UserDTO currentUser, UserDTO focusUser, CellType cellType)
+        {
+            return cellType switch
+            {
+                CellType.City => IsUserSameCity(currentUser, focusUser) && await IsApprovedCityMember(focusUser.Id),
+                CellType.Region => IsUserSameRegion(currentUser, focusUser) && await IsApprovedCityMember(focusUser.Id),
+                CellType.Club => IsUserSameClub(currentUser, focusUser) && await IsApprovedCLubMember(focusUser.Id),
+                _ => false
+            };
         }
     }
 }

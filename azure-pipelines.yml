@@ -74,7 +74,7 @@ stages:
         projectKey: 'ita-social-projects-eplast'
         projectName: 'EPlast '
         extraProperties: |
-          sonar.inclusions= EPlast/EPlast.BLL/Services/**, EPlast/EPlast.WebApi/Controllers/**
+          sonar.inclusions= EPlast/EPlast.BLL/Services/**, EPlast/EPlast.WebApi/Controllers/**, EPlast/EPlast.BLL/Handlers/**
           sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
           sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/**/*.trx        
     - task: DotNetCoreCLI@2
@@ -98,7 +98,7 @@ stages:
         projects: |
          EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
          EPlast/EPlast.Tests/EPlast.Tests.csproj
-        arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[EPlast.WebApi]*Controllers*%2c[EPlast.BLL]*Services*" /p:Exclude="[EPlast.XUnitTest]*%2c[EPlast.Tests]*" --logger trx'
+        arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[EPlast.WebApi]*Controllers*%2c[EPlast.BLL]*Services*%2c[EPlast.BLL]*Handlers*" /p:Exclude="[EPlast.XUnitTest]*%2c[EPlast.Tests]*" --logger trx'
         publishTestResults: false
     - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
       displayName: 'Run Code Analysis'
