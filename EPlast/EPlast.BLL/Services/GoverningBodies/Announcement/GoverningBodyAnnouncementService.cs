@@ -94,11 +94,18 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             var order = GetOrder();
             var selector = GetSelector();
             var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(null, selector, order, pageNumber, pageSize, true);
-            var announcements = tuple.Item1;
+            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1);
+
+            foreach (var ann in announcements)
+            {
+                ann.ImagesPresent =
+                    await _repoWrapper.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(i => i.GoverningBodyAnnouncementId == ann.Id)
+                    == null ? false : true;
+            }
             var rows = tuple.Item2;
 
             return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>
-                (_mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(announcements), rows);
+                (announcements, rows);
         }
 
         public async Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id)

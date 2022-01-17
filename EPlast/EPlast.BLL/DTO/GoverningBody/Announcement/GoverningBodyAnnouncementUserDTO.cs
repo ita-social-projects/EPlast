@@ -13,5 +13,6 @@ namespace EPlast.BLL.DTO.GoverningBody.Announcement
         public DateTime Date { get; set; }
         public UserDTO User { get; set; }
         public IEnumerable<GoverningBodyAnnouncementImageDTO> Images { get; set; }
+        public bool ImagesPresent { get; set; }
     }
 }
