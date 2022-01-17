@@ -19,6 +19,79 @@ namespace EPlast.DataAccess.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.Pictures", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("PictureFileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Pictures");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.Section", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sections");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.Subsection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("Subsections");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.SubsectionPictures", b =>
+                {
+                    b.Property<int>("SubsectionID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PictureID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubsectionID", "PictureID");
+
+                    b.HasIndex("PictureID");
+
+                    b.ToTable("SubsectionsPictures");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.AdminType", b =>
                 {
                     b.Property<int>("ID")
@@ -3243,6 +3316,30 @@ namespace EPlast.DataAccess.Migrations
                     b.HasDiscriminator().HasValue("User");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.Subsection", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.AboutBase.Section", "Section")
+                        .WithMany("Subsections")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.SubsectionPictures", b =>
+                {
+                    b.HasOne("EPlast.DataAccess.Entities.AboutBase.Pictures", "Pictures")
+                        .WithMany("Subsections")
+                        .HasForeignKey("PictureID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EPlast.DataAccess.Entities.AboutBase.Subsection", "Subsection")
+                        .WithMany("SubsectionsPictures")
+                        .HasForeignKey("SubsectionID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.AnnualReport", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.City", "City")
@@ -3849,15 +3946,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Subsection", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Section", "Section")
-                        .WithMany("Subsections")
-                        .HasForeignKey("SectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

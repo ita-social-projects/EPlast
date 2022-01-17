@@ -46,39 +46,6 @@ namespace EPlast.Tests.Services.Club
         private string StringId => "1";
 
         [Test]
-        public async Task ArchiveAsync_WithModel_ReturnsClubArchived()
-        {
-            // Arrange
-            ClubService clubService = CreateClubService();
-            _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()));
-            _repoWrapper.Setup(r => r.SaveAsync());
-
-            // Act
-            await clubService.ArchiveAsync(Id);
-
-            // Assert
-            _repoWrapper.Verify(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()), Times.Once);
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
-        }
-
-        [Test]
-        public void ArchiveAsync_ClubIsNotEmpty_ThrowsInvalidOperationException()
-        {
-            // Arrange
-            _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
-               .ReturnsAsync(new DataAccessClub.Club()
-               {
-                   ClubAdministration = new List<ClubAdministration>(),
-                   ClubMembers = new List<ClubMembers>()
-               });
-            _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()));
-            _repoWrapper.Setup(r => r.SaveAsync());
-
-            //Act // Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _clubService.ArchiveAsync(Id));
-        }
-
-        [Test]
         public void CreateAsync_InvalidOperationException()
         {
             // Arrange
@@ -480,6 +447,7 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
+
         public async Task GetByIdAsync_ReturnsClub()
         {
             // Arrange
@@ -1052,43 +1020,6 @@ namespace EPlast.Tests.Services.Club
         }
 
         [Test]
-        public async Task GetClubHistoryFollowers_Tests()
-        {
-            // Arrange
-            _repoWrapper
-                .Setup(r => r.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-                .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>());
-            _mapper
-                .Setup(m => m.Map<IEnumerable<DataAccessClub.ClubMemberHistory>,
-                                  IEnumerable<ClubMemberHistoryDTO>>
-                      (It.IsAny<IEnumerable<DataAccessClub.ClubMemberHistory>>()))
-                .Returns(new List<ClubMemberHistoryDTO>());
-
-            // Act
-            var result = await _clubService.GetClubHistoryFollowers(Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<List<ClubMemberHistoryDTO>>(result);
-        }
-
-        [Test]
-        public async Task GetClubAdministrations_Tests()
-        {
-            // Arrange
-            _repoWrapper
-                .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubAdministration, bool>>>(), null))
-                .ReturnsAsync(new List<DataAccessClub.ClubAdministration>());
-
-            // Act
-            var result = await _clubService.GetClubAdministrations(Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<DataAccessClub.ClubAdministration[]>(result);
-        }
-
-        [Test]
         public async Task GetClubHead_ReturnsClubHead()
         {
             // Arrange
@@ -1197,138 +1128,6 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.Null(result);
-        }
-
-        [Test]
-        public async Task GetcountdeletedUsersPerYear_Tests()
-        {
-            // Arrange
-            _repoWrapper
-                .Setup(r => r.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-                .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>());
-            // Act
-            var result = await _clubService.GetCountDeletedUsersPerYear(Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<int>(result);
-        }
-
-        [Test]
-        public async Task GetcountUsersPerYear_Tests()
-        {
-            // Arrange
-            _repoWrapper
-                .Setup(r => r.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-                .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>());
-
-            // Act
-            var result = await _clubService.GetCountUsersPerYear(Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<int>(result);
-        }
-
-        [Test]
-        public async Task GetClubHistoryMembers_Tests()
-        {
-            // Arrange
-            _repoWrapper
-                .Setup(r => r.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(),
-                      It.IsAny<Func<IQueryable<DataAccessClub.ClubMemberHistory>, IIncludableQueryable<DataAccessClub.ClubMemberHistory, IQueryable<User>>>>()))
-                .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>());
-
-            _mapper.Setup(m => m.Map<IEnumerable<DataAccessClub.ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>
-                      (It.IsAny<IEnumerable<DataAccessClub.ClubMemberHistory>>()))
-                .Returns(new List<ClubMemberHistoryDTO>());
-
-            // Act
-            var result = await _clubService.GetClubHistoryMembers(Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<List<ClubMemberHistoryDTO>>(result);
-        }
-
-        [Test]
-        public async Task GetClubDataForReport_returnNull_Tests()
-        {
-            // Arrange
-            _repoWrapper
-                .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
-                .ReturnsAsync(()=>null);
-
-            // Act
-            var result = await _clubService.GetClubDataForReport(Id);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Test]
-        public async Task GetClubDataForReport_Tests()
-        {
-            //// Arrange
-            _repoWrapper
-                .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
-                .ReturnsAsync(new DataAccessClub.Club());
-
-            var listItems = new List<ClubAdministration>
-            {
-               new ClubAdministration 
-                {
-                    UserId = "a124e48a-e83a-4e1c-a222-a3e654ac09ad",
-                    User = new DataAccessClub.User(),
-                    Status=true,
-                    ClubId=1,
-                    AdminType = new AdminType
-                    {
-                        AdminTypeName = Roles.KurinHead
-                    },
-                     EndDate = DateTime.Now.AddMonths(-3)
-            }};
-
-            _repoWrapper.Setup(x => x.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
-                            It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
-                         .ReturnsAsync( listItems);
-
-            _repoWrapper
-               .Setup(r => r.ClubAdministration.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubAdministration, bool>>>(), null))
-               .ReturnsAsync(() => null);
-
-            _repoWrapper
-                  .Setup(r => r.ClubMemberHistory.GetAllAsync
-                      (It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-                  .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>());
-
-            ClubService clubService = CreateClubService();
-
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
-
-            // Act
-            var result = await clubService.GetClubDataForReport(Id);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubReportDataDTO>(result);
-        }
-
-        [Test]
-        public async Task UnArchiveAsync_WithModel_ReturnsClubUnArchived()
-        {
-            // Arrange
-            ClubService clubService = CreateClubService();
-            _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()));
-            _repoWrapper.Setup(r => r.SaveAsync());
-
-            // Act
-            await clubService.UnArchiveAsync(Id);
-
-            // Assert
-            _repoWrapper.Verify(r => r.Club.Update(It.IsAny<DataAccessClub.Club>()), Times.Once);
-            _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
         [SetUp]
@@ -1580,35 +1379,6 @@ namespace EPlast.Tests.Services.Club
             };
         }
 
-        private IEnumerable<DataAccessClub.Club> GetTestClub()
-        {
-            return new List<DataAccessClub.Club>
-            {
-                new DataAccessClub.Club{
-                    Name = "Львів",
-                    ClubAdministration = new List<ClubAdministration>(),
-                    ClubMembers = new List<ClubMembers>(),
-                    ClubDocuments = new List<ClubDocuments>(),
-                    },
-                new DataAccessClub.Club{
-                    Name = "Стрий",
-                    ClubAdministration = new List<ClubAdministration>(),
-                    ClubMembers = new List<ClubMembers>(),
-                    ClubDocuments = new List<ClubDocuments>(),
-                }
-            }.AsEnumerable();
-        }
-
-        private IEnumerable<ClubDTO> GetTestClubDTO()
-        {
-            return new List<ClubDTO>
-            {
-                new ClubDTO{Name = "Львів"},
-                new ClubDTO{Name = "Стрий"},
-                new ClubDTO{Name = "Миколаїв"}
-            }.AsEnumerable();
-        }
-
         private DataAccessClub.Club GetTestClubWithoutLogo()
         {
             var club = new DataAccessClub.Club
@@ -1646,7 +1416,5 @@ namespace EPlast.Tests.Services.Club
                 }
             };
         }
-
-        private Tuple<IEnumerable<DataAccessClub.Club>, int> CreateTuple => new Tuple<IEnumerable<DataAccessClub.Club>, int>(GetClubsByPage(), 100);
     }
 }
