@@ -26,6 +26,6 @@ namespace EPlast.BLL
         /// <param name="page">Current page</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Searched Precautions</returns>
-        Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(IEnumerable<string> sortByOrder , IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter, string searchedData, int page, int pageSize);
+        Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(PrecautionTableSettings tableSettings);//IEnumerable<string> sortByOrder , IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter, string searchedData, int page, int pageSize);
     }
 }

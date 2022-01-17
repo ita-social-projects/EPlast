@@ -15,6 +15,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.PrecautionsDTO;
 
 namespace EPlast.Tests.Controllers
 {
@@ -103,18 +104,17 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<UserPrecautionDTO>>(resultValue);
         }
 
-        /*[Test]
+        [Test]
         public void GetUsersPrecautionsForTable_ReturnsOkObjectResult()
         {
             //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
             _precautionService
-                .Setup(x => x.GetUsersPrecautionsForTableAsync(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<UserPrecautionsTableObject>());
+                .Setup(x => x.GetUsersPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>())).ReturnsAsync(CreateTuple);
 
+            PrecautionController controller = _PrecautionController;
             //Act
-            var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
+            var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<PrecautionTableSettings>()).Result;
             var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
@@ -123,7 +123,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(resultValue);
-        }*/
+        }
 
         [Test]
         public async Task GetPrecaution_PrecautionById_ReturnsOkObjectResult()
@@ -477,5 +477,22 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        private List<UserPrecautionsTableObject> GetUsersPrecautionByPage()
+        {
+            return new List<UserPrecautionsTableObject>()
+            {
+                new UserPrecautionsTableObject()
+                {
+                    Number = 34,
+                }
+            };
+        }
+        private int GetFakeUserPrecautionNumber()
+        {
+            return 100;
+        }
+
+        private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
     }
 }

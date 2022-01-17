@@ -73,7 +73,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
         {
-            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(tableSettings.SortByOrder, tableSettings.StatusSorter, tableSettings.PrecautionNameSorter, tableSettings.DateSorter, tableSettings.SearchedData, tableSettings.Page, tableSettings.PageSize);            
+            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(tableSettings);            
             var allInfoPrecautions = precautions.Item1.ToList();
             allInfoPrecautions.ForEach(u => u.Total = precautions.Item2);
             return Ok(allInfoPrecautions);

@@ -11,7 +11,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 using EPlast.BLL.DTO.PrecautionsDTO;
 
 namespace EPlast.BLL.Services
@@ -73,40 +72,36 @@ namespace EPlast.BLL.Services
                 throw new UnauthorizedAccessException();
         }
 
-        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(IEnumerable<string> sortByOrder, IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter, string searchedData, int page, int pageSize)
+        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(PrecautionTableSettings tableSettings)
         {
-            var filter = GetFilter(searchedData, statusSorter, precautionNameSorter, dateSorter);
-            var order = GetOrder(sortByOrder);
+            var filter = GetFilter(tableSettings.SearchedData, tableSettings.StatusSorter, tableSettings.PrecautionNameSorter, tableSettings.DateSorter);
+            var order = GetOrder(tableSettings.SortByOrder);
             var selector = GetSelector();
             var include = GetInclude();
-            var tuple = await _repoWrapper.UserPrecaution.GetRangeAsync(filter, selector, order, include, page, pageSize);
+            var tuple = await _repoWrapper.UserPrecaution.GetRangeAsync(filter, selector, order, include, tableSettings.Page, tableSettings.PageSize);
             var precautions = tuple.Item1;
             var rows = tuple.Item2;
 
             return new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(_mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionsTableObject>>(precautions), rows);
-        }        
-        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusSorter, IEnumerable<string> precautionNameSorter, IEnumerable<string> dateSorter)
-        {                        
+        }
+        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusSorter, IEnumerable<string> nameSorter, IEnumerable<string> dateSorter)
+        {            
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
+            var checkDate = searchedDataEmty ? "" : String.Join("-", searchedData.Split(".").Reverse());
             Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
                 false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
-                || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
-
-                || (x.Date.Day.ToString()+"."+ x.Date.Month.ToString() + "." +x.Date.Year.ToString()).Contains(searchedData)
-                || (x.EndDate.Day.ToString() + "." + x.EndDate.Month.ToString() + "." + x.EndDate.Year.ToString()).Contains(searchedData) 
-                //|| (x.Date.ToString("dd.MM.yyyy")).Contains(searchedData) || (x.EndDate.ToString("dd.MM.yyyy")).Contains(searchedData)
-                //|| x.Date.ToString().Contains(searchedData) || x.EndDate.ToString().Contains(searchedData)
-
+                || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)                
+                || x.Date.Date.ToString().Contains(checkDate) || x.EndDate.Date.ToString().Contains(checkDate)
                 || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
             };
 
-            Expression<Func<UserPrecaution, bool>> precautionNameSorterExpr = (precautionNameSorter == null) switch
+            Expression<Func<UserPrecaution, bool>> nameSorterExpr = (nameSorter == null) switch
             {
                 true => x => true,
-                false => x => precautionNameSorter.Contains(x.Precaution.Name),
+                false => x => nameSorter.Contains(x.Precaution.Name),
             };
 
             Expression<Func<UserPrecaution, bool>> dateSorterExpr = (dateSorter == null) switch
@@ -123,7 +118,7 @@ namespace EPlast.BLL.Services
 
             Expression<Func<UserPrecaution, bool>> searchAndStatusFilter = Combine(searchedDataExpr, statusSorterExpr);
             Expression<Func<UserPrecaution, bool>> filtersWithDateFilter = Combine(searchAndStatusFilter, dateSorterExpr);
-            Expression<Func<UserPrecaution, bool>> allFilterByTable = Combine(filtersWithDateFilter, precautionNameSorterExpr);
+            Expression<Func<UserPrecaution, bool>> allFilterByTable = Combine(filtersWithDateFilter, nameSorterExpr);
 
             return allFilterByTable;
         }
@@ -145,8 +140,8 @@ namespace EPlast.BLL.Services
 
                 "userName" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByPrecautionName()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByPrecautionName()),
+                    "ascend" => expr = x => x.OrderBy(GetOrderByName()),
+                    "descend" => expr = x => x.OrderByDescending(GetOrderByName()),
                     _ => expr = x => x
                 },
 
@@ -157,35 +152,6 @@ namespace EPlast.BLL.Services
                     _ => expr = x => x
                 }
             };
-            
-        
-            /*if (sortByOrder.Contains("number"))
-            {
-                if (sortByOrder.Contains("ascend"))
-                    expr = x => x.OrderBy(GetOrderByNumber());
-                else if (sortByOrder.Contains("descend"))
-                    expr = x => x.OrderByDescending(x => x.Number);
-                else
-                    expr = x => x;
-            }
-            else if (sortByOrder.Contains("userName"))
-            {
-                if (sortByOrder.Contains("ascend"))
-                    expr = x => x.OrderBy(x => x.User.FirstName + " " + x.User.LastName);
-                else if (sortByOrder.Contains("descend"))
-                    expr = x => x.OrderByDescending(x => x.User.FirstName + " " + x.User.LastName);
-                else
-                    expr = x => x;
-            }
-            else
-            {
-                if (sortByOrder.Contains("ascend"))
-                    expr = x => x.OrderBy(x => x.EndDate);
-                else if (sortByOrder.Contains("descend"))
-                    expr = x => x.OrderByDescending(x => x.EndDate);
-                else
-                    expr = x => x;                
-            }*/
             return expr;
         }        
         private Expression<Func<UserPrecaution, UserPrecaution>> GetSelector()
@@ -193,7 +159,7 @@ namespace EPlast.BLL.Services
             Expression<Func<UserPrecaution, UserPrecaution>> expr = x => x;
             return expr;
         }
-        public static Expression<T> Combine<T>(Expression<T> firstExpression, Expression<T> secondExpression)
+        private static Expression<T> Combine<T>(Expression<T> firstExpression, Expression<T> secondExpression)
         {
             if (firstExpression is null)
             {
@@ -218,7 +184,7 @@ namespace EPlast.BLL.Services
             Expression<Func<UserPrecaution, object>> expr = x => x.Number;
             return expr;
         }
-        private Expression<Func<UserPrecaution, object>> GetOrderByPrecautionName()
+        private Expression<Func<UserPrecaution, object>> GetOrderByName()
         {
             Expression<Func<UserPrecaution, object>> expr = x => x.User.FirstName + " " + x.User.LastName;
             return expr;

@@ -150,11 +150,10 @@ namespace EPlast.DataAccess.Repositories
             if (selector != null)
             {
                 query = query.Select(selector);
-            }                                   
+            }
 
             if (sorting != null)
             {
-                //query = query.OrderBy(sorting);
                 query = sorting(query);
             }
 
