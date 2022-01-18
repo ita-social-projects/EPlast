@@ -100,7 +100,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             {
                 ann.ImagesPresent =
                     await _repoWrapper.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(i => i.GoverningBodyAnnouncementId == ann.Id)
-                    == null ? false : true;
+                    != null;
             }
             var rows = tuple.Item2;
 
