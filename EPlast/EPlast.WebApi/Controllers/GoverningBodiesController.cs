@@ -347,16 +347,6 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyAnnouncementUserDTO);
         }
 
-        [Obsolete("This action is obsolete. Use GetAnnouncementsByPage action to provide better performance")]
-        [HttpGet("GetAllAnnouncements")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetAllAnnouncement()
-        {
-            var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
-
-            return Ok(announcements);
-        }
-
         /// <summary>
         /// Get specified by page number and page size list of announcements
         /// </summary>

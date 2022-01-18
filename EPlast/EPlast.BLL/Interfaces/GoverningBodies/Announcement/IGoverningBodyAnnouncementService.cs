@@ -8,7 +8,6 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
 {
     public interface IGoverningBodyAnnouncementService
     {
-        Task<IEnumerable<GoverningBodyAnnouncementUserDTO>> GetAllAnnouncementAsync();
         Task DeleteAnnouncementAsync(int id);
         Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO);
         Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id);

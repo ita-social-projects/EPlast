@@ -120,29 +120,6 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         }
 
         [Test]
-        public async Task GetAllAnnouncement_Valid()
-        {
-            //Arrange
-            _repoWrapper.Setup(g => g.GoverningBodyAnnouncement.GetAllAsync(null, null))
-                .ReturnsAsync(GetTestPlastAnnouncement());
-            _mapper.Setup(m => m.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(It.IsAny<IEnumerable<GoverningBodyAnnouncement>>()))
-                .Returns(GetTestPlastAnnouncementDTO());
-            var a = _repoWrapper.Setup(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
-               It.IsAny<Func<IQueryable<User>,
-               IIncludableQueryable<User, object>>>())).ReturnsAsync(new User());
-            _mapper.Setup(m => m.Map<IEnumerable<UserDTO>>(a));
-
-            //Act
-            var result = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<GoverningBodyAnnouncementUserDTO>>(result);
-            _repoWrapper.Verify(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
-               null), Times.AtLeastOnce);
-        }
-
-        [Test]
         public async Task GetAnnouncementById_Valid()
         {
             //Arrange

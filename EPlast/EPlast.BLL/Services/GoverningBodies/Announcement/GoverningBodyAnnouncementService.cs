@@ -75,19 +75,6 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             await _repoWrapper.SaveAsync();
         }
 
-        [Obsolete("This method is obsolete. Use GetAnnouncementsByPageAsync method to provide better performance")]
-        public async Task<IEnumerable<GoverningBodyAnnouncementUserDTO>> GetAllAnnouncementAsync()
-        {
-            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>
-                (await _repoWrapper.GoverningBodyAnnouncement.GetAllAsync());
-            foreach (GoverningBodyAnnouncementUserDTO announcement in announcements)
-            {
-                var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
-                announcement.User = _mapper.Map<UserDTO>(user);
-            }
-            return announcements.OrderByDescending(d => d.Date);
-        }
-
         /// <inheritdoc/>
         public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize)
         {
