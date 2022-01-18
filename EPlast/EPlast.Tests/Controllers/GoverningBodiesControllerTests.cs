@@ -483,7 +483,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService
                 .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>());
-           
+
             // Act
             var result = await _governingBodiesController.GetUserAdministrations(GetStringTestId());
 
@@ -499,7 +499,7 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService
                 .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(It.IsAny<IEnumerable<GoverningBodyAdministrationDTO>>());
-           
+
             // Act
             var result = await _governingBodiesController.GetUserPreviousAdministrations(GetStringTestId());
 
@@ -552,6 +552,21 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task GetAllAnnouncement_Valid()
+        {
+            //Arrange
+            _governingBodyAnnouncementService.Setup(a => a.GetAllAnnouncementAsync())
+                .ReturnsAsync(new List<GoverningBodyAnnouncementUserDTO>().AsEnumerable());
+
+            //Act
+            var result = await _governingBodiesController.GetAllAnnouncement();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [TestCase(1, 5)]
@@ -676,7 +691,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(g => g.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(),
                     It.IsAny<int>()))
                 .ThrowsAsync(new Exception());
-            
+
             //Act
             var result = await _governingBodiesController.GetUserAdministrationsForTable(It.IsAny<string>(),
                 It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>());

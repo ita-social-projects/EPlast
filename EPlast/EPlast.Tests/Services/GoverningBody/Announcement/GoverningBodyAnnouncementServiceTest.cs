@@ -67,7 +67,8 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             //Assert
             Assert.IsNotNull(result);
             Assert.DoesNotThrowAsync(async () => {
-                await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()); });
+                await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
+            });
         }
 
         [Test]
@@ -116,6 +117,29 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             Exception exception = Assert.ThrowsAsync(typeof(ArgumentNullException),
                async () => { await _governingBodyAnnouncementService.DeleteAnnouncementAsync(It.IsAny<int>()); });
             Assert.AreEqual("Value cannot be null. (Parameter 'Announcement with 0 not found')", exception.Message);
+        }
+
+        [Test]
+        public async Task GetAllAnnouncement_Valid()
+        {
+            //Arrange
+            _repoWrapper.Setup(g => g.GoverningBodyAnnouncement.GetAllAsync(null, null))
+                .ReturnsAsync(GetTestPlastAnnouncement());
+            _mapper.Setup(m => m.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(It.IsAny<IEnumerable<GoverningBodyAnnouncement>>()))
+                .Returns(GetTestPlastAnnouncementDTO());
+            var a = _repoWrapper.Setup(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+               It.IsAny<Func<IQueryable<User>,
+               IIncludableQueryable<User, object>>>())).ReturnsAsync(new User());
+            _mapper.Setup(m => m.Map<IEnumerable<UserDTO>>(a));
+
+            //Act
+            var result = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAnnouncementUserDTO>>(result);
+            _repoWrapper.Verify(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
+               null), Times.AtLeastOnce);
         }
 
         [Test]
@@ -297,7 +321,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             {
                 Id = 1,
                 Text = "Hello world",
-                Images = new List<GoverningBodyAnnouncementImage> { 
+                Images = new List<GoverningBodyAnnouncementImage> {
                     new GoverningBodyAnnouncementImage
                     {
                         ImagePath = "image.png"
@@ -320,7 +344,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             };
         }
 
-        private Tuple<IEnumerable<GoverningBodyAnnouncement>, int> CreateTuple => 
+        private Tuple<IEnumerable<GoverningBodyAnnouncement>, int> CreateTuple =>
             new Tuple<IEnumerable<GoverningBodyAnnouncement>, int>(GetAnnouncementsByPage(), 100);
     }
 }
