@@ -646,6 +646,22 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task EditAnnouncement_IdIsNull_ReturnsBadRequest()
+        {
+            //Arrange
+
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(null as int?);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
+        }
+
+        [Test]
         public async Task GetUserAdministrationsForTable_ReturnsOkObjectResult()
         {
             //Arrange

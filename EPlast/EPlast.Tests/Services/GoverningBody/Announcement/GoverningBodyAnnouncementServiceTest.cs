@@ -51,6 +51,27 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         }
 
         [Test]
+        public async Task AddAnnouncement_EmptyImages_Valid()
+        {
+            //Arrange
+            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Returns(GetGoverningBodyAnnouncement());
+            _repoWrapper
+               .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
+            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
+            _context.Setup(c => c.HttpContext.User).Returns(new ClaimsPrincipal());
+
+            //Act
+            var result = await _governingBodyAnnouncementService.AddAnnouncementAsync(GetGoverningBodyAnnouncementWithEmptyImagesDTO());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.DoesNotThrowAsync(async () => {
+                await _governingBodyAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
+            });
+        }
+
+        [Test]
         public async Task AddAnnouncement_Valid()
         {
             //Arrange
@@ -268,7 +289,16 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             {
                 Id = 228,
                 Text = "Hello world",
-                ImagesBase64 = new List<string> { "data:image/jpeg;base64,/9j/4AAQSk" }
+                ImagesBase64 = new List<string> { "data:image/jpg;base64,/9j/4AAQSk" }
+            };
+        }
+
+        private GoverningBodyAnnouncementWithImagesDTO GetGoverningBodyAnnouncementWithEmptyImagesDTO()
+        {
+            return new GoverningBodyAnnouncementWithImagesDTO
+            {
+                Text = "Hello world",
+                ImagesBase64 = new List<string> { "" }
             };
         }
 
@@ -277,7 +307,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             return new GoverningBodyAnnouncementWithImagesDTO
             {
                 Text = "Hello world",
-                ImagesBase64 = new List<string> { "data:image/jpeg;base64,/9j/4AAQSk" }
+                ImagesBase64 = new List<string> { "data:image/jpg;base64,/9j/4AAQSk" }
             };
         }
 
