@@ -494,5 +494,41 @@ namespace EPlast.Tests.Controllers
         }
 
         private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
+
+        [TestCase("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу")]
+        public async Task CheckUserPrecautionsType_ReturnsOkObjectResult_Test(string userId, string type)
+        {
+            //Arrange
+            _userPrecautionService
+                .Setup(x => x.GetUserPrecautionsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<UserPrecautionDTO>().AsEnumerable());
+
+            //Act
+            var result = await _PrecautionController.CheckUserPrecautionsType(userId, type);
+            var resultValue = (result as OkObjectResult).Value;
+
+            //Assert
+            Assert.IsInstanceOf<bool>(resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserActivePrecautionEndDate_Test()
+        {
+            //Arrange
+            _userPrecautionService
+                .Setup(x => x.GetUserActivePrecaution(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new UserPrecautionDTO());
+
+            //Act
+            var result = await _PrecautionController.GetUserActivePrecautionEndDate(It.IsAny<string>(), It.IsAny<string>());
+            var resultValue = (result as OkObjectResult).Value;
+
+            //Assert
+            Assert.IsInstanceOf<string>(resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
     }
 }
