@@ -378,6 +378,40 @@ namespace EPlast.Tests.Services.EmailSending
             _mockEmailSendingService.Verify();
         }
 
+        [Test]
+        public async Task NotifyNewPlastMembersAndCityAdminsAsync_Empty_Test()
+        {
+            // Arrange
+            _mockRepoWrapper
+                    .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+                                                   It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
+                    .ReturnsAsync(new List<CityMembers>());
+            _mockUserManager
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<User>(),
+                                              It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _mockEmailSendingService
+                .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
+                                             It.IsAny<string>(),
+                                             It.IsAny<string>(),
+                                             It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
+                .Returns(new EmailModel());
+
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>())).Returns(new UserNotification());
+
+            // Act
+            await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
+
+            // Assert
+            _mockRepoWrapper.Verify();
+            _mockUserManager.Verify();
+            _mockEmailSendingService.Verify();
+        }
+
         private static List<NotificationTypeDTO> FakeTypeId()
         {
             return new List<NotificationTypeDTO>
