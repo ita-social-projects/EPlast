@@ -19,7 +19,7 @@ namespace EPlast.BLL.Interfaces.Terms
         /// Get all user Id
         /// </summary>
         /// <param name="user">Authorized user</param>
-        /// <returns>All users Id</returns>
+        /// <returns>All users Id without sender</returns>
         [Obsolete("Use refactored method via mediator query/handler GetAllUsersIdWithoutSender")]
         Task<IEnumerable<string>> GetAllUsersIdAsync(User user);
 
