@@ -241,7 +241,7 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>The id of a city by user id</returns>
-        [Obsolete("Use refactored method via mediator query/handler GetCityIdByUserId")]
+        [Obsolete("Use refactored method via mediator query/handler GetCityIdByUserId")] 
         Task<int> GetCityIdByUserIdAsync(string userId);
     }
 }
