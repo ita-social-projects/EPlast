@@ -89,40 +89,37 @@ namespace EPlast.Tests.Services.Terms
         }
 
         [Test]
-        public async Task GetAllUsers_IfAdmin_WorksCorrectly()
+        public async Task GetAllUsersIdWithoutSender_IfAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
                 .Setup(x => x.UserProfile.GetAllAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(),
                     It.IsAny<Func<IQueryable<UserProfile>, IIncludableQueryable<UserProfile, object>>>()))
                 .ReturnsAsync(GetTestUsersId());
-            mockMapper.Setup(m => m.Map<IEnumerable<UserProfileDTO>>(It.IsAny<UserProfile>()))
-                .Returns(GetTestUsersIdDTO());
 
             //Act
-            var actualResult = await TermsService.GetAllUsersIdAsync(new User());
+            var actualResult = await TermsService.GetAllUsersIdWithoutAdminIdAsync(FakeUser());
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await TermsService.GetAllUsersIdAsync(new User()); });
+            Assert.DoesNotThrowAsync(async () => { await TermsService.GetAllUsersIdWithoutAdminIdAsync(new User()); });
             Assert.IsNotNull(actualResult);
             Assert.IsInstanceOf(typeof(IEnumerable<string>), actualResult);
+            Assert.AreEqual(GetTestUsersId().Select(x => x.UserID), actualResult);
         }
 
         [Test]
-        public void GetAllUsers_IfNotAdmin_WorksCorrectly()
+        public void GetAllUsersIdWithoutSender_IfNotAdmin_WorksCorrectly()
         {
             //Arrange
             mockRepoWrapper
                 .Setup(x => x.UserProfile.GetAllAsync(It.IsAny<Expression<Func<UserProfile, bool>>>(),
                     It.IsAny<Func<IQueryable<UserProfile>, IIncludableQueryable<UserProfile, object>>>()))
                 .ReturnsAsync(GetTestUsersId());
-            mockMapper.Setup(m => m.Map<IEnumerable<UserProfileDTO>>(It.IsAny<UserProfile>()))
-                .Returns(GetTestUsersIdDTO());
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
 
             //Act
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await TermsService.GetAllUsersIdAsync(It.IsAny<User>()); });
+                async () => { await TermsService.GetAllUsersIdWithoutAdminIdAsync(FakeUser()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -225,18 +222,17 @@ namespace EPlast.Tests.Services.Terms
         {
             return new List<UserProfile>
             {
-                new UserProfile{ UserID = "963b1137-d8b5-4de7-b83f-66791b7ca4d8"},
-                new UserProfile{ UserID = "99dbe3c2-6108-43cc-bac2-e8efe7e08481"}
+                new UserProfile{ UserID = "963b1137-d8b5-4de7-b83f-66791b7ca4d8", GenderID = 1},
+                new UserProfile{ UserID = "99dbe3c2-6108-43cc-bac2-e8efe7e08481", GenderID = 1}
             }.AsEnumerable();
         }
 
-        private IEnumerable<UserProfileDTO> GetTestUsersIdDTO()
+        private User FakeUser()
         {
-            return new List<UserProfileDTO>
+            return new User
             {
-                new UserProfileDTO{ UserID = "963b1137-d8b5-4de7-b83f-66791b7ca4d8"},
-                new UserProfileDTO{ UserID = "99dbe3c2-6108-43cc-bac2-e8efe7e08481"}
-            }.AsEnumerable();
+                Id = "963b1137-d8b5-4de7-b83f-66791b7ca4d8"
+            };
         }
     }
 }

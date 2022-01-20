@@ -83,7 +83,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAllUsersId_ReturnsOkObjectResult()
+        public async Task GetAllUsersIdWithoutSender_ReturnsOkObjectResult()
         {
             //Arrange
             _mockMediator
