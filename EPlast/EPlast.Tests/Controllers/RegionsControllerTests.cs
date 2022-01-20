@@ -631,7 +631,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetReportByIdAsync_ReturnsReportDTO()
         {
             // Arrange
-            _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<int>(), It.IsAny<int>()))
+            _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new RegionAnnualReportDTO());
             
             // Act
