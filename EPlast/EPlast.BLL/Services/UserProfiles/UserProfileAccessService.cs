@@ -12,12 +12,6 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IUserService _userService;
         private readonly UserManager<DatabaseEntities.User> _userManager;
 
-        private async Task<bool> IsAdminAsync(User user)
-        {
-            var roles = await _userManager.GetRolesAsync(user);
-            return roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead);
-        }
-
         public UserProfileAccessService(IUserService userService, UserManager<DatabaseEntities.User> userManager)
         {
             _userManager = userManager;
@@ -38,11 +32,10 @@ namespace EPlast.BLL.Services.UserProfiles
             return role switch
             {
                 Roles.CityHead =>
-                    (roles.Contains(Roles.CityHead) && _userService.IsUserSameCity(currentUser, focusUser) ||
-                    (roles.Contains(Roles.OkrugaHead) && _userService.IsUserSameRegion(currentUser, focusUser))) &&
-                    await _userService.IsApprovedCityMember(focusUserId),
+                    (roles.Contains(Roles.CityHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)) ||
+                    (roles.Contains(Roles.OkrugaHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Region)),
                 Roles.KurinHead =>
-                    (roles.Contains(Roles.KurinHead) && _userService.IsUserSameClub(currentUser, focusUser) && await _userService.IsApprovedCLubMember(focusUserId)),
+                    (roles.Contains(Roles.KurinHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Club)),
                 _ => false,
             };
         }
@@ -57,9 +50,9 @@ namespace EPlast.BLL.Services.UserProfiles
                 return true;
             }
             return
-                ((roles.Contains(Roles.OkrugaHead)) && _userService.IsUserSameRegion(currentUser, focusUser)) ||
-                ((roles.Contains(Roles.CityHead)) && _userService.IsUserSameCity(currentUser, focusUser)) ||
-                ((roles.Contains(Roles.KurinHead)) && _userService.IsUserSameClub(currentUser, focusUser));
+                ((roles.Contains(Roles.OkrugaHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Region)) ||
+                ((roles.Contains(Roles.CityHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)) ||
+                ((roles.Contains(Roles.KurinHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Club));
         }
 
         public async Task<bool> CanViewFullProfile(User user, string focusUserId)
@@ -78,7 +71,12 @@ namespace EPlast.BLL.Services.UserProfiles
             return
                 (_userService.IsUserSameCity(currentUser, focusUser) || _userService.IsUserSameClub(currentUser, focusUser)) ||
                 ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && _userService.IsUserSameRegion(currentUser, focusUser));
+        }
 
+        private async Task<bool> IsAdminAsync(User user)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            return roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead);
         }
     }
 }

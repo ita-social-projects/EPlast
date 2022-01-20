@@ -31,6 +31,7 @@ namespace EPlast.BLL.Services.UserAccess
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
         private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
         private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
+        private const string MenuAccessSettingsFile = "MenuAccessSettings.json";
 
         public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
@@ -99,12 +100,24 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["CanApproveAsClubHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
             userAccess["CanApproveAsCityHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
             userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanSeeAddDeleteUserExtractUPU"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanAddUserDistionction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDeleteUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDownloadUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanViewDownloadUserBiography"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             return userAccess;
         }
 
         public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
         {
             _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(MenuAccessSettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }
