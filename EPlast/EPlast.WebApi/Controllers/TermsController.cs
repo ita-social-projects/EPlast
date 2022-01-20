@@ -1,9 +1,11 @@
-﻿using EPlast.BLL.DTO.Terms;
-using EPlast.BLL.Interfaces.Terms;
+﻿using EPlast.BLL.Commands.TermsOfUse;
+using EPlast.BLL.DTO.Terms;
+using EPlast.BLL.Queries.TermsOfUse;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -17,13 +19,13 @@ namespace EPlast.WebApi.Controllers
     
     public class TermsController : ControllerBase
     {
-        private readonly ITermsService _termsOfUse;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
-        public TermsController(ITermsService termsOfUse, UserManager<User> userManager)
+        public TermsController( UserManager<User> userManager, IMediator mediator)
         {
-            _termsOfUse = termsOfUse;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -36,10 +38,11 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetFirstTermsOfUse()
         {
-            TermsDTO termsDTO = await _termsOfUse.GetFirstRecordAsync();
-            if (termsDTO == null)
+            var query = new GetFirstRecordQuery();
+            var termsDto = await _mediator.Send(query);
+            if (termsDto == null)
                 return NotFound();
-            return Ok(termsDTO); 
+            return Ok(termsDto); 
         }
 
         /// <summary>
@@ -50,7 +53,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("UsersId")]
         public async Task<IActionResult> GetAllUsersId()
         {
-            var usersId = await _termsOfUse.GetAllUsersIdWithoutAdminIdAsync(await _userManager.GetUserAsync(User));
+            var query = new GetAllUsersIdWithoutSenderQuery(await _userManager.GetUserAsync(User));
+            var usersId = await _mediator.Send(query);
             return Ok(usersId);
         }
 
@@ -69,7 +73,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _termsOfUse.ChangeTermsAsync(termsDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangeTermsCommand(termsDTO, await _userManager.GetUserAsync(User));
+                    await _mediator.Send(query);
                     return NoContent();
                 }
                 catch (NullReferenceException)
@@ -95,7 +100,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _termsOfUse.AddTermsAsync(termsDTO, await _userManager.GetUserAsync(User));
+                    var query = new AddTermsCommand(termsDTO, await _userManager.GetUserAsync(User));
+                    await _mediator.Send(query);
                     return NoContent();
                 }
                 catch
