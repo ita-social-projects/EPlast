@@ -19,6 +19,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.Queries.City;
+using MediatR;
+using System.Threading;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -27,11 +30,31 @@ namespace EPlast.Tests.Services.EmailSending
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IEmailContentService> _mockEmailContentService;
         private Mock<INotificationService> _mockNotificationService;
-        private Mock<ICityService> _mockCityService;
         private Mock<IUserService> _mockUserService;
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<UserManager<User>> _mockUserManager;
         private INewPlastMemberEmailGreetingService _newPlastMemberEmailGreetingService;
+        private Mock<IMediator> _mockMediator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            var store = new Mock<IUserStore<User>>();
+            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _mockRepoWrapper = new Mock<IRepositoryWrapper>();
+            _mockEmailSendingService = new Mock<IEmailSendingService>();
+            _mockEmailContentService = new Mock<IEmailContentService>();
+            _mockNotificationService = new Mock<INotificationService>();
+            _mockUserService = new Mock<IUserService>();
+            _mockMediator = new Mock<IMediator>();
+            _newPlastMemberEmailGreetingService = new NewPlastMemberEmailGreetingService(_mockRepoWrapper.Object,
+                _mockUserManager.Object,
+                _mockEmailSendingService.Object,
+                _mockEmailContentService.Object,
+                _mockNotificationService.Object,
+                _mockUserService.Object,
+                _mockMediator.Object);
+        }
 
         [Test]
         public async Task NotifyNewPlastMembersAndCityAdminsAsync_Valid_Test()
@@ -149,7 +172,7 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>()));
             _mockUserService.Setup(x => x.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
-            _mockCityService.Setup(x => x.GetCityAdminsAsync(It.IsAny<int>()))
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(cityProfile);
             _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
@@ -164,7 +187,8 @@ namespace EPlast.Tests.Services.EmailSending
                     It.IsAny<DateTime>())).Returns(new EmailModel());
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(It.IsAny<string>(),
                 It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new UserNotification());
-            _mockCityService.Setup(x => x.GetCityIdByUserIdAsync(It.IsAny<string>())).ReturnsAsync(240);
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityIdByUserIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(240);
             _mockNotificationService.Setup(x => x.GetAllNotificationTypesAsync()).ReturnsAsync(FakeTypeId());
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(
                     It.IsAny<string>(),
@@ -265,7 +289,7 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>()));
             _mockUserService.Setup(x => x.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
-            _mockCityService.Setup(x => x.GetCityAdminsAsync(It.IsAny<int>()))
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(cityProfile);
             _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
@@ -280,7 +304,8 @@ namespace EPlast.Tests.Services.EmailSending
                     It.IsAny<DateTime>())).Returns(new EmailModel());
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(It.IsAny<string>(),
                 It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new UserNotification());
-            _mockCityService.Setup(x => x.GetCityIdByUserIdAsync(It.IsAny<string>())).ReturnsAsync(240);
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityIdByUserIdQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(240);
             _mockNotificationService.Setup(x => x.GetAllNotificationTypesAsync()).ReturnsAsync(FakeTypeId());
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(
                     It.IsAny<string>(),
@@ -351,26 +376,6 @@ namespace EPlast.Tests.Services.EmailSending
             _mockRepoWrapper.Verify();
             _mockUserManager.Verify();
             _mockEmailSendingService.Verify();
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            var store = new Mock<IUserStore<User>>();
-            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            _mockRepoWrapper = new Mock<IRepositoryWrapper>();
-            _mockEmailSendingService = new Mock<IEmailSendingService>();
-            _mockEmailContentService = new Mock<IEmailContentService>();
-            _mockNotificationService = new Mock<INotificationService>();
-            _mockCityService = new Mock<ICityService>();
-            _mockUserService = new Mock<IUserService>();
-            _newPlastMemberEmailGreetingService = new NewPlastMemberEmailGreetingService(_mockRepoWrapper.Object,
-                                                                                         _mockUserManager.Object,
-                                                                                         _mockEmailSendingService.Object,
-                                                                                         _mockEmailContentService.Object,
-                                                                                         _mockNotificationService.Object,
-                                                                                         _mockCityService.Object,
-                                                                                         _mockUserService.Object);
         }
 
         private static List<NotificationTypeDTO> FakeTypeId()
