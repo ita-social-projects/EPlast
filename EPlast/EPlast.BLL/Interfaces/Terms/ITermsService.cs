@@ -21,7 +21,7 @@ namespace EPlast.BLL.Interfaces.Terms
         /// <param name="user">Authorized user</param>
         /// <returns>All users Id without sender</returns>
         [Obsolete("Use refactored method via mediator query/handler GetAllUsersIdWithoutSender")]
-        Task<IEnumerable<string>> GetAllUsersIdAsync(User user);
+        Task<IEnumerable<string>> GetAllUsersIdWithoutAdminIdAsync(User user);
 
         /// <summary>
         /// Edit terms of use by Id
