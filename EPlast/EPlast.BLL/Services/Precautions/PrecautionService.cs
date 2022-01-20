@@ -133,23 +133,23 @@ namespace EPlast.BLL.Services
             {
                 "number" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByNumber()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByNumber()),
-                    _ => expr = x => x
+                    "ascend" => x => x.OrderBy(GetOrderByNumber()),
+                    "descend" => x => x.OrderByDescending(GetOrderByNumber()),
+                    _ => x => x
                 },
 
                 "userName" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByName()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByName()),
-                    _ => expr = x => x
+                    "ascend" => x => x.OrderBy(GetOrderByName()),
+                    "descend" => x => x.OrderByDescending(GetOrderByName()),
+                    _ => x => x
                 },
 
                 _ => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByEndDate()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByEndDate()),
-                    _ => expr = x => x
+                    "ascend" => x => x.OrderBy(GetOrderByEndDate()),
+                    "descend" => x => x.OrderByDescending(GetOrderByEndDate()),
+                    _ => x => x
                 }
             };
             return expr;
@@ -162,14 +162,10 @@ namespace EPlast.BLL.Services
         private static Expression<T> Combine<T>(Expression<T> firstExpression, Expression<T> secondExpression)
         {
             if (firstExpression is null)
-            {
                 return secondExpression;
-            }
 
             if (secondExpression is null)
-            {
                 return firstExpression;
-            }
 
             var invokedExpression = Expression.Invoke(
                 secondExpression,
