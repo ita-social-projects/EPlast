@@ -478,23 +478,6 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        private List<UserPrecautionsTableObject> GetUsersPrecautionByPage()
-        {
-            return new List<UserPrecautionsTableObject>()
-            {
-                new UserPrecautionsTableObject()
-                {
-                    Number = 34,
-                }
-            };
-        }
-        private int GetFakeUserPrecautionNumber()
-        {
-            return 100;
-        }
-
-        private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
-
         [TestCase("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу")]
         public async Task CheckUserPrecautionsType_ReturnsOkObjectResult_Test(string userId, string type)
         {
@@ -530,5 +513,23 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        private List<UserPrecautionsTableObject> GetUsersPrecautionByPage()
+        {
+            return new List<UserPrecautionsTableObject>()
+            {
+                new UserPrecautionsTableObject()
+                {
+                    Number = 34,
+                }
+            };
+        }
+
+        private int GetFakeUserPrecautionNumber()
+        {
+            return 100;
+        }
+
+        private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
     }
 }
