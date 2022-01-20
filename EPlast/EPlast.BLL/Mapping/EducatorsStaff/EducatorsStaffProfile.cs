@@ -9,6 +9,8 @@ namespace EPlast.BLL.Mapping.EducationsStaff
         public EducatorsStaffProfile()
         {
             CreateMap<EducatorsStaff, EducatorsStaffDTO>().ReverseMap();
+            CreateMap<EducatorsStaff, EducatorsStaffTableObject >().ForMember(dest => dest.Id, act => act.MapFrom(src => src.ID))
+                .ForMember(dest => dest.UserName, act => act.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
         }
         
     }

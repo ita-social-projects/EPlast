@@ -1,10 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -158,5 +163,56 @@ namespace EPlast.DataAccess.Repositories
 
             return new Tuple<IEnumerable<T>, int>(query, TotalRecords);
         }
+
+        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
+                                                       Expression<Func<T, T>> selector = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+                                                       int? pageNumber = null,
+                                                       int? pageSize = null)
+        {
+            return await this.GetRangeQuery(filter, selector, sorting, include, pageNumber, pageSize);
+        }
+        private async Task<Tuple<IEnumerable<T>, int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
+                                                       Expression<Func<T, T>> selector = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+                                                       int? pageNumber = null,
+                                                       int? pageSize = null)
+        {
+            var query = this.EPlastDBContext.Set<T>().AsNoTracking();
+
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            if (selector != null)
+            {
+                query = query.Select(selector);
+            }
+
+            if (sorting != null)
+            {
+                //query = query.OrderBy(sorting);
+                query = sorting(query);
+            }
+
+            var TotalRecords = await query.CountAsync();
+
+            if (pageNumber != null && pageSize != null)
+            {
+                query = query.Skip((int)(pageSize * (pageNumber - 1)))
+                    .Take((int)pageSize);
+            }
+
+            return new Tuple<IEnumerable<T>, int>(query, TotalRecords);
+        }
+
     }
 }

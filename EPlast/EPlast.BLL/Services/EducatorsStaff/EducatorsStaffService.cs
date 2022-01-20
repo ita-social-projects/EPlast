@@ -6,9 +6,11 @@ using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EducatorsStaff
@@ -159,5 +161,135 @@ namespace EPlast.BLL.Services.EducatorsStaff
         {
             return _repositoryWrapper.KVs.GetEducatorsStaff(kadraType, searchedData, page, pageSize);
         }
+
+        public async Task<Tuple<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject>, int>> GetEducatorsStaffTableAsync
+            (int kadraType, IEnumerable<string> sortByOrder,string searchedData, int page, int pageSize)
+        {
+            var filter = GetFilter(kadraType, searchedData);
+            var order = GetOrder(sortByOrder);
+            var include = GetInclude();
+            var selector = GetSelector();
+            var tuple = await _repositoryWrapper.KVs.GetRangeAsync(filter, selector, order, include, page, pageSize);
+            var kadras = tuple.Item1;
+            var rows = tuple.Item2;
+            return new Tuple<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject>, int>(_mapper.Map<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject>>(kadras), rows);
+        }
+
+        private Func<IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>,IIncludableQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff,object>>  GetInclude()
+        {
+            Func<IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IIncludableQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.Include(i => i.User).Include(i => i.KadraVykhovnykivType);
+            return expr;
+        }
+
+        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, bool>> GetFilter(int kadraType, string searchedData)
+        {
+            var searchedDataEmty = string.IsNullOrEmpty(searchedData);
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, bool>> searchedDataExpr = (searchedDataEmty) switch
+            {
+                true => x => true,
+                false => x =>
+                x.NumberInRegister.ToString().Contains(searchedData)
+                || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
+                || x.DateOfGranting.ToString().Contains(searchedData)
+            };
+
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, bool>> kadraTypeExpr = (kadraType > 0) switch
+            {
+                true => x => x.KadraVykhovnykivTypeId.Equals(kadraType),
+                false => x => false
+                //5 => x => x.KadraVykhovnykivTypeId.Equals(5),
+                //6 => x => x.KadraVykhovnykivTypeId.Equals(6),
+                //7 => x => x.KadraVykhovnykivTypeId.Equals(7),
+                //8 => x => x.KadraVykhovnykivTypeId.Equals(8),
+            };
+
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, bool>> allFilterByTable = Combine(searchedDataExpr, kadraTypeExpr);
+            return allFilterByTable;
+        }
+
+        public static Expression<T> Combine<T>(Expression<T> firstExpression, Expression<T> secondExpression)
+        {
+            if (firstExpression is null)
+                return secondExpression;
+
+            if (secondExpression is null)
+                return firstExpression;
+
+            var invokedExpression = Expression.Invoke(
+            secondExpression,
+            firstExpression.Parameters);
+
+            var combinedExpression = Expression.AndAlso(firstExpression.Body, invokedExpression);
+            return Expression.Lambda<T>(combinedExpression, firstExpression.Parameters);
+        }
+
+        private Func<IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>> GetOrder(IEnumerable<string> sortByOrder)
+        {
+            Func<IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>> expr = (sortByOrder.First()) switch
+            {
+                "id" => (sortByOrder.Last()) switch
+                {
+                    "ascend" => expr = x => x.OrderBy(GetOrderByID()),
+                    "descend" => expr = x => x.OrderByDescending(GetOrderByID()),
+                    _ => expr = x => x
+                },
+                "userName" => (sortByOrder.Last()) switch
+                {
+                    "ascend" => expr = x => x.OrderBy(GetOrderByUserName()),
+                    "descend" => expr = x => x.OrderByDescending(GetOrderByUserName()),
+                    _=> expr = x => x
+                },
+                "numberInRegister" => (sortByOrder.Last()) switch
+                {
+                    "ascend" => expr = x => x.OrderBy(GetOrderByNumberInRegister()),
+                    "descend" => expr = x => x.OrderByDescending(GetOrderByNumberInRegister()),
+                   _ => expr = x => x
+                },
+                _ => (sortByOrder.Last()) switch
+                {
+                    "ascend" => expr = x => x.OrderBy(GetOrderByDateOfGranting()),
+                    "descend" => expr = x => x.OrderByDescending(GetOrderByDateOfGranting()),
+                    _ => expr = x => x
+                }
+           };
+                return expr;
+        }
+        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff,DataAccess.Entities.EducatorsStaff.EducatorsStaff>> GetSelector()
+        {
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, DataAccess.Entities.EducatorsStaff.EducatorsStaff>> expr = x => x;
+            return expr;
+        }
+
+        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByNumberInRegister()
+        {
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.NumberInRegister;
+            return expr;
+        }
+
+        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByUserName()
+        {
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.User.FirstName + " " + x.User.LastName;
+            return expr;
+        }
+
+        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByDateOfGranting()
+        {
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.DateOfGranting;
+            return expr;
+        }
+        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByID()
+        {
+            Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.ID;
+            return expr;
+        }
+
+        //private Func<IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IIncludableQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetInclude()
+        //{
+        //    Func<IQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff>, IIncludableQueryable<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.Include(i => i.User).Include(c => c);
+        //    return expr;
+        //}
+
+
+
     }
 }
