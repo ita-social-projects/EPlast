@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services
                         .Include(a => a.NewCityAdmin)
                         .Include(a => a.MembersStatistic)
                         .Include(a => a.City));
-            return await _cityAccessService.HasAccessAsync(user) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+            return await _cityAccessService.HasAccessAsync(user, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
                 : throw new UnauthorizedAccessException();
         }
 
