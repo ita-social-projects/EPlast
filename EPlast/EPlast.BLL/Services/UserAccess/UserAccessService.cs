@@ -31,6 +31,7 @@ namespace EPlast.BLL.Services.UserAccess
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
         private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
         private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
+        private const string MenuAccessSettingsFile = "MenuAccessSettings.json";
 
         public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
@@ -105,6 +106,13 @@ namespace EPlast.BLL.Services.UserAccess
         public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
         {
             _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(MenuAccessSettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }
