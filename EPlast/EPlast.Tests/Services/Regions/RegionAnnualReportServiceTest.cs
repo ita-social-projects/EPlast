@@ -37,6 +37,7 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
             int Id = 2, year = 2020;
+            User user = new User();
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstAsync(
                 It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
@@ -44,7 +45,7 @@ namespace EPlast.Tests.Services.Regions
             _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
                 .Returns(new RegionAnnualReportDTO() { ID = 2 });
             // Act
-            var result = await _service.GetReportByIdAsync(Id, year);
+            var result = await _service.GetReportByIdAsync(user, Id, year);
             // Assert
             Assert.IsInstanceOf<RegionAnnualReportDTO>(result);
             Assert.IsNotNull(result);
