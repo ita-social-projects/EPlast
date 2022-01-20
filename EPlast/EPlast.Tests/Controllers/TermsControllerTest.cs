@@ -81,11 +81,11 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAllUsersId_ReturnsOkObjectResult()
+        public async Task GetAllUsersIdWithoutSender_ReturnsOkObjectResult()
         {
             //Arrange
             _termsService
-                .Setup(x => x.GetAllUsersIdAsync(new User()))
+                .Setup(x => x.GetAllUsersIdWithoutAdminIdAsync(new User()))
                 .ReturnsAsync((new List<string>()).AsEnumerable());
 
             //Act
