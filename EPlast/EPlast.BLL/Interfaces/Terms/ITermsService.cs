@@ -17,8 +17,8 @@ namespace EPlast.BLL.Interfaces.Terms
         /// Get all user Id
         /// </summary>
         /// <param name="user">Authorized user</param>
-        /// <returns>All users Id</returns>
-        Task<IEnumerable<string>> GetAllUsersIdAsync(User user);
+        /// <returns>All users Id without sender</returns>
+        Task<IEnumerable<string>> GetAllUsersIdWithoutAdminIdAsync(User user);
 
         /// <summary>
         /// Edit terms of use by Id

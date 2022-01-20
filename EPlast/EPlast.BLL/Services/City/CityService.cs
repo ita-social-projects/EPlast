@@ -592,7 +592,7 @@ namespace EPlast.BLL.Services
         public async Task<int> GetCityIdByUserIdAsync(string userId)
         {
             var city = await _repoWrapper.CityMembers.GetFirstAsync(user=>user.UserId == userId);
-            return city.ID;
+            return city.CityId;
         }
     }
 }
