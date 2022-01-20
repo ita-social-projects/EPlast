@@ -100,6 +100,11 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["CanApproveAsClubHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
             userAccess["CanApproveAsCityHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
             userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanSeeAddDeleteUserExtractUPU"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanAddUserDistionction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDeleteUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDownloadUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanViewDownloadUserBiography"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             return userAccess;
         }
 

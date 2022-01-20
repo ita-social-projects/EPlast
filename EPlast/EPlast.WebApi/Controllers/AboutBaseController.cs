@@ -13,6 +13,7 @@ using EPlast.BLL.Interfaces.AboutBase;
 using Microsoft.AspNetCore.Identity;
 using EPlast.DataAccess.Entities;
 using EPlast.BLL.DTO.AboutBase;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -24,15 +25,18 @@ namespace EPlast.WebApi.Controllers
         private readonly IAboutBaseSectionService _aboutBaseSectionService;
         private readonly IAboutBaseSubsectionService _aboutBaseSubsectionService;
         private readonly UserManager<User> _userManager;
+        private readonly IPicturesManager _picturesManager;
 
         public AboutBaseController(
             IAboutBaseSectionService aboutBaseSectionService,
             IAboutBaseSubsectionService aboutBaseSubsectionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IPicturesManager picturesManager)
         {
             _aboutBaseSectionService = aboutBaseSectionService;
             _aboutBaseSubsectionService = aboutBaseSubsectionService;
             _userManager = userManager;
+            _picturesManager = picturesManager;
         }
 
         [HttpGet("AboutBaseSection/{id}")]
@@ -67,6 +71,21 @@ namespace EPlast.WebApi.Controllers
             return Ok(subsectionDTOs);
         }
 
+        /// <summary>
+        /// Get pictures in Base64 format by subsection Id.
+        /// </summary>
+        /// <returns>List of pictures in Base64 format.</returns>
+        /// <param name="subsectionId">The Id of subsection</param>
+        /// <response code="200">List of pictures</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        [HttpGet("{subsectionId:int}/pictures")]
+        public async Task<IActionResult> GetPictures(int subsectionId)
+        {
+            var pictures = await _picturesManager.GetPicturesAsync(subsectionId);
+
+            return Ok(pictures);
+        }
+
         [HttpDelete("DeleteSection/{id}")]
         public async Task<IActionResult> DeleteAboutBaseSection(int id)
         {
@@ -93,6 +112,21 @@ namespace EPlast.WebApi.Controllers
             {
                 return NotFound();
             }
+        }
+
+        /// <summary>
+        /// Delete picture by Id.
+        /// </summary>
+        /// <returns>Status code of the picture deleting operation.</returns>
+        /// <param name="pictureId">The Id of picture</param>
+        /// <response code="200">OK</response>
+        /// <response code="400">Bad Request</response> 
+        /// <response code="404">Not Found</response> 
+        [HttpDelete("pictures/{pictureId:int}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> DeletePicture(int pictureId)
+        {
+            return StatusCode(await _picturesManager.DeletePictureAsync(pictureId));
         }
 
         [HttpPost("AboutBaseSection/Create")]
@@ -130,6 +164,21 @@ namespace EPlast.WebApi.Controllers
                 }
             }
             return BadRequest(ModelState);
+        }
+
+        /// <summary>
+        /// Add pictures to gallery of specific subsection by subsection Id.
+        /// </summary>
+        /// <returns>List of added pictures.</returns>
+        /// <param name="subsectionId">The Id of subsection</param>
+        /// <param name="files">List of uploaded pictures</param>
+        /// <response code="200">List of added pictures</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        [HttpPost("{subsectionId:int}/subsectionPictures")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> FillSubsectionPictures(int subsectionId, [FromForm] IList<IFormFile> files)
+        {
+            return Ok(await _picturesManager.FillSubsectionPicturesAsync(subsectionId, files));
         }
 
         [HttpPut("EditSection/{id}")]

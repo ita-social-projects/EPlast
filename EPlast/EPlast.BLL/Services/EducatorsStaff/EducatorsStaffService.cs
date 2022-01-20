@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
             var user = await _userManager.FindByIdAsync(kadrasDTO.UserId);
             var roles = await _userManager.GetRolesAsync(user);
 
-            if (roles.Contains(Roles.RegisteredUser))
+            if (roles.Contains(Roles.RegisteredUser) || roles.Contains(Roles.Supporter))
             {
                 throw new ArgumentException("Can't add with the restricted roles");
             }

@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.AboutBase;
 using EPlast.BLL.Services.AboutBase;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;

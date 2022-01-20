@@ -588,6 +588,12 @@ namespace EPlast.BLL.Services
             _repoWrapper.City.Update(city);
             await _repoWrapper.SaveAsync();
         }
+
+        public async Task<int> GetCityIdByUserIdAsync(string userId)
+        {
+            var city = await _repoWrapper.CityMembers.GetFirstAsync(user=>user.UserId == userId);
+            return city.CityId;
+        }
     }
 }
 

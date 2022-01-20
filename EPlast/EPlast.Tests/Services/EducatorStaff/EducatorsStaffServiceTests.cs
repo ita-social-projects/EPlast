@@ -85,7 +85,7 @@ namespace EPlast.Tests.Services.EducatorStaff
 
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.RegisteredUser });
+                .ReturnsAsync(new List<string> { Roles.RegisteredUser, Roles.Supporter });
             _mapper.Setup(x => x.Map<EducatorsStaffDTO, EducatorsStaff>
                          (It.IsAny<EducatorsStaffDTO>())).
                           Returns(new EducatorsStaff());

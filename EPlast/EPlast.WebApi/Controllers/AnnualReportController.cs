@@ -29,7 +29,6 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<AnnualReportController> _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
         private readonly UserManager<User> _userManager;
-        private readonly IPdfService _pdfService;
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
@@ -38,7 +37,6 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<AnnualReportController> loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
             UserManager<User> userManager,
-            IPdfService pdfService,
             IClubAnnualReportService clubAnnualReportService, 
             IMapper mapper)
         {
@@ -46,7 +44,6 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _localizer = localizer;
             _userManager = userManager;
-            _pdfService = pdfService;
             _clubAnnualReportService = clubAnnualReportService;
             _mapper = mapper;
         }
@@ -72,7 +69,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("{id:int}")]
-        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)] 
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)] 
         public async Task<IActionResult> Get(int id)
         {
             try
@@ -119,22 +116,7 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
         }
-
-        /// <summary>
-        ///  Returns pdf file as base64
-        /// </summary>
-        /// <param name="objId">AnnualReport id</param>
-        /// <returns>Pdf file as base64 what was created with AnnualReport data</returns>
-        /// <response code="200">Pdf file as base64</response>
-        [HttpGet("createPdf/{objId:int}")]
-        public async Task<IActionResult> CreatePdf(int objId)
-        {
-            var fileBytes = await _pdfService.AnnualReportCreatePDFAsync(objId);
-            var base64EncodedPdf = Convert.ToBase64String(fileBytes);
-
-            return Ok(base64EncodedPdf);
-        }
-
+        
         /// <summary>
         /// Get all members of a specific city
         /// </summary>
