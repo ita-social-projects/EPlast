@@ -386,6 +386,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        /// Method is redundant
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
@@ -408,6 +409,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        /// Method is redundant
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
@@ -441,6 +443,7 @@ namespace EPlast.BLL.Services
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(filteredCities);
         }
 
+        // Method is redundant
         private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDTO model)
         {
             var cityDto = model.City;
@@ -465,6 +468,7 @@ namespace EPlast.BLL.Services
             return city;
         }
 
+        // Method moved to be used with command/handler CreateCity
         private async Task<DataAccessCity.City> CreateCityAsync(CityDTO model)
         {
             var city = _mapper.Map<CityDTO, DataAccessCity.City>(model);
@@ -475,7 +479,8 @@ namespace EPlast.BLL.Services
 
             return city;
         }
-
+        
+        // Method is redundant
         private async Task UploadPhotoAsync(CityDTO city, IFormFile file)
         {
             var cityId = city.ID;
@@ -485,7 +490,8 @@ namespace EPlast.BLL.Services
 
             city.Logo = GetChangedPhoto("images\\Cities", file, oldImageName, _env.WebRootPath, _uniqueId.GetUniqueId().ToString());
         }
-
+        
+        // Method moved to be used with command/handler UploadCityPhoto
         private async Task UploadPhotoAsync(CityDTO city)
         {
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
@@ -528,6 +534,8 @@ namespace EPlast.BLL.Services
             }
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -537,6 +545,8 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<DataAccessCity.City>> GetAllNotActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -546,6 +556,8 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<CityDTO>> GetAllActiveCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllActiveAsync(cityName));
@@ -576,11 +588,14 @@ namespace EPlast.BLL.Services
             return new Tuple<IEnumerable<CityObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessCity.CityObject>, IEnumerable<CityObjectDTO>>(cities), rows);
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<CityDTO>> GetAllNotActiveCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllNotActiveAsync(cityName));
         }
 
+        /// <inheritdoc />
         public async Task UnArchiveAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && !c.IsActive);
