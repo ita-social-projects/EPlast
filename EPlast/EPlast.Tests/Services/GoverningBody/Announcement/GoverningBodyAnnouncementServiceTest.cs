@@ -223,7 +223,8 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _repoWrapper
               .Setup(r => r.GoverningBodyAnnouncement.GetRangeAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
               It.IsAny<Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>>>(),
-              It.IsAny<Expression<Func<GoverningBodyAnnouncement, object>>>(), It.IsAny<int>(), It.IsAny<int>(), true))
+              It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>>>(), null,
+              It.IsAny<int>(), It.IsAny<int>()))
               .ReturnsAsync(CreateTuple);
             _repoWrapper
                 .Setup(r => r.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(

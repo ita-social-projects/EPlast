@@ -80,7 +80,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         {
             var order = GetOrder();
             var selector = GetSelector();
-            var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(null, selector, order, pageNumber, pageSize, true);
+            var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(null, selector, order, null, pageNumber, pageSize);
             var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1);
 
             foreach (var ann in announcements)
@@ -179,9 +179,10 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             return await _blobStorage.GetBlobBase64Async(imageName);
         }
 
-        private Expression<Func<GoverningBodyAnnouncement, object>> GetOrder()
+        private Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> GetOrder()
         {
-            Expression<Func<GoverningBodyAnnouncement, object>> expr = x => x.Date;
+            Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> expr = x =>
+            x.OrderByDescending(y => y.Date);
             return expr;
         }
         private Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>> GetSelector()
