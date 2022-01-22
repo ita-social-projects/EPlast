@@ -106,12 +106,12 @@ namespace EPlast.DataAccess.Repositories
 
         public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
-                                                       Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
-                                                       int? pageSize = null, 
-                                                       bool sortDesc = false)
+                                                       int? pageSize = null)
         {
-            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize, sortDesc);
+            return await this.GetRangeQuery(filter, selector, sorting, include, pageNumber, pageSize);
         }
 
         private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
@@ -130,32 +130,37 @@ namespace EPlast.DataAccess.Repositories
 
         private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
-                                                       Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null,
                                                        bool sortDesc = false)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
 
-            if(filter != null)
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (filter != null)
             {
                 query = query.Where(filter);
             }
-            if(selector != null)
+
+            if (selector != null)
             {
                 query = query.Select(selector);
             }
 
+            if (sorting != null)
+            {
+                query = sorting(query);
+            }
+
             var TotalRecords = await query.CountAsync();
 
-            if(sorting != null)
-            {
-                if(!sortDesc)
-                    query = query.OrderBy(sorting);
-                else
-                    query = query.OrderByDescending(sorting);
-            }
-            if(pageNumber != null && pageSize != null)
+            if (pageNumber != null && pageSize != null)
             {
                 query = query.Skip((int)(pageSize * (pageNumber - 1)))
                     .Take((int)pageSize);

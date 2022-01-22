@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Handlers.CityHandlers;
+using EPlast.BLL.Commands.City;
 using EPlast.BLL.Queries.City;
 using MediatR;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
@@ -29,7 +29,6 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<CitiesController> _logger;
         private readonly ICacheService _cache;
         private readonly IMapper _mapper;
-        private readonly ICityService _cityService;
         private readonly ICityParticipantsService _cityParticipantsService;
         private readonly ICityDocumentsService _cityDocumentsService;
         private readonly ICityAccessService _cityAccessService;
@@ -41,7 +40,6 @@ namespace EPlast.WebApi.Controllers
 
         public CitiesController(ILoggerService<CitiesController> logger,
             IMapper mapper,
-            ICityService cityService,
             ICityDocumentsService cityDocumentsService,
             ICityAccessService cityAccessService, UserManager<User> userManager,
             ICityParticipantsService cityParticipantsService, ICacheService cache,
@@ -50,7 +48,6 @@ namespace EPlast.WebApi.Controllers
             _cache = cache;
             _logger = logger;
             _mapper = mapper;
-            _cityService = cityService;
             _cityDocumentsService = cityDocumentsService;
             _cityAccessService = cityAccessService;
             _userManager = userManager;
@@ -83,7 +80,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Cities")]
         public async Task<IActionResult> GetCities()
         {
-            var cities = await _cityService.GetCities();
+            var query = new GetActiveCitiesQuery();
+            var cities = await _mediator.Send(query);
             return Ok(cities);
         }
 
@@ -96,12 +94,14 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name)
         {
             string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}";
-            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
+            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
 
             if (citiesTuple is null)
             {
-                bool isArchive = false;
-                citiesTuple = await _cityService.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive);
+                const bool isArchive = false;
+                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive);
+                citiesTuple = await _mediator.Send(query);
+
                 if (!String.IsNullOrEmpty(name))
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
@@ -122,12 +122,14 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name)
         {
             string cityRecordKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
-            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
+            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
 
             if (citiesTuple is null)
             {
-                bool isArchive = true;
-                citiesTuple = await _cityService.GetAllCitiesByPageAndIsArchiveAsync(page, pageSize, name, isArchive);
+                const bool isArchive = true;
+                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive);
+                citiesTuple = await _mediator.Send(query);
+
                 if (!String.IsNullOrEmpty(name))
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
@@ -319,7 +321,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPhotoBase64(string logoName)
         {
-            var logoBase64 = await _cityService.GetLogoBase64(logoName);
+            var query = new GetCityLogoBase64Query(logoName);
+            var logoBase64 = await _mediator.Send(query);
 
             return Ok(logoBase64);
         }
@@ -342,7 +345,9 @@ namespace EPlast.WebApi.Controllers
 
             var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
 
-            cityDTO.ID = await _cityService.CreateAsync(cityDTO);
+            var createCityCommand = new CreateCityWthIdCommand(cityDTO);
+            cityDTO.ID = await _mediator.Send(createCityCommand);
+
             _logger.LogInformation($"City {{{cityDTO.Name}}} was created.");
             await _cache.RemoveRecordsByPatternAsync(ActiveCitiesCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedCitiesCacheKey);
@@ -367,7 +372,9 @@ namespace EPlast.WebApi.Controllers
 
             var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
 
-            await _cityService.EditAsync(cityDTO);
+            var editCityCommand = new EditCityCommand(cityDTO);
+            await _mediator.Send(editCityCommand);
+
             _logger.LogInformation($"City {{{cityDTO.Name}}} was edited.");
             await _cache.RemoveRecordsByPatternAsync(ActiveCitiesCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedCitiesCacheKey);
@@ -383,7 +390,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Archive(int cityId)
         {
-            await _cityService.ArchiveAsync(cityId);
+            var command = new ArchiveCityCommand(cityId);
+            await _mediator.Send(command);
+
             await _cache.RemoveRecordsByPatternAsync(ActiveCitiesCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedCitiesCacheKey);
             return Ok();
@@ -397,7 +406,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> UnArchive(int cityId)
         {
-            await _cityService.UnArchiveAsync(cityId);
+            var command = new UnArchiveCityCommand(cityId);
+            await _mediator.Send(command);
+
             await _cache.RemoveRecordsByPatternAsync(ActiveCitiesCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedCitiesCacheKey);
             return Ok();
@@ -411,7 +422,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> Remove(int cityId)
         {
-            await _cityService.RemoveAsync(cityId);
+            var command = new RemoveCityCommand(cityId);
+            await _mediator.Send(command);
             _logger.LogInformation($"City with id {{{cityId}}} was deleted.");
             await _cache.RemoveRecordsByPatternAsync(ActiveCitiesCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedCitiesCacheKey);

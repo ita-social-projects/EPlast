@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -136,25 +137,150 @@ namespace EPlast.Tests.Services.Precautions
             //Assert
             Assert.IsEmpty(result);
         }
-
         [Test]
-        public void GetUsersPrecautionsForTable_ReturnsUserDistinctionsTableObject()
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsSortedByNumber()
         {
             //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "number", "ascend" };
+
             mockRepoWrapper
-                .Setup(x => x.UserPrecaution.GetUsersPrecautions(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<UserPrecautionsTableObject>());
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
 
             //Act
-            var result = PrecautionService.GetUsersPrecautionsForTable(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
 
             //Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<List<UserPrecautionsTableObject>>(result);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
         }
-        
+        [Test]
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsSortedByNumberDescend()
+        {
+            //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "number", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsSortedByUserNameAscend()
+        {
+            //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "userName", "ascend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsSortedByUserNameDescend()
+        {
+            //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "userName", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsSortedByEndDateAscend()
+        {
+            //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "endDate", "ascend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsSortedByEndDateDescend()
+        {
+            //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "endDate", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersPrecautionByPageAsync_ReturnsTupleWithUserPrecautionsTableObjectAndIntRowsWithFilters()
+        {
+            //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
+            TestPTS.SortByOrder = new List<string> { "endDate", "ascend" };
+            TestPTS.PrecautionNameFilter = new List<string> { "Догана", "Сувора догана" };
+            TestPTS.SearchedData = "2021";
+            TestPTS.StatusFilter = new List<string> { "Прийнято", "Потверджено" };
+            TestPTS.DateFilter = new List<string> { "2021", "2022" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserPrecaution.GetRangeAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+              It.IsAny<Expression<Func<UserPrecaution, UserPrecaution>>>(), It.IsAny<Func<IQueryable<UserPrecaution>, IQueryable<UserPrecaution>>>(),
+              It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await PrecautionService.GetUsersPrecautionsForTableAsync(TestPTS);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserPrecautionsTableObject>, int>>(result);
+        }
         [Test]
         public void DeletePrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
@@ -302,5 +428,18 @@ namespace EPlast.Tests.Services.Precautions
 
             };
         }
+
+        private List<UserPrecaution> GetUsersPrecautionByPage()
+        {
+            return new List<UserPrecaution>()
+            {
+                new UserPrecaution()
+                {
+                    Number = 123,
+                }
+            };
+        }
+
+        private Tuple<IEnumerable<UserPrecaution>, int> CreateTuple => new Tuple<IEnumerable<UserPrecaution>, int>(GetUsersPrecautionByPage(), 100);
     }
 }

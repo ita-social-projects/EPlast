@@ -3,10 +3,12 @@ using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Handlers.ClubHandlers;
 using EPlast.BLL.Queries.Club;
 using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,8 +39,8 @@ namespace EPlast.Tests.Handlers.Club
             //Arrange
             _repoWrapper
               .Setup(x => x.Club.GetRangeAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(),
-              It.IsAny<Expression<Func<DataAccessClub.Club, DataAccessClub.Club>>>(), 
-              It.IsAny<Expression<Func<DataAccessClub.Club, Object>>>(), It.IsAny<int>(), It.IsAny<int>(), false))
+              It.IsAny<Expression<Func<DataAccessClub.Club, DataAccessClub.Club>>>(), It.IsAny<Func<IQueryable<DataAccessClub.Club>, IQueryable<DataAccessClub.Club>>>(),
+              It.IsAny<Func<IQueryable<DataAccessClub.Club>, IIncludableQueryable<DataAccessClub.Club, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
               .ReturnsAsync(CreateTuple);
 
             //Act 

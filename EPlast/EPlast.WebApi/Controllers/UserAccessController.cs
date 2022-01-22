@@ -76,5 +76,12 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserStatisticsAccessAsync(userId));
         }
+
+        [HttpGet("GetUserMenuAccess/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserMenuAccess(string userId)
+        {
+            return Ok(await _userAccessService.GetUserMenuAccessAsync(userId));
+        }
     }
 }
