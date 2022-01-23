@@ -52,5 +52,10 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// </summary>
         Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId, User user);
 
+        /// <summary>
+        /// Returns dictionary with user accesses for menu
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId);
+
     }
 }
