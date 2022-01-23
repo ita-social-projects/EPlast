@@ -123,8 +123,8 @@ namespace EPlast.BLL
 
                 "userName" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => x => x.OrderBy(GetOrderByName()),
-                    "descend" => x => x.OrderByDescending(GetOrderByName()),
+                    "ascend" => x => x.OrderBy(GetOrderByUserName()),
+                    "descend" => x => x.OrderByDescending(GetOrderByUserName()),
                     _ => x => x
                 },
 
@@ -152,7 +152,7 @@ namespace EPlast.BLL
             Expression<Func<UserDistinction, object>> expr = x => x.Distinction.Name;
             return expr;
         }
-        private Expression<Func<UserDistinction, object>> GetOrderByName()
+        private Expression<Func<UserDistinction, object>> GetOrderByUserName()
         {
             Expression<Func<UserDistinction, object>> expr = x => x.User.FirstName + " " + x.User.LastName;
             return expr;

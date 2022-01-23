@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.DTO.Distinction;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -139,21 +140,166 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         }
 
         [Test]
-        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObject()
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByNumberAscending()
         {
             //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "number", "ascend" };
+            TestDTS.SearchedData = "2021";
+
             mockRepoWrapper
-                .Setup(x => x.UserDistinction.GetUsersDistinctions(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<UserDistinctionsTableObject>());
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
 
             //Act
-            var result =  distinctionService.GetUsersDistinctionsForTable(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
 
             //Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<List<UserDistinctionsTableObject>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByNumberDescending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "number", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByDistinctionNameDescending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "distinctionName", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByDistinctionNameAscending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "distinctionName", "ascend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByUserNameAscending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "userName", "ascend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByUserNameDescending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "userName", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByDateDescending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "date", "descend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByDateAscending()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "date", "ascend" };
+
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
         }
 
         [Test]
@@ -303,5 +449,17 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
 
             };
         }
+        private List<UserDistinction> GetUsersDistinctionByPage()
+        {
+            return new List<UserDistinction>()
+            {
+                new UserDistinction()
+                {
+                    Number = 123,
+                }
+            };
+        }
+
+        private Tuple<IEnumerable<UserDistinction>, int> CreateTuple => new Tuple<IEnumerable<UserDistinction>, int>(GetUsersDistinctionByPage(), 100);
     }
 }
