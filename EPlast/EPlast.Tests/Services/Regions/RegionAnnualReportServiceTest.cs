@@ -33,7 +33,7 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public async Task GetReportByIdAsync_UnauthorizedAccessException()
+        public void GetReportByIdAsync_UnauthorizedAccessException()
         {
             //Arrange
             int Id = 2, year = 2020;

@@ -198,10 +198,10 @@ namespace EPlast.BLL.Services.Region
                 predicate: a => a.RegionId == regionId && a.Date.Year == year) != null;
         }
 
-        public async Task<RegionAnnualReportDTO> GetReportByIdAsync(User user, int id, int year)
+        public async Task<RegionAnnualReportDTO> GetReportByIdAsync(User claimsPrincipal, int id, int year)
         {
             var regionReport = await _repositoryWrapper.RegionAnnualReports.GetFirstAsync(predicate: i => i.ID == id && i.Date.Year == year);
-            return await _regionAccessService.HasAccessAsync(user, regionReport.RegionId) ? _mapper.Map<RegionAnnualReport, RegionAnnualReportDTO>(regionReport)
+            return await _regionAccessService.HasAccessAsync(claimsPrincipal, regionReport.RegionId) ? _mapper.Map<RegionAnnualReport, RegionAnnualReportDTO>(regionReport)
                 : throw new UnauthorizedAccessException();
         }
 

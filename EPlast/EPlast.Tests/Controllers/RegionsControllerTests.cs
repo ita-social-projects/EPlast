@@ -18,7 +18,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.Resources;
 using EPlast.BLL.Interfaces.Cache;
-
 namespace EPlast.Tests.Controllers
 {
     internal class RegionsControllerTests
@@ -641,6 +640,38 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionAnnualReportDTO>(actual); 
+        }
+
+        [Test]
+        public async Task GetReportByIdAsync_UnauthorizedAccessException()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<int>()))
+                     .Throws(new UnauthorizedAccessException());
+
+            // Act
+            var expected = StatusCodes.Status403Forbidden;
+            var result = await _regionController.GetReportByIdAsync(2, 2020);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task GetReportByIdAsync_NullReferenceException()
+        {
+            // Arrange
+            _regionAnnualReportService.Setup(x => x.GetReportByIdAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<int>()))
+                     .Throws(new NullReferenceException());
+
+            // Act
+            var expected = StatusCodes.Status404NotFound;
+            var result = await _regionController.GetReportByIdAsync(1, 2);
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
