@@ -13,7 +13,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.Services.Distinctions
 {
     public class DistinctionService : IDistinctionService
     {
