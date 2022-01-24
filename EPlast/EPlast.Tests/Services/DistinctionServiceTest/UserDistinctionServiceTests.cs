@@ -83,7 +83,6 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                 .ReturnsAsync(userDistinction);
 
             //Act
-
             //Assert
             Assert.DoesNotThrowAsync(async () => { await distinctionService.DeleteUserDistinctionAsync(It.IsAny<int>(), It.IsAny<User>()); });
         }
