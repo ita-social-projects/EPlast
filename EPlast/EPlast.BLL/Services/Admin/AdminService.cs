@@ -308,7 +308,7 @@ namespace EPlast.BLL.Services
             return _repoWrapper.AdminType.GetUsersCountAsync();
         }
 
-        private async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
+        public async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
         {
             bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy);
             bool Regions = roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy);

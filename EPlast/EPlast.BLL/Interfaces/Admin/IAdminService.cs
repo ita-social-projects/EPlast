@@ -86,5 +86,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get users which have only the specified roles
         /// </summary>
         Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+
+        Task<FilterTableParametersByRole> TableFilterParameters_byRole(IList<string> roles, string userId);
     }
 }

@@ -817,7 +817,73 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
         }
+        [Test]
+        public async Task TableFilterParameters_byRole_OkrugaHead_ReturnsCorrect()
+        {
+           
+            string[] roles = new string[] { Roles.OkrugaHead};
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.OkrugaHead };
+            RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminType, RegionId = It.IsAny<int>() };
+            ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
+            Region region = new Region { RegionAdministration = regionAdministrations, RegionName = "qwerty"};
 
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>,
+                    IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>())
+                )
+                .ReturnsAsync(regionAdministration);
+            _repoWrapper
+              .Setup(x => x.Region.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.Region>,
+                  IIncludableQueryable<DataAccess.Entities.Region, object>>>())
+              )
+              .ReturnsAsync(region);
+           
+            // Act
+            FilterTableParametersByRole result = await service.TableFilterParameters_byRole(roles, It.IsAny<string>());
+
+            // Assert
+            Assert.IsNotNull(result.Regions);
+        }
+
+        [Test]
+        public async Task TableFilterParameters_byRole_CityHead_ReturnsCorrect()
+        {
+
+            string[] roles = new string[] { Roles.CityHead };
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.CityHead };
+            CityAdministration cityAdministration = new CityAdministration() { AdminType = adminType, CityId = It.IsAny<int>() };
+            ICollection<CityAdministration> cityAdministrations = new List<CityAdministration>() { cityAdministration };
+            DataAccess.Entities.City city = new DataAccess.Entities.City { CityAdministration = cityAdministrations, Name = "qwerty" };
+
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityAdministration>,
+                    IIncludableQueryable<DataAccess.Entities.CityAdministration, object>>>())
+                )
+                .ReturnsAsync(cityAdministration);
+            _repoWrapper
+              .Setup(x => x.City.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                  IIncludableQueryable<DataAccess.Entities.City, object>>>())
+              )
+              .ReturnsAsync(city);
+
+            // Act
+            FilterTableParametersByRole result = await service.TableFilterParameters_byRole(roles, It.IsAny<string>());
+
+            // Assert
+            Assert.IsNotNull(result.Cities);
+        }
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>
