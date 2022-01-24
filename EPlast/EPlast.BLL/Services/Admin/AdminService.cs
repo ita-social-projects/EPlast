@@ -228,40 +228,13 @@ namespace EPlast.BLL.Services
         {
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-            //string strRegions = strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
-            //string strCities = strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
-            //string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
             
             FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
             string strAndClubs = filterTableParametersByRole.AndClubs;
             string strRegions = filterTableParametersByRole.Regions;
             string strCities = filterTableParametersByRole.Cities;
             string strClubs = filterTableParametersByRole.Clubs;
-            //if (roles.Contains(Roles.OkrugaHead))
-            //{
-            //    int regionId = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId)).RegionId;
-            //    string regionName = (await _repoWrapper.Region.GetSingleAsync(r => r.ID == regionId)).RegionName;
-            //    strRegions = regionName == null ? null : regionName;
-            //}
-            //if (roles.Contains(Roles.CityHead) && !roles.Contains(Roles.OkrugaHead))
-            //{
-            //    int cityId = (await _repoWrapper.CityAdministration.GetSingleAsync(r => r.UserId == userId)).CityId;
-            //    string cityName = (await _repoWrapper.City.GetSingleAsync(r => r.ID == cityId)).Name;
-            //    strCities = cityName == null ? null : cityName;
-            //}
-            //if (roles.Contains(Roles.KurinHead) && !roles.Contains(Roles.OkrugaHead) && !roles.Contains(Roles.CityHead))
-            //{
-            //    int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId)).ClubId;
-            //    string kurinName = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
-            //    strClubs = kurinName == null ? null : kurinName;
-            //}
-            //if (roles.Contains(Roles.KurinHead) && roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.KurinHead) && roles.Contains(Roles.CityHead))
-            //{
-            //    int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId)).ClubId;
-            //    string kurinName = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
-            //    strAndClubs = kurinName == null ? null : kurinName;
-            //}
-
+           
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
