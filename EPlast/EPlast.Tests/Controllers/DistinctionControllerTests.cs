@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using EPlast.BLL.DTO.Distinction;
 
 namespace EPlast.Tests.Controllers
 {
@@ -152,15 +153,13 @@ namespace EPlast.Tests.Controllers
         [Test]
         public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
         {
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
             //Arrange
             _distinctionService
-                .Setup(x => x.GetUsersDistinctionsForTable(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<UserDistinctionsTableObject>());
+                 .Setup(x => x.GetUsersDistinctionsForTableAsync(It.IsAny<DistictionTableSettings>())).ReturnsAsync(CreateTuple);
 
             //Act
-            var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
+            var result = _distinctionController.GetUsersDistinctionsForTable(It.IsAny<DistictionTableSettings>()).Result;
             var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
@@ -579,5 +578,23 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(true, resultObject);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        private List<UserDistinctionsTableObject> GetUsersDistinctionByPage()
+        {
+            return new List<UserDistinctionsTableObject>()
+            {
+                new UserDistinctionsTableObject()
+                {
+                    Number = 34,
+                }
+            };
+        }
+
+        private int GetFakeUserDistinctionNumber()
+        {
+            return 100;
+        }
+
+        private Tuple<IEnumerable<UserDistinctionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserDistinctionsTableObject>, int>(GetUsersDistinctionByPage(), GetFakeUserDistinctionNumber());
     }
 }
