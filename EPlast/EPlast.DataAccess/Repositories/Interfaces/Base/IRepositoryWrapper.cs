@@ -43,6 +43,7 @@ namespace EPlast.DataAccess.Repositories
         IDistinctionRepository Distinction { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
         IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement { get; }
+        IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
         IEventAdminRepository EventAdmin { get; }

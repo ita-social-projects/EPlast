@@ -368,7 +368,7 @@ namespace EPlast.Tests.Services.Club
                     {new UserPlastDegree() { UserId = "12345", PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
 
             // Act
-            var result = await clubService.GetClubProfileAsync(Id, new User(){Id = "1"});
+            var result = await clubService.GetClubProfileAsync(Id, new User() { Id = "1" });
 
             // Assert
             Assert.NotNull(result);
@@ -793,8 +793,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             _repoWrapper
-                .Setup(u=>u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-                    .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>(){new ClubMemberHistory(){}});
+                .Setup(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
+                    .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>() { new ClubMemberHistory() { } });
             _repoWrapper
                 .Setup(u => u.SaveAsync());
             _repoWrapper
@@ -802,7 +802,7 @@ namespace EPlast.Tests.Services.Club
             // Act
             await _clubService.DeleteClubMemberHistory(It.IsAny<int>());
             // Assert
-            _repoWrapper.Verify(u=>u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
             _repoWrapper.Verify(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
