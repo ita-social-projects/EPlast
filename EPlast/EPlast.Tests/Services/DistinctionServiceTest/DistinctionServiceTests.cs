@@ -301,7 +301,26 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             Assert.NotNull(result);
             Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
         }
+        [Test]
+        public void GetUsersDistinctions_ReturnsUserDistinctionsTableObjectASyncSortingByDate()
+        {
+            //Arrange
+            DistictionTableSettings TestDTS = new DistictionTableSettings();
+            TestDTS.SortByOrder = new List<string> { "date", "" };
 
+            mockRepoWrapper
+              .Setup(x => x.UserDistinction.GetRangeAsync(It.IsAny<Expression<Func<UserDistinction, bool>>>(),
+                It.IsAny<Expression<Func<UserDistinction, UserDistinction>>>(), It.IsAny<Func<IQueryable<UserDistinction>, IQueryable<UserDistinction>>>(),
+                It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>(), It.IsAny<int>(), It.IsAny<int>()))
+              .ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = distinctionService.GetUsersDistinctionsForTableAsync(TestDTS).Result;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserDistinctionsTableObject>, int>>(result);
+        }
         [Test]
         public void DeleteDistinctionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
         {
