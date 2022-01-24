@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO.Distinction;
+using EPlast.BLL.Services.Distinctions;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
