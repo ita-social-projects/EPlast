@@ -34,7 +34,6 @@ namespace EPlast.Tests.Controllers
 
         private readonly Mock<IUserManagerService> _userManagerService;
         private Mock<HttpContext> _httpContext;
-        private AdminController _AdminController;
         private ControllerContext _context;
         public AdminControllerTest()
         {

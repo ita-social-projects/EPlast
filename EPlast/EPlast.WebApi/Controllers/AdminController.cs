@@ -321,7 +321,6 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All cities in specify model</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("regionsAdmins")]
-        [System.Obsolete]
         public async Task<IActionResult> RegionsAdmins()
         {
             var model = new CitiesAdminsViewModel()
