@@ -884,6 +884,40 @@ namespace EPlast.Tests.Services
             // Assert
             Assert.IsNotNull(result.Cities);
         }
+
+        [Test]
+        public async Task TableFilterParameters_byRole_KurinHead_ReturnsCorrect()
+        {
+
+            string[] roles = new string[] { Roles.KurinHead };
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.KurinHead };
+            ClubAdministration clubAdministration = new ClubAdministration() { AdminType = adminType, ClubId = It.IsAny<int>() };
+            ICollection<ClubAdministration> clubAdministrations = new List<ClubAdministration>() { clubAdministration };
+            DataAccess.Entities.Club club = new DataAccess.Entities.Club { ClubAdministration = clubAdministrations, Name = "qwerty" };
+
+            _repoWrapper
+                .Setup(x => x.ClubAdministration.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.ClubAdministration>,
+                    IIncludableQueryable<DataAccess.Entities.ClubAdministration, object>>>())
+                )
+                .ReturnsAsync(clubAdministration);
+            _repoWrapper
+              .Setup(x => x.Club.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
+                  IIncludableQueryable<DataAccess.Entities.Club, object>>>())
+              )
+              .ReturnsAsync(club);
+
+            // Act
+            FilterTableParametersByRole result = await service.TableFilterParameters_byRole(roles, It.IsAny<string>());
+
+            // Assert
+            Assert.IsNotNull(result.Clubs);
+        }
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>
