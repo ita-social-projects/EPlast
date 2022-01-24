@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
-        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters);
+        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId);
 
         /// <summary>
         /// Gets short users infos, by search string

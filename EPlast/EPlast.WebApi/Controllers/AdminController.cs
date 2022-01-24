@@ -284,7 +284,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Profiles")]
         public async Task<IActionResult> GetUsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
-            var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters);
+            var user_Id =  _userManagerService.GetCurrentUserId(HttpContext.User);
+            var tuple = await _adminService.GetUsersTableAsync(tableFilterParameters, user_Id);
             var users = tuple.Item1;
             var usersCount = tuple.Item2;
 
@@ -320,6 +321,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All cities in specify model</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("regionsAdmins")]
+        [System.Obsolete]
         public async Task<IActionResult> RegionsAdmins()
         {
             var model = new CitiesAdminsViewModel()

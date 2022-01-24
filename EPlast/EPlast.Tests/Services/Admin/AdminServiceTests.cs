@@ -615,7 +615,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<CityMembers>());
             _repoWrapper
                 .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(),It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(),It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
@@ -623,7 +623,7 @@ namespace EPlast.Tests.Services
                 .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
 
             // Act
-            var result = await service.GetUsersTableAsync(new TableFilterParameters(){Page = 1, PageSize = 2, Cities = null, Regions = null, Clubs = null, Degrees = null, Tab = null, FilterRoles = null});
+            var result = await service.GetUsersTableAsync(new TableFilterParameters(){Page = 1, PageSize = 2, Cities = null, Regions = null, Clubs = null, Degrees = null, Tab = null, FilterRoles = null}, It.IsAny<string>());
 
             // Assert
             Assert.NotNull(result);
@@ -656,7 +656,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<CityMembers>());
             _repoWrapper
                 .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
@@ -668,7 +668,7 @@ namespace EPlast.Tests.Services
             {
                 Page = 1, PageSize = 2, Cities = new List<int> {1}, Regions = new List<int> {1},
                 Clubs = new List<int> {1}, Degrees = new List<int> {1}, Tab = null, FilterRoles = null
-            });
+            }, It.IsAny<string>());
 
             // Assert
             Assert.NotNull(result);
