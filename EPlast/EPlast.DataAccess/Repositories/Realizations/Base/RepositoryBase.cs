@@ -133,7 +133,8 @@ namespace EPlast.DataAccess.Repositories
                                                        Func<IQueryable<T>, IQueryable<T>> sorting = null,
                                                        Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
-                                                       int? pageSize = null)
+                                                       int? pageSize = null,
+                                                       bool sortDesc = false)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
 

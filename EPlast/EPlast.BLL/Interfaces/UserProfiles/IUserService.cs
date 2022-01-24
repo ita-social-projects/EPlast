@@ -104,6 +104,5 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser);
-
     }
 }
