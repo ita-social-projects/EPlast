@@ -15,6 +15,10 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
+using EPlast.Resources;
+using System.Security.Principal;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace EPlast.Tests.Controllers
 {
@@ -29,7 +33,8 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ILoggerService<AdminController>> _logger;
 
         private readonly Mock<IUserManagerService> _userManagerService;
-
+        private Mock<HttpContext> _httpContext;
+        private ControllerContext _context;
         public AdminControllerTest()
         {
             _logger = new Mock<ILoggerService<AdminController>>();
@@ -37,6 +42,12 @@ namespace EPlast.Tests.Controllers
             _adminService = new Mock<IAdminService>();
             _cityService = new Mock<ICityService>();
             _cityAdministrationService = new Mock<ICityParticipantsService>();
+            _httpContext = new Mock<HttpContext>();
+            
+            _context = new ControllerContext(
+               new ActionContext(
+                   _httpContext.Object, new RouteData(),
+                   new ControllerActionDescriptor()));
         }
 
         private AdminController CreateAdminController => new AdminController(
@@ -339,10 +350,23 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task UsersTable_Valid_Test()
         {
-            _adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<TableFilterParameters>()))
+            _httpContext = new Mock<HttpContext>();
+           
+            var fakeIdentity = new GenericIdentity("User");
+            var principal = new GenericPrincipal(fakeIdentity, null);
+
+            _httpContext.Setup(t => t.User).Returns(principal);
+           
+            AdminController adminController = CreateAdminController;
+            
+
+            //Set your controller ControllerContext with fake context
+           adminController.ControllerContext = _context;
+
+            _adminService.Setup(a => a.GetUsersTableAsync(It.IsAny<TableFilterParameters>(), It.IsAny<string>()))
                 .ReturnsAsync(CreateTuple);
 
-            AdminController adminController = CreateAdminController;
+            
             var expected = StatusCodes.Status200OK;
 
             // Act
@@ -450,7 +474,7 @@ namespace EPlast.Tests.Controllers
             Degrees = new List<int>(),
             SearchData = "Ольга"
         };
-
+        System.Security.Claims.ClaimsPrincipal claimsPrincipal = new System.Security.Claims.ClaimsPrincipal();
         private Tuple<IEnumerable<UserTableDTO>, int> CreateTuple => new Tuple<IEnumerable<UserTableDTO>, int>(CreateUserTableObjects, 100);
 
         private IEnumerable<UserTableDTO> CreateUserTableObjects => new List<UserTableDTO>()

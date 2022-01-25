@@ -224,16 +224,22 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId)
         {
-            string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
-            string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
-            string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            
+            FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
+            string strAndClubs = filterTableParametersByRole.AndClubs;
+            string strRegions = filterTableParametersByRole.Regions;
+            string strCities = filterTableParametersByRole.Cities;
+            string strClubs = filterTableParametersByRole.Clubs;
+           
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
                 tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
-                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles);
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles, strAndClubs);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
@@ -300,6 +306,37 @@ namespace EPlast.BLL.Services
         public Task<int> GetUsersCountAsync()
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();
+        }
+
+        public async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
+        {
+            bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy);
+            bool Regions = roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy);
+            bool Clubs = roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy);
+
+            FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
+            if (Regions)
+            {
+                int regionId = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId)).RegionId;
+                filterTableParametersByRole.Regions = (await _repoWrapper.Region.GetSingleAsync(r => r.ID == regionId)).RegionName;               
+            }
+            if (Cities && !Regions)
+            {
+                int cityId = (await _repoWrapper.CityAdministration.GetSingleAsync(r => r.UserId == userId)).CityId;
+                filterTableParametersByRole.Cities = (await _repoWrapper.City.GetSingleAsync(r => r.ID == cityId)).Name;
+            }
+            if (Clubs && !Regions && !Cities)
+            {
+                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId)).ClubId;
+                filterTableParametersByRole.Clubs = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
+            }
+            if (Clubs && Regions || Clubs && Cities)
+            {
+                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId)).ClubId;
+                filterTableParametersByRole.AndClubs = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
+            }
+
+            return filterTableParametersByRole;
         }
     }
 }
