@@ -33,7 +33,7 @@ namespace EPlast.BLL.Services.Precautions
         {
             await CheckIfAdminAsync(user);
 
-            bool existNumber = await IsNumberExistAsync(userPrecautionDTO.Number);
+            bool existNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
             if (existNumber)
             {
                 throw new ArgumentException("Can`t add precaution with existing number");
@@ -70,7 +70,7 @@ namespace EPlast.BLL.Services.Precautions
         {
             await CheckIfAdminAsync(user);
 
-            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number);
+            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
             if (existRegisterNumber)
             {
                 throw new ArgumentException("Number in register already exists");
@@ -132,10 +132,15 @@ namespace EPlast.BLL.Services.Precautions
             return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
         }
 
-        public async Task<bool> IsNumberExistAsync(int number)
-        {
+        public async Task<bool> IsNumberExistAsync(int number, int? id = null)
+        {                        
             var distNum = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(x => x.Number == number);
-            return distNum != null;
+            if (distNum == null)
+            {
+                return false;
+            }
+
+            return distNum.Id != id;   
         }
 
         public async Task CheckIfAdminAsync(User user)
