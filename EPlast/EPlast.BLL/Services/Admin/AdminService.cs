@@ -322,7 +322,6 @@ namespace EPlast.BLL.Services
             }
             if (Cities && !Regions)
             {
-                var h = await _repoWrapper.CityMembers.GetSingleAsync(r => r.UserId == userId && r.IsApproved);
                 int cityId = (await _repoWrapper.CityMembers.GetSingleAsync(r => r.UserId == userId && r.IsApproved)).CityId;
                 filterTableParametersByRole.Cities = (await _repoWrapper.City.GetSingleAsync(r => r.ID == cityId)).Name;
             }
