@@ -256,24 +256,24 @@ namespace EPlast.BLL.Services.EducatorsStaff
             return expr;
         }
 
-        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByNumberInRegister()
+        public Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByNumberInRegister()
         {
             Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.NumberInRegister;
             return expr;
         }
 
-        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByUserName()
+        public Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByUserName()
         {
             Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.User.FirstName + " " + x.User.LastName;
             return expr;
         }
 
-        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByDateOfGranting()
+        public Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByDateOfGranting()
         {
             Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.DateOfGranting;
             return expr;
         }
-        private Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByID()
+        public Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByID()
         {
             Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> expr = x => x.ID;
             return expr;
