@@ -854,21 +854,19 @@ namespace EPlast.Tests.Services
         [Test]
         public async Task TableFilterParameters_byRole_CityHead_ReturnsCorrect()
         {
-
             string[] roles = new string[] { Roles.CityHead };
-            AdminType adminType = new AdminType() { AdminTypeName = Roles.CityHead };
-            CityAdministration cityAdministration = new CityAdministration() { AdminType = adminType, CityId = It.IsAny<int>() };
-            ICollection<CityAdministration> cityAdministrations = new List<CityAdministration>() { cityAdministration };
-            DataAccess.Entities.City city = new DataAccess.Entities.City { CityAdministration = cityAdministrations, Name = "qwerty" };
+            CityMembers cityMembers = new CityMembers() { CityId = It.IsAny<int>() };
+            ICollection<CityMembers> cityAdministrations = new List<CityMembers>() { cityMembers };
+            DataAccess.Entities.City city = new DataAccess.Entities.City {  Name = "qwerty" };
 
             _repoWrapper
-                .Setup(x => x.CityAdministration.GetSingleAsync
+                .Setup(x => x.CityMembers.GetSingleAsync
                 (
-                    It.IsAny<Expression<Func<DataAccess.Entities.CityAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityAdministration>,
-                    IIncludableQueryable<DataAccess.Entities.CityAdministration, object>>>())
+                    It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                    IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
                 )
-                .ReturnsAsync(cityAdministration);
+                .ReturnsAsync(cityMembers);
             _repoWrapper
               .Setup(x => x.City.GetSingleAsync
               (
