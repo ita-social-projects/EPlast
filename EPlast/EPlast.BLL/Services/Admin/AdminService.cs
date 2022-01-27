@@ -317,22 +317,22 @@ namespace EPlast.BLL.Services
             FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
             if (Regions)
             {
-                int regionId = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId)).RegionId;
+                int regionId = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).RegionId;
                 filterTableParametersByRole.Regions = (await _repoWrapper.Region.GetSingleAsync(r => r.ID == regionId)).RegionName;               
             }
             if (Cities && !Regions)
             {
-                int cityId = (await _repoWrapper.CityAdministration.GetSingleAsync(r => r.UserId == userId)).CityId;
+                int cityId = (await _repoWrapper.CityAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).CityId;
                 filterTableParametersByRole.Cities = (await _repoWrapper.City.GetSingleAsync(r => r.ID == cityId)).Name;
             }
             if (Clubs && !Regions && !Cities)
             {
-                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId)).ClubId;
+                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId;
                 filterTableParametersByRole.Clubs = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
             }
             if (Clubs && Regions || Clubs && Cities)
             {
-                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId)).ClubId;
+                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId;
                 filterTableParametersByRole.AndClubs = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
             }
 
