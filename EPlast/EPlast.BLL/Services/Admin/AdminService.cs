@@ -310,7 +310,7 @@ namespace EPlast.BLL.Services
 
         public async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
         {
-            bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy);
+            bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy) || roles.Contains(Roles.PlastMember);
             bool Regions = roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy);
             bool Clubs = roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy);
 
