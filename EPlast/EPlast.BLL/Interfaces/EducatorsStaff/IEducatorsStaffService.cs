@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.EducatorsStaff;
+using System;
 
 namespace EPlast.BLL.Interfaces.EducatorsStaff
 {
@@ -40,5 +41,6 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
         /// <param name="pageSize">Page size</param>
         /// <returns>EducatorsStaff</returns>
         IEnumerable<EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData, int page, int pageSize);
+        Task<Tuple<IEnumerable<EducatorsStaffTableObject>, int>> GetEducatorsStaffTableAsync(int kadraType, IEnumerable<string> sortByOrder, string searchedData, int page, int pageSize);
     }
 }
