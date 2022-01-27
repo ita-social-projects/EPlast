@@ -916,7 +916,7 @@ namespace EPlast.Tests.Services
             FilterTableParametersByRole result = await service.TableFilterParameters_byRole(roles, It.IsAny<string>());
 
             // Assert
-            Assert.IsNotNull(result.Clubs);
+            Assert.IsNotNull(result.AndClubs);
         }
         [Test]
         public async Task TableFilterParameters_byRole_KurinHead_OkrugaHead_ReturnsCorrect()
