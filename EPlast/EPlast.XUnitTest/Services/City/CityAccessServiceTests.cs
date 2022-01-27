@@ -25,7 +25,7 @@ namespace EPlast.XUnitTest.Services.City
         private const string AdminRoleName = Roles.Admin;
         private const string RegionAdminRoleName = Roles.OkrugaHead;
         private const string CityAdminRoleName = Roles.CityHead;
-        private const string CityAdminDeputyRoleName = Roles.CityHeadDeputy;
+        private const string RegionAdminDeputyRoleName = Roles.CityHeadDeputy;
 
         private readonly Mock<IRepositoryWrapper> _repositoryWrapper = new Mock<IRepositoryWrapper>();
         private readonly Mock<IMapper> _mapper = new Mock<IMapper>();
@@ -347,7 +347,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             // Arrange
             _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { CityAdminDeputyRoleName });
+                .ReturnsAsync(new List<string> { RegionAdminDeputyRoleName });
             _repositoryWrapper.Setup(x => x.AnnualReports.GetAllAsync(
                 It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
                     .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
@@ -377,7 +377,7 @@ namespace EPlast.XUnitTest.Services.City
         {
             // Arrange
             _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { CityAdminDeputyRoleName });
+                .ReturnsAsync(new List<string> { RegionAdminDeputyRoleName });
             _repositoryWrapper.Setup(x => x.AnnualReports.GetAllAsync(
                 It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
                     .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
@@ -402,6 +402,65 @@ namespace EPlast.XUnitTest.Services.City
                 It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()));
         }
 
+        [Fact]
+        public async Task GetAllCitiesIdAndName_RegionAdminDeputyEmptyList()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { RegionAdminDeputyRoleName });
+            _repositoryWrapper.Setup(x => x.AnnualReports.GetAllAsync(
+                It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
+                    .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
+                        IIncludableQueryable<DatabaseEntities.AnnualReport, object>
+                    >>())).ReturnsAsync(new List<DatabaseEntities.AnnualReport>()
+                {new DatabaseEntities.AnnualReport() {CityId = 1}});
+            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
+                .ReturnsAsync((CityAdministration)null);
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(), null))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
+            _mapper.Setup(x =>
+                    x.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
+                        It.IsAny<IEnumerable<DatabaseEntities.City>>()))
+                .Returns(_expected);
+
+            // Act
+            var result = await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()), Times.Never);
+            Assert.Equal(result, _expected);
+        }
+
+        [Fact]
+        public async Task GetAllCitiesIdAndName_RegionAdminDeputy_Succeeded()
+        {
+            // Arrange
+            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { RegionAdminDeputyRoleName });
+            _repositoryWrapper.Setup(x => x.AnnualReports.GetAllAsync(
+                It.IsAny<Expression<Func<DatabaseEntities.AnnualReport, bool>>>(), It
+                    .IsAny<Func<IQueryable<DatabaseEntities.AnnualReport>,
+                        IIncludableQueryable<DatabaseEntities.AnnualReport, object>
+                    >>())).ReturnsAsync(new List<DatabaseEntities.AnnualReport>()
+                {new DatabaseEntities.AnnualReport() {CityId = 1}});
+            _repositoryWrapper.Setup(r => r.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DatabaseEntities.CityAdministration, bool>>>(), null))
+                .ReturnsAsync(new DatabaseEntities.CityAdministration());
+            _repositoryWrapper.Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()))
+                .ReturnsAsync(new List<DatabaseEntities.City> { new DatabaseEntities.City() });
+            _mapper.Setup(x =>
+                    x.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
+                        It.IsAny<IEnumerable<DatabaseEntities.City>>()))
+                .Returns(_expected);
+
+            // Act
+            await _cityAccessService.GetAllCitiesIdAndName(new User());
+
+            // Assert
+            _repositoryWrapper.Verify(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.City, bool>>>(),
+                It.IsAny<Func<IQueryable<DatabaseEntities.City>, IIncludableQueryable<DatabaseEntities.City, object>>>()));
+        }
 
         [Fact]
         public async Task GetAllCitiesIdAndName_Admin_Passed()

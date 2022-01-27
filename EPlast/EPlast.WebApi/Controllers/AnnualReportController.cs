@@ -175,7 +175,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The city does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPost]
-        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
+        [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Create(AnnualReportDTO annualReport)
         {
             if (ModelState.IsValid)
