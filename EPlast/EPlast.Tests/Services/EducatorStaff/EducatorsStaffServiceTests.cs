@@ -430,7 +430,222 @@ namespace EPlast.Tests.Services.EducatorStaff
             Assert.NotNull(result);
             Assert.IsInstanceOf<List<EducatorsStaffTableObject>>(result);
         }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByDateAscend()
+        {
+            //Arrange
+            string[] SortByOrder = new [] { "endDate", "ascend" };
 
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByDateDescend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "endDate", "descend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByUserNameDescend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "userName", "descend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByUserNameAscend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "userName", "ascend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByNumberInRegisterDescend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "numberInRegister", "descend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByNumberInRegisterAscend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "numberInRegister", "ascend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByIdAscend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "id", "ascend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllUsersEducatorsStaffByPageAsync_ReturnsTupleWithUserEducatorsStaffTableObjectAndIntRowsSortedByIdDescend()
+        {
+            //Arrange
+            string[] SortByOrder = new[] { "id", "descend" };
+
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), SortByOrder, It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllEducatorsStaffByPageAsync_ReturnsTupleWithEducatorsStaffTableObjectAndIntRowsWithFilters()
+        {
+            //Arrange
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(5, new List<string> { "id", "ascend" }, "", 1, 1);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public async Task GetAllEducatorsStaffByPageAsync_ReturnsTupleWithEducatorsStaffTableObjectAndRowsWithFilters()
+        {
+            //Arrange
+            _repositoryWrapper
+              .Setup(x => x.KVs.GetRangeAsync(It.IsAny<Expression<Func<EducatorsStaff, bool>>>(),
+              It.IsAny<Expression<Func<EducatorsStaff, EducatorsStaff>>>(), It.IsAny<Func<IQueryable<EducatorsStaff>, IQueryable<EducatorsStaff>>>(),
+              It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
+
+            //Act
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(5, new List<string> { "id", "ascend" }, It.IsAny<string>(), 1, 1);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<EducatorsStaffTableObject>, int>>(result);
+        }
+        [Test]
+        public void GetOrderByUserName()
+        {
+            //Arrange
+            //Act
+            var result = _educatorsStaffService.GetOrderByUserName();
+
+            //Assert
+            Assert.IsNotNull(result);
+        }
+        [Test]
+        public void GetOrderByID()
+        {
+            //Arrange
+            //Act
+            var result = _educatorsStaffService.GetOrderByID();
+
+            //Assert
+            Assert.IsNotNull(result);
+        }
+        [Test]
+        public void GetOrderByNumberInRegister()
+        {
+            //Arrange
+            //Act
+            var result = _educatorsStaffService.GetOrderByNumberInRegister();
+
+            //Assert
+            Assert.IsNotNull(result);
+        }
+        [Test]
+        public void GetOrderByDateOfGranting()
+        {
+            //Arrange
+            //Act
+            var result = _educatorsStaffService.GetOrderByDateOfGranting();
+
+            //Assert
+            Assert.IsNotNull(result);
+        }
         private IEnumerable<EducatorsStaffDTO> GetTestEducatorsStaffDTO()
         {
             return new List<EducatorsStaffDTO>
@@ -461,5 +676,21 @@ namespace EPlast.Tests.Services.EducatorStaff
             ID = 1,
             NumberInRegister = 2,
         };
+        private List<EducatorsStaff> GetUsersByPage()
+        {
+            return new List<EducatorsStaff>()
+            {
+                new EducatorsStaff()
+                {
+                    NumberInRegister = 34,
+                }
+            };
+        }
+
+        private int GetFakeUserNumber()
+        {
+            return 100;
+        }
+        private Tuple<IEnumerable<EducatorsStaff>, int> CreateTuple => new Tuple<IEnumerable<EducatorsStaff>, int>(GetUsersByPage(), GetFakeUserNumber());
     }
 }

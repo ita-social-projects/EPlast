@@ -916,7 +916,61 @@ namespace EPlast.Tests.Services
             FilterTableParametersByRole result = await service.TableFilterParameters_byRole(roles, It.IsAny<string>());
 
             // Assert
-            Assert.IsNotNull(result.Clubs);
+            Assert.IsNotNull(result.AndClubs);
+        }
+        [Test]
+        public async Task TableFilterParameters_byRole_KurinHead_OkrugaHead_ReturnsCorrect()
+        {
+
+            string[] roles = new string[] { Roles.KurinHead, Roles.OkrugaHead };
+            AdminType adminType = new AdminType() { AdminTypeName = Roles.KurinHead };
+            ClubAdministration clubAdministration = new ClubAdministration() { AdminType = adminType, ClubId = It.IsAny<int>() };
+            ICollection<ClubAdministration> clubAdministrations = new List<ClubAdministration>() { clubAdministration };
+            DataAccess.Entities.Club club = new DataAccess.Entities.Club { ClubAdministration = clubAdministrations, Name = "qwerty" };
+
+            _repoWrapper
+                .Setup(x => x.ClubAdministration.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.ClubAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.ClubAdministration>,
+                    IIncludableQueryable<DataAccess.Entities.ClubAdministration, object>>>())
+                )
+                .ReturnsAsync(clubAdministration);
+            _repoWrapper
+              .Setup(x => x.Club.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
+                  IIncludableQueryable<DataAccess.Entities.Club, object>>>())
+              )
+              .ReturnsAsync(club);
+            AdminType adminTypeOkrugaHead = new AdminType() { AdminTypeName = Roles.OkrugaHead };
+            RegionAdministration regionAdministration = new RegionAdministration() { AdminType = adminTypeOkrugaHead, RegionId = It.IsAny<int>() };
+            ICollection<RegionAdministration> regionAdministrations = new List<RegionAdministration>() { regionAdministration };
+            Region region = new Region { RegionAdministration = regionAdministrations, RegionName = "qwerty" };
+
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>,
+                    IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>())
+                )
+                .ReturnsAsync(regionAdministration);
+            _repoWrapper
+              .Setup(x => x.Region.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.Region>,
+                  IIncludableQueryable<DataAccess.Entities.Region, object>>>())
+              )
+              .ReturnsAsync(region);
+            // Act
+            FilterTableParametersByRole result = await service.TableFilterParameters_byRole(roles, It.IsAny<string>());
+
+            // Assert
+            Assert.IsNotNull(result.AndClubs);
+            Assert.IsNotNull(result.Regions);
         }
         private IEnumerable<User> GetTestUsers()
         {
