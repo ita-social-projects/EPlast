@@ -584,7 +584,7 @@ namespace EPlast.Tests.Services.EducatorStaff
               It.IsAny<Func<IQueryable<EducatorsStaff>, IIncludableQueryable<EducatorsStaff, object>>>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(CreateTuple);
 
             //Act
-            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(It.IsAny<int>(), It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>());
+            var result = await _educatorsStaffService.GetEducatorsStaffTableAsync(5, new List<string> { "id", "ascend" }, "", 1, 1);
 
             //Assert
             Assert.IsNotNull(result);
