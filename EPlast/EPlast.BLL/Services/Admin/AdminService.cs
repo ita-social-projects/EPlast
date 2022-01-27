@@ -325,7 +325,7 @@ namespace EPlast.BLL.Services
                 int cityId = (await _repoWrapper.CityAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).CityId;
                 filterTableParametersByRole.Cities = (await _repoWrapper.City.GetSingleAsync(r => r.ID == cityId)).Name;
             }
-            if (Clubs && !Regions && !Cities)
+            if (Clubs && !Regions)
             {
                 int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId;
                 filterTableParametersByRole.Clubs = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
