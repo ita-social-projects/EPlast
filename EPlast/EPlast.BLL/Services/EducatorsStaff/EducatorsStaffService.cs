@@ -225,27 +225,27 @@ namespace EPlast.BLL.Services.EducatorsStaff
             {
                 "id" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByID()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByID()),
-                    _ => expr = x => x
+                    "ascend" =>  x => x.OrderBy(GetOrderByID()),
+                    "descend" => x => x.OrderByDescending(GetOrderByID()),
+                    _ => x => x
                 },
                 "userName" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByUserName()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByUserName()),
-                    _ => expr = x => x
+                    "ascend" => x => x.OrderBy(GetOrderByUserName()),
+                    "descend" =>x => x.OrderByDescending(GetOrderByUserName()),
+                    _ => x => x
                 },
                 "numberInRegister" => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByNumberInRegister()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByNumberInRegister()),
-                    _ => expr = x => x
+                    "ascend" => x => x.OrderBy(GetOrderByNumberInRegister()),
+                    "descend" => x => x.OrderByDescending(GetOrderByNumberInRegister()),
+                    _ => x => x
                 },
                 _ => (sortByOrder.Last()) switch
                 {
-                    "ascend" => expr = x => x.OrderBy(GetOrderByDateOfGranting()),
-                    "descend" => expr = x => x.OrderByDescending(GetOrderByDateOfGranting()),
-                    _ => expr = x => x
+                    "ascend" => x => x.OrderBy(GetOrderByDateOfGranting()),
+                    "descend" => x => x.OrderByDescending(GetOrderByDateOfGranting()),
+                    _ => x => x
                 }
             };
             return expr;
