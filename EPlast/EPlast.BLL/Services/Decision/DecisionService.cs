@@ -70,6 +70,7 @@ namespace EPlast.BLL.Services
             Decesion decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionDto.ID);
             decision.Name = decisionDto.Name;
             decision.Description = decisionDto.Description;
+            decision.DecesionStatusType = (DecesionStatusType)decisionDto.DecisionStatusType;
             _repoWrapper.Decesion.Update(decision);
             await _repoWrapper.SaveAsync();
         }
