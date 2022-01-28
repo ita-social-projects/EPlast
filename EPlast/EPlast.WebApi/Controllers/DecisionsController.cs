@@ -42,7 +42,6 @@ namespace EPlast.WebApi.Controllers
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
             {
                 GoverningBodies = await _governingBodiesService.GetGoverningBodiesListAsync(),
-                DecisionTargets = await _decisionService.GetDecisionTargetListAsync(),
                 DecisionStatusTypeListItems = _decisionService.GetDecisionStatusTypes()
             };
 
@@ -200,6 +199,17 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(base64EncodedPDF);
         }
-
+        /// <summary>
+        /// Get targets
+        /// </summary>
+        /// <param name="searchedData">Searched Data</param>
+        /// <returns>List of Targets</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("targetList/{searchedData}")]
+        public async Task<IActionResult> GetDecisionTargetSearchList(string searchedData)
+        {
+            var targets = await _decisionService.GetDecisionTargetSearchListAsync(searchedData);
+            return Ok(targets);
+        }
     }
 }

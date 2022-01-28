@@ -123,6 +123,12 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetSearchListAsync(string search)
+        {
+            return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()).Where(d=>d.TargetName.Contains(search)));
+        }
+
+        /// <inheritdoc />
         public IEnumerable<SelectListItem> GetDecisionStatusTypes()
         {
             return _decisionVMCreator.GetDecesionStatusTypes();

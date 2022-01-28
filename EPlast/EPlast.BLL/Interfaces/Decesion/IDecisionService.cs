@@ -73,6 +73,12 @@ namespace EPlast.BLL
         Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync();
 
         /// <summary>
+        /// Returns the IEnumerable of the decision targets dto 
+        /// </summary>
+        /// <returns>The IEnumerable of the decision targets dto</returns>
+        Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetSearchListAsync(string search);
+
+        /// <summary>
         /// Returns the IEnumerable of the decision wrappers dto
         /// </summary>
         /// <returns></returns>
