@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,6 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <returns>Can the user approve</returns>
         bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isAdmin=false);
 
-
         /// <summary>
         /// Get a image
         /// </summary>
@@ -90,12 +90,19 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <returns>User gender string</returns>
         Task<string> GetUserGenderAsync(string userId);
 
+        /// <summary>
+        /// Function checks if users are in same city, region or hovel
+        /// </summary>
+        /// <param name="currentUser">active user</param>
+        /// <param name="focusUser">user which we checking</param>
+        /// <param name="cellType">Type of cell (City, Region , Club)</param>
+        Task<bool> IsUserInSameCellAsync(UserDTO currentUser, UserDTO focusUser, CellType cellType);
+
         Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser);
         Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser);
         Task<bool> IsUserInRegionAsync(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser);
-
     }
 }

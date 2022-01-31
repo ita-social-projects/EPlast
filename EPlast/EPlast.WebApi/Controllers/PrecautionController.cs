@@ -1,11 +1,14 @@
 ﻿using EPlast.BLL;
+using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -63,17 +66,17 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get all Users Precautions
         /// </summary>
-        /// <param name="searchedData">Searched Data</param>
-        /// <param name="page">Current page on pagination</param>
-        /// <param name="pageSize">Number of records per page</param>
+        /// <param name="tableSettings">data of table filters, page, search data, page size</param>
         /// <returns>List of UserPrecautionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersPrecautionsForTable")]
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
-        public IActionResult GetUsersPrecautionsForTable(string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
         {
-            var distinctions = _precautionService.GetUsersPrecautionsForTable(searchedData, page, pageSize);
-            return Ok(distinctions);
+            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(tableSettings);            
+            var allInfoPrecautions = precautions.Item1.ToList();
+            allInfoPrecautions.ForEach(u => u.Total = precautions.Item2);
+            return Ok(allInfoPrecautions);
         }
 
         /// <summary>
@@ -278,6 +281,38 @@ namespace EPlast.WebApi.Controllers
         {
             bool distNumber = await _userPrecautionService.IsNumberExistAsync(number);
             return Ok(distNumber);
+        }
+
+        /// <summary>
+        /// Checks if theres already an active Precaution with such type for user
+        /// </summary>
+        /// <param name="userId">User id which checking</param>
+        /// <param name="type">Type which checking</param>
+        /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("checkUserPrecautionsType/{userId}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> CheckUserPrecautionsType(string userId, string type)
+        {
+            bool distNumber = await _userPrecautionService.CheckUserPrecautionsType(userId, type);
+            return Ok(distNumber);
+        }
+
+        /// <summary>
+        /// Get an active Precaution with such type for user
+        /// </summary>
+        /// <param name="userId">User id which checking</param>
+        /// <param name="type">Type which checking</param>
+        /// <returns>True if exist</returns>
+        /// <returns>False if doesn't exist</returns>
+        /// <response code="200">Check was successfull</response>
+        [HttpGet("getUserActivePrecautionEndDate/{userId}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> GetUserActivePrecautionEndDate(string userId, string type)
+        {
+            string endDate = (await _userPrecautionService.GetUserActivePrecaution(userId, type)).EndDate.ToShortDateString();
+            return Ok(endDate);
         }
 
         /// <summary>

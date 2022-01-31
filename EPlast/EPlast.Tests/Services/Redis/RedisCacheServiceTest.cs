@@ -3,6 +3,7 @@ using EPlast.BLL.Services.Redis;
 using EPlast.DataAccess.Entities;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using StackExchange.Redis;
 using System;
@@ -18,7 +19,7 @@ namespace EPlast.Tests.Services.Redis
         private Mock<IConnectionMultiplexer> _connectionMultiplexer;
         private Mock<IDatabase> _db;
         private Mock<IServer> _server;
-        private Mock<IConfiguration> _configuration; 
+        private Mock<IConfiguration> _configuration;
 
         private RedisCacheService _redisCacheService;
 
@@ -48,13 +49,26 @@ namespace EPlast.Tests.Services.Redis
         }
 
         [Test]
-        public async Task GetRecordByKeyAsync_ReturnsNull()
+        public async Task CheckIfKeyExistsAsync_ReturnFalseBecauseOfError()
         {
             //Arrange
-            _db.Setup(x => x.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>())).ReturnsAsync(It.IsAny<RedisValue>());
+            _db.Setup(x => x.KeyExistsAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>())).ThrowsAsync<IDatabase, bool>(It.IsAny<RedisConnectionException>());
 
             //Act
-            var result = await _redisCacheService.GetRecordByKeyAsync<Tuple<IEnumerable<RegionObject>, int>> (Key);
+            var result = await _redisCacheService.CheckIfKeyExistsAsync(Key);
+
+            //Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task GetRecordByKeyAsync_ReturnNullBecauseOfJSonConvertError()
+        {
+            //Arrange
+            _db.Setup(x => x.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>())).ThrowsAsync<IDatabase, RedisValue>(It.IsAny<RedisConnectionException>());
+
+            //Act
+            var result = await _redisCacheService.GetRecordByKeyAsync<Tuple<IEnumerable<RegionObject>, int>>(new RedisValue());
 
             //Assert
             Assert.IsNull(result);
@@ -80,6 +94,20 @@ namespace EPlast.Tests.Services.Redis
             _server
                 .Setup(x => x.Keys(It.IsAny<int>(), It.IsAny<RedisValue>(), It.IsAny<int>(), It.IsAny<CommandFlags>()))
                 .Returns(new List<RedisKey> {Key});
+
+            //Act
+            await _redisCacheService.RemoveRecordsByPatternAsync(Key);
+
+            //Assert
+            _db.Verify(x => x.KeyDeleteAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()), Times.Never);
+        }
+
+        [Test]
+        public async Task RemoveRecordByPatternAsync_ThrowsNullException()
+        {
+            //Arrange
+            _connectionMultiplexer.Setup(x => x.GetServer(It.IsAny<string>(), It.IsAny<object>()))
+                .Throws(It.IsAny<ArgumentNullException>());
 
             //Act
             await _redisCacheService.RemoveRecordsByPatternAsync(Key);

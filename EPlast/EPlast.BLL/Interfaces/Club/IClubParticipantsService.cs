@@ -36,6 +36,12 @@ namespace EPlast.BLL.Interfaces.Club
         Task RemoveAdministratorAsync(int adminId);
 
         /// <summary>
+        /// Removes Administration roles of user in the Club
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        Task RemoveAdminRolesByUserIdAsync(string userId);
+
+        /// <summary>
         /// Removes roles from previous administrators
         /// </summary>
         Task ContinueAdminsDueToDate();
@@ -84,6 +90,14 @@ namespace EPlast.BLL.Interfaces.Club
         Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId);
 
         /// <summary>
+        /// Returns either given user is approved or not
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>True if given user is approved, otherwise false</returns>
+        /// See<see cref="ICityMembersService.CheckIsUserApproved(int)"/> to check if user is approved
+        Task<bool?> CheckIsUserApproved(int userId);
+
+        /// <summary>
         /// Club name only for approved member
         /// </summary>
         /// <param name="memberId">The id of the member</param>
@@ -98,10 +112,10 @@ namespace EPlast.BLL.Interfaces.Club
 
 
         /// <summary>
-        /// Remove a specific follower from the Club
+        /// Remove a specific member from the Club
         /// </summary>
-        /// <param name="member">The member of the club</param>
-        Task RemoveMemberAsync(ClubMembers member);
+        /// <param name="userId">The Id of the member</param>
+        Task RemoveMemberAsync(string userId);
 
         /// <summary>
         /// Add  follower from the Club to history table

@@ -19,6 +19,7 @@ using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories.Interfaces.User;
 using EPlast.DataAccess.Repositories.Realizations.User;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Announcement;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
@@ -65,6 +66,10 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private ISectorDocumentsRepository _governingBodySectorDocuments;
         private ISectorDocumentTypeRepository _governingBodySectorDocumentType;
 
+        private ISubsectionRepository _subsection;
+        private ISubsectionPicturesRepository _subsectionPictures;
+        private IPicturesRepository _pictures;
+
         private ICityAdministrationRepository _cityAdministration;
         private ICityDocumentsRepository _cityDocuments;
         private ICityDocumentTypeRepository _cityDocumentType;
@@ -107,9 +112,11 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IRegionAnnualReportsRepository _regionAnnualReports;
         private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
+        private IGoverningBodyAnnouncementImageRepository _governingBodyAnnouncementImage;
 
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
+        private TermsRepository _termsRepository;
         private UserRenewalRepository _userRenewalRepository;
 
         public IEducatorsStaffTypesRepository KVTypes
@@ -288,6 +295,43 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public ISubsectionRepository Subsection
+        {
+            get
+            {
+                if (_subsection == null)
+                {
+                    _subsection = new SubsectionRepository(_dbContext);
+                }
+
+                return _subsection;
+            }
+        }
+
+        public IPicturesRepository Pictures
+        {
+            get
+            {
+                if (_pictures == null)
+                {
+                    _pictures = new PicturesRepository(_dbContext);
+                }
+                return _pictures;
+            }
+        }
+
+        public ISubsectionPicturesRepository SubsectionPictures
+        {
+            get
+            {
+                if (_subsectionPictures == null)
+                {
+                    _subsectionPictures = new SubsectionPicturesRepository(_dbContext);
+                }
+                return _subsectionPictures;
+            }
+        }
+
         public IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement
         {
             get
@@ -297,6 +341,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _governingBodyAnnouncement = new GoverningBodyAnnouncementRepository(_dbContext);
                 }
                 return _governingBodyAnnouncement;
+            }
+        }
+
+        public IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage
+        {
+            get
+            {
+                if (_governingBodyAnnouncementImage == null)
+                {
+                    _governingBodyAnnouncementImage = new GoverningBodyAnnouncementImageRepository(_dbContext);
+                }
+                return _governingBodyAnnouncementImage;
             }
         }
 
@@ -939,7 +995,17 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _subsectionRepository;
             }
         }
-
+        public ITermsRepository TermsOfUse
+        {
+            get
+            {
+                if (_termsRepository == null)
+                {
+                    _termsRepository = new TermsRepository(_dbContext);
+                }
+                return _termsRepository;
+            }
+        }
 
 
         public IMembersStatisticsRepository MembersStatistics

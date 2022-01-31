@@ -204,6 +204,40 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public async Task RemoveAdminByIdAsync_ReturnsCorrect()
+        {
+            //Arrange
+            _repoWrapper.Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+            .ReturnsAsync(new List<RegionAdministration>());
+            _repoWrapper
+                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>,
+                IIncludableQueryable<RegionAdministration, object>>>()))
+                .ReturnsAsync(regionAdmHead);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
+                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _repoWrapper
+                .Setup(r => r.RegionAdministration.Delete(It.IsAny<RegionAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            await _servise.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+
+            //Assert
+            _repoWrapper.Verify();
+            _adminTypeService.Verify();
+            _userManager.Verify();
+        }
+
+
+        [Test]
         public void DeleteAdminByIdAsync_HeadDeputy_ReturnsCorrect()
         {
             //Arrange

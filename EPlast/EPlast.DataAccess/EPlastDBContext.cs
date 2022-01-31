@@ -1,5 +1,6 @@
 ﻿using System;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
@@ -44,9 +45,12 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<RegionObject> RegionObjects { get; set; }
+        public DbSet<CityObject> CityObjects { get; set; }
         public DbSet<RegionNamesObject> RegionNamesObjects { get; set; }
         public DbSet<Section> Sections { get; set; }
         public DbSet<Subsection> Subsections { get; set; }
+        public DbSet<SubsectionPictures> SubsectionsPictures { get; set; }
+        public DbSet<Pictures> Pictures { get; set; }
         public DbSet<AnnualReportTableObject> AnnualReportTableObjects { get; set; }
         public DbSet<ClubAnnualReportTableObject> ClubAnnualReportTableObjects { get; set; }
         public DbSet<RegionAnnualReportTableObject> RegionAnnualReportTableObjects { get; set; }
@@ -56,8 +60,11 @@ namespace EPlast.DataAccess
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
         public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
+        public DbSet<GoverningBodyAnnouncementImage> GoverningBodyAnnouncementImages { get; set; }
+        public DbSet<Terms> Terms { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
+        public DbSet<EducatorsStaffTableObject> EducatorsStaffTableObjects { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -73,7 +80,7 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
             modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
-
+            modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
             modelBuilder.Entity<UserRenewal>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -94,7 +101,25 @@ namespace EPlast.DataAccess
                 entity.Property(e => e.Approved)
                     .HasDefaultValue(false);
             });
-                
+
+            modelBuilder.Entity<Pictures>()
+                .HasKey(x => x.ID);
+
+            modelBuilder.Entity<SubsectionPictures>()
+                .HasKey(x => new { x.SubsectionID, x.PictureID });
+
+            modelBuilder.Entity<SubsectionPictures>()
+                .HasOne(x => x.Subsection)
+                .WithMany(m => m.SubsectionsPictures)
+                .HasForeignKey(x => x.SubsectionID);
+
+            modelBuilder.Entity<SubsectionPictures>()
+                .HasOne(x => x.Pictures)
+                .WithMany(e => e.Subsections)
+                .HasForeignKey(x => x.PictureID);
+
+            modelBuilder.Entity<Subsection>()
+                .HasKey(x => x.Id);
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);

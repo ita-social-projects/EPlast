@@ -34,13 +34,11 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         public async Task<IEnumerable<ClubDTO>> GetClubsAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in _clubAccessGetters.Keys)
+            var key = _clubAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
+            if(key != null)
             {
-                if (roles.Contains(key))
-                {
-                    var cities = await _clubAccessGetters[key].GetClubs(user.Id);
-                    return _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(cities);
-                }
+                var cities = await _clubAccessGetters[key].GetClubs(user.Id);
+                return _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(cities);
             }
             return Enumerable.Empty<ClubDTO>();
         }
@@ -52,14 +50,11 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             var clubsId =
                 (await _repositoryWrapper.ClubAnnualReports.GetAllAsync(predicate: x => x.Date.Year == DateTime.Now.Year))
                 .Select(x => x.ClubId).ToList();
-            foreach (var key in _clubAccessGetters.Keys)
+            var key = _clubAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
+            if(key != null)
             {
-                if (roles.Contains(key))
-                {
-                    options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
-                        await _clubAccessGetters[key].GetClubs(user.Id));
-                    break;
-                }
+                options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                    await _clubAccessGetters[key].GetClubs(user.Id));
             }
             foreach (var item in options)
             {
@@ -78,10 +73,10 @@ namespace EPlast.BLL.Services.Club.ClubAccess
         public async Task<bool> HasAccessAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            foreach (var key in roles)
+            var key = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdmin.Contains(x));
+            if(key != null)
             {
-                if (Roles.HeadsAndHeadDeputiesAndAdmin.Contains(key))
-                    return true;
+                return true;
             }
             return false;
         }

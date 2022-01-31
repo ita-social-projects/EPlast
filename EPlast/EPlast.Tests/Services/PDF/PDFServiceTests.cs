@@ -291,66 +291,6 @@ namespace EPlast.Tests.Services.PDF
             Assert.Null(actualReturn.Result);
         }
 
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
-        public void AnnualReportCreatePDFAsync_ReturnsByteArray_Test(int annualReportId)
-        {
-            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .ReturnsAsync(AnnualReports.FirstOrDefault(x => x.ID == annualReportId));
-            _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
-
-            var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
-
-            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
-            Assert.IsInstanceOf<byte[]>(actualReturn.Result);
-        }
-
-        [TestCase(8)]
-        public void AnnualReportCreatePDFAsync_ReturnsNull_Test(int annualReportId)
-        {
-            // Arrange
-            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .ReturnsAsync((AnnualReport) null);
-
-            // Act
-            var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
-
-            // Assert
-            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
-            _logger.Verify();
-            Assert.Null(actualReturn.Result);
-        }
-
-        [TestCase(8)]
-        public void AnnualReportCreatePDFAsync_ThrowsException_CallsLogErrorMethod(int annualReportId)
-        {
-            // Arrange
-            _repository.Setup(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .Throws(new Exception("Test"));
-
-            // Act
-            var actualReturn = _pdfService.AnnualReportCreatePDFAsync(annualReportId);
-
-            // Assert
-            _repository.Verify(rep => rep.AnnualReports.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()), Times.Once);
-            _logger.Verify(x => x.LogError("Exception: Test"));
-            Assert.Null(actualReturn.Result);
-        }
-
         private static User GetUserWithFatherName(string userId)
         {
             return new User()

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
@@ -26,5 +26,22 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
         Task<IEnumerable<SectorAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
 
         Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId);
+
+        /// <summary>
+        /// Gets SectorAdministration history for a specific user
+        /// </summary>
+        /// <param name="userId">The Id of target user</param>
+        /// <param name="isActive">Active status option</param>
+        /// <param name="pageNumber">Page number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns>SectorAdministration history</returns>
+        Task<Tuple<IEnumerable<SectorAdministrationDTO>, int>> GetAdministrationForTableAsync(
+            string userId, bool isActive, int pageNumber, int pageSize);
+
+        /// <summary>
+        /// Changes status of Sector admins when the date expires
+        /// Adds one year to the current EndDate if the requirements are met
+        /// </summary>
+        Task ContinueSectorAdminsDueToDateAsync();
     }
 }

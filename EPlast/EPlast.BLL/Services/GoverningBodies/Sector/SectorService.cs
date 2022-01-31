@@ -230,5 +230,40 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
             return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins).Reverse();
         }
+
+        /// <inheritdoc />
+        public async Task<Tuple<IEnumerable<SectorAdministrationDTO>, int>> GetAdministrationForTableAsync(
+            string userId, bool isActive, int pageNumber, int pageSize)
+        {
+            var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(
+                predicate: g => g.UserId == userId && g.Status == isActive,
+                include: source => source
+                    .OrderBy(o => o.StartDate)
+                    .Include(u => u.User)
+                    .Include(a => a.AdminType)
+                    .Include(s => s.Sector));
+
+            var rowCount = admins.Count();
+
+            admins = admins.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
+
+            return new Tuple<IEnumerable<SectorAdministrationDTO>, int>(
+                _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins), rowCount);
+        }
+
+        /// <inheritdoc />
+        public async Task ContinueSectorAdminsDueToDateAsync()
+        {
+            var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(x => x.Status);
+
+            foreach (var admin in admins)
+            {
+                if (admin.EndDate == null || DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) >= 0) continue;
+                admin.EndDate = admin.EndDate.Value.AddYears(1);
+                _repoWrapper.GoverningBodySectorAdministration.Update(admin);
+            }
+
+            await _repoWrapper.SaveAsync();
+        }
     }
 }

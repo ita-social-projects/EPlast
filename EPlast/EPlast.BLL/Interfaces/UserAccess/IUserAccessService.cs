@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -46,5 +46,16 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// Returns dictionary with user accesses for events
         /// </summary>
         Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null);
+
+        /// <summary>
+        /// Returns dictionary with user accesses for UserProfile
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId, User user);
+
+        /// <summary>
+        /// Returns dictionary with user accesses for menu
+        /// </summary>
+        Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId);
+
     }
 }

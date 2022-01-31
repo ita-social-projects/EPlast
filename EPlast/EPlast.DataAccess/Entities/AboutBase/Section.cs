@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.DataAccess.Entities
+namespace EPlast.DataAccess.Entities.AboutBase
 {
     public class Section
     {

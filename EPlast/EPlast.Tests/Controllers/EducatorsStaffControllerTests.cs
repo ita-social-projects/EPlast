@@ -8,6 +8,8 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities.EducatorsStaff;
+using System;
 
 namespace EPlast.Tests.Controllers
 {
@@ -418,6 +420,27 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
+        [Test]
+        public void GetEducatorsStaffForTable_ReturnsOkObjectResult()
+        {
+            //Arrange
+            EducatorsStaffTableSettingsDTO tableSettings = new EducatorsStaffTableSettingsDTO() { KadraTypeId = 0, Page = 1, PageSize = 1, SearchedData ="", SortByOrder = new string[] { "id", "ascend" } };
+            _educatorsStaffService
+                .Setup(x => x.GetEducatorsStaffTableAsync(It.IsAny<int>(),It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>() )).ReturnsAsync(CreateTuple);
+            
+
+            //Act
+            var result = _educatorsStaffController.GetEducatorsStaffForTable(tableSettings).Result;
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            _educatorsStaffService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<List<EducatorsStaffTableObject>>(resultValue);
+        }
+
         private List<EducatorsStaffDTO> CreateFakeEducatorsStaffDTO()
             => new List<EducatorsStaffDTO>()
             {
@@ -430,5 +453,21 @@ namespace EPlast.Tests.Controllers
                     ID = 2
                 },
             };
+        private List<EducatorsStaffTableObject> GetUsersByPage()
+        {
+            return new List<EducatorsStaffTableObject>()
+            {
+                new EducatorsStaffTableObject()
+                {
+                    NumberInRegister = 34,
+                }
+            };
+        }
+
+        private int GetFakeUserNumber()
+        {
+            return 100;
+        }
+        private Tuple<IEnumerable<EducatorsStaffTableObject>, int> CreateTuple => new Tuple<IEnumerable<EducatorsStaffTableObject>, int>(GetUsersByPage(), GetFakeUserNumber());
     }
 }

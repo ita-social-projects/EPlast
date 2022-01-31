@@ -1,6 +1,13 @@
 ﻿using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
@@ -8,13 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Interfaces.UserProfiles;
-using Microsoft.AspNetCore.Identity;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Http;
 
 namespace EPlast.Tests.Controllers
 {
@@ -222,9 +222,7 @@ namespace EPlast.Tests.Controllers
         public async Task DeletePlastDegreeForUser_Returns403Forbidden()
         {
             //Arrange
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            ArrangeTests(string.Empty, false);
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
@@ -266,59 +264,45 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ChangeUserOathDate_ReturnOK()
+        public async Task ChangeUserEntryAndOathDates_ReturnOK()
         {
             //Arrange
             bool successfulChangedDates = true;
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
-            _userDatesService.Setup(cs => cs.ChangeUserOathDateAsync(It.IsAny<UserOathDateDTO>()))
-                             .ReturnsAsync(successfulChangedDates);
+            ArrangeTests(Roles.Admin, successfulChangedDates);
 
             //Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new UserOathDateDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(((OkObjectResult)result).Value);
-            Assert.IsInstanceOf<UserOathDateDTO>(((OkObjectResult)result).Value);
+            Assert.IsInstanceOf<EntryAndOathDatesDTO>(((OkObjectResult)result).Value);
         }
 
         [Test]
-        public async Task ChangeUserOathDate_ReturnBadRequest()
+        public async Task ChangeUserEntryAndOathDates_ReturnBadRequest()
         {
             //Arrange
-            bool successfulChangedDates = false;
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
-            _userDatesService.Setup(cs => cs.ChangeUserOathDateAsync(It.IsAny<UserOathDateDTO>()))
-                             .ReturnsAsync(successfulChangedDates);
+            bool failedChangeDates = false;
+            ArrangeTests(Roles.Admin, failedChangeDates);
 
             //Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new UserOathDateDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
-
         [Test]
-        public async Task ChangeUserOathDate_NoAccess_Return403Forbidden()
+        public async Task ChangeUserEntryAndOathDates_NoAccess_Return403Forbidden()
         {
             //Arrange
-            bool successfulChangedDates = false;
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.PlastMember });
-            _userDatesService.Setup(cs => cs.ChangeUserOathDateAsync(It.IsAny<UserOathDateDTO>()))
-                             .ReturnsAsync(successfulChangedDates);
+            bool failedChangeDates = false;
+            ArrangeTests(Roles.PlastMember, failedChangeDates);
             var expected = StatusCodes.Status403Forbidden;
 
             //Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new UserOathDateDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
             var actual = (result as StatusCodeResult).StatusCode;
 
             //Assert
@@ -326,16 +310,31 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task ChangeUserOathDate_Return403Forbidden()
+        public async Task ChangeUserEntryAndOathDates_Return403Forbidden()
         {
             //Arrange
-            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
-            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
-            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
+            ArrangeTests(string.Empty, false);
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _activeMembershipController.ChangeUserOathDateAsync(new UserOathDateDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
+            var actual = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()));
+            _userManager.Verify();
+            Assert.AreEqual(expected, actual);
+        }
+
+        [Test]
+        public async Task ChangeUserEntryAndOathDates_RegisteredUser_Return403Forbidden()
+        {
+            //Arrange
+            ArrangeTests(Roles.RegisteredUser, false);
+            var expected = StatusCodes.Status403Forbidden;
+
+            // Act
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -374,6 +373,15 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        private void ArrangeTests(string role, bool isChanged)
+        {
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
+            _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { role });
+            _userDatesService.Setup(cs => cs.ChangeUserEntryAndOathDateAsync(It.IsAny<EntryAndOathDatesDTO>()))
+                             .ReturnsAsync(isChanged);
         }
 
         private string _userId = "1";

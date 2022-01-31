@@ -3,9 +3,6 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Interfaces.Club;
-using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -17,98 +14,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Interfaces.FormerMember;
 
 namespace EPlast.BLL.Services
 {
     public class AdminService : IAdminService
     {
-        private readonly ICityParticipantsService _cityParticipants;
-        private readonly IClubParticipantsService _clubParticipants;
         private readonly IMapper _mapper;
-        private readonly IRegionAdministrationService _regionService;
-        private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
-        private readonly ISectorAdministrationService _sectorAdministrationService;
         private readonly IRepositoryWrapper _repoWrapper;
+        public readonly IFormerMemberService _formerMemberService;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<User> _userManager;
 
         public AdminService(IRepositoryWrapper repoWrapper,
+                            IFormerMemberService formerMemberService,
                             UserManager<User> userManager,
                             IMapper mapper,
-                            RoleManager<IdentityRole> roleManager,
-                            IClubParticipantsService clubParticipants,
-                            IRegionAdministrationService regionService,
-                            ICityParticipantsService cityParticipants,
-                            IGoverningBodyAdministrationService governingBodyAdministrationService,
-                            ISectorAdministrationService sectorAdministrationService)
+                            RoleManager<IdentityRole> roleManager)
         {
             _repoWrapper = repoWrapper;
+            _formerMemberService = formerMemberService;
             _userManager = userManager;
             _mapper = mapper;
             _roleManager = roleManager;
-            _clubParticipants = clubParticipants;
-            _regionService = regionService;
-            _cityParticipants = cityParticipants;
-            _governingBodyAdministrationService = governingBodyAdministrationService;
-            _sectorAdministrationService = sectorAdministrationService;
         }
-
-        /// <inheritdoc />
         public async Task ChangeAsync(string userId)
         {
-            User user = await _userManager.FindByIdAsync(userId);
-
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            if (currentRoles.Count > 0)
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
-                await _userManager.RemoveFromRolesAsync(user, userRoles);
-            }
-
-            var cityMember = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
-
-            if (cityMember != null)
-            {
-                await _cityParticipants.RemoveMemberAsync(cityMember);
-            }
-
-            var clubMember = await _repoWrapper.ClubMembers.GetFirstOrDefaultAsync(m => m.UserId == userId);
-            if (clubMember != null)
-            {
-                await _clubParticipants.RemoveMemberAsync(clubMember);
-            }
-
-            var regionAdmin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId);
-            if (regionAdmin != null)
-            {
-                await _regionService.DeleteAdminByIdAsync(regionAdmin.ID);
-            }
-
-            var governingBodyAdmin = await _repoWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
-            if (governingBodyAdmin != null)
-            {
-                await _governingBodyAdministrationService.RemoveAdministratorAsync(governingBodyAdmin.Id);
-            }
-
-            var sectorAdmin = await _repoWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.UserId == userId && a.Status);
-            if (sectorAdmin != null)
-            {
-                await _sectorAdministrationService.RemoveAdministratorAsync(sectorAdmin.Id);
-            }
-
-            var membershipDates = await _repoWrapper.UserMembershipDates.GetFirstOrDefaultAsync(m => m.UserId == userId);
-            if (membershipDates != null)
-            {
-                membershipDates.DateEnd = DateTime.Now;
-                _repoWrapper.UserMembershipDates.Update(membershipDates);
-                await _repoWrapper.SaveAsync();
-            }
-
-            await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
+            await _formerMemberService.MakeUserFormerMeberAsync(userId);
         }
-
         public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
             const string supporter = Roles.Supporter;
@@ -193,10 +126,9 @@ namespace EPlast.BLL.Services
                 GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
                             include: x => x.Include(i => i.Region).ThenInclude(r => r.RegionAdministration).ThenInclude(a => a.AdminType)
                                            .Include(c => c.CityAdministration).ThenInclude(c => c.AdminType));
-
-            foreach (var city in cities)
+            foreach (var region in cities.Select(x => x.Region))
             {
-                city.Region.RegionAdministration = city.Region.RegionAdministration.Where(r =>
+                region.RegionAdministration = region.RegionAdministration.Where(r =>
                 {
                     if ((r.AdminType.AdminTypeName == Roles.OkrugaHead || r.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy) && (r.EndDate > DateTime.Now || r.EndDate == null))
                     {
@@ -292,16 +224,22 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId)
         {
-            string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
-            string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
-            string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            
+            FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
+            string strAndClubs = filterTableParametersByRole.AndClubs;
+            string strRegions = filterTableParametersByRole.Regions;
+            string strCities = filterTableParametersByRole.Cities;
+            string strClubs = filterTableParametersByRole.Clubs;
+           
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
                 tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
-                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles);
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles, strAndClubs);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
@@ -368,6 +306,33 @@ namespace EPlast.BLL.Services
         public Task<int> GetUsersCountAsync()
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();
+        }
+
+        public async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
+        {
+            bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy) || roles.Contains(Roles.PlastMember);
+            bool Regions = roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy);
+            bool Clubs = roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy);
+
+            FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
+            if (Regions)
+            {
+                int regionId = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).RegionId;
+                filterTableParametersByRole.Regions = (await _repoWrapper.Region.GetSingleAsync(r => r.ID == regionId)).RegionName;               
+            }
+            if (Cities && !Regions)
+            {
+                int cityId = (await _repoWrapper.CityMembers.GetSingleAsync(r => r.UserId == userId && r.IsApproved)).CityId;
+                filterTableParametersByRole.Cities = (await _repoWrapper.City.GetSingleAsync(r => r.ID == cityId)).Name;
+            }
+           
+            if (Clubs)
+            {
+                int kurinId = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId;
+                filterTableParametersByRole.AndClubs = (await _repoWrapper.Club.GetSingleAsync(r => r.ID == kurinId)).Name;
+            }
+
+            return filterTableParametersByRole;
         }
     }
 }

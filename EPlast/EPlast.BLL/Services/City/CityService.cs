@@ -3,7 +3,9 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Services.CityClub;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,9 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Services.CityClub;
 using DataAccessCity = EPlast.DataAccess.Entities;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services
 {
@@ -92,7 +92,7 @@ namespace EPlast.BLL.Services
                         .ThenInclude(u => u.User));
             return _mapper.Map<DataAccessCity.City, CityDTO>(city);
         }
-        
+
         /// <inheritdoc />
         public async Task<CityDTO> GetCityByIdAsync(int cityId)
         {
@@ -127,6 +127,16 @@ namespace EPlast.BLL.Services
                 .Where(a => a.Status)
                 .ToList();
             return cityAdmins;
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
+        {
+            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
+                include: source => source
+                    .Include(t => t.User));
+            var users = cityMembers.Select(x => x.User);
+            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDTO>>(users);
         }
 
         /// <inheritdoc />
@@ -177,16 +187,6 @@ namespace EPlast.BLL.Services
             };
 
             return cityProfileDto;
-        }
-
-        /// <inheritdoc />
-        public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
-        {
-            var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
-                include: source => source
-                    .Include(t => t.User));
-            var users = cityMembers.Select(x => x.User);
-            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDTO>>(users);
         }
 
         /// <inheritdoc />
@@ -386,6 +386,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        /// Method is redundant
         public async Task EditAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
@@ -408,6 +409,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
+        /// Method is redundant
         public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
@@ -441,6 +443,7 @@ namespace EPlast.BLL.Services
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(filteredCities);
         }
 
+        // Method is redundant
         private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDTO model)
         {
             var cityDto = model.City;
@@ -465,6 +468,7 @@ namespace EPlast.BLL.Services
             return city;
         }
 
+        // Method moved to be used with command/handler CreateCity
         private async Task<DataAccessCity.City> CreateCityAsync(CityDTO model)
         {
             var city = _mapper.Map<CityDTO, DataAccessCity.City>(model);
@@ -475,7 +479,8 @@ namespace EPlast.BLL.Services
 
             return city;
         }
-
+        
+        // Method is redundant
         private async Task UploadPhotoAsync(CityDTO city, IFormFile file)
         {
             var cityId = city.ID;
@@ -485,7 +490,8 @@ namespace EPlast.BLL.Services
 
             city.Logo = GetChangedPhoto("images\\Cities", file, oldImageName, _env.WebRootPath, _uniqueId.GetUniqueId().ToString());
         }
-
+        
+        // Method moved to be used with command/handler UploadCityPhoto
         private async Task UploadPhotoAsync(CityDTO city)
         {
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
@@ -528,6 +534,8 @@ namespace EPlast.BLL.Services
             }
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -537,6 +545,8 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<DataAccessCity.City>> GetAllNotActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -546,22 +556,58 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<CityDTO>> GetAllActiveCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllActiveAsync(cityName));
         }
 
+        /// <inheritdoc />
+        public async Task<Tuple<IEnumerable<CityObjectDTO>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize, string name, bool isArchive)
+        {
+            var tuple = await _repoWrapper.City.GetCitiesObjects(page, pageSize, name, isArchive);
+            var cities = tuple.Item1;
+            //get images from blob storage
+            foreach (var city in cities)
+            {
+                try
+                {
+                    //If string is null or empty then image is default, and it is not stored in Blob storage :)
+                    if (!string.IsNullOrEmpty(city.Logo))
+                    {
+                        city.Logo = await _cityBlobStorage.GetBlobBase64Async(city.Logo);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Cannot get image from blob storage because {ex}");
+                }
+            }
+            var rows = tuple.Item2;
+            return new Tuple<IEnumerable<CityObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessCity.CityObject>, IEnumerable<CityObjectDTO>>(cities), rows);
+        }
+
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<CityDTO>> GetAllNotActiveCitiesAsync(string cityName = null)
         {
             return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllNotActiveAsync(cityName));
         }
 
+        /// <inheritdoc />
         public async Task UnArchiveAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && !c.IsActive);
             city.IsActive = true;
             _repoWrapper.City.Update(city);
             await _repoWrapper.SaveAsync();
+        }
+
+        public async Task<int> GetCityIdByUserIdAsync(string userId)
+        {
+            var city = await _repoWrapper.CityMembers.GetFirstAsync(user=>user.UserId == userId);
+            return city.CityId;
         }
     }
 }

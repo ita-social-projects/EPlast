@@ -1,16 +1,15 @@
-using EPlast.BLL.Interfaces;
+﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.UserAccess
 {
@@ -18,10 +17,10 @@ namespace EPlast.BLL.Services.UserAccess
     {
         private readonly IClubAccessService _clubAccessService;
         private readonly IEventUserAccessService _eventAccessService;
-        private readonly UserManager<DatabaseEntities.User> _userManager;
         private readonly ICityAccessService _cityAccessService;
         private readonly IRegionAccessService _regionAccessService;
         private readonly IAnnualReportAccessService _annualReportAccessService;
+        private readonly IUserProfileAccessService _userProfileAccessService;
         private readonly ISecurityModel _securityModel;
 
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
@@ -31,15 +30,17 @@ namespace EPlast.BLL.Services.UserAccess
         private const string RegionSecuritySettingsFile = "RegionAccessSettings.json";
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
         private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
+        private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
+        private const string MenuAccessSettingsFile = "MenuAccessSettings.json";
 
-        public UserAccessService(IClubAccessService clubAccessService, IEventUserAccessService eventAccessService, UserManager<DatabaseEntities.User> userManager, ICityAccessService cityAccessService, IRegionAccessService regionAccessService, IAnnualReportAccessService annualReportAccessService, ISecurityModel securityModel)
+        public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
-            _clubAccessService = clubAccessService;
-            _eventAccessService = eventAccessService;
-            _userManager = userManager;
-            _cityAccessService = cityAccessService;
-            _regionAccessService = regionAccessService;
-            _annualReportAccessService = annualReportAccessService;
+            _clubAccessService = userAccessWrapper.ClubAccessService;
+            _eventAccessService = userAccessWrapper.EventAccessService;
+            _cityAccessService = userAccessWrapper.CityAccessService;
+            _regionAccessService = userAccessWrapper.RegionAccessService;
+            _annualReportAccessService = userAccessWrapper.AnnualReportAccessService;
+            _userProfileAccessService = userAccessWrapper.UserProfileAccessService;
             _securityModel = securityModel;
         }
 
@@ -61,21 +62,9 @@ namespace EPlast.BLL.Services.UserAccess
         public async Task<Dictionary<string, bool>> GetUserEventAccessAsync(string userId, User user, int? eventId = null)
         {
             _securityModel.SetSettingsFile(EventUserSecuritySettingsFile);
-            var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            var roles = await _userManager.GetRolesAsync(user);
-            if (eventId != null)
-            {
-                bool access = await _eventAccessService.HasAccessAsync(user, (int)eventId);
-                if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
-                {
-                    FunctionalityWithSpecificAccessForEvents.functionalities.ForEach(i => userAccess[i] = access);
-                }
-                if (access)
-                {
-                    userAccess["SubscribeOnEvent"] = false;
-                }
-            }
-            return userAccess;
+            var defaultUserAccesses = await _securityModel.GetUserAccessAsync(userId);
+            var userAccesses = await _eventAccessService.RedefineAccessesAsync(defaultUserAccesses, user, eventId);
+            return userAccesses;
         }
 
         public async Task<Dictionary<string, bool>> GetUserCityAccessAsync(int cityId, string userId, User user)
@@ -98,13 +87,37 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            userAccess["CanViewReportDetails"] = await _annualReportAccessService.CanViewReportDetailsAsync(user, userAccess["CanViewReportDetails"], reportType, reportId);
             userAccess["CanEditReport"] = await _annualReportAccessService.CanEditReportAsync(user, userAccess["CanEditReport"], reportType, reportId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserProfileAccessAsync(string userId, string focusUserId, User user)
+        {
+            _securityModel.SetSettingsFile(UserProfileAccessSettings);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            userAccess["CanViewUserFullProfile"] = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
+            userAccess["CanApproveAsClubHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            userAccess["CanApproveAsCityHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
+            userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanSeeAddDeleteUserExtractUPU"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanAddUserDistionction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDeleteUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanDownloadUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            userAccess["CanViewDownloadUserBiography"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
             return userAccess;
         }
 
         public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
         {
             _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(MenuAccessSettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }

@@ -222,5 +222,14 @@ namespace EPlast.BLL.Services.Region
         {
             return _mapper.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDTO>>(await _repoWrapper.AdminType.GetAllAsync());
         }
+
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var adminRoles = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach(var role in adminRoles)
+            {
+                await DeleteAdminByIdAsync(role.ID);
+            }
+        }
     }
 }

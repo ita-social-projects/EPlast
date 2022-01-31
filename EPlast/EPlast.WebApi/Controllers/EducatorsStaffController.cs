@@ -5,6 +5,7 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
@@ -114,7 +115,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         ///  <response code="404"> no types yet in database</response>
         [HttpGet("kvTypes")]
-        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> GetKVTypes()
         {
             var Types = await _kvTypeService.GetAllKVTypesAsync();
@@ -131,7 +131,6 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         ///  <response code="404"> no kadras yet in database</response>
         [HttpGet("kadras")]
-        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> GetAllKVs()
         {
             var KVs = await _kvService.GetAllKVsAsync();
@@ -204,6 +203,21 @@ namespace EPlast.WebApi.Controllers
         {
             string UserId = await _kvService.GetUserByEduStaff(EduStaffId);
             return UserId;
+        }
+
+        /// <summary>
+        /// Get all EducatorsStaff
+        /// </summary>
+        /// <param name="tableSettings">tableSettings</param>
+        /// <returns>List of EducatorsStaffTableObject</returns>
+        /// <response code="200">Successful operation</response>
+        [HttpGet("EducatorsStaffForTable")]
+        public async Task<IActionResult> GetEducatorsStaffForTable([FromQuery] EducatorsStaffTableSettingsDTO tableSettings)
+        {
+            var educatorsStaff = await _kvService.GetEducatorsStaffTableAsync(tableSettings.KadraTypeId, tableSettings.SortByOrder, tableSettings.SearchedData, tableSettings.Page, tableSettings.PageSize);
+            var info = educatorsStaff.Item1.ToList();
+            info.ForEach(x => x.Total = educatorsStaff.Item2);
+            return Ok(info);
         }
     }
 }

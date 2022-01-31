@@ -1,7 +1,9 @@
 ﻿using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services;
@@ -24,6 +26,7 @@ namespace EPlast.Tests.Services.EmailSending
     {
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IEmailContentService> _mockEmailContentService;
+        private Mock<INotificationService> _mockNotificationService;
         private Mock<ICityService> _mockCityService;
         private Mock<IUserService> _mockUserService;
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
@@ -120,10 +123,18 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(new EmailModel());
+                .Returns(new EmailModel());
             _mockEmailContentService
                 .Setup(x => x.GetCityAdminAboutNewPlastMemberEmail(It.IsAny<string>(), It.IsAny<string>(),
                     It.IsAny<DateTime>())).Returns(new EmailModel());
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(It.IsAny<string>(),
+                It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new UserNotification());
+            _mockCityService.Setup(x => x.GetCityIdByUserIdAsync(It.IsAny<string>())).ReturnsAsync(240);
+            _mockNotificationService.Setup(x => x.GetAllNotificationTypesAsync()).ReturnsAsync(FakeTypeId());
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns(new UserNotification());
+            _mockRepoWrapper.Setup(x => x.UserNotifications.CreateAsync(It.IsAny<UserNotification>()));
 
             // Act
             await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
@@ -160,7 +171,11 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>()))
                 .ReturnsAsync(true);
             _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(new EmailModel());
+                .Returns(new EmailModel());
+
+            _mockEmailContentService.Setup(x => x.GetGreetingForNewPlastMemberMessageAsync(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<int>(), It.IsAny<int>())).Returns(new UserNotification());
 
             // Act
             await _newPlastMemberEmailGreetingService.NotifyNewPlastMembersAndCityAdminsAsync();
@@ -179,14 +194,35 @@ namespace EPlast.Tests.Services.EmailSending
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockEmailSendingService = new Mock<IEmailSendingService>();
             _mockEmailContentService = new Mock<IEmailContentService>();
+            _mockNotificationService = new Mock<INotificationService>();
             _mockCityService = new Mock<ICityService>();
             _mockUserService = new Mock<IUserService>();
             _newPlastMemberEmailGreetingService = new NewPlastMemberEmailGreetingService(_mockRepoWrapper.Object,
                                                                                          _mockUserManager.Object,
                                                                                          _mockEmailSendingService.Object,
                                                                                          _mockEmailContentService.Object,
+                                                                                         _mockNotificationService.Object,
                                                                                          _mockCityService.Object,
                                                                                          _mockUserService.Object);
+        }
+
+        private static List<NotificationTypeDTO> FakeTypeId()
+        {
+            return new List<NotificationTypeDTO>
+            {
+                new NotificationTypeDTO()
+                {
+                    Id = 0
+                },
+                new NotificationTypeDTO()
+                {
+                    Id = 1
+                },
+                new NotificationTypeDTO()
+                {
+                    Id = 2
+                }
+            };
         }
     }
 }

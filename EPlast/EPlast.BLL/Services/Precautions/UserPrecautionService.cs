@@ -32,6 +32,18 @@ namespace EPlast.BLL.Services.Precautions
         public async Task AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
+
+            bool existNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            if (existNumber)
+            {
+                throw new ArgumentException("Can`t add precaution with existing number");
+            }
+            bool isActive = await CheckUserPrecautionsType(userPrecautionDTO.UserId, userPrecautionDTO.Precaution.Name);
+            if (isActive)
+            {
+                throw new ArgumentException("User has the same active precaution");
+            }
+
             var userPrecaution = new UserPrecaution()
             {
                 UserId = userPrecautionDTO.UserId,
@@ -57,6 +69,13 @@ namespace EPlast.BLL.Services.Precautions
         public async Task ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
+
+            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            if (existRegisterNumber)
+            {
+                throw new ArgumentException("Number in register already exists");
+            }
+
             var userPrecaution = new UserPrecaution()
             {
                 Id = userPrecautionDTO.Id,
@@ -113,10 +132,15 @@ namespace EPlast.BLL.Services.Precautions
             return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
         }
 
-        public async Task<bool> IsNumberExistAsync(int number)
-        {
+        public async Task<bool> IsNumberExistAsync(int number, int? id = null)
+        {                        
             var distNum = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(x => x.Number == number);
-            return distNum != null;
+            if (distNum == null)
+            {
+                return false;
+            }
+
+            return distNum.Id != id;   
         }
 
         public async Task CheckIfAdminAsync(User user)
@@ -155,6 +179,15 @@ namespace EPlast.BLL.Services.Precautions
         private async Task<bool> CheckUserPrecautions(string userId)
         {
             return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive);
+        }
+        public async Task<bool> CheckUserPrecautionsType(string userId, string type)
+        {
+            return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive && x.Precaution.Name.Equals(type));
+        }
+
+        public async Task<UserPrecautionDTO> GetUserActivePrecaution(string userId, string type)
+        {
+            return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
         }
     }
 }

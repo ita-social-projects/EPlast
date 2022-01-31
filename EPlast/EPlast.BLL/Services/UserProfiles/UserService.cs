@@ -264,7 +264,7 @@ namespace EPlast.BLL.Services.UserProfiles
         private async Task<string> UploadPhotoAsyncFromBase64(string userId, string imageBase64)
         {
             var oldImageName = (await _repoWrapper.User.GetFirstOrDefaultAsync(x => x.Id == userId)).ImagePath;
-            if (!string.IsNullOrWhiteSpace(imageBase64) && imageBase64.Length > 0)
+            if (!string.IsNullOrWhiteSpace(imageBase64))
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
@@ -339,6 +339,7 @@ namespace EPlast.BLL.Services.UserProfiles
                  .GetFirstOrDefaultAsync(u => u.UserId == userId, m => m.Include(u => u.User));
             return cityMember != null && cityMember.IsApproved;
         }
+
         public async Task<bool> IsApprovedCLubMember(string userId)
         {
             var clubMember = await _repoWrapper.ClubMembers
@@ -405,5 +406,15 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
         }
 
+        public async Task<bool> IsUserInSameCellAsync(UserDTO currentUser, UserDTO focusUser, CellType cellType)
+        {
+            return cellType switch
+            {
+                CellType.City => IsUserSameCity(currentUser, focusUser) && await IsApprovedCityMember(focusUser.Id),
+                CellType.Region => IsUserSameRegion(currentUser, focusUser) && await IsApprovedCityMember(focusUser.Id),
+                CellType.Club => IsUserSameClub(currentUser, focusUser) && await IsApprovedCLubMember(focusUser.Id),
+                _ => false
+            };
+        }
     }
 }

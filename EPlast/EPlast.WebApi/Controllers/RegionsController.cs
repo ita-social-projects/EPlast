@@ -171,7 +171,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of annual reports</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("GetAllRegionAnnualReports")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
@@ -497,7 +497,10 @@ namespace EPlast.WebApi.Controllers
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
                }
-                await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
+               else
+                {
+                    await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
+                }
             }
             return StatusCode(StatusCodes.Status200OK, new {page = page, pageSize = pageSize, regions = regionsTuple.Item1, total = regionsTuple.Item2, canCreate = User.IsInRole(Roles.Admin)});
         }
@@ -523,7 +526,10 @@ namespace EPlast.WebApi.Controllers
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
                 }
-                await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
+                else
+                {
+                    await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
+                }
             }              
             return StatusCode(StatusCodes.Status200OK, new { regions = regionsTuple.Item1, total = regionsTuple.Item2});
         }
@@ -591,7 +597,18 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetReportById/{id}/{year}")]
         public async Task<IActionResult> GetReportByIdAsync(int id, int year)
         {
-            return Ok(await _RegionAnnualReportService.GetReportByIdAsync(id, year));
+            try
+            {
+                return Ok(await _RegionAnnualReportService.GetReportByIdAsync(await _userManager.GetUserAsync(User), id, year));
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
         }
 
         [HttpGet("GetUserAdministrations/{userId}")]

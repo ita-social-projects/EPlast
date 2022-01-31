@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EPlast.BLL.DTO.UserProfiles;
+using Newtonsoft.Json;
 
 namespace EPlast.BLL.DTO.City
 {
@@ -48,6 +49,7 @@ namespace EPlast.BLL.DTO.City
         public int DocumentsCount { get; set; }
         public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
         public IEnumerable<CityMembersDTO> CityMembers { get; set; }
+        [JsonIgnore]
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
         public IEnumerable<CityLegalStatusDTO> CityLegalStatuses { get; set; }
         public IEnumerable<UserRenewalDTO> UserRenewals { get; set; }

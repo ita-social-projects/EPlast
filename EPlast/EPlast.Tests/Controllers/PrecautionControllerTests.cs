@@ -15,6 +15,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.PrecautionsDTO;
 
 namespace EPlast.Tests.Controllers
 {
@@ -107,14 +108,13 @@ namespace EPlast.Tests.Controllers
         public void GetUsersPrecautionsForTable_ReturnsOkObjectResult()
         {
             //Arrange
+            PrecautionTableSettings TestPTS = new PrecautionTableSettings();
             _precautionService
-                .Setup(x => x.GetUsersPrecautionsForTable(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<UserPrecautionsTableObject>());
+                .Setup(x => x.GetUsersPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>())).ReturnsAsync(CreateTuple);
 
+            PrecautionController controller = _PrecautionController;
             //Act
-            var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
+            var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<PrecautionTableSettings>()).Result;
             var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
@@ -465,7 +465,7 @@ namespace EPlast.Tests.Controllers
         public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
         {
             //Arrange
-            _userPrecautionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>()))
+            _userPrecautionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
 
             //Act
@@ -477,5 +477,59 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        [TestCase("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу")]
+        public async Task CheckUserPrecautionsType_ReturnsOkObjectResult_Test(string userId, string type)
+        {
+            //Arrange
+            _userPrecautionService
+                .Setup(x => x.GetUserPrecautionsOfUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(new List<UserPrecautionDTO>().AsEnumerable());
+
+            //Act
+            var result = await _PrecautionController.CheckUserPrecautionsType(userId, type);
+            var resultValue = (result as OkObjectResult).Value;
+
+            //Assert
+            Assert.IsInstanceOf<bool>(resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUserActivePrecautionEndDate_Test()
+        {
+            //Arrange
+            _userPrecautionService
+                .Setup(x => x.GetUserActivePrecaution(It.IsAny<string>(), It.IsAny<string>()))
+                .ReturnsAsync(new UserPrecautionDTO());
+
+            //Act
+            var result = await _PrecautionController.GetUserActivePrecautionEndDate(It.IsAny<string>(), It.IsAny<string>());
+            var resultValue = (result as OkObjectResult).Value;
+
+            //Assert
+            Assert.IsInstanceOf<string>(resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        private List<UserPrecautionsTableObject> GetUsersPrecautionByPage()
+        {
+            return new List<UserPrecautionsTableObject>()
+            {
+                new UserPrecautionsTableObject()
+                {
+                    Number = 34,
+                }
+            };
+        }
+
+        private int GetFakeUserPrecautionNumber()
+        {
+            return 100;
+        }
+
+        private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
     }
 }

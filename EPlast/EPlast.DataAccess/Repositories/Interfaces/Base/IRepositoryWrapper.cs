@@ -43,6 +43,7 @@ namespace EPlast.DataAccess.Repositories
         IDistinctionRepository Distinction { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
         IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement { get; }
+        IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
         IEventAdminRepository EventAdmin { get; }
@@ -72,8 +73,11 @@ namespace EPlast.DataAccess.Repositories
         ISectorAdministrationRepository GoverningBodySectorAdministration { get; }
         ISectorDocumentsRepository GoverningBodySectorDocuments { get; }
         ISectorDocumentTypeRepository GoverningBodySectorDocumentType { get; }
+        ISubsectionRepository Subsection { get; }
+        ISubsectionPicturesRepository SubsectionPictures { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
+        IPicturesRepository Pictures { get;  }
         IPlastDegreeRepository PlastDegrees { get; }
         IPrecautionRepository Precaution { get; }
         IRegionRepository Region { get; }
@@ -93,6 +97,7 @@ namespace EPlast.DataAccess.Repositories
         IWorkRepository Work { get; }
         ISectionRepository AboutBaseSection { get; }
         ISubsectionRepository AboutBaseSubsection { get; }
+        ITermsRepository TermsOfUse { get; }
         IUserRenewalRepository UserRenewal { get; }
 
         void Save();

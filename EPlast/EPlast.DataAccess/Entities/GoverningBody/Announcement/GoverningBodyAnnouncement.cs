@@ -11,5 +11,6 @@ namespace EPlast.DataAccess.Entities.GoverningBody.Announcement
         public DateTime Date { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
+        public ICollection<GoverningBodyAnnouncementImage> Images { get; set; }
     }
 }

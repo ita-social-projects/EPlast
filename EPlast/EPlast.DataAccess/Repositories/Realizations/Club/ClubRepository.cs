@@ -1,5 +1,10 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -9,6 +14,5 @@ namespace EPlast.DataAccess.Repositories
             : base(dbContext)
         {
         }
-
     }
 }

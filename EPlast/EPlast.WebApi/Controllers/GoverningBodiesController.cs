@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -298,29 +300,31 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
-        [HttpPost("AddAnnouncement/{text}")]
+        [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAnnouncement(string text)
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(announcement);
 
-                return Ok();
+                return Ok(id);
             }
             return BadRequest(ModelState);
         }
 
         [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
-                return Ok();
+                var id = await _governingBodyAnnouncementService.EditAnnouncementAsync(announcement);
+                if(id == null)
+                    return BadRequest();
+                return Ok(id);
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [HttpDelete("DeleteAnnouncement/{id:int}")]
@@ -344,11 +348,19 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyAnnouncementUserDTO);
         }
 
-        [HttpGet("GetAllAnnouncements")]
+        /// <summary>
+        /// Get specified by page number and page size list of announcements
+        /// </summary>
+        /// <param name="pageNumber">Number of the page</param>
+        /// <param name="pageSize">Size of one page</param>
+        /// <returns>Specified by page number and page size list of announcements</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Could not get requested announcements</response>
+        [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetAllAnnouncement()
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize)
         {
-            var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+            var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
 
             return Ok(announcements);
         }
@@ -361,5 +373,36 @@ namespace EPlast.WebApi.Controllers
             return Ok(users);
         }
 
+        /// <summary>
+        /// Get UserAdministrations for table
+        /// </summary>
+        /// <param name="userId">The Id of target user</param>
+        /// <param name="isActive">Active status option</param>
+        /// <param name="pageNumber">Page number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns>UserAdministrations object</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Bad request</response>
+        [HttpGet("GetUserAdminsForTable")]
+        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive, 
+            [Required] int pageNumber, [Required] int pageSize)
+        {
+            try
+            {
+                var (item1, item2) =
+                    await _governingBodiesService.GetAdministrationForTableAsync(userId, isActive, pageNumber, pageSize);
+
+                return Ok(new
+                {
+                    admins = _mapper
+                        .Map<IEnumerable<GoverningBodyAdministrationDTO>, IEnumerable<GoverningBodyTableViewModel>>(item1),
+                    rowCount = item2
+                });
+            }
+            catch
+            {
+                return BadRequest("Error getting UserAdministration");
+            }
+        }
     }
 }

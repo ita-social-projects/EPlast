@@ -294,6 +294,23 @@ namespace EPlast.Tests.Services.City
             Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
         }
 
+        [TestCase]
+        public async Task GetAllCitiesByPageAndIsArchiveAsync_NullInput_ReturnsIEnumerableCityObjectDTO()
+        {
+            // Arrange
+            _repoWrapper
+                .Setup(x => x.City.GetCitiesObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(CreateTuple);
+            _cityBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).Throws(new ArgumentException("Can not get image"));
+
+            // Act
+            var result = await _cityService.GetAllCitiesByPageAndIsArchiveAsync(1, 2, null, false);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDTO>, int>>(result);
+        }
+
         [Test]
         public async Task GetAllCitiesAsync_ReturnsAllCities()
         {
@@ -1117,6 +1134,20 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
 
+        [Test]
+        public async Task GetCityIdByUserIdAsync_ReturnNotNull()
+        {
+            // Arrange
+            _repoWrapper.Setup(x => x.CityMembers.GetFirstAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null))
+                .ReturnsAsync(new CityMembers());
+
+            // Act
+            var result = await _cityService.GetCityIdByUserIdAsync(It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
         private int Id => 1;
         private string stringId => "1";
         private int count => 2;
@@ -1132,6 +1163,14 @@ namespace EPlast.Tests.Services.City
                 new CityDTO{Name = "Миколаїв"}
             }.AsEnumerable();
         }
+
+        private Tuple<IEnumerable<CityObject>, int> CreateTuple => new Tuple<IEnumerable<CityObject>, int>(CreateCityObjects, 100);
+
+        private IEnumerable<CityObject> CreateCityObjects => new List<CityObject>()
+        {
+            new CityObject(){ Logo = "logo.png"},
+            new CityObject()
+        };
 
         private IEnumerable<DataAccessCity.City> GetTestCity()
         {
