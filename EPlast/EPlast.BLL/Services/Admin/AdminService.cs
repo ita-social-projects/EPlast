@@ -341,7 +341,7 @@ namespace EPlast.BLL.Services
         }
         public async Task<bool> IsCityMember(string userId)
         {
-            return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved == true)).Count() > 0;
+            return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved)).Any();
         }
     }
 }
