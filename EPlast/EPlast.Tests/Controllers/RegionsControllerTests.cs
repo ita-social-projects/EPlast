@@ -3,10 +3,14 @@ using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,13 +19,8 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.BLL.Handlers.RegionHandlers;
-using EPlast.Resources;
-using EPlast.BLL.Interfaces.Cache;
-using MediatR;
-using EPlast.BLL.Queries.Region;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -971,7 +970,6 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = "Lviv";
-            bool isArchive = false;
             _medaitor
                 .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
@@ -997,7 +995,6 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = null;
-            bool isArchive = false;
             _medaitor
                 .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
@@ -1024,7 +1021,6 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = "Lviv";
-            bool isArchive = true;
             _medaitor
                 .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
@@ -1047,7 +1043,6 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = null;
-            bool isArchive = true;
             _medaitor
                 .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
