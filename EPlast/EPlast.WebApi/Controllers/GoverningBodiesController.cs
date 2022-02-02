@@ -300,13 +300,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
-        [HttpPost("AddAnnouncement/{text}")]
+        [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAnnouncement(string text)
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
+                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(announcement);
 
                 return Ok(id);
             }
@@ -315,14 +315,16 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
-                return Ok();
+                var id = await _governingBodyAnnouncementService.EditAnnouncementAsync(announcement);
+                if(id == null)
+                    return BadRequest();
+                return Ok(id);
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [HttpDelete("DeleteAnnouncement/{id:int}")]
@@ -346,11 +348,19 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyAnnouncementUserDTO);
         }
 
-        [HttpGet("GetAllAnnouncements")]
+        /// <summary>
+        /// Get specified by page number and page size list of announcements
+        /// </summary>
+        /// <param name="pageNumber">Number of the page</param>
+        /// <param name="pageSize">Size of one page</param>
+        /// <returns>Specified by page number and page size list of announcements</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Could not get requested announcements</response>
+        [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetAllAnnouncement()
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize)
         {
-            var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+            var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
 
             return Ok(announcements);
         }

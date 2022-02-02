@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.BLL;
+﻿using EPlast.BLL;
+using EPlast.BLL.DTO.Distinction;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -106,16 +108,15 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get all Users Distinctions
         /// </summary>
-        /// <param name="searchedData">Searched Data</param>
-        /// <param name="page">Current page on pagination</param>
-        /// <param name="pageSize">Number of records per page</param>
         /// <returns>List of UserDistinctionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersDistinctionsForTable")]
-        public IActionResult GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetUsersDistinctionsForTable([FromQuery] DistictionTableSettings tableSettings)
         {
-            var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
-            return Ok(distinctions);
+            var distinctions = await _distinctionService.GetUsersDistinctionsForTableAsync(tableSettings);
+            var allInfoDistinctions = distinctions.Item1.ToList();
+            allInfoDistinctions.ForEach(u => u.Total = distinctions.Item2);
+            return Ok(allInfoDistinctions);            
         }
 
         /// <summary>

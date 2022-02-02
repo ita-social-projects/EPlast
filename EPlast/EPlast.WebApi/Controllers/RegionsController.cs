@@ -605,7 +605,18 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetReportById/{id}/{year}")]
         public async Task<IActionResult> GetReportByIdAsync(int id, int year)
         {
-            return Ok(await _RegionAnnualReportService.GetReportByIdAsync(id, year));
+            try
+            {
+                return Ok(await _RegionAnnualReportService.GetReportByIdAsync(await _userManager.GetUserAsync(User), id, year));
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
         }
 
         [HttpGet("GetUserAdministrations/{userId}")]

@@ -48,9 +48,6 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetGoverningBodiesListAsync())
                 .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
             _decisionService
-                .Setup(x => x.GetDecisionTargetListAsync())
-                .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
-            _decisionService
                 .Setup(x => x.GetDecisionStatusTypes())
                 .Returns(GetFakeSelectListItems());
 
@@ -58,7 +55,6 @@ namespace EPlast.Tests.Controllers
             var result = await _decisionsController.GetMetaData();
             var resultValue = (result.Result as OkObjectResult).Value;
             var decisionStatusTypes = (resultValue as DecisionCreateViewModel).DecisionStatusTypeListItems;
-            var decisionTargets = (resultValue as DecisionCreateViewModel).DecisionTargets;
 
             //Assert
             _decisionService.Verify();
@@ -66,7 +62,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<DecisionCreateViewModel>(resultValue);
             Assert.AreEqual(2, decisionStatusTypes.Count());
-            Assert.AreEqual(2, decisionTargets.Count());
             Assert.IsInstanceOf<ActionResult<DecisionCreateViewModel>>(result);
         }
 
@@ -301,7 +296,22 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+        [Test]
+        public async Task GetTargetList_ReturnsOkObjectResult()
+        {
+            //Arrange       
+            _decisionService
+                .Setup(x => x.GetDecisionTargetSearchListAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
 
+            //Act
+            var result = await _decisionsController.GetDecisionTargetSearchList(It.IsAny<string>());
+
+            //Assert
+            _decisionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
         public DecisionViewModel GetFakeDecisionViewModel()
             => new DecisionViewModel
             {
