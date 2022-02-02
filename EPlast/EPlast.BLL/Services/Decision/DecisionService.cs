@@ -70,6 +70,7 @@ namespace EPlast.BLL.Services
             Decesion decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == decisionDto.ID);
             decision.Name = decisionDto.Name;
             decision.Description = decisionDto.Description;
+            decision.DecesionStatusType = (DecesionStatusType)decisionDto.DecisionStatusType;
             _repoWrapper.Decesion.Update(decision);
             await _repoWrapper.SaveAsync();
         }
@@ -120,6 +121,12 @@ namespace EPlast.BLL.Services
         public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync()
         {
             return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()));
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetSearchListAsync(string search)
+        {
+            return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()).Where(d=>d.TargetName.Contains(search)));
         }
 
         /// <inheritdoc />
