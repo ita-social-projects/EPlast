@@ -88,5 +88,9 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
 
         Task<FilterTableParametersByRole> TableFilterParameters_byRole(IList<string> roles, string userId);
+        /// <summary>
+        ///Check if user is member of city
+        /// </summary>
+        Task<bool> IsCityMember(string userId);
     }
 }

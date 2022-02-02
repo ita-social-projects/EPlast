@@ -228,12 +228,17 @@ namespace EPlast.BLL.Services
         {
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
-            
-            FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
-            string strAndClubs = filterTableParametersByRole.AndClubs;
-            string strRegions = filterTableParametersByRole.Regions;
-            string strCities = filterTableParametersByRole.Cities;
-            string strClubs = filterTableParametersByRole.Clubs;
+            string strAndClubs = null;
+            string strRegions = null;
+            string strCities = null;
+            string strClubs = null;
+            if (!roles.Contains(Roles.Admin)){
+                FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
+                strAndClubs = filterTableParametersByRole.AndClubs;
+                strRegions = filterTableParametersByRole.Regions;
+                strCities = filterTableParametersByRole.Cities;
+                strClubs = filterTableParametersByRole.Clubs;
+            }
            
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
@@ -333,6 +338,10 @@ namespace EPlast.BLL.Services
             }
 
             return filterTableParametersByRole;
+        }
+        public async Task<bool> IsCityMember(string userId)
+        {
+            return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved == true)).Count() > 0;
         }
     }
 }

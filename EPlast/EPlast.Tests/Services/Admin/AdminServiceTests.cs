@@ -970,6 +970,44 @@ namespace EPlast.Tests.Services
             Assert.IsNotNull(result.AndClubs);
             Assert.IsNotNull(result.Regions);
         }
+        [Test]
+        public void IsCityMember_ReturnsCorrect()
+        {
+            // Arrange
+            CityMembers cityMember = new CityMembers() { UserId = "qwerty"};
+            List<CityMembers> cityMembers = new List<CityMembers>(){ cityMember };
+            _repoWrapper.Setup(x => x.CityMembers.GetAllAsync(
+                It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                     IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
+                ).ReturnsAsync(cityMembers);
+
+            // Act
+            var result = service.IsCityMember("qwerty").Result;
+
+            // Assert
+            _formerMemberService.Verify();
+            Assert.True(result);
+        }
+        [Test]
+        public void IsCityMember_ReturnsFalse()
+        {
+            // Arrange
+            
+            List<CityMembers> cityMembers = new List<CityMembers>();
+            _repoWrapper.Setup(x => x.CityMembers.GetAllAsync(
+                It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                     IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
+                ).ReturnsAsync(cityMembers);
+
+            // Act
+            var result = service.IsCityMember("qwerty").Result;
+
+            // Assert
+            _formerMemberService.Verify();
+            Assert.False(result);
+        }
         private IEnumerable<User> GetTestUsers()
         {
             return new List<User>

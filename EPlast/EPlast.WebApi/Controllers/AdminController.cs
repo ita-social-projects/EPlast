@@ -330,5 +330,17 @@ namespace EPlast.WebApi.Controllers
 
             return Ok(model);
         }
+        /// <summary>
+        /// Change user role to expired
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        [HttpPut("IsCityMember/{userId}")]
+        public async Task<bool> IsCityMember(string userId)
+        {        
+          bool res = await _adminService.IsCityMember(userId); 
+          return res;
+        }
     }
 }
