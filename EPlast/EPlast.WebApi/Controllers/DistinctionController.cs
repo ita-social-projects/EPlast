@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using EPlast.BLL.Queries.Distinction;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -22,16 +24,18 @@ namespace EPlast.WebApi.Controllers
         private readonly IDistinctionService _distinctionService;
         private readonly IUserDistinctionService _userDistinctionService;
         private readonly UserManager<User> _userManager;
-
+        private readonly IMediator _mediator;
 
         public DistinctionController(
             IDistinctionService distinctionService, 
             IUserDistinctionService userDistinctionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
             _distinctionService = distinctionService;
             _userDistinctionService = userDistinctionService;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -113,9 +117,11 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("UsersDistinctionsForTable")]
         public async Task<IActionResult> GetUsersDistinctionsForTable([FromQuery] DistictionTableSettings tableSettings)
         {
-            var distinctions = await _distinctionService.GetUsersDistinctionsForTableAsync(tableSettings);
-            var allInfoDistinctions = distinctions.Item1.ToList();
-            allInfoDistinctions.ForEach(u => u.Total = distinctions.Item2);
+            var query = new GetUsersDistinctionsForTableQuery(tableSettings);
+            //var distinctions = await _distinctionService.GetUsersDistinctionsForTableAsync(tableSettings);
+            var distinctionsTuple = await _mediator.Send(query);
+            var allInfoDistinctions = distinctionsTuple.Item1.ToList();
+            allInfoDistinctions.ForEach(u => u.Total = distinctionsTuple.Item2);
             return Ok(allInfoDistinctions);            
         }
 

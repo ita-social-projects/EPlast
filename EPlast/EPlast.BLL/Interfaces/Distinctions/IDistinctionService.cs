@@ -19,6 +19,6 @@ namespace EPlast.BLL
 
         Task DeleteDistinctionAsync(int id, User user);
 
-        Task<Tuple<IEnumerable<UserDistinctionsTableObject>, int>> GetUsersDistinctionsForTableAsync(DistictionTableSettings tableSettings);
+        //Task<Tuple<IEnumerable<UserDistinctionsTableObject>, int>> GetUsersDistinctionsForTableAsync(DistictionTableSettings tableSettings);
     }
 }
