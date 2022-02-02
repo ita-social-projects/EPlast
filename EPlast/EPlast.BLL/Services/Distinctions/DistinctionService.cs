@@ -1,16 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BLL.DTO.Distinction;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Distinctions
@@ -28,24 +21,24 @@ namespace EPlast.BLL.Services.Distinctions
             _userManager = userManager;
         }
 
-        public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, User user)
+        /*public async Task AddDistinctionAsync(DistinctionDTO distinctionDTO, User user)
         {
             await CheckIfAdminAsync(user);
             var distinction = _mapper.Map<DistinctionDTO, Distinction>(distinctionDTO);
             await _repoWrapper.Distinction.CreateAsync(distinction);
             await _repoWrapper.SaveAsync();
-        }
+        }*/
 
-        public async Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, User user)
+        /*public async Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, User user)
         {
             await CheckIfAdminAsync(user);
             var distinction = await _repoWrapper.Distinction.GetFirstAsync(x => x.Id == distinctionDTO.Id);
             distinction.Name = distinctionDTO.Name;
             _repoWrapper.Distinction.Update(distinction);
             await _repoWrapper.SaveAsync();
-        }
+        }*/
 
-        public async Task DeleteDistinctionAsync(int id, User user)
+        /*public async Task DeleteDistinctionAsync(int id, User user)
         {
             await CheckIfAdminAsync(user);
             var distinction = (await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
@@ -53,7 +46,7 @@ namespace EPlast.BLL.Services.Distinctions
                 throw new ArgumentNullException($"Distinction with {id} not found");
             _repoWrapper.Distinction.Delete(distinction);
             await _repoWrapper.SaveAsync();
-        }
+        }*/
 
         /*public async Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync()
         {
@@ -66,11 +59,11 @@ namespace EPlast.BLL.Services.Distinctions
             return distinction;
         }*/
 
-        public async Task CheckIfAdminAsync(User user)
+        /*public async Task CheckIfAdminAsync(User user)
         {
             if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
-        }
+        }*/
 
         /*public async Task<Tuple<IEnumerable<UserDistinctionsTableObject>, int>> GetUsersDistinctionsForTableAsync(DistictionTableSettings tableSettings)
         {

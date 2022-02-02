@@ -78,7 +78,7 @@ namespace EPlast.WebApi.Controllers
         {
             //DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
             var query = new GetDistinctionQuery(id);
-            var distinction = _mediator.Send(query);
+            var distinction = await _mediator.Send(query);
             if (distinction == null)
                 return NotFound();
             return Ok(distinction);
@@ -93,7 +93,7 @@ namespace EPlast.WebApi.Controllers
         {
             //IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
             var query = new GetAllDistinctionQuery();
-            var distinctions = _mediator.Send(query);
+            var distinctions = await _mediator.Send(query);
             return Ok(distinctions);
         }
 
@@ -142,7 +142,9 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _distinctionService.DeleteDistinctionAsync(id, await _userManager.GetUserAsync(User));
+                //await _distinctionService.DeleteDistinctionAsync(id, await _userManager.GetUserAsync(User));
+                var query = new DeleteDistinctionQuery(id, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);
                 return NoContent();
             }
             catch (NullReferenceException) 
@@ -210,7 +212,9 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _distinctionService.AddDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                //await _distinctionService.AddDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                var query = new AddDistinctionQuery(distinctionDTO, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -257,7 +261,9 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _distinctionService.ChangeDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                    //await _distinctionService.ChangeDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangeDistinctionQuery(distinctionDTO, await _userManager.GetUserAsync(User));
+                    await _mediator.Send(query);
                     return NoContent();
                 }
                 catch (NullReferenceException)

@@ -28,7 +28,7 @@ namespace EPlast.Tests.Controllers
 
         private DistinctionController _distinctionController;
 
-        [SetUp]
+        /*[SetUp]
         public void SetUp()
         {
             _distinctionService = new Mock<IDistinctionService>();
@@ -41,7 +41,7 @@ namespace EPlast.Tests.Controllers
                 _userDistinctionService.Object,
                 _userManager.Object
                 );
-        }
+        }*/
 
         [Test]
         public async Task GetUserDistinction_DistinctionById_ReturnsOkObjectResult()
@@ -96,7 +96,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<List<UserDistinctionDTO>>(resultValue);
         }
-
+        /*
         [Test]
         public async Task GetDistinction_DistinctionById_ReturnsOkObjectResult()
         {
@@ -114,7 +114,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<DistinctionDTO>(resultValue);
         }
-
+        
         [Test]
         public async Task GetDistinction_DistinctionById_ReturnsNotFoundResult()
         {
@@ -150,7 +150,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<DistinctionDTO>>(resultValue);
         }
 
-       /* [Test]
+        [Test]
         public void GetUsersDistinctionsForTable_ReturnsOkObjectResult()
         {
             DistictionTableSettings TestDTS = new DistictionTableSettings();
@@ -205,7 +205,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
-        [Test]
+       /* [Test]
         public async Task DeleteDistinction_ReturnsNoContentResult()
         {
             //Arrange
@@ -250,7 +250,7 @@ namespace EPlast.Tests.Controllers
             _distinctionService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
-        }
+        }*/
 
         [Test]
         public async Task DeleteUserDistinction_ReturnsNoContentResult()
