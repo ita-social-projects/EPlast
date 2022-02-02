@@ -680,6 +680,27 @@ namespace EPlast.Tests.Services
         {
             // Arrange
             List<string> role = new List<string>() { Roles.PlastMember };
+            string[] roles = new string[] { Roles.CityHead };
+            CityMembers cityMembers = new CityMembers() { CityId = It.IsAny<int>() };
+            ICollection<CityMembers> cityAdministrations = new List<CityMembers>() { cityMembers };
+            DataAccess.Entities.City city = new DataAccess.Entities.City { Name = "qwerty" };
+
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                    IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
+                )
+                .ReturnsAsync(cityMembers);
+            _repoWrapper
+              .Setup(x => x.City.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                  IIncludableQueryable<DataAccess.Entities.City, object>>>())
+              )
+              .ReturnsAsync(city);
             _repoWrapper
                 .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
                It.IsAny<Func<IQueryable<User>,
@@ -704,7 +725,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
                     It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
             _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(role);
             _mapper
                 .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
                 .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
