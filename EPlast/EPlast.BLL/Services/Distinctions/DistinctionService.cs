@@ -55,16 +55,16 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync()
+        /*public async Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync()
         {
             return _mapper.Map<IEnumerable<Distinction>, IEnumerable<DistinctionDTO>>(await _repoWrapper.Distinction.GetAllAsync());
-        }
+        }*/
         
-        public async Task<DistinctionDTO> GetDistinctionAsync(int id)
+        /*public async Task<DistinctionDTO> GetDistinctionAsync(int id)
         {
             var distinction = _mapper.Map<DistinctionDTO>(await _repoWrapper.Distinction.GetFirstAsync(d => d.Id == id));
             return distinction;
-        }
+        }*/
 
         public async Task CheckIfAdminAsync(User user)
         {

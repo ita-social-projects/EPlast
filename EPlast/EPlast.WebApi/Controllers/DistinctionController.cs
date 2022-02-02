@@ -76,7 +76,9 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
-            DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
+            //DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
+            var query = new GetDistinctionQuery(id);
+            var distinction = _mediator.Send(query);
             if (distinction == null)
                 return NotFound();
             return Ok(distinction);
@@ -89,7 +91,9 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Distinctions")] 
         public async Task<IActionResult> GetDistinction()
         {
-            IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
+            //IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
+            var query = new GetAllDistinctionQuery();
+            var distinctions = _mediator.Send(query);
             return Ok(distinctions);
         }
 
@@ -103,7 +107,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("User/Distinctions/{id}")]
         public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
         {
-            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfUserAsync(id);
+            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfUserAsync(id);            
             if (userDistinctions == null)
                 return NotFound();
             return Ok(userDistinctions);

@@ -9,7 +9,7 @@ namespace EPlast.BLL
 {
     public interface IDistinctionService
     {
-        Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync();
+        //Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync();
 
         Task<DistinctionDTO> GetDistinctionAsync(int id);
 
