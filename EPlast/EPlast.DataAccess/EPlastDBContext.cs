@@ -60,6 +60,7 @@ namespace EPlast.DataAccess
         public DbSet<DecisionTableObject> DecisionTableObject { get; set; }
         public DbSet<RegionMembersInfoTableObject> RegionMembersInfoTableObjects { get; set; }
         public DbSet<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
+        public DbSet<GoverningBodyAnnouncementImage> GoverningBodyAnnouncementImages { get; set; }
         public DbSet<Terms> Terms { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
