@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
+using EPlast.BLL.Queries.Distinction;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -19,19 +21,18 @@ namespace EPlast.WebApi.Controllers
 
     public class DistinctionController : ControllerBase
     {
-        private readonly IDistinctionService _distinctionService;
         private readonly IUserDistinctionService _userDistinctionService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
-
-        public DistinctionController(
-            IDistinctionService distinctionService, 
+        public DistinctionController( 
             IUserDistinctionService userDistinctionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
-            _distinctionService = distinctionService;
             _userDistinctionService = userDistinctionService;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -72,7 +73,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
-            DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
+            var query = new GetDistinctionQuery(id);
+            var distinction = await _mediator.Send(query);
             if (distinction == null)
                 return NotFound();
             return Ok(distinction);
@@ -85,7 +87,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("Distinctions")] 
         public async Task<IActionResult> GetDistinction()
         {
-            IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
+            var query = new GetAllDistinctionQuery();
+            var distinctions = await _mediator.Send(query);
             return Ok(distinctions);
         }
 
@@ -99,7 +102,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("User/Distinctions/{id}")]
         public async Task<IActionResult> GetDistinctionOfGivenUser(string id)
         {
-            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfUserAsync(id);
+            var userDistinctions = await _userDistinctionService.GetUserDistinctionsOfUserAsync(id);            
             if (userDistinctions == null)
                 return NotFound();
             return Ok(userDistinctions);
@@ -113,9 +116,10 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("UsersDistinctionsForTable")]
         public async Task<IActionResult> GetUsersDistinctionsForTable([FromQuery] DistictionTableSettings tableSettings)
         {
-            var distinctions = await _distinctionService.GetUsersDistinctionsForTableAsync(tableSettings);
-            var allInfoDistinctions = distinctions.Item1.ToList();
-            allInfoDistinctions.ForEach(u => u.Total = distinctions.Item2);
+            var query = new GetUsersDistinctionsForTableQuery(tableSettings);
+            var distinctionsTuple = await _mediator.Send(query);
+            var allInfoDistinctions = distinctionsTuple.Item1.ToList();
+            allInfoDistinctions.ForEach(u => u.Total = distinctionsTuple.Item2);
             return Ok(allInfoDistinctions);            
         }
 
@@ -132,7 +136,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _distinctionService.DeleteDistinctionAsync(id, await _userManager.GetUserAsync(User));
+                var query = new DeleteDistinctionQuery(id, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);
                 return NoContent();
             }
             catch (NullReferenceException) 
@@ -200,7 +205,8 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _distinctionService.AddDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                var query = new AddDistinctionQuery(distinctionDTO, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -247,7 +253,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _distinctionService.ChangeDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangeDistinctionQuery(distinctionDTO, await _userManager.GetUserAsync(User));
+                    await _mediator.Send(query);
                     return NoContent();
                 }
                 catch (NullReferenceException)
