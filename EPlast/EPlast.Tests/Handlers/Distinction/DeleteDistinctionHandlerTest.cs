@@ -23,7 +23,6 @@ namespace EPlast.Tests.Handlers.Distinction
         private DeleteDistinctionQuery _query;
 
         private User _user;
-        private int _id;
 
         [SetUp]
         public void SetUp()
@@ -32,7 +31,7 @@ namespace EPlast.Tests.Handlers.Distinction
             _mockMediator = new Mock<IMediator>();
             _handler = new DeleteDistinctionHandler(_mockRepoWrapper.Object, _mockMediator.Object);            
             _user = new User();
-            _query = new DeleteDistinctionQuery(_id, _user);
+            _query = new DeleteDistinctionQuery(It.IsAny<int>(), _user);
         }
 
         [Test]
