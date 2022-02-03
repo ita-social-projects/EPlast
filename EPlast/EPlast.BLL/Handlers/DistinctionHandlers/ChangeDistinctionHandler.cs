@@ -25,6 +25,7 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
             var distinction = await _repositoryWrapper.Distinction.GetFirstAsync(x => x.Id == request.DistinctionDTO.Id);
             distinction.Name = request.DistinctionDTO.Name;
             _repositoryWrapper.Distinction.Update(distinction);
+            await _repositoryWrapper.SaveAsync();
 
             return Unit.Value;
         }
