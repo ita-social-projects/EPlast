@@ -3,10 +3,14 @@ using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +19,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
-using EPlast.Resources;
-using EPlast.BLL.Interfaces.Cache;
+
 namespace EPlast.Tests.Controllers
 {
     internal class RegionsControllerTests
@@ -30,6 +34,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IRegionService> _regionService;
         private Mock<UserManager<User>> _userManager;
         private Mock<ICacheService> _cache;
+        private Mock<IMediator> _medaitor;
 
         [Test]
         public async Task AddAdministrator_CorrectData_ReturnsOkObjectResult()
@@ -66,6 +71,19 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionDocumentDTO>(actual);
+        }
+
+        [Test]
+        public async Task AddDocument_NewDocument_ReturnsBadRequest()
+        {
+            // Arrange
+            _logger.Setup(x => x.LogInformation(It.IsAny<string>())).Throws(new ArgumentException());
+
+            // Act
+            var actual = await _regionController.AddDocument(new RegionDocumentDTO());
+
+            // Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(actual);
         }
 
         [Test]
@@ -984,9 +1002,8 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = "Lviv";
-            bool isArchive = false;
-            _regionService
-                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+            _medaitor
+                .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
             var expected = StatusCodes.Status200OK;
             var mockHttpContext = new Mock<HttpContext>();
@@ -998,7 +1015,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-            _regionService.Verify((u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive)));
+            _medaitor.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }
@@ -1010,9 +1027,8 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = null;
-            bool isArchive = false;
-            _regionService
-                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+            _medaitor
+                .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
             var expected = StatusCodes.Status200OK;
             var mockHttpContext = new Mock<HttpContext>();
@@ -1025,7 +1041,7 @@ namespace EPlast.Tests.Controllers
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-            _regionService.Verify((u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive)));
+            _medaitor.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }
@@ -1037,17 +1053,17 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = "Lviv";
-            bool isArchive = true;
-            _regionService
-                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+            _medaitor
+                .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
             var expected = StatusCodes.Status200OK;
+
             // Act
             var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-            _regionService.Verify();
+            _medaitor.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }
@@ -1059,17 +1075,17 @@ namespace EPlast.Tests.Controllers
             int page = 1;
             int pageSize = 2;
             string regionName = null;
-            bool isArchive = true;
-            _regionService
-                .Setup(u => u.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive))
+            _medaitor
+                .Setup(x => x.Send(It.IsAny<GetAllRegionsByPageAndIsArchiveQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
             var expected = StatusCodes.Status200OK;
+
             // Act
             var result = await _regionController.GetNotActiveRegions(page, pageSize, regionName);
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-            _regionService.Verify();
+            _medaitor.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }
@@ -1084,12 +1100,14 @@ namespace EPlast.Tests.Controllers
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _cache = new Mock<ICacheService>();
+            _medaitor = new Mock<IMediator>();
             _regionController = new RegionsController(_cache.Object,
                 _logger.Object,
                 _regionService.Object, 
                 _regionAdministrationService.Object,
                 _regionAnnualReportService.Object, 
-                _userManager.Object);
+                _userManager.Object,
+                _medaitor.Object);
         }
 
         [Test]

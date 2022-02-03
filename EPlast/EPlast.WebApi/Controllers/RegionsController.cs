@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using EPlast.BLL.Queries.Region;
+using MediatR;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -24,6 +26,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
         private readonly IRegionService _regionService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
         private const string ActiveRegionsCacheKey = "ActiveRegions";
         private const string ArchivedRegionsCacheKey = "ArchivedRegions";
@@ -34,7 +37,8 @@ namespace EPlast.WebApi.Controllers
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService RegionAnnualReportService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
             _cache = cache;
             _logger = logger;
@@ -42,6 +46,7 @@ namespace EPlast.WebApi.Controllers
             _regionAdministrationService = regionAdministrationService;
             _RegionAnnualReportService = RegionAnnualReportService;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         [HttpPost("AddAdministrator")]
@@ -477,34 +482,35 @@ namespace EPlast.WebApi.Controllers
             return Ok(HeadDeputy);
         }
 
+
         /// <summary>
         /// Get all active regions using redis cache
         /// </summary>
         /// <returns>List of active regions</returns>
         [HttpGet("Profiles/Active/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName)
+        public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName = null)
         {
             string regionRecordKey = $"{ActiveRegionsCacheKey}_{page}_{pageSize}_{regionName}";
             var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
-            
+
             if (regionsTuple is null)
             {
-                bool isArchive = false;
-                regionsTuple = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive);
-               if (!String.IsNullOrEmpty(regionName))
-               {
+                bool isArchive = true;
+                var query = new GetAllRegionsByPageAndIsArchiveQuery(page, pageSize, regionName, isArchive);
+                regionsTuple = await  _mediator.Send(query);
+                if (!String.IsNullOrEmpty(regionName))
+                {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
-               }
-               else
+                }
+                else
                 {
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
                 }
             }
-            return StatusCode(StatusCodes.Status200OK, new {page = page, pageSize = pageSize, regions = regionsTuple.Item1, total = regionsTuple.Item2, canCreate = User.IsInRole(Roles.Admin)});
+            return StatusCode(StatusCodes.Status200OK, new { page = page, pageSize = pageSize, regions = regionsTuple.Item1, total = regionsTuple.Item2, canCreate = User.IsInRole(Roles.Admin) });
         }
-
 
         /// <summary>
         /// Get all not active regions using redis cache
@@ -519,8 +525,9 @@ namespace EPlast.WebApi.Controllers
 
             if (regionsTuple is null)
             {
-                bool isArchive = true;
-                regionsTuple = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive);
+                bool isArchive = false;
+                var query = new GetAllRegionsByPageAndIsArchiveQuery(page, pageSize, regionName, isArchive);
+                regionsTuple = await _mediator.Send(query);
                 if (!String.IsNullOrEmpty(regionName))
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
@@ -530,7 +537,7 @@ namespace EPlast.WebApi.Controllers
                 {
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
                 }
-            }              
+            }
             return StatusCode(StatusCodes.Status200OK, new { regions = regionsTuple.Item1, total = regionsTuple.Item2});
         }
 
