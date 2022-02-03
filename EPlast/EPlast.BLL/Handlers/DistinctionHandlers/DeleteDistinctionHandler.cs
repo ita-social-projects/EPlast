@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BLL.Queries.Distinction;
+﻿using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using System;
@@ -11,20 +10,18 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
     public class DeleteDistinctionHandler : IRequestHandler<DeleteDistinctionQuery>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public DeleteDistinctionHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IMediator mediator)
+        public DeleteDistinctionHandler(IRepositoryWrapper repositoryWrapper, IMediator mediator)
         {
             _repositoryWrapper = repositoryWrapper;
-            _mapper = mapper;
             _mediator = mediator;
         }
 
         public async Task<Unit> Handle(DeleteDistinctionQuery request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
-            await _mediator.Send(query);
+            await _mediator.Send(query, cancellationToken);
 
             var distinction = (await _repositoryWrapper.Distinction.GetFirstAsync(d => d.Id == request.Id));
             if (distinction == null)

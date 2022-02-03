@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.Queries.Distinction;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using System.Threading;
@@ -23,11 +24,10 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
         public async Task<Unit> Handle(AddDistinctionQuery request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
-            await _mediator.Send(query);
+            await _mediator.Send(query, cancellationToken);
 
-            var distinction = await _repositoryWrapper.Distinction.GetFirstAsync(x => x.Id == request.DistinctionDTO.Id);
-            distinction.Name = request.DistinctionDTO.Name;
-            _repositoryWrapper.Distinction.Update(distinction);
+            var distinction = _mapper.Map<DistinctionDTO, Distinction>(request.DistinctionDTO);
+            await _repositoryWrapper.Distinction.CreateAsync(distinction);
             await _repositoryWrapper.SaveAsync();
 
             return Unit.Value;

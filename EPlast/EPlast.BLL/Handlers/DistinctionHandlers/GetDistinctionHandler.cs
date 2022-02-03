@@ -2,9 +2,6 @@
 using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +19,7 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
         }
         public async Task<DistinctionDTO> Handle(GetDistinctionQuery request, CancellationToken cancellationToken)
         {
-            var distinction = _mapper.Map<DistinctionDTO>(await _repositoryWrapper.Distinction.GetFirstAsync(d => d.Id == request.Id));
-            return distinction;
+            return _mapper.Map<DistinctionDTO>(await _repositoryWrapper.Distinction.GetFirstAsync(d => d.Id == request.Id));             
         }
     }
 }

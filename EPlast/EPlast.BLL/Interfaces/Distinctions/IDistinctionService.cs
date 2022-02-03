@@ -9,15 +9,15 @@ namespace EPlast.BLL
 {
     public interface IDistinctionService
     {
-        //Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync();
+        /*Task<IEnumerable<DistinctionDTO>> GetAllDistinctionAsync();
 
-        //Task<DistinctionDTO> GetDistinctionAsync(int id);
+        Task<DistinctionDTO> GetDistinctionAsync(int id);
 
-        //Task AddDistinctionAsync(DistinctionDTO distinctionDTO, User user);
+        Task AddDistinctionAsync(DistinctionDTO distinctionDTO, User user);
 
-        //Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, User user);
+        Task ChangeDistinctionAsync(DistinctionDTO distinctionDTO, User user);
 
-        //Task DeleteDistinctionAsync(int id, User user);
+        Task DeleteDistinctionAsync(int id, User user);*/
 
         //Task<Tuple<IEnumerable<UserDistinctionsTableObject>, int>> GetUsersDistinctionsForTableAsync(DistictionTableSettings tableSettings);
     }
