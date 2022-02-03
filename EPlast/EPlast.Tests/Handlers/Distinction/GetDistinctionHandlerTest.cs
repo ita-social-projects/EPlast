@@ -20,9 +20,6 @@ namespace EPlast.Tests.Handlers.Distinction
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<IMapper> _mockMapper;
         private GetDistinctionHandler _handler;
-        private GetDistinctionQuery _query;
-
-        private int _id;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +27,6 @@ namespace EPlast.Tests.Handlers.Distinction
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
             _handler = new GetDistinctionHandler(_mockRepoWrapper.Object, _mockMapper.Object);
-            _query = new GetDistinctionQuery(_id);
         }
 
         [Test]
@@ -45,7 +41,7 @@ namespace EPlast.Tests.Handlers.Distinction
                 .Setup(x => x.Map<DistinctionDTO>(It.IsAny<DataAccess.Entities.UserEntities.Distinction>())).Returns(new DistinctionDTO());
 
             //Act
-            var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
+            var result = await _handler.Handle(It.IsAny<GetDistinctionQuery>(), It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
