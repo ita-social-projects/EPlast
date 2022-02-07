@@ -1,98 +1,51 @@
 ﻿using AutoMapper;
-using EPlast.DataAccess.Entities;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using EPlast.BLL.DTO.PrecautionsDTO;
 
-namespace EPlast.BLL.Services
+namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    public class PrecautionService : IPrecautionService
+    class GetUsersPrecautionsForTableHandler: IRequestHandler<GetUsersPrecautionsForTableQuery, Tuple<IEnumerable<UserPrecautionsTableObject>, int>>
     {
+        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
-        private readonly IRepositoryWrapper _repoWrapper;
-        private readonly UserManager<User> _userManager;
 
-        public PrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager)
+        public GetUsersPrecautionsForTableHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
+            _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
-            _repoWrapper = repoWrapper;
-            _userManager = userManager;
         }
 
-        public async Task AddPrecautionAsync(PrecautionDTO precautionDTO, User user)
+        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> Handle(GetUsersPrecautionsForTableQuery request, CancellationToken cancellationToken)
         {
-            await CheckIfAdminAsync(user);
-            var Precaution = _mapper.Map<PrecautionDTO, Precaution>(precautionDTO);
-            await _repoWrapper.Precaution.CreateAsync(Precaution);
-            await _repoWrapper.SaveAsync();
-        }
-
-        public async Task ChangePrecautionAsync(PrecautionDTO precautionDTO, User user)
-        {
-            await CheckIfAdminAsync(user);
-            var Precaution = await _repoWrapper.Precaution.GetFirstAsync(x => x.Id == precautionDTO.Id);
-            Precaution.Name = precautionDTO.Name;
-            _repoWrapper.Precaution.Update(Precaution);
-            await _repoWrapper.SaveAsync();
-        }
-
-        public async Task DeletePrecautionAsync(int id, User user)
-        {
-            await CheckIfAdminAsync(user);
-            var Precaution = (await _repoWrapper.Precaution.GetFirstAsync(d => d.Id == id));
-            if (Precaution == null)
-                throw new ArgumentNullException($"Precaution with {id} not found");
-            _repoWrapper.Precaution.Delete(Precaution);
-            await _repoWrapper.SaveAsync();
-        }
-
-        public async Task<IEnumerable<PrecautionDTO>> GetAllPrecautionAsync()
-        {
-            return _mapper.Map<IEnumerable<Precaution>, IEnumerable<PrecautionDTO>>(await _repoWrapper.Precaution.GetAllAsync());
-        }
-
-        public async Task<PrecautionDTO> GetPrecautionAsync(int id)
-        {
-            var Precaution = _mapper.Map<PrecautionDTO>(await _repoWrapper.Precaution.GetFirstAsync(d => d.Id == id));
-            return Precaution;
-        }
-        //
-        public async Task CheckIfAdminAsync(User user)
-        {
-            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
-                throw new UnauthorizedAccessException();
-        }
-
-        public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(PrecautionTableSettings tableSettings)
-        {
-            var filter = GetFilter(tableSettings.SearchedData, tableSettings.StatusFilter, tableSettings.PrecautionNameFilter, tableSettings.DateFilter);
-            var order = GetOrder(tableSettings.SortByOrder);
+            var filter = GetFilter(request.TableSettings.SearchedData, request.TableSettings.StatusFilter, request.TableSettings.PrecautionNameFilter, request.TableSettings.DateFilter);
+            var order = GetOrder(request.TableSettings.SortByOrder);
             var selector = GetSelector();
             var include = GetInclude();
-            var tuple = await _repoWrapper.UserPrecaution.GetRangeAsync(filter, selector, order, include, tableSettings.Page, tableSettings.PageSize);
+            var tuple = await _repositoryWrapper.UserPrecaution.GetRangeAsync(filter, selector, order, include, request.TableSettings.Page, request.TableSettings.PageSize);
             var precautions = tuple.Item1;
             var rows = tuple.Item2;
 
             return new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(_mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionsTableObject>>(precautions), rows);
         }
         private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusFilter, IEnumerable<string> precautionNameFilter, IEnumerable<string> dateFilter)
-        {            
+        {
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
             var getDate = searchedDataEmty ? "" : String.Join("-", searchedData.Split(".").Reverse());
             Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
                 false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
-                || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)                
+                || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
                 || x.Date.Date.ToString().Contains(getDate) || x.EndDate.Date.ToString().Contains(getDate)
                 || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
@@ -110,7 +63,7 @@ namespace EPlast.BLL.Services
                 false => x => dateFilter.Contains(x.Date.Year.ToString()),
             };
 
-            Expression <Func<UserPrecaution, bool>> statusFilterExpr = (statusFilter == null) switch
+            Expression<Func<UserPrecaution, bool>> statusFilterExpr = (statusFilter == null) switch
             {
                 true => x => true,
                 false => x => statusFilter.Contains(x.Status),
@@ -153,7 +106,7 @@ namespace EPlast.BLL.Services
                 }
             };
             return expr;
-        }        
+        }
         private Expression<Func<UserPrecaution, UserPrecaution>> GetSelector()
         {
             Expression<Func<UserPrecaution, UserPrecaution>> expr = x => x;
