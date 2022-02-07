@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services
             _repoWrapper = repoWrapper;
             _userManager = userManager;
         }
-
+        //
         public async Task AddPrecautionAsync(PrecautionDTO precautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
@@ -35,7 +35,7 @@ namespace EPlast.BLL.Services
             await _repoWrapper.Precaution.CreateAsync(Precaution);
             await _repoWrapper.SaveAsync();
         }
-
+        //
         public async Task ChangePrecautionAsync(PrecautionDTO precautionDTO, User user)
         {
             await CheckIfAdminAsync(user);
@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services
             _repoWrapper.Precaution.Update(Precaution);
             await _repoWrapper.SaveAsync();
         }
-
+        //
         public async Task DeletePrecautionAsync(int id, User user)
         {
             await CheckIfAdminAsync(user);
@@ -54,12 +54,12 @@ namespace EPlast.BLL.Services
             _repoWrapper.Precaution.Delete(Precaution);
             await _repoWrapper.SaveAsync();
         }
-
+        //
         public async Task<IEnumerable<PrecautionDTO>> GetAllPrecautionAsync()
         {
             return _mapper.Map<IEnumerable<Precaution>, IEnumerable<PrecautionDTO>>(await _repoWrapper.Precaution.GetAllAsync());
         }
-
+        //
         public async Task<PrecautionDTO> GetPrecautionAsync(int id)
         {
             var Precaution = _mapper.Map<PrecautionDTO>(await _repoWrapper.Precaution.GetFirstAsync(d => d.Id == id));
@@ -71,7 +71,7 @@ namespace EPlast.BLL.Services
             if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
                 throw new UnauthorizedAccessException();
         }
-
+        //
         public async Task<Tuple<IEnumerable<UserPrecautionsTableObject>, int>> GetUsersPrecautionsForTableAsync(PrecautionTableSettings tableSettings)
         {
             var filter = GetFilter(tableSettings.SearchedData, tableSettings.StatusFilter, tableSettings.PrecautionNameFilter, tableSettings.DateFilter);
