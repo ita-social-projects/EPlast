@@ -115,7 +115,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IDecisionService, DecisionService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IEmailContentService, EmailContentService>();
