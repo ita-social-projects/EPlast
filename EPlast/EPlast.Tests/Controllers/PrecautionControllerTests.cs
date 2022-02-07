@@ -16,12 +16,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.PrecautionsDTO;
+using MediatR;
+using EPlast.BLL.Queries.Precaution;
+using System.Threading;
 
 namespace EPlast.Tests.Controllers
 {
     internal class PrecautionControllerTests
-    {
-        private Mock<IPrecautionService> _precautionService;
+    {        
+        private Mock<IMediator> _mediator;
         private Mock<IUserPrecautionService> _userPrecautionService;
         private Mock<UserManager<User>> _userManager;
         private Mock<HttpContext> _httpContext = new Mock<HttpContext>();
@@ -32,7 +35,7 @@ namespace EPlast.Tests.Controllers
         [SetUp]
         public void SetUp()
         {
-            _precautionService = new Mock<IPrecautionService>();
+            _mediator = new Mock<IMediator>();
             _userPrecautionService = new Mock<IUserPrecautionService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -42,9 +45,9 @@ namespace EPlast.Tests.Controllers
                 .Returns(true);
 
             _PrecautionController = new PrecautionController(
-                _precautionService.Object,
                 _userPrecautionService.Object,
-                _userManager.Object
+                _userManager.Object,
+                _mediator.Object
                 );
             _context = new ControllerContext(
                 new ActionContext(
@@ -109,16 +112,16 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             PrecautionTableSettings TestPTS = new PrecautionTableSettings();
-            _precautionService
-                .Setup(x => x.GetUsersPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>())).ReturnsAsync(CreateTuple);
-
+            _mediator
+                .Setup(x => x.Send(It.IsAny<GetUsersPrecautionsForTableQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(CreateTuple);            
             PrecautionController controller = _PrecautionController;
+
             //Act
             var result = _PrecautionController.GetUsersPrecautionsForTable(It.IsAny<PrecautionTableSettings>()).Result;
             var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
@@ -129,14 +132,16 @@ namespace EPlast.Tests.Controllers
         public async Task GetPrecaution_PrecautionById_ReturnsOkObjectResult()
         {
             //Arrange
-            _precautionService
-                .Setup(x => x.GetPrecautionAsync(It.IsAny<int>()))
+            _mediator
+                .Setup(x => x.Send(It.IsAny<GetPrecautionQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new PrecautionDTO());
+
             //Act
             var result = await _PrecautionController.GetPrecaution(It.IsAny<int>());
             var resultValue = (result as OkObjectResult).Value as PrecautionDTO;
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<PrecautionDTO>(resultValue);
@@ -146,30 +151,34 @@ namespace EPlast.Tests.Controllers
         public async Task GetPrecaution_PrecautionById_ReturnsNotFoundResult()
         {
             //Arrange
-            _precautionService
-                .Setup(x => x.GetPrecautionAsync(It.IsAny<int>()))
+            _mediator
+                .Setup(x => x.Send(It.IsAny<GetPrecautionQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((PrecautionDTO)null);
             PrecautionController precautionController = _PrecautionController;
+
             //Act
             var result = await precautionController.GetPrecaution(It.IsAny<int>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
-        public async Task GetPrecaution_ReturnsOkObjectResult()
+        public async Task GetAllPrecaution_ReturnsOkObjectResult()
         {
             //Arrange
-            _precautionService
-                .Setup(x => x.GetAllPrecautionAsync())
+            _mediator
+                .Setup(x => x.Send(It.IsAny<GetAllPrecautionQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new List<PrecautionDTO>().AsEnumerable());
+
             //Act
             var result = await _PrecautionController.GetPrecaution();
             var resultValue = (result as OkObjectResult).Value;
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
@@ -216,13 +225,15 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _PrecautionController.ControllerContext = _context;
-            _precautionService
-                .Setup(x => x.DeletePrecautionAsync(It.IsAny<int>(), It.IsAny<User>()));
+            _mediator
+                .Setup(x => x.Send(It.IsAny<DeletePrecautionQuery>(), It.IsAny<CancellationToken>()));
             PrecautionController precautionController = _PrecautionController;
+
             //Act
             var result = await precautionController.DeletePrecaution(It.IsAny<int>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -232,14 +243,16 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _PrecautionController.ControllerContext = _context;
-            _precautionService
-                .Setup(x => x.DeletePrecautionAsync(It.IsAny<int>(), It.IsAny<User>()))
+            _mediator
+                .Setup(x => x.Send(It.IsAny<DeletePrecautionQuery>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
             PrecautionController precautionController = _PrecautionController;
+
             //Act
             var result = await precautionController.DeletePrecaution(It.IsAny<int>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -325,12 +338,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _PrecautionController.ControllerContext = _context;
-            _precautionService
-                .Setup(x => x.AddPrecautionAsync(It.IsAny<PrecautionDTO>(), It.IsAny<User>()));
+            _mediator
+                .Setup(x => x.Send(It.IsAny<AddPrecautionQuery>(), It.IsAny<CancellationToken>()));
+
             //Act
             var result = await _PrecautionController.AddPrecaution(It.IsAny<PrecautionDTO>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             _userManager.Verify();
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -341,12 +356,14 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _PrecautionController.ModelState.AddModelError("name", "Name field is required");
-            _precautionService
-                .Setup(x => x.AddPrecautionAsync(It.IsAny<PrecautionDTO>(), It.IsAny<User>()));
+            _mediator
+                .Setup(x => x.Send(It.IsAny<AddPrecautionQuery>(), It.IsAny<CancellationToken>()));
+
             //Act
             var result = await _PrecautionController.AddPrecaution(It.IsAny<PrecautionDTO>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
@@ -403,12 +420,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _PrecautionController.ControllerContext = _context;
-            _precautionService
-                .Setup(x => x.ChangePrecautionAsync(It.IsAny<PrecautionDTO>(), It.IsAny<User>()));
+            _mediator
+                .Setup(x => x.Send(It.IsAny<ChangePrecautionQuery>(), It.IsAny<CancellationToken>()));
+
             //Act
             var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             _userManager.Verify();
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -419,12 +438,14 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _PrecautionController.ModelState.AddModelError("name", "Name field is required");
-            _precautionService
-                .Setup(x => x.ChangePrecautionAsync(It.IsAny<PrecautionDTO>(), It.IsAny<User>()));
+            _mediator
+                .Setup(x => x.Send(It.IsAny<AddPrecautionQuery>(), It.IsAny<CancellationToken>()));
+
             //Act
             var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
@@ -434,13 +455,15 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _PrecautionController.ControllerContext = _context;
-            _precautionService
-                .Setup(x => x.ChangePrecautionAsync(It.IsAny<PrecautionDTO>(), It.IsAny<User>()))
+            _mediator
+                .Setup(x => x.Send(It.IsAny<ChangePrecautionQuery>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
+
             //Act
             var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
+
             //Assert
-            _precautionService.Verify();
+            _mediator.Verify();
             _userManager.Verify();
             Assert.IsInstanceOf<NotFoundResult>(result);
         }

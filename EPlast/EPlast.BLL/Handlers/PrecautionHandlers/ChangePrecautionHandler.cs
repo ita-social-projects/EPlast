@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    class ChangePrecautionHandler: IRequestHandler<ChangePrecautionQuery>
+    public class ChangePrecautionHandler: IRequestHandler<ChangePrecautionQuery>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMediator _mediator;

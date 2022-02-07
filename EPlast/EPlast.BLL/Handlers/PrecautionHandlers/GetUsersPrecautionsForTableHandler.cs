@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    class GetUsersPrecautionsForTableHandler: IRequestHandler<GetUsersPrecautionsForTableQuery, Tuple<IEnumerable<UserPrecautionsTableObject>, int>>
+    public class GetUsersPrecautionsForTableHandler: IRequestHandler<GetUsersPrecautionsForTableQuery, Tuple<IEnumerable<UserPrecautionsTableObject>, int>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;

@@ -1,5 +1,5 @@
-﻿using EPlast.BLL.Handlers.DistinctionHandlers;
-using EPlast.BLL.Queries.Distinction;
+﻿using EPlast.BLL.Handlers.PrecautionHandlers;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
@@ -12,14 +12,14 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EPlast.Tests.Handlers.Distinction
+namespace EPlast.Tests.Handlers.Precaution
 {
-    public class DeleteDistinctionHandlerTest
+    public class DeletePrecautionHandlerTest
     {
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<IMediator> _mockMediator;
-        private DeleteDistinctionHandler _handler;
-        private DeleteDistinctionQuery _query;
+        private DeletePrecautionHandler _handler;
+        private DeletePrecautionQuery _query;
 
         private User _user;
 
@@ -28,23 +28,23 @@ namespace EPlast.Tests.Handlers.Distinction
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMediator = new Mock<IMediator>();
-            _handler = new DeleteDistinctionHandler(_mockRepoWrapper.Object, _mockMediator.Object);            
+            _handler = new DeletePrecautionHandler(_mockRepoWrapper.Object, _mockMediator.Object);
             _user = new User();
-            _query = new DeleteDistinctionQuery(It.IsAny<int>(), _user);
+            _query = new DeletePrecautionQuery(It.IsAny<int>(), _user);
         }
 
         [Test]
-        public async Task DeleteDistinctionHandler_Valid()
+        public async Task DeletePrecautionHandler_Valid()
         {
             //Arrange
-            var distinctions = new DataAccess.Entities.UserEntities.Distinction();
+            var distinctions = new DataAccess.Entities.UserEntities.Precaution();
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<DeleteDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<DeletePrecautionQuery>(), It.IsAny<CancellationToken>()));
             _mockRepoWrapper
-                .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.UserEntities.Distinction, bool>>>(),
-                    It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Distinction>, IIncludableQueryable<DataAccess.Entities.UserEntities.Distinction, object>>>()))
+                .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.UserEntities.Precaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Precaution>, IIncludableQueryable<DataAccess.Entities.UserEntities.Precaution, object>>>()))
                 .ReturnsAsync(distinctions);
-            _mockRepoWrapper.Setup(x => x.Distinction.Delete(It.IsAny<DataAccess.Entities.UserEntities.Distinction>()));
+            _mockRepoWrapper.Setup(x => x.Precaution.Delete(It.IsAny<DataAccess.Entities.UserEntities.Precaution>()));
             _mockRepoWrapper.Setup(x => x.SaveAsync());
 
             //Act

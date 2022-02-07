@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.Queries.Distinction;
+﻿using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using MediatR;
