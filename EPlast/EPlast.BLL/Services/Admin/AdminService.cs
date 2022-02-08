@@ -229,9 +229,9 @@ namespace EPlast.BLL.Services
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
             string strAndClubs = null;
-            string strRegions = null;
-            string strCities = null;
-            string strClubs = null;
+            string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
+            string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
+            string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
             if (!roles.Contains(Roles.Admin)){
                 FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
                 strAndClubs = filterTableParametersByRole.AndClubs;
