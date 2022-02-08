@@ -461,7 +461,32 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
         }
-        
+        [Test]
+        public async Task IsCityMember_True_Test()
+        {
+            //Arrange
+            _adminService.Setup(x => x.IsCityMember(It.IsAny<string>())).ReturnsAsync(true);
+            AdminController adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.IsCityMember(It.IsAny<string>());
+
+            Assert.True(result);
+           
+        }
+        [Test]
+        public async Task IsCityMember_False_Test()
+        {
+            //Arrange
+            _adminService.Setup(x => x.IsCityMember(It.IsAny<string>())).ReturnsAsync(false);
+            AdminController adminController = CreateAdminController;
+
+            // Act
+            var result = await adminController.IsCityMember(It.IsAny<string>());
+
+            Assert.False(result);
+
+        }
         private TableFilterParameters CreateTableFilterParameters => new TableFilterParameters()
         {
             Page = 1,
