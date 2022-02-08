@@ -2,9 +2,11 @@
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using EPlast.WebApi.Models.Decision;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -22,10 +24,12 @@ namespace EPlast.WebApi.Controllers
         private readonly IPdfService _pdfService;
         private readonly IMapper _mapper;
         private readonly IGoverningBodiesService _governingBodiesService;
-        public DecisionsController(IPdfService pdfService, IDecisionService decisionService, IMapper mapper, IGoverningBodiesService governingBodiesService)
+        private readonly IUserManagerService _userManagerService;
+        public DecisionsController(IPdfService pdfService, IUserManagerService userManagerService, IDecisionService decisionService, IMapper mapper, IGoverningBodiesService governingBodiesService)
         {
             _pdfService = pdfService;
             _decisionService = decisionService;
+            _userManagerService = userManagerService;
             _mapper = mapper;
             _governingBodiesService = governingBodiesService;
         }
@@ -122,6 +126,14 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest();
             }
+
+            var userId = _userManagerService.GetCurrentUserId(HttpContext.User);
+            var decisionCreatorIs = (await _decisionService.GetDecisionAsync(decision.ID)).UserId;
+            if (!decisionCreatorIs.Equals(userId) )
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+           
             await _decisionService.ChangeDecisionAsync(decision);
 
             return NoContent();
