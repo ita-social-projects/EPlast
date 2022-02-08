@@ -175,7 +175,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Decision was deleted</response>
         /// <response code="404">Decision does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(Roles = Roles.Admin + "," + Roles.RegionBoardHead)]
         public async Task<IActionResult> Delete(int id)
         {
             await _decisionService.DeleteDecisionAsync(id);
