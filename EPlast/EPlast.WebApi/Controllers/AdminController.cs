@@ -334,7 +334,7 @@ namespace EPlast.WebApi.Controllers
         ///  Check if user is member of city
         /// </summary>
         /// <param name="userId">The id of the user</param>
-        [HttpPut("IsCityMember/{userId}")]
+        [HttpGet("IsCityMember/{userId}")]
         public async Task<bool> IsCityMember(string userId)
         {        
           bool res = await _adminService.IsCityMember(userId); 
