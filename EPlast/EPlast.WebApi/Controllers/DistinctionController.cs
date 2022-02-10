@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using EPlast.BLL.Queries.Distinction;
+using EPlast.BLL.Commands.Distinction;
 
 namespace EPlast.WebApi.Controllers
 {

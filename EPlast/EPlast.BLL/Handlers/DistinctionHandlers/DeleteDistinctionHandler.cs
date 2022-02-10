@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Queries.Distinction;
+﻿using EPlast.BLL.Commands.Distinction;
+using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using System;

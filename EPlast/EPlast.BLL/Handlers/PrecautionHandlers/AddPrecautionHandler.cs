@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;

@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Queries.Precaution;
+﻿using EPlast.BLL.Commands.Precaution;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using System.Threading;

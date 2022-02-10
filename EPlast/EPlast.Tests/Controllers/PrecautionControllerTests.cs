@@ -19,6 +19,7 @@ using EPlast.BLL.DTO.PrecautionsDTO;
 using MediatR;
 using EPlast.BLL.Queries.Precaution;
 using System.Threading;
+using EPlast.BLL.Commands.Precaution;
 
 namespace EPlast.Tests.Controllers
 {

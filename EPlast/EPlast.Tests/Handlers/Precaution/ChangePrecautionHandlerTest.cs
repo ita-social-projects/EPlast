@@ -12,6 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using EPlast.BLL.Commands.Precaution;
 
 namespace EPlast.Tests.Handlers.Precaution
 {

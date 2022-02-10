@@ -1,10 +1,7 @@
 ﻿using EPlast.DataAccess.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace EPlast.BLL.Queries.Distinction
+namespace EPlast.BLL.Commands.Distinction
 {
     public class AddDistinctionCommand: IRequest
     {

@@ -19,6 +19,7 @@ using EPlast.BLL.DTO.Distinction;
 using MediatR;
 using EPlast.BLL.Queries.Distinction;
 using System.Threading;
+using EPlast.BLL.Commands.Distinction;
 
 namespace EPlast.Tests.Controllers
 {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EPlast.BLL.Queries.Distinction
+namespace EPlast.BLL.Commands.Distinction
 {
     public class DeleteDistinctionCommand : IRequest
     {

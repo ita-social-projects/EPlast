@@ -1,7 +1,7 @@
 ﻿using EPlast.DataAccess.Entities;
 using MediatR;
 
-namespace EPlast.BLL.Queries.Precaution
+namespace EPlast.BLL.Commands.Precaution
 {
     public class DeletePrecautionCommand: IRequest
     {

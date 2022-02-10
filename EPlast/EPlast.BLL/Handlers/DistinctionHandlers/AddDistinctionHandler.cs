@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using EPlast.BLL.Commands.Distinction;
 using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
