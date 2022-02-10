@@ -675,6 +675,79 @@ namespace EPlast.Tests.Services
             Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
         }
 
+        [TestCase]
+        public async Task UsersTableAsync_NotNullInputAdmin_ReturnsIEnumerableUserTableDTO()
+        {
+            // Arrange
+            List<string> role = new List<string>() { Roles.PlastMember };
+            string[] roles = new string[] { Roles.CityHead };
+            CityMembers cityMembers = new CityMembers() { CityId = It.IsAny<int>() };
+            ICollection<CityMembers> cityAdministrations = new List<CityMembers>() { cityMembers };
+            DataAccess.Entities.City city = new DataAccess.Entities.City { Name = "qwerty" };
+
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetSingleAsync
+                (
+                    It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                    IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
+                )
+                .ReturnsAsync(cityMembers);
+            _repoWrapper
+              .Setup(x => x.City.GetSingleAsync
+              (
+                  It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                  It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                  IIncludableQueryable<DataAccess.Entities.City, object>>>())
+              )
+              .ReturnsAsync(city);
+            _repoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+               It.IsAny<Func<IQueryable<User>,
+               IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>());
+            _repoWrapper
+                .Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+               It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+               IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new List<DataAccess.Entities.City>());
+            _repoWrapper
+                 .Setup(x => x.ClubMembers.GetAllAsync(It.IsAny<Expression<Func<ClubMembers, bool>>>(),
+                It.IsAny<Func<IQueryable<ClubMembers>,
+                IIncludableQueryable<ClubMembers, object>>>()))
+                 .ReturnsAsync(new List<ClubMembers>());
+            _repoWrapper
+                .Setup(x => x.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(),
+               It.IsAny<Func<IQueryable<CityMembers>,
+               IIncludableQueryable<CityMembers, object>>>()))
+                .ReturnsAsync(new List<CityMembers>());
+            _repoWrapper
+                .Setup(x => x.AdminType.GetUserTableObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(CreateTuple);
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(role);
+            _mapper
+                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
+
+            // Act
+            var result = await service.GetUsersTableAsync(new TableFilterParameters()
+            {
+                Page = 1,
+                PageSize = 2,
+                Cities = new List<int> { 1 },
+                Regions = new List<int> { 1 },
+                Clubs = new List<int> { 1 },
+                Degrees = new List<int> { 1 },
+                Tab = null,
+                FilterRoles = null
+            }, It.IsAny<string>());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
+        }
+
         [Test]
         public async Task GetUsersAsync_ReturnsShortUserInformationDTO()
         {
@@ -969,6 +1042,44 @@ namespace EPlast.Tests.Services
             // Assert
             Assert.IsNotNull(result.AndClubs);
             Assert.IsNotNull(result.Regions);
+        }
+        [Test]
+        public void IsCityMember_ReturnsCorrect()
+        {
+            // Arrange
+            CityMembers cityMember = new CityMembers() { UserId = "qwerty"};
+            List<CityMembers> cityMembers = new List<CityMembers>(){ cityMember };
+            _repoWrapper.Setup(x => x.CityMembers.GetAllAsync(
+                It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                     IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
+                ).ReturnsAsync(cityMembers);
+
+            // Act
+            var result = service.IsCityMember("qwerty").Result;
+
+            // Assert
+            _formerMemberService.Verify();
+            Assert.True(result);
+        }
+        [Test]
+        public void IsCityMember_ReturnsFalse()
+        {
+            // Arrange
+            
+            List<CityMembers> cityMembers = new List<CityMembers>();
+            _repoWrapper.Setup(x => x.CityMembers.GetAllAsync(
+                It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
+                     IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>())
+                ).ReturnsAsync(cityMembers);
+
+            // Act
+            var result = service.IsCityMember("qwerty").Result;
+
+            // Assert
+            _formerMemberService.Verify();
+            Assert.False(result);
         }
         private IEnumerable<User> GetTestUsers()
         {
