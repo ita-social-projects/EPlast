@@ -6,6 +6,7 @@ namespace EPlast.BLL.DTO.Events
     {
         public int EventId { get; set; }
         public string EventName { get; set; }
+//        public string Photo { get; set; }
         public string Description { get; set; }
         public string EventDateStart { get; set; }
         public string EventDateEnd { get; set; }

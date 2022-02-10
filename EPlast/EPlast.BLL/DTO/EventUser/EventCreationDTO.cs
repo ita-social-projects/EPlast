@@ -9,6 +9,8 @@ namespace EPlast.BLL.DTO.EventUser
         [Required(ErrorMessage = "This field can't be empty")]
         public string EventName { get; set; }
         [Required(ErrorMessage = "This field can't be empty")]
+//        public string Photo { get; set; }
+ //       [Required(ErrorMessage = "This field can't be empty")]
         public string Description { get; set; }
         [Required(ErrorMessage = "This field can't be empty")]
         public string Questions { get; set; }
