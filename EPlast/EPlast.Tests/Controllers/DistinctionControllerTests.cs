@@ -222,7 +222,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<DeleteDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<DeleteDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
             var result = await _distinctionController.DeleteDistinction(It.IsAny<int>());
             //Assert
@@ -245,7 +245,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<DeleteDistinctionQuery>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.Send(It.IsAny<DeleteDistinctionCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
             //Act
             var result = await _distinctionController.DeleteDistinction(It.IsAny<int>());
@@ -387,7 +387,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<AddDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<AddDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
             var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -411,7 +411,7 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("name", "Name field is required");
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<AddDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<AddDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
             var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -507,7 +507,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<ChangeDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<ChangeDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
             var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -531,7 +531,7 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("name", "Name field is required");
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<ChangeDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<ChangeDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
             var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
             //Assert
@@ -554,7 +554,7 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<ChangeDistinctionQuery>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.Send(It.IsAny<ChangeDistinctionCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
             //Act
             var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());

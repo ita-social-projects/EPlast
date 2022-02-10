@@ -21,7 +21,7 @@ namespace EPlast.Tests.Handlers.Distinction
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<IMediator> _mockMediator;
         private ChangeDistinctionHandler _handler;
-        private ChangeDistinctionQuery _query;
+        private ChangeDistinctionCommand _query;
 
         private User _user;
         private DistinctionDTO _distinctionDTO;
@@ -34,7 +34,7 @@ namespace EPlast.Tests.Handlers.Distinction
             _handler = new ChangeDistinctionHandler(_mockRepoWrapper.Object, _mockMediator.Object);
             _distinctionDTO = new DistinctionDTO();
             _user = new User();
-            _query = new ChangeDistinctionQuery(_distinctionDTO, _user);
+            _query = new ChangeDistinctionCommand(_distinctionDTO, _user);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace EPlast.Tests.Handlers.Distinction
             //Arrange
             var distinctions = new DataAccess.Entities.UserEntities.Distinction();
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<AddDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<AddDistinctionCommand>(), It.IsAny<CancellationToken>()));
             _mockRepoWrapper
                 .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.UserEntities.Distinction, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Distinction>, IIncludableQueryable<DataAccess.Entities.UserEntities.Distinction, object>>>()))

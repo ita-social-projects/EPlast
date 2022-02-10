@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    public class DeletePrecautionHandler: IRequestHandler<DeletePrecautionQuery>
+    public class DeletePrecautionHandler: IRequestHandler<DeletePrecautionCommand>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMediator _mediator;
@@ -18,7 +18,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(DeletePrecautionQuery request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeletePrecautionCommand request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);

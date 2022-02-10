@@ -141,7 +141,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var query = new DeletePrecautionQuery(id, await _userManager.GetUserAsync(User));
+                var query = new DeletePrecautionCommand(id, await _userManager.GetUserAsync(User));
                 await _mediator.Send(query);                
                 return NoContent();
             }
@@ -213,7 +213,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var query = new AddPrecautionQuery(PrecautionDTO, await _userManager.GetUserAsync(User));
+                var query = new AddPrecautionCommand(PrecautionDTO, await _userManager.GetUserAsync(User));
                 await _mediator.Send(query);                
                 return NoContent();
             }
@@ -263,7 +263,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    var query = new ChangePrecautionQuery(PrecautionDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangePrecautionCommand(PrecautionDTO, await _userManager.GetUserAsync(User));
                     await _mediator.Send(query);                    
                     return NoContent();
                 }

@@ -19,7 +19,7 @@ namespace EPlast.Tests.Handlers.Precaution
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<IMediator> _mockMediator;
         private DeletePrecautionHandler _handler;
-        private DeletePrecautionQuery _query;
+        private DeletePrecautionCommand _query;
 
         private User _user;
 
@@ -30,7 +30,7 @@ namespace EPlast.Tests.Handlers.Precaution
             _mockMediator = new Mock<IMediator>();
             _handler = new DeletePrecautionHandler(_mockRepoWrapper.Object, _mockMediator.Object);
             _user = new User();
-            _query = new DeletePrecautionQuery(It.IsAny<int>(), _user);
+            _query = new DeletePrecautionCommand(It.IsAny<int>(), _user);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace EPlast.Tests.Handlers.Precaution
             //Arrange
             var distinctions = new DataAccess.Entities.UserEntities.Precaution();
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<DeletePrecautionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<DeletePrecautionCommand>(), It.IsAny<CancellationToken>()));
             _mockRepoWrapper
                 .Setup(x => x.Precaution.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.UserEntities.Precaution, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Precaution>, IIncludableQueryable<DataAccess.Entities.UserEntities.Precaution, object>>>()))

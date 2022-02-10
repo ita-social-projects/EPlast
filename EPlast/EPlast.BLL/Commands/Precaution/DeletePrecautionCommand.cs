@@ -3,11 +3,11 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.Precaution
 {
-    public class DeletePrecautionQuery: IRequest
+    public class DeletePrecautionCommand: IRequest
     {
         public int Id { get; set; }
         public User User { get; set; }
-        public DeletePrecautionQuery(int id, User user)
+        public DeletePrecautionCommand(int id, User user)
         {
             Id = id;
             User = user;

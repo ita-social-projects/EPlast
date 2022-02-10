@@ -226,7 +226,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _mediator
-                .Setup(x => x.Send(It.IsAny<DeletePrecautionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<DeletePrecautionCommand>(), It.IsAny<CancellationToken>()));
             PrecautionController precautionController = _PrecautionController;
 
             //Act
@@ -244,7 +244,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _mediator
-                .Setup(x => x.Send(It.IsAny<DeletePrecautionQuery>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.Send(It.IsAny<DeletePrecautionCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
             PrecautionController precautionController = _PrecautionController;
 
@@ -339,7 +339,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _mediator
-                .Setup(x => x.Send(It.IsAny<AddPrecautionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<AddPrecautionCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
             var result = await _PrecautionController.AddPrecaution(It.IsAny<PrecautionDTO>());
@@ -357,7 +357,7 @@ namespace EPlast.Tests.Controllers
             _PrecautionController.ControllerContext = _context;
             _PrecautionController.ModelState.AddModelError("name", "Name field is required");
             _mediator
-                .Setup(x => x.Send(It.IsAny<AddPrecautionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<AddPrecautionCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
             var result = await _PrecautionController.AddPrecaution(It.IsAny<PrecautionDTO>());
@@ -421,7 +421,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _mediator
-                .Setup(x => x.Send(It.IsAny<ChangePrecautionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<ChangePrecautionCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
             var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
@@ -439,7 +439,7 @@ namespace EPlast.Tests.Controllers
             _PrecautionController.ControllerContext = _context;
             _PrecautionController.ModelState.AddModelError("name", "Name field is required");
             _mediator
-                .Setup(x => x.Send(It.IsAny<AddPrecautionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<AddPrecautionCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
             var result = await _PrecautionController.EditPrecaution(It.IsAny<PrecautionDTO>());
@@ -456,7 +456,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _PrecautionController.ControllerContext = _context;
             _mediator
-                .Setup(x => x.Send(It.IsAny<ChangePrecautionQuery>(), It.IsAny<CancellationToken>()))
+                .Setup(x => x.Send(It.IsAny<ChangePrecautionCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
 
             //Act

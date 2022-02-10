@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.DistinctionHandlers
 {
-    public class ChangeDistinctionHandler : IRequestHandler<ChangeDistinctionQuery>
+    public class ChangeDistinctionHandler : IRequestHandler<ChangeDistinctionCommand>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMediator _mediator;
@@ -17,7 +17,7 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(ChangeDistinctionQuery request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ChangeDistinctionCommand request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);

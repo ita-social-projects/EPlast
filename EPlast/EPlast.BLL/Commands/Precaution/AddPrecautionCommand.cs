@@ -3,11 +3,11 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.Precaution
 {
-    public class AddPrecautionQuery: IRequest
+    public class AddPrecautionCommand: IRequest
     {
         public PrecautionDTO PrecautionDTO { get; set; }
         public User User { get; set; }
-        public AddPrecautionQuery(PrecautionDTO precautionDTO, User user)
+        public AddPrecautionCommand(PrecautionDTO precautionDTO, User user)
         {
             PrecautionDTO = precautionDTO;
             User = user;

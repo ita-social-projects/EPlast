@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    public class AddPrecautionHandler: IRequestHandler<AddPrecautionQuery>
+    public class AddPrecautionHandler: IRequestHandler<AddPrecautionCommand>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -21,7 +21,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(AddPrecautionQuery request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(AddPrecautionCommand request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);

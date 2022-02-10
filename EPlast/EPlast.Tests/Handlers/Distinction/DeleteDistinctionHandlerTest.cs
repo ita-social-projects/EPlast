@@ -19,7 +19,7 @@ namespace EPlast.Tests.Handlers.Distinction
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<IMediator> _mockMediator;
         private DeleteDistinctionHandler _handler;
-        private DeleteDistinctionQuery _query;
+        private DeleteDistinctionCommand _query;
 
         private User _user;
 
@@ -30,7 +30,7 @@ namespace EPlast.Tests.Handlers.Distinction
             _mockMediator = new Mock<IMediator>();
             _handler = new DeleteDistinctionHandler(_mockRepoWrapper.Object, _mockMediator.Object);            
             _user = new User();
-            _query = new DeleteDistinctionQuery(It.IsAny<int>(), _user);
+            _query = new DeleteDistinctionCommand(It.IsAny<int>(), _user);
         }
 
         [Test]
@@ -39,7 +39,7 @@ namespace EPlast.Tests.Handlers.Distinction
             //Arrange
             var distinctions = new DataAccess.Entities.UserEntities.Distinction();
             _mockMediator
-                .Setup(x => x.Send(It.IsAny<DeleteDistinctionQuery>(), It.IsAny<CancellationToken>()));
+                .Setup(x => x.Send(It.IsAny<DeleteDistinctionCommand>(), It.IsAny<CancellationToken>()));
             _mockRepoWrapper
                 .Setup(x => x.Distinction.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.UserEntities.Distinction, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Distinction>, IIncludableQueryable<DataAccess.Entities.UserEntities.Distinction, object>>>()))

@@ -19,7 +19,7 @@ namespace EPlast.Tests.Handlers.Precaution
         private Mock<IMediator> _mockMediator;
         private Mock<IMapper> _mapper;
         private AddPrecautionHandler _handler;
-        private AddPrecautionQuery _query;
+        private AddPrecautionCommand _query;
         private Mock<UserManager<User>> _userManager;
 
         private User _user;
@@ -34,7 +34,7 @@ namespace EPlast.Tests.Handlers.Precaution
             _handler = new AddPrecautionHandler(_mockRepoWrapper.Object, _mapper.Object, _mockMediator.Object);
             _precautionDTO = new PrecautionDTO();
             _user = new User();
-            _query = new AddPrecautionQuery(_precautionDTO, _user);
+            _query = new AddPrecautionCommand(_precautionDTO, _user);
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
         }

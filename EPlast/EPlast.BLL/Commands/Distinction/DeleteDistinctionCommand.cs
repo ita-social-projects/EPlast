@@ -6,12 +6,12 @@ using System.Text;
 
 namespace EPlast.BLL.Queries.Distinction
 {
-    public class DeleteDistinctionQuery : IRequest
+    public class DeleteDistinctionCommand : IRequest
     {
         public int Id { get; set; }
         public User User { get; set; }
 
-        public DeleteDistinctionQuery(int id, User user)
+        public DeleteDistinctionCommand(int id, User user)
         {
             Id = id;
             User = user;
