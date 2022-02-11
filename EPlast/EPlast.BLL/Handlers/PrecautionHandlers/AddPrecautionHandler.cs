@@ -1,34 +1,34 @@
 ﻿using AutoMapper;
-using EPlast.BLL.Commands.Distinction;
-using EPlast.BLL.Queries.Distinction;
+using EPlast.BLL.Commands.Precaution;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EPlast.BLL.Handlers.DistinctionHandlers
+namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    public class AddDistinctionHandler : IRequestHandler<AddDistinctionCommand>
+    public class AddPrecautionHandler: IRequestHandler<AddPrecautionCommand>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
 
-        public AddDistinctionHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IMediator mediator)
+        public AddPrecautionHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IMediator mediator)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(AddDistinctionCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(AddPrecautionCommand request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);
 
-            var distinction = _mapper.Map<DistinctionDTO, Distinction>(request.DistinctionDTO);
-            await _repositoryWrapper.Distinction.CreateAsync(distinction);
+            var precaution = _mapper.Map<PrecautionDTO, Precaution>(request.PrecautionDTO);
+            await _repositoryWrapper.Precaution.CreateAsync(precaution);
             await _repositoryWrapper.SaveAsync();
 
             return Unit.Value;

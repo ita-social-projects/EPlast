@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using EPlast.BLL.Queries.Distinction;
+using EPlast.BLL.Commands.Distinction;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -136,7 +137,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var query = new DeleteDistinctionQuery(id, await _userManager.GetUserAsync(User));
+                var query = new DeleteDistinctionCommand(id, await _userManager.GetUserAsync(User));
                 await _mediator.Send(query);
                 return NoContent();
             }
@@ -205,7 +206,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var query = new AddDistinctionQuery(distinctionDTO, await _userManager.GetUserAsync(User));
+                var query = new AddDistinctionCommand(distinctionDTO, await _userManager.GetUserAsync(User));
                 await _mediator.Send(query);
                 return NoContent();
             }
@@ -253,7 +254,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    var query = new ChangeDistinctionQuery(distinctionDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangeDistinctionCommand(distinctionDTO, await _userManager.GetUserAsync(User));
                     await _mediator.Send(query);
                     return NoContent();
                 }

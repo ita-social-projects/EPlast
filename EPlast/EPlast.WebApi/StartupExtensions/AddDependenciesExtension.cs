@@ -159,7 +159,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IPdfService, PdfService>();
             services.AddScoped<IPicturesManager, PicturesManager>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
-            services.AddScoped<IPrecautionService, PrecautionService>();
             services.AddScoped<IRegionAccessService, RegionAccessService>();
             services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGoverningBodyAnnouncementService, GoverningBodyAnnouncementService>();

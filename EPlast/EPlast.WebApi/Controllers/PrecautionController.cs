@@ -1,8 +1,10 @@
 ﻿using EPlast.BLL;
+using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.DTO.PrecautionsDTO;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,19 +21,19 @@ namespace EPlast.WebApi.Controllers
     [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
 
     public class PrecautionController : ControllerBase
-    {
-        private readonly IPrecautionService _precautionService;
-        private readonly IUserPrecautionService _userPrecautionService;
+    {        
+        private readonly IUserPrecautionService _userPrecautionService;                
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
-        public PrecautionController(
-            IPrecautionService PrecautionService,
+        public PrecautionController(            
             IUserPrecautionService userPrecautionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
-            _precautionService = PrecautionService;
             _userPrecautionService = userPrecautionService;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -73,9 +75,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
         {
-            var precautions = await _precautionService.GetUsersPrecautionsForTableAsync(tableSettings);            
-            var allInfoPrecautions = precautions.Item1.ToList();
-            allInfoPrecautions.ForEach(u => u.Total = precautions.Item2);
+            var query = new GetUsersPrecautionsForTableQuery(tableSettings);
+            var precautionsTuple = await _mediator.Send(query);            
+            var allInfoPrecautions = precautionsTuple.Item1.ToList();
+            allInfoPrecautions.ForEach(u => u.Total = precautionsTuple.Item2);
             return Ok(allInfoPrecautions);
         }
 
@@ -90,7 +93,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetPrecaution(int id)
         {
-            PrecautionDTO Precaution = await _precautionService.GetPrecautionAsync(id);
+            var query = new GetPrecautionQuery(id);
+            var Precaution = await _mediator.Send(query);            
             if (Precaution == null)
                 return NotFound();
             return Ok(Precaution);
@@ -105,7 +109,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetPrecaution()
         {
-            return Ok(await _precautionService.GetAllPrecautionAsync());
+            var query = new GetAllPrecautionQuery();            
+            return Ok(await _mediator.Send(query));
         }
 
         /// <summary>
@@ -137,7 +142,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _precautionService.DeletePrecautionAsync(id, await _userManager.GetUserAsync(User));
+                var query = new DeletePrecautionCommand(id, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);                
                 return NoContent();
             }
             catch (NullReferenceException)
@@ -208,7 +214,8 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _precautionService.AddPrecautionAsync(PrecautionDTO, await _userManager.GetUserAsync(User));
+                var query = new AddPrecautionCommand(PrecautionDTO, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);                
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -257,7 +264,8 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _precautionService.ChangePrecautionAsync(PrecautionDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangePrecautionCommand(PrecautionDTO, await _userManager.GetUserAsync(User));
+                    await _mediator.Send(query);                    
                     return NoContent();
                 }
                 catch (NullReferenceException)

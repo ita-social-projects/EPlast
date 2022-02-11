@@ -1,5 +1,5 @@
-﻿using EPlast.BLL.Handlers.DistinctionHandlers;
-using EPlast.BLL.Queries.Distinction;
+﻿using EPlast.BLL.Handlers.PrecautionHandlers;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using MediatR;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EPlast.Tests.Handlers.Distinction
+namespace EPlast.Tests.Handlers.Precaution
 {
     public class CheckIfAdminHandlerTest
     {
