@@ -3,7 +3,6 @@ using EPlast.DataAccess.Entities.UserEntities;
 using MediatR;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BLL.Queries.Distinction
 {

@@ -1,14 +1,14 @@
 ﻿using EPlast.DataAccess.Entities;
 using MediatR;
 
-namespace EPlast.BLL.Queries.Distinction
+namespace EPlast.BLL.Commands.Distinction
 {
-    public class ChangeDistinctionQuery: IRequest
+    public class AddDistinctionCommand: IRequest
     {
         public DistinctionDTO DistinctionDTO { get; set; }
         public User User { get; set; }
 
-        public ChangeDistinctionQuery(DistinctionDTO distinctionDTO, User user)
+        public AddDistinctionCommand(DistinctionDTO distinctionDTO, User user)
         {
             DistinctionDTO = distinctionDTO;
             User = user;

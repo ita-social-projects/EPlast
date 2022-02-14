@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Queries.Distinction;
+﻿using EPlast.BLL.Commands.Distinction;
+using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.DistinctionHandlers
 {
-    public class DeleteDistinctionHandler : IRequestHandler<DeleteDistinctionQuery>
+    public class DeleteDistinctionHandler : IRequestHandler<DeleteDistinctionCommand>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMediator _mediator;
@@ -18,7 +19,7 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
             _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(DeleteDistinctionQuery request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(DeleteDistinctionCommand request, CancellationToken cancellationToken)
         {
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);

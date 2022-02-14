@@ -1,12 +1,9 @@
 ﻿using AutoMapper;
-using EPlast.BLL;
 using EPlast.BLL.DTO.Distinction;
 using EPlast.BLL.Handlers.DistinctionHandlers;
 using EPlast.BLL.Queries.Distinction;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
-using MediatR;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
