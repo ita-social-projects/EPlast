@@ -26,9 +26,9 @@ namespace EPlast.DataAccess.Entities
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Прізвище повинне складати від 2 до 25 символів")]
         public string LastName { get; set; }
 
-        [Display(Name = "По-батькові")]
+        [Display(Name = "По батькові")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
-            ErrorMessage = "По-батькові має містити тільки літери")]
+            ErrorMessage = "По батькові має містити тільки літери")]
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Поле по-батькові повинне складати від 2 до 25 символів")]
         public string FatherName { get; set; }
         [StringLength(18, MinimumLength = 18, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
