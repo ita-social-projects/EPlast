@@ -2,15 +2,20 @@ using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Decision;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
@@ -22,6 +27,9 @@ namespace EPlast.Tests.Controllers
         private Mock<IPdfService> _pdfService = new Mock<IPdfService>();
         private Mock<IMapper> _mapper;
         private Mock<IGoverningBodiesService> _goverrningBodiesService;
+        private Mock<IUserManagerService> _userManagerService;
+        private Mock<HttpContext> _httpContext;
+        private ControllerContext _context;
 
         private DecisionsController _decisionsController;
 
@@ -31,15 +39,22 @@ namespace EPlast.Tests.Controllers
             _decisionService = new Mock<IDecisionService>();
             _pdfService = new Mock<IPdfService>();
             _mapper = new Mock<IMapper>();
+            _userManagerService = new Mock<IUserManagerService>();
             _goverrningBodiesService = new Mock<IGoverningBodiesService>();
+            _httpContext = new Mock<HttpContext>();
 
+            _context = new ControllerContext(
+               new ActionContext(
+                   _httpContext.Object, new RouteData(),
+                   new ControllerActionDescriptor()));
             _decisionsController = new DecisionsController(
                 _pdfService.Object,
+                _userManagerService.Object,
                 _decisionService.Object,
                 _mapper.Object,
                 _goverrningBodiesService.Object);
         }
-
+        
         [Test]
         public async Task GetMetaData_DecisionById_ReturnsOkObjectResult()
         {
@@ -48,9 +63,6 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetGoverningBodiesListAsync())
                 .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
             _decisionService
-                .Setup(x => x.GetDecisionTargetListAsync())
-                .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
-            _decisionService
                 .Setup(x => x.GetDecisionStatusTypes())
                 .Returns(GetFakeSelectListItems());
 
@@ -58,7 +70,6 @@ namespace EPlast.Tests.Controllers
             var result = await _decisionsController.GetMetaData();
             var resultValue = (result.Result as OkObjectResult).Value;
             var decisionStatusTypes = (resultValue as DecisionCreateViewModel).DecisionStatusTypeListItems;
-            var decisionTargets = (resultValue as DecisionCreateViewModel).DecisionTargets;
 
             //Assert
             _decisionService.Verify();
@@ -66,7 +77,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<DecisionCreateViewModel>(resultValue);
             Assert.AreEqual(2, decisionStatusTypes.Count());
-            Assert.AreEqual(2, decisionTargets.Count());
             Assert.IsInstanceOf<ActionResult<DecisionCreateViewModel>>(result);
         }
 
@@ -109,16 +119,54 @@ namespace EPlast.Tests.Controllers
         public async Task Update_ReturnsNoContentResult()
         {
             //Arrange
-            var mockDecision = new DecisionDTO();
+            _httpContext = new Mock<HttpContext>();
+
+            var fakeIdentity = new GenericIdentity("User");
+            var principal = new GenericPrincipal(fakeIdentity, null);
+
+            _httpContext.Setup(t => t.User).Returns(principal);
+            DecisionsController decisionsController = _decisionsController;
+            decisionsController.ControllerContext = _context;
+            var mockDecision = new DecisionDTO() { UserId = "qwerty"};
+            _decisionService
+                .Setup(x => x.GetDecisionAsync(It.IsAny<int>()))
+                .ReturnsAsync(mockDecision);
             _decisionService
                 .Setup(x => x.ChangeDecisionAsync(mockDecision));
-
+            _userManagerService.Setup(x => x.GetCurrentUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>())).Returns("qwerty");
             //Act
             var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision);
 
             //Assert
             _decisionService.Verify();
             Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task Update_Returns403Result()
+        {
+            //Arrange
+            _httpContext = new Mock<HttpContext>();
+
+            var fakeIdentity = new GenericIdentity("User");
+            var principal = new GenericPrincipal(fakeIdentity, null);
+            var expected = StatusCodes.Status403Forbidden;
+            _httpContext.Setup(t => t.User).Returns(principal);
+            DecisionsController decisionsController = _decisionsController;
+            decisionsController.ControllerContext = _context;
+            var mockDecision = new DecisionDTO() { UserId = "qwerty1" };
+            _decisionService
+                .Setup(x => x.GetDecisionAsync(It.IsAny<int>()))
+                .ReturnsAsync(mockDecision);
+            _decisionService
+                .Setup(x => x.ChangeDecisionAsync(mockDecision));
+            _userManagerService.Setup(x => x.GetCurrentUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>())).Returns("qwerty");
+            //Act
+            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision);
+            var actual = (result as StatusCodeResult).StatusCode;
+            //Assert
+            _decisionService.Verify();
+            Assert.AreEqual(expected, actual);
         }
 
         [Test]
@@ -301,7 +349,22 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+        [Test]
+        public async Task GetTargetList_ReturnsOkObjectResult()
+        {
+            //Arrange       
+            _decisionService
+                .Setup(x => x.GetDecisionTargetSearchListAsync(It.IsAny<string>()))
+                .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
 
+            //Act
+            var result = await _decisionsController.GetDecisionTargetSearchList(It.IsAny<string>());
+
+            //Assert
+            _decisionService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
         public DecisionViewModel GetFakeDecisionViewModel()
             => new DecisionViewModel
             {

@@ -15,7 +15,7 @@ namespace EPlast.BLL
         Task DeleteUserPrecautionAsync(int id, User user);
         Task<IEnumerable<UserPrecautionDTO>> GetUserPrecautionsOfUserAsync(string UserId);
         Task<UserPrecautionDTO> GetUserActivePrecaution(string userId, string type);
-        Task<bool> IsNumberExistAsync(int number);
+        Task<bool> IsNumberExistAsync(int number, int? id = null);
         Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync();
         Task<bool> CheckUserPrecautionsType(string userId, string type);
     }

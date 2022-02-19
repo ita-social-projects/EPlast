@@ -224,16 +224,27 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters)
+        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId)
         {
-            string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
+            var user = await _userManager.FindByIdAsync(userId);
+            var roles = await _userManager.GetRolesAsync(user);
+            string strAndClubs = null;
             string strRegions = tableFilterParameters.Regions == null ? null : string.Join(",", tableFilterParameters.Regions.ToArray());
+            string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
             string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
+            if (!roles.Contains(Roles.Admin)){
+                FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
+                strAndClubs = filterTableParametersByRole.AndClubs;
+                strRegions = filterTableParametersByRole.Regions;
+                strCities = filterTableParametersByRole.Cities;
+                strClubs = filterTableParametersByRole.Clubs;
+            }
+           
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
                 tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
-                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles);
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles, strAndClubs);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
@@ -300,6 +311,34 @@ namespace EPlast.BLL.Services
         public Task<int> GetUsersCountAsync()
         {
             return _repoWrapper.AdminType.GetUsersCountAsync();
+        }
+
+        public async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
+        {
+            bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy) || roles.Contains(Roles.PlastMember);
+            bool Regions = roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy);
+            bool Clubs = roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy);
+
+            FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
+            if (Regions)
+            {
+                filterTableParametersByRole.Regions = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).RegionId.ToString();              
+            }
+            if (Cities && !Regions)
+            {
+                filterTableParametersByRole.Cities = (await _repoWrapper.CityMembers.GetSingleAsync(r => r.UserId == userId && r.IsApproved)).CityId.ToString();
+            }
+           
+            if (Clubs)
+            {
+                filterTableParametersByRole.AndClubs = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId.ToString();
+            }
+
+            return filterTableParametersByRole;
+        }
+        public async Task<bool> IsCityMember(string userId)
+        {
+            return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved)).Any();
         }
     }
 }

@@ -33,10 +33,29 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public void GetReportByIdAsync_UnauthorizedAccessException()
+        {
+            //Arrange
+            int Id = 2, year = 2020;
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstAsync(
+                It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
+                .ReturnsAsync(new RegionAnnualReport() { ID = 2 });
+            _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
+                .Returns(new RegionAnnualReportDTO() { ID = 2 });
+
+            // Act & Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
+                await _service.GetReportByIdAsync(new User(), Id, year));
+        }
+
+        [Test]
         public async Task GetReportByIdAsync_ReturnsRegionAnnualReportDTO()
         {
             // Arrange
             int Id = 2, year = 2020;
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstAsync(
                 It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
@@ -44,7 +63,7 @@ namespace EPlast.Tests.Services.Regions
             _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
                 .Returns(new RegionAnnualReportDTO() { ID = 2 });
             // Act
-            var result = await _service.GetReportByIdAsync(Id, year);
+            var result = await _service.GetReportByIdAsync(new User(), Id, year);
             // Assert
             Assert.IsInstanceOf<RegionAnnualReportDTO>(result);
             Assert.IsNotNull(result);

@@ -269,6 +269,21 @@ namespace EPlast.Tests.Services.Decision
         }
 
         [Test]
+        public async Task GetDecisionTargetListSearchAsyncTest()
+        {
+            //Arrange
+            List<DecisionTargetDTO> decisionTargets = GetTestDecisionTargetsDtoList();
+            _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
+                It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>())).ReturnsAsync(new List<DecesionTarget>());
+
+            //Act
+            var actualReturn = await _decisionService.GetDecisionTargetSearchListAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.AreEqual(decisionTargets.Aggregate("", (x, y) => y.TargetName), actualReturn.Aggregate("", (x, y) => y.TargetName));
+        }
+
+        [Test]
         public void GetDecisionStatusTypesTest()
         {
             //Arrange

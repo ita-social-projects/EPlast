@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
-        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters);
+        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId);
 
         /// <summary>
         /// Gets short users infos, by search string
@@ -86,5 +86,11 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get users which have only the specified roles
         /// </summary>
         Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+
+        Task<FilterTableParametersByRole> TableFilterParameters_byRole(IList<string> roles, string userId);
+        /// <summary>
+        ///Check if user is member of city
+        /// </summary>
+        Task<bool> IsCityMember(string userId);
     }
 }

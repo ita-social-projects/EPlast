@@ -115,7 +115,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IDecisionService, DecisionService>();
             services.AddScoped<IDecisionVmInitializer, DecisionVmInitializer>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
-            services.AddScoped<IDistinctionService, DistinctionService>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
             services.AddScoped<IEducatorsStaffTypesService, EducatorsStaffTypesService>();
             services.AddScoped<IEmailContentService, EmailContentService>();
@@ -160,7 +159,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IPdfService, PdfService>();
             services.AddScoped<IPicturesManager, PicturesManager>();
             services.AddScoped<IPlastDegreeService, PlastDegreeService>();
-            services.AddScoped<IPrecautionService, PrecautionService>();
             services.AddScoped<IRegionAccessService, RegionAccessService>();
             services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGoverningBodyAnnouncementService, GoverningBodyAnnouncementService>();
