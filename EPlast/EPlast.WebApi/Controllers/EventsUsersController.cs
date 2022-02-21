@@ -84,6 +84,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
+            if (createDTO.Event.EventDateStart >= createDTO.Event.EventDateEnd)
+            { 
+                return StatusCode(StatusCodes.Status400BadRequest, "End date was before start date");
+            }
+
             createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
 
             return Created(nameof(GetEventUserByUserId), createDTO);
