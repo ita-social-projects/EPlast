@@ -53,7 +53,7 @@ namespace EPlast.BLL.DTO.AnnualReport
 
         [Required(ErrorMessage = "Заповніть поле")]
         [Range(0, double.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public double PublicFunds { get; set; }
+        public double PublicFunds { get; set; } 
 
         [Required(ErrorMessage = "Заповніть поле")]
         [Range(0, double.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
