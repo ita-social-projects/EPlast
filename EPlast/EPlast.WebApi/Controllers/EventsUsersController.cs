@@ -88,7 +88,6 @@ namespace EPlast.WebApi.Controllers
             { 
                 return StatusCode(StatusCodes.Status400BadRequest, "End date was before start date");
             }
-
             createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
 
             return Created(nameof(GetEventUserByUserId), createDTO);
