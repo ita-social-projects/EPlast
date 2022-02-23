@@ -123,7 +123,7 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetAdminType_ReturnsAdminTypeId()
         {
             // Arrange
-            _repoWrapper.Setup(x => x.AdminType.GetFirstAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
+            _repoWrapper.Setup(x => x.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
                 It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
             .ReturnsAsync(new AdminType() { ID=2});
           
