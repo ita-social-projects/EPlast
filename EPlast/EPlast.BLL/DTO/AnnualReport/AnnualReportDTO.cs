@@ -52,20 +52,20 @@ namespace EPlast.BLL.DTO.AnnualReport
         public int NumberOfHonoraryMembers { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, double.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public double PublicFunds { get; set; } 
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public decimal PublicFunds { get; set; } 
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, double.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public double ContributionFunds { get; set; }
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public decimal ContributionFunds { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, double.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public double PlastSalary { get; set; }
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public decimal PlastSalary { get; set; }
 
         [Required(ErrorMessage = "Заповніть поле")]
-        [Range(0, double.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
-        public double SponsorshipFunds { get; set; }
+        [Range(0, (double)decimal.MaxValue, ErrorMessage = "Кількість не може бути від'ємною")]
+        public decimal SponsorshipFunds { get; set; }
 
         [MaxLength(2000, ErrorMessage = "Максимально допустима кількість символів 2000")]
         public string ListProperty { get; set; }
