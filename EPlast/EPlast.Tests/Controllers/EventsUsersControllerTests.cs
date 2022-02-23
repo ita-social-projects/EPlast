@@ -133,6 +133,23 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task EventCreate_ReturnNullReference()
+        {
+            // Arrange
+            eventUserManager
+                .Setup((x) => x.CreateEventAsync(null))
+                .ReturnsAsync(null);
+
+            // Act
+            var result = await eventsUsersController.EventCreate(CreateFakeEventCreate());
+            var resultValue = (result as CreatedResult).Value;
+
+            // Assert
+            Assert.IsInstanceOf<EventCreateDTO>(resultValue);
+            Assert.IsInstanceOf<CreatedResult>(result);
+        }
+
+        [Test]
         public async Task EventCreate_ReturnsCreatedResult()
         {
             // Arrange

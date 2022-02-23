@@ -9,6 +9,7 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,6 +61,11 @@ namespace EPlast.BLL.Services.EventUser
         {
             await GetAdministrationTypeId();
             model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджено");
+
+            if (model.Event.EventDateStart >= model.Event.EventDateEnd)
+            {
+                throw new InvalidOperationException();
+            }
 
             var eventToCreate = mapper.Map<EventCreationDTO, Event>(model.Event);
 
