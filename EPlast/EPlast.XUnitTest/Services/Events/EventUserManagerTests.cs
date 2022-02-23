@@ -16,7 +16,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace EPlast.XUnitTest.Services.Events
+namespace EPlast.XUnitTest.Services.EventUser
 {
     public class EventUserManagerTests
     {
@@ -112,7 +112,7 @@ namespace EPlast.XUnitTest.Services.Events
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { },
+                Event = new EventCreationDTO { EventDateStart = new DateTime(2020, 04, 30), EventDateEnd = new DateTime(2021, 04, 30) },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { },
                 Bunchuzhnyi = new EventAdministrationDTO { },
