@@ -12,6 +12,7 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace EPlast.Tests.Controllers
 {
@@ -130,6 +131,25 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
             Assert.AreEqual(expectedId, actual);
+        }
+        
+        [Test]
+        public async Task EventCreate_Returns400BadRequest()
+        {
+            // Arrange
+            eventUserManager
+                .Setup((x) => x.CreateEventAsync(It.IsAny<EventCreateDTO>()))
+                .Throws(new InvalidOperationException());
+
+            // Act
+            var result = await eventsUsersController.EventCreate(CreateFakeEventCreateDates());
+            var expected = StatusCodes.Status400BadRequest;
+            var actual = (result as ObjectResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expected, actual);
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ObjectResult>(result);
         }
 
         [Test]
@@ -273,6 +293,15 @@ namespace EPlast.Tests.Controllers
                 Event = new EventCreationDTO()
                 {
                     ID = 1,
+                },
+            };
+
+        private EventCreateDTO CreateFakeEventCreateDates()
+            => new EventCreateDTO()
+            {
+                Event = new EventCreationDTO
+                {
+                    EventDateStart = new DateTime(2021, 04, 30), EventDateEnd = new DateTime(2020, 04, 30) 
                 },
             };
     }
