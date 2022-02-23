@@ -97,7 +97,7 @@ namespace EPlast.XUnitTest.Services.EventUser
             _repoWrapper.Setup(r => r.Event.CreateAsync(It.IsAny<Event>()));
 
             //Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async() => await eventUserManager.CreateEventAsync(GetEventCreateDTOException()));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => eventUserManager.CreateEventAsync(GetEventCreateDTOException()));
         }
 
         [Fact]
