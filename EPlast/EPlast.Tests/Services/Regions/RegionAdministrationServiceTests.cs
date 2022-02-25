@@ -125,10 +125,11 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             _repoWrapper.Setup(x => x.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
                 It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
-            .ReturnsAsync(new AdminType() { ID=2});
-          
+            .ReturnsAsync(new AdminType() { ID = 2 });
+
             //Act
             var result = await _servise.GetAdminType(It.IsAny<string>());
+
             // Assert
             Assert.IsInstanceOf<int>(result);
             Assert.AreEqual(2, result);
@@ -136,6 +137,27 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        
+        public async Task GetAdminType_Throw_Null_of_AdminType_ReturnsAdminTypeId()
+        {
+            // Arrange
+            _repoWrapper.SetupSequence(x => x.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
+                It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
+            .ReturnsAsync((AdminType)null)
+            .ReturnsAsync(new AdminType() { ID = 2 });
+
+            //Act
+            var result = await _servise.GetAdminType(It.IsAny<string>());
+
+            // Assert
+            Assert.IsInstanceOf<int>(result);
+            Assert.AreEqual(2, result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+
+
         public async Task GetAdministrationAsync_ReturnsIEnumerableRegionAdministrationDTO()
         {
             // Arrange
