@@ -164,7 +164,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest("Проблеми з завантаженням файлу");
             }
             var query = new SaveDecisionAsyncCommand(decisionWrapper);
-            decisionWrapper.Decision.ID = await _mediator.Send(query); //_decisionService.SaveDecisionAsync(decisionWrapper);
+            decisionWrapper.Decision.ID = await _mediator.Send(query);
             var getDecisionOrganizationAsync = new GetDecisionOrganizationAsyncQuery(decisionWrapper.Decision.GoverningBody);
             var decisionOrganizations = (await _mediator.Send(getDecisionOrganizationAsync)).GoverningBodyName;
 
@@ -202,7 +202,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Download(string filename)
         {
             var query = new DownloadDecisionFileFromBlobAsyncQuery(filename);
-            var base64 = await _mediator.Send(query); //_decisionService.DownloadDecisionFileFromBlobAsync(filename);
+            var base64 = await _mediator.Send(query);
 
             return Ok(base64);
         }

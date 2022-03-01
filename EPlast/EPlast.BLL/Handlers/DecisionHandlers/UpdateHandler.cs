@@ -11,12 +11,10 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
     public class UpdateHandler: IRequestHandler<UpdateCommand>
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IMapper _mapper;
 
         public UpdateHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
             _repoWrapper = repositoryWrapper;
-            _mapper = mapper;
         }
 
         public async Task<Unit> Handle(UpdateCommand request, CancellationToken cancellationToken)

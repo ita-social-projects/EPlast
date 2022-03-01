@@ -13,13 +13,11 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
     public class DeleteDecisionAsyncHandler:IRequestHandler<DeleteDecisionAsyncCommand>
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly IMapper _mapper;
         private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
 
         public DeleteDecisionAsyncHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IDecisionBlobStorageRepository decisionBlobStorage)
         {
             _repoWrapper = repositoryWrapper;
-            _mapper = mapper;
             _decisionBlobStorage = decisionBlobStorage;
         }
 
