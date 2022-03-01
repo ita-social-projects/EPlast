@@ -21,9 +21,9 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<GoverningBodyDTO> Handle(GetDecisionOrganizationAsyncQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(request.governingBody.GoverningBodyName)
-                   ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == request.governingBody.Id)
-                   : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(request.governingBody.GoverningBodyName)));
+            return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(request.GoverningBody.GoverningBodyName)
+                   ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == request.GoverningBody.Id)
+                   : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(request.GoverningBody.GoverningBodyName)));
 
         }
     }

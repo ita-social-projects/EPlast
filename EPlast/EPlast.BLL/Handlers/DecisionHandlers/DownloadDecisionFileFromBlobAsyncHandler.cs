@@ -19,7 +19,7 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<string> Handle(DownloadDecisionFileFromBlobAsyncQuery request, CancellationToken cancellationToken)
         {
-            return await _decisionBlobStorage.GetBlobBase64Async(request.fileName);
+            return await _decisionBlobStorage.GetBlobBase64Async(request.FileName);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<Unit> Handle(UploadFileToBlobAsyncCommand request, CancellationToken cancellationToken)
         {
-            await _decisionBlobStorage.UploadBlobForBase64Async(request.base64, request.fileName);
+            await _decisionBlobStorage.UploadBlobForBase64Async(request.Base64, request.FileName);
 
             return Unit.Value;
         }

@@ -25,20 +25,20 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<int> Handle(SaveDecisionAsyncCommand request, CancellationToken cancellationToken)
         {
-            var query = new CreateDecisionTargetAsyncCommand(request.decision.Decision.DecisionTarget.TargetName);
-            request.decision.Decision.DecisionTarget = await _mediator.Send(query);
-            var repoDecision = _mapper.Map<Decesion>(request.decision.Decision);
+            var query = new CreateDecisionTargetAsyncCommand(request.Decision.Decision.DecisionTarget.TargetName);
+            request.Decision.Decision.DecisionTarget = await _mediator.Send(query);
+            var repoDecision = _mapper.Map<Decesion>(request.Decision.Decision);
             _repoWrapper.Decesion.Attach(repoDecision);
             _repoWrapper.Decesion.Create(repoDecision);
-            if (request.decision.FileAsBase64 != null)
+            if (request.Decision.FileAsBase64 != null)
             {
                 repoDecision.FileName = $"{_uniqueId.GetUniqueId()}{repoDecision.FileName}";
-                var uploadFileToBlobAsync = new UploadFileToBlobAsyncCommand(request.decision.FileAsBase64, repoDecision.FileName);
+                var uploadFileToBlobAsync = new UploadFileToBlobAsyncCommand(request.Decision.FileAsBase64, repoDecision.FileName);
                 await _mediator.Send(uploadFileToBlobAsync);
             }
             await _repoWrapper.SaveAsync();
 
-            return request.decision.Decision.ID;
+            return request.Decision.Decision.ID;
         }
     }
 }

@@ -21,10 +21,10 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<Unit> Handle(UpdateCommand request, CancellationToken cancellationToken)
         {
-            Decesion decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == request.decisionDTO.ID);
-            decision.Name = request.decisionDTO.Name;
-            decision.Description = request.decisionDTO.Description;
-            decision.DecesionStatusType = (DecesionStatusType)request.decisionDTO.DecisionStatusType;
+            Decesion decision = await _repoWrapper.Decesion.GetFirstAsync(x => x.ID == request.DecisionDto.ID);
+            decision.Name = request.DecisionDto.Name;
+            decision.Description = request.DecisionDto.Description;
+            decision.DecesionStatusType = (DecesionStatusType)request.DecisionDto.DecisionStatusType;
             _repoWrapper.Decesion.Update(decision);
             await _repoWrapper.SaveAsync();
 

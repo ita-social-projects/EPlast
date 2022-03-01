@@ -24,7 +24,7 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<IEnumerable<DecisionTargetDTO>> Handle(GetDecisionTargetSearchListAsyncQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()).Where(d => d.TargetName.Contains(request.searchedData)));
+            return _mapper.Map<IEnumerable<DecisionTargetDTO>>((await _repoWrapper.DecesionTarget.GetAllAsync()).Where(d => d.TargetName.Contains(request.SearchedData)));
         }
     }
 }

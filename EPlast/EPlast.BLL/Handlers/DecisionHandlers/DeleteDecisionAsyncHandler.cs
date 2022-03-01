@@ -25,9 +25,9 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<Unit> Handle(DeleteDecisionAsyncCommand request, CancellationToken cancellationToken)
         {
-            var decision = (await _repoWrapper.Decesion.GetFirstAsync(d => d.ID == request.id));
+            var decision = (await _repoWrapper.Decesion.GetFirstAsync(d => d.ID == request.Id));
             if (decision == null)
-                throw new ArgumentNullException($"Decision with {request.id} id not found");
+                throw new ArgumentNullException($"Decision with {request.Id} id not found");
             _repoWrapper.Decesion.Delete(decision);
             if (decision.FileName != null)
                 await _decisionBlobStorage.DeleteBlobAsync(decision.FileName);
