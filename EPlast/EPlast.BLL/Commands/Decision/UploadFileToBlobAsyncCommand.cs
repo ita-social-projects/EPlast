@@ -5,12 +5,12 @@ namespace EPlast.BLL.Commands.Decision
 {
     public class UploadFileToBlobAsyncCommand : IRequest
     {
-        public string base64 { get; set; }
-        public string fileName { get; set; }
-        public UploadFileToBlobAsyncCommand(string _base64, string _fileName)
+        public string Base64 { get; set; }
+        public string FileName { get; set; }
+        public UploadFileToBlobAsyncCommand(string base64, string fileName)
         {
-            base64 = _base64;
-            fileName = _fileName;
+            Base64 = base64;
+            FileName = fileName;
         }
     }
 }

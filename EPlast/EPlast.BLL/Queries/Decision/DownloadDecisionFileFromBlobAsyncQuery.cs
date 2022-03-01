@@ -5,10 +5,10 @@ namespace EPlast.BLL.Queries.Decision
 {
     public class DownloadDecisionFileFromBlobAsyncQuery: IRequest<string>
     {
-        public string fileName { get; set; }
+        public string FileName { get; set; }
         public DownloadDecisionFileFromBlobAsyncQuery(string fileName)
         {
-            this.fileName = fileName;
+            FileName = fileName;
         }
     }
 }

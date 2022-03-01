@@ -5,10 +5,10 @@ namespace EPlast.BLL.Commands.Decision
 {
     public class SaveDecisionAsyncCommand : IRequest<int>
     {      
-        public DecisionWrapperDTO decision { get; set; }
-        public SaveDecisionAsyncCommand(DecisionWrapperDTO _decisionWrapper)
+        public DecisionWrapperDTO Decision { get; set; }
+        public SaveDecisionAsyncCommand(DecisionWrapperDTO decisionWrapper)
         {
-            decision = _decisionWrapper;
+            Decision = decisionWrapper;
         }
     }
 }

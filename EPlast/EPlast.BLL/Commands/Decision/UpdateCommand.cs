@@ -6,10 +6,10 @@ namespace EPlast.BLL.Commands.Decision
 {
     public class UpdateCommand: IRequest
     {
-        public DecisionDTO decisionDTO { get; set; }
-        public UpdateCommand(DecisionDTO _decisionDTO)
+        public DecisionDTO DecisionDto { get; set; }
+        public UpdateCommand(DecisionDTO decisionDTO)
         {
-            decisionDTO = _decisionDTO;
+            DecisionDto = decisionDTO;
         }
     }
 }

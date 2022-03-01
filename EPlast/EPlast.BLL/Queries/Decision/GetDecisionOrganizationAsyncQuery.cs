@@ -6,10 +6,10 @@ namespace EPlast.BLL.Queries.Decision
 {
     public class GetDecisionOrganizationAsyncQuery : IRequest<GoverningBodyDTO>
     {
-        public GoverningBodyDTO governingBody { get; set; }
-        public GetDecisionOrganizationAsyncQuery(GoverningBodyDTO _governingBody)
+        public GoverningBodyDTO GoverningBody { get; set; }
+        public GetDecisionOrganizationAsyncQuery(GoverningBodyDTO governingBody)
         {
-            governingBody = _governingBody;
+            GoverningBody = governingBody;
         }
     }
 }

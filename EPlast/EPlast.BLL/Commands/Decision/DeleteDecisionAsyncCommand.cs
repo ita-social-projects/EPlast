@@ -5,10 +5,10 @@ namespace EPlast.BLL.Commands.Decision
 {
     public class DeleteDecisionAsyncCommand: IRequest
     {
-        public int id { get; set; }
-        public DeleteDecisionAsyncCommand(int _id)
+        public int Id { get; set; }
+        public DeleteDecisionAsyncCommand(int id)
         {
-            id = _id;
+            Id = id;
         }
     }
 }

@@ -6,10 +6,10 @@ namespace EPlast.BLL.Queries.Decision
 {
     public class GetDecisionTargetSearchListAsyncQuery: IRequest<IEnumerable<DecisionTargetDTO>>
     {
-        public string searchedData { get; set; }
-        public GetDecisionTargetSearchListAsyncQuery(string _searchedData)
+        public string SearchedData { get; set; }
+        public GetDecisionTargetSearchListAsyncQuery(string searchedData)
         {
-            searchedData = _searchedData;
+            SearchedData = searchedData;
         }     
     }
 }
