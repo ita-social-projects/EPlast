@@ -47,7 +47,7 @@ then make sure that the required data is written to the table [AspNetRoles],if n
 The instructions below will allow you to run application locally in the containers for developing and testing purpose. 
 
 5.1. Installation Prerequisites:<br/>
-     -  [Docker](https://www.docker.com) version 17.05 or higher, [Docker Compose] (https://docs.docker.com/compose). If you are running Microsoft Windows family OS, it is better to use [docker-desktop](https://www.docker.com/products/docker-desktop).     
+     -  [Docker](https://www.docker.com) version 17.05 or higher, [Docker Compose] (https://docs.docker.com/compose). If you are running Microsoft Windows family OS, it is better to use [docker-desktop](https://www.docker.com/products/docker-desktop). How to [set up](https://drive.google.com/file/d/1K55JtMZ_--rkW1Xk9easkz8RUW3AZCUp/view) a docker.
      - [Microsoft SQL Server 2017+](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) or access to cloud MSSQL server with deployed database.     
      - Access to the Azure Storage.
      
