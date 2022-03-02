@@ -26,5 +26,7 @@ namespace EPlast.BLL.Interfaces.Region
 
         Task<IEnumerable<AdminTypeDTO>> GetAllAdminTypes();
         Task RemoveAdminRolesByUserIdAsync(string userId);
+
+        Task EditStatusAdministration(int adminId, bool status = false);
     }
 }

@@ -792,6 +792,18 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
+        [Test]
+        public async Task EditStatus_ReturnsRegions()
+        {
+            // Arrange
+            int id = 2;
+
+            // Act
+            var result = await _regionController.EditStatus(id);
+
+            // Assert
+            Assert.IsInstanceOf<OkResult>(result);
+        }
 
         [Test]
         public async Task GetRegionMembersInfo_ReturnsOk()
