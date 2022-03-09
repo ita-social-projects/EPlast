@@ -19,7 +19,6 @@ namespace EPlast.BLL.Services
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly IEmailContentService _emailContentService;
-        //private readonly ICityService _cityService;
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
         private readonly IRepositoryWrapper _repoWrapper;
