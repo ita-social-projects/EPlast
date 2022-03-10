@@ -77,13 +77,7 @@ namespace EPlast.BLL.Services.EventUser
                     EventAdministrationTypeID = commandantTypeId,
                     EventID = eventToCreate.ID,
                 },
-                 /*new EventAdministration
-                 {
-                    UserID = model.Alternate.UserId,
-                    EventAdministrationTypeID = alternateTypeId,
-                    EventID = eventToCreate.ID,
-                 },*/
-                  new EventAdministration
+                 new EventAdministration
                   {
                     UserID = model.Bunchuzhnyi.UserId,
                     EventAdministrationTypeID = bunchuzhnyiTypeID,
