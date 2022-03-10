@@ -85,6 +85,25 @@ namespace EPlast.XUnitTest.Services.EventUser
         }
 
         [Fact]
+        public async Task CreateEventTestWithoutAlternate()
+        {
+            int statusId = 1;
+            _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
+
+            _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
+                .Returns(new Event());
+            _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
+            _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
+            _repoWrapper.Setup(r => r.Event.CreateAsync(It.IsAny<Event>()));
+
+            //Act
+            var methodResult = await eventUserManager.CreateEventAsync(GetEventCreateDTOWithoutAlternate());
+
+            //Assert
+            Assert.IsType<int>(methodResult);
+        }
+
+        [Fact]
         public async Task CreateEventExceptionTest()
         {
             int statusId = 1;
@@ -131,6 +150,31 @@ namespace EPlast.XUnitTest.Services.EventUser
                 Event = new EventCreationDTO { EventDateStart = new DateTime(2020, 04, 30), EventDateEnd = new DateTime(2021, 04, 30) },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { },
+                Bunchuzhnyi = new EventAdministrationDTO { },
+                Pysar = new EventAdministrationDTO { },
+                EventCategories = new List<EventCategoryDTO>
+                {
+                    new EventCategoryDTO { }
+                },
+                EventTypes = new List<EventTypeDTO>
+                {
+                    new EventTypeDTO { }
+                },
+                Users = new List<UserInfoDTO>
+                {
+                    new UserInfoDTO { }
+                }
+            };
+            return eventCreate;
+        }
+
+        public EventCreateDTO GetEventCreateDTOWithoutAlternate()
+        {
+            var eventCreate = new EventCreateDTO
+            {
+                Event = new EventCreationDTO { EventDateStart = new DateTime(2020, 04, 30), EventDateEnd = new DateTime(2021, 04, 30) },
+                Сommandant = new EventAdministrationDTO { },
+                Alternate = new EventAdministrationDTO { UserId = null },
                 Bunchuzhnyi = new EventAdministrationDTO { },
                 Pysar = new EventAdministrationDTO { },
                 EventCategories = new List<EventCategoryDTO>
