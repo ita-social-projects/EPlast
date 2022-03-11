@@ -78,12 +78,6 @@ namespace EPlast.BLL.Services.EventUser
                     EventID = eventToCreate.ID,
                 },
                  new EventAdministration
-                 {
-                    UserID = model.Alternate.UserId,
-                    EventAdministrationTypeID = alternateTypeId,
-                    EventID = eventToCreate.ID,
-                 },
-                  new EventAdministration
                   {
                     UserID = model.Bunchuzhnyi.UserId,
                     EventAdministrationTypeID = bunchuzhnyiTypeID,
@@ -96,7 +90,15 @@ namespace EPlast.BLL.Services.EventUser
                     EventID = eventToCreate.ID,
                    },
             };
-
+            if (model.Alternate.UserId != null)
+            {
+                administrationList.Add(new EventAdministration
+                {
+                    UserID = model.Alternate.UserId,
+                    EventAdministrationTypeID = alternateTypeId,
+                    EventID = eventToCreate.ID,
+                });
+            }
             eventToCreate.EventAdministrations = administrationList;
 
             await repoWrapper.Event.CreateAsync(eventToCreate);
