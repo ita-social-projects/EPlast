@@ -104,6 +104,27 @@ namespace EPlast.XUnitTest.Services.EventUser
         }
 
         [Fact]
+        public async Task CreateEventTestWithAlternate()
+        {
+            int statusId = 1;
+            _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
+
+            _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
+                .Returns(new Event());
+            _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
+            _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
+            _repoWrapper.Setup(r => r.Event.CreateAsync(It.IsAny<Event>()));
+
+            //Act
+            var param = GetEventCreateDTOWithoutAlternate();
+            param.Alternate.UserId = "0";
+            var methodResult = await eventUserManager.CreateEventAsync(param);
+
+            //Assert
+            Assert.IsType<int>(methodResult);
+        }
+
+        [Fact]
         public async Task CreateEventExceptionTest()
         {
             int statusId = 1;
