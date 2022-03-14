@@ -132,7 +132,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (ModelState.IsValid)
             {
-                var users = await _adminService.GetUsersForGoverningBodies();
+                var users = await _adminService.GetUsersForGoverningBodiesAsync();
                 return Ok(users);
             }
             return BadRequest();

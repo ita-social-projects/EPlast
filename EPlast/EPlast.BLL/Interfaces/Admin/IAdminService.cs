@@ -80,7 +80,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <summary>
         /// Get users which have PlastMember role with field IsInDeputyRole
         /// </summary>
-        Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodies();
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodiesAsync();
 
         /// <summary>
         /// Get users which have all the specified roles

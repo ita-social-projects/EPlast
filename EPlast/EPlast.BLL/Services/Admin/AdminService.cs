@@ -341,7 +341,7 @@ namespace EPlast.BLL.Services
             return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved)).Any();
         }
 
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodies()
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodiesAsync()
         {
             var adminRoles = new List<string>
             {
