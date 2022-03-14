@@ -119,7 +119,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [TestCase(1)]
-        public async Task AddPlastDegreeForUser_InValidForCityAdmin(int degreeId)
+        public async Task AddPlastDegreeForUser_ValidForCityAdmin(int degreeId)
         {
             //Arrange
             bool successfulAdded = true;
@@ -138,7 +138,12 @@ namespace EPlast.Tests.Controllers
             var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = degreeId, UserId = _userId });
 
             //Assert
-            Assert.IsInstanceOf<StatusCodeResult>(result);
+            //Assert
+            Assert.IsInstanceOf<CreatedResult>(result);
+            var cr = (CreatedResult)result;
+            Assert.NotNull(cr.Value);
+            Assert.IsInstanceOf<int>(cr.Value);
+            Assert.AreEqual(degreeId, cr.Value);
         }
 
         [TestCase(3)]
