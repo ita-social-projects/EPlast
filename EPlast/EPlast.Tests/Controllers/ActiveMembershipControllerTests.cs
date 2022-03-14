@@ -138,7 +138,6 @@ namespace EPlast.Tests.Controllers
             var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = degreeId, UserId = _userId });
 
             //Assert
-            //Assert
             Assert.IsInstanceOf<CreatedResult>(result);
             var cr = (CreatedResult)result;
             Assert.NotNull(cr.Value);
