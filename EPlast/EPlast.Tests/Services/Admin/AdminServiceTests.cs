@@ -932,7 +932,7 @@ namespace EPlast.Tests.Services
             var res = (await service.GetUsersForGoverningBodiesAsync());
 
             //Assert
-            Assert.AreEqual(0, res.Count());
+            Assert.AreEqual(res.Count(), 0);
         }
 
         [Test]
