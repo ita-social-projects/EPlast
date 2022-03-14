@@ -49,7 +49,9 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             var userRoles = await _userManager.GetRolesAsync(user);
 
             if (!userRoles.Contains(Roles.PlastMember))
+            {
                 throw new ArgumentException("Can't add user with the roles");
+            }
 
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodySectorHead ?
                 Roles.GoverningBodySectorHead : 
