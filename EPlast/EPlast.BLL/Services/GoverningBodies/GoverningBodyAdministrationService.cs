@@ -48,14 +48,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var allowedRoles = new List<List<string>>
-            {
-                { new List<string>(){ Roles.PlastMember } },
-                { new List<string>(){ Roles.PlastMember, Roles.KurinHead } },
-                { new List<string>(){ Roles.PlastMember, Roles.KurinHeadDeputy } }
-            };
-
-            if (!allowedRoles.Any(x => x.OrderByDescending(x => x).SequenceEqual(userRoles.OrderByDescending(x => x))))
+            if (!userRoles.Contains(Roles.PlastMember))
                 throw new ArgumentException("Can't add user with the roles");
 
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? 
