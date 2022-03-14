@@ -3,9 +3,11 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,7 +24,7 @@ namespace EPlast.BLL.Services.City
         private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ICityService _cityService;
+        private readonly IMediator _mediator;
         private readonly UserManager<User> _userManager;
 
         public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
@@ -30,7 +32,7 @@ namespace EPlast.BLL.Services.City
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
                                        IEmailSendingService emailSendingService,
-                                       ICityService cityService,
+                                       IMediator mediator,
                                        IEmailContentService emailContentService)
         {
             _repositoryWrapper = repositoryWrapper;
@@ -38,7 +40,7 @@ namespace EPlast.BLL.Services.City
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
-            _cityService = cityService;
+            _mediator = mediator;
             _emailContentService = emailContentService;
         }
 
@@ -120,7 +122,8 @@ namespace EPlast.BLL.Services.City
                 
             };
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
-            var regionId = await _cityService.GetByIdAsync(cityId);
+            var query = new GetCityByIdQuery(cityId);
+            var regionId = await _mediator.Send(query);
             var regionAdministrations =
                 await _repositoryWrapper.RegionAdministration.GetAllAsync(d =>
                     d.UserId == userId && d.Status && d.RegionId != regionId.RegionId);

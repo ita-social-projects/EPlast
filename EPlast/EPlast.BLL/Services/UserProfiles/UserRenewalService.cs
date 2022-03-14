@@ -7,12 +7,14 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using MediatR;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -20,7 +22,7 @@ namespace EPlast.BLL.Services.UserProfiles
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        private readonly ICityService _cityService;
+        private readonly IMediator _mediator;
         private readonly ICityParticipantsService _cityParticipantsService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly IEmailContentService _emailContentService;
@@ -29,7 +31,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public UserRenewalService(
             IRepositoryWrapper repoWrapper,
             IMapper mapper,
-            ICityService cityService,
+            IMediator mediator,
             ICityParticipantsService cityParticipantsService,
             IEmailSendingService emailSendingService,
             IEmailContentService emailContentService,
@@ -37,7 +39,7 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
-            _cityService = cityService;
+            _mediator = mediator;
             _cityParticipantsService = cityParticipantsService;
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
@@ -81,8 +83,8 @@ namespace EPlast.BLL.Services.UserProfiles
         {
             if ((await _userManager.GetRolesAsync(user)).Contains(Roles.Admin)) 
                 return true;
-
-            var validAdmins = (await _cityService.GetCityAdminsIdsAsync(cityId)).Split(",");
+            var query = new GetCityAdminsIdsQuery(cityId);
+            var validAdmins = (await _mediator.Send(query)).Split(",");
             return validAdmins.Any(admin => user.Id == admin);
         }
 
@@ -97,7 +99,8 @@ namespace EPlast.BLL.Services.UserProfiles
         public async Task SendRenewalConfirmationEmailAsync(string userId, int cityId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            var cityName = (await _cityService.GetCityByIdAsync(cityId)).Name;
+            var query = new GetCityByIdQuery(cityId);
+            var cityName = (await _mediator.Send(query)).Name;
             var emailContent = _emailContentService.GetUserRenewalConfirmationEmail(cityName);
             await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
