@@ -122,6 +122,23 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get users which have PlastMember role with field IsInDeputyRole
+        /// </summary>
+        /// <returns>User with roles</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Roles are null</response>
+        [HttpGet("GetUsersForGoverningBodies")]
+        public async Task<IActionResult> GetUsersForGoverningBodies()
+        {
+            if (ModelState.IsValid)
+            {
+                var users = await _adminService.GetUsersForGoverningBodies();
+                return Ok(users);
+            }
+            return BadRequest();
+        }
+
+        /// <summary>
         /// Get users which have only the specified roles
         /// </summary>
         /// <param name="roles"></param>

@@ -78,6 +78,11 @@ namespace EPlast.BLL.Services.Interfaces
         Task<IEnumerable<ShortUserInformationDTO>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
 
         /// <summary>
+        /// Get users which have PlastMember role with field IsInDeputyRole
+        /// </summary>
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodies();
+
+        /// <summary>
         /// Get users which have all the specified roles
         /// </summary>
         Task<IEnumerable<ShortUserInformationDTO>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);

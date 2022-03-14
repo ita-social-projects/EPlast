@@ -340,5 +340,30 @@ namespace EPlast.BLL.Services
         {
             return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved)).Any();
         }
+
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodies()
+        {
+            var adminRoles = new List<string>
+            {
+                Roles.GoverningBodyHead,
+                Roles.GoverningBodySecretary,
+                Roles.GoverningBodySectorHead,
+                Roles.GoverningBodySectorSecretary
+            };
+            var users = await _repoWrapper.User.GetAllAsync();
+            var usersDtos = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains(Roles.PlastMember))
+                    {
+                        var IsInDeputyRole = roles.Intersect(adminRoles).Any();
+                        var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                        shortUser.IsInDeputyRole = IsInDeputyRole;
+                        usersDtos.Add(shortUser);
+                    }
+            }
+            return usersDtos;
+        }
     }
 }
