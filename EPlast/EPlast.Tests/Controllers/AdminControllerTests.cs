@@ -446,7 +446,22 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
         }
-        
+
+        [Test]
+        public async Task GetUsersForGoverningBodies_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _adminService.Setup(x => x.GetUsersForGoverningBodiesAsync())
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            AdminController adminController = CreateAdminController;
+
+            //Act
+            var res = await adminController.GetUsersForGoverningBodies();
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
+
         [Test]
         public async Task GetUsersByExactRoles_ReturnsOkObjectResult()
         {
