@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220315103905_questionFieldNoMoreRequiredInActionForm")]
+    partial class questionFieldNoMoreRequiredInActionForm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,8 +124,8 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int?>("ClubID")
                         .HasColumnType("int");
 
-                    b.Property<int>("ContributionFunds")
-                        .HasColumnType("int");
+                    b.Property<decimal>("ContributionFunds")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(450)");
@@ -175,14 +177,14 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("NumberOfTeachers")
                         .HasColumnType("int");
 
-                    b.Property<int>("PlastSalary")
-                        .HasColumnType("int");
+                    b.Property<decimal>("PlastSalary")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("PublicFunds")
-                        .HasColumnType("int");
+                    b.Property<decimal>("PublicFunds")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("SponsorshipFunds")
-                        .HasColumnType("int");
+                    b.Property<decimal>("SponsorshipFunds")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -2489,48 +2491,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Religions");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Section", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Sections");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Subsection", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SectionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SectionId");
-
-                    b.ToTable("Subsections");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Terms", b =>
