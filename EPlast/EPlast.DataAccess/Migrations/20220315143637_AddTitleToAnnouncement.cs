@@ -7,12 +7,12 @@ namespace EPlast.DataAccess.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Titile",
+                name: "Title",
                 table: "SectorAnnouncement",
                 nullable: true);
 
             migrationBuilder.AddColumn<string>(
-                name: "Titile",
+                name: "Title",
                 table: "GoverningBodyAnnouncement",
                 nullable: true);
         }
@@ -20,11 +20,11 @@ namespace EPlast.DataAccess.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Titile",
+                name: "Title",
                 table: "SectorAnnouncement");
 
             migrationBuilder.DropColumn(
-                name: "Titile",
+                name: "Title",
                 table: "GoverningBodyAnnouncement");
         }
     }
