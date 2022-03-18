@@ -76,12 +76,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         }
 
         /// <inheritdoc/>
-        public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize)
+        public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize, int governingBodyId)
         {
             var order = GetOrder();
             var selector = GetSelector();
             var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(null, selector, order, null, pageNumber, pageSize);
-            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1);
+            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1.Where(x => x.GoverningBodyId == governingBodyId));
 
             foreach (var ann in announcements)
             {
@@ -89,7 +89,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
                     await _repoWrapper.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(i => i.GoverningBodyAnnouncementId == ann.Id)
                     != null;
             }
-            var rows = tuple.Item2;
+            var rows = announcements.Count();
 
             return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>
                 (announcements, rows);
@@ -192,13 +192,15 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             new GoverningBodyAnnouncement { 
                 Id = x.Id,
                 UserId = x.UserId,
-                Text = x.Text, 
+                Text = x.Text,
+                Title = x.Title,
                 User = new User
                 {
                     FirstName = x.User.FirstName,
                     LastName = x.User.LastName,
                     ImagePath = x.User.ImagePath
                 }, 
+                GoverningBodyId = x.GoverningBodyId,
                 Date = x.Date };
             return expr;
         }
