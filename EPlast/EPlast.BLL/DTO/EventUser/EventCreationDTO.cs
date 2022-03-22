@@ -10,18 +10,18 @@ namespace EPlast.BLL.DTO.EventUser
         public string EventName { get; set; }
         [Required(ErrorMessage = "This field can't be empty")]
         public string Description { get; set; }
-        [Required(ErrorMessage = "This field can't be empty")]
         public string Questions { get; set; }
         [Required(ErrorMessage = "This field can't be empty")]
+        private DateTime _eventDateStart;
         public DateTime EventDateStart { get; set; }
         [Required(ErrorMessage = "This field can't be empty")]
         public DateTime EventDateEnd
         {
-            get { return EventDateEnd; }
+            get { return _eventDateStart; }
             set
             {
                 if (value > EventDateStart)
-                    EventDateEnd = value;
+                    _eventDateStart = value;
             }
         }
         [Required(ErrorMessage = "This field can't be empty")]

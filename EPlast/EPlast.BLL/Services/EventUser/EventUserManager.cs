@@ -9,6 +9,7 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,6 +62,11 @@ namespace EPlast.BLL.Services.EventUser
             await GetAdministrationTypeId();
             model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджено");
 
+            if (model.Event.EventDateStart >= model.Event.EventDateEnd)
+            {
+                throw new InvalidOperationException();
+            }
+
             var eventToCreate = mapper.Map<EventCreationDTO, Event>(model.Event);
 
             var administrationList = new List<EventAdministration>
@@ -72,12 +78,6 @@ namespace EPlast.BLL.Services.EventUser
                     EventID = eventToCreate.ID,
                 },
                  new EventAdministration
-                 {
-                    UserID = model.Alternate.UserId,
-                    EventAdministrationTypeID = alternateTypeId,
-                    EventID = eventToCreate.ID,
-                 },
-                  new EventAdministration
                   {
                     UserID = model.Bunchuzhnyi.UserId,
                     EventAdministrationTypeID = bunchuzhnyiTypeID,
@@ -90,7 +90,15 @@ namespace EPlast.BLL.Services.EventUser
                     EventID = eventToCreate.ID,
                    },
             };
-
+            if (model.Alternate.UserId != null)
+            {
+                administrationList.Add(new EventAdministration
+                {
+                    UserID = model.Alternate.UserId,
+                    EventAdministrationTypeID = alternateTypeId,
+                    EventID = eventToCreate.ID,
+                });
+            }
             eventToCreate.EventAdministrations = administrationList;
 
             await repoWrapper.Event.CreateAsync(eventToCreate);

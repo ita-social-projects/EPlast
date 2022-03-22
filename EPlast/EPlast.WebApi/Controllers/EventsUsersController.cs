@@ -8,6 +8,7 @@ using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -84,9 +85,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
         {
-            createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
+            try
+            {
+                createDTO.Event.ID = await eventUserManager.CreateEventAsync(createDTO);
 
-            return Created(nameof(GetEventUserByUserId), createDTO);
+                return Created(nameof(GetEventUserByUserId), createDTO);
+            }
+            catch (InvalidOperationException)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new { message = "End date was before start day" });
+            }
         }
 
         /// <summary>

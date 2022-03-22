@@ -3,11 +3,12 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -24,7 +25,7 @@ namespace EPlast.BLL.Services.Region
         private readonly IMapper _mapper;
         private readonly IRegionBlobStorageRepository _regionBlobStorage;
         private readonly IRegionFilesBlobStorageRepository _regionFilesBlobStorageRepository;
-        private readonly ICityService _cityService;
+        private readonly IMediator _mediator;
         private readonly IUniqueIdService _uniqueId;
         private readonly UserManager<User> _userManager;
 
@@ -32,14 +33,14 @@ namespace EPlast.BLL.Services.Region
             IMapper mapper,
             IRegionFilesBlobStorageRepository regionFilesBlobStorageRepository,
             IRegionBlobStorageRepository regionBlobStorage,
-            ICityService cityService,
+            IMediator mediator,
             IUniqueIdService uniqueId, UserManager<User> userManager)
         {
             _regionFilesBlobStorageRepository = regionFilesBlobStorageRepository;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _regionBlobStorage = regionBlobStorage;
-            _cityService = cityService;
+            _mediator = mediator;
             _uniqueId = uniqueId;
             _userManager = userManager;
         }
@@ -156,8 +157,8 @@ namespace EPlast.BLL.Services.Region
             var documents = await _repoWrapper
                 .RegionDocument
                 .GetAllAsync(d => d.RegionId == regionId);
-
-            var cities = await _cityService.GetCitiesByRegionAsync(regionId);
+            var query = new GetCitiesByRegionQuery(regionId);
+            var cities = await _mediator.Send(query);
             regionProfile.Cities = cities;
             regionProfile.City = region.City;
             regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
