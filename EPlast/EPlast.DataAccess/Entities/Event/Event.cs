@@ -13,7 +13,6 @@ namespace EPlast.DataAccess.Entities.Event
         [Required(ErrorMessage = "Поле з введеними змінами обовязкове!")]
         [MaxLength(200, ErrorMessage = "Текст не може перевищувати 200 символів")]
         public string Description { get; set; }
-        [Required(ErrorMessage = "Поле питаннями обовязкове!")]
         [MaxLength(200, ErrorMessage = "Питання не можуть перевищувати 200 символів")]
         public string Questions { get; set; }
         [Required(ErrorMessage = "Вам потрібно обрати дату початку!")]

@@ -1288,7 +1288,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(6);
 
                     b.Property<string>("Questions")
-                        .IsRequired()
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 

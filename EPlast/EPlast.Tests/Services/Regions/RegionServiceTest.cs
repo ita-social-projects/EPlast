@@ -3,11 +3,12 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
@@ -16,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
@@ -27,7 +29,7 @@ namespace EPlast.Tests.Services.Regions
         private Mock<IMapper> _mapper;
         private Mock<IRegionBlobStorageRepository> _regionBlobStorage;
         private Mock<IRegionFilesBlobStorageRepository> _regionFilesBlobStorageRepository;
-        private Mock<ICityService> _cityService;
+        private Mock<IMediator> _mediator;
         private Mock<IUniqueIdService> _uniqueId;
         private Mock<UserManager<User>> _userManager;
         private RegionService _regionService;
@@ -39,13 +41,13 @@ namespace EPlast.Tests.Services.Regions
             _mapper = new Mock<IMapper>();
             _regionBlobStorage = new Mock<IRegionBlobStorageRepository>();
             _regionFilesBlobStorageRepository = new Mock<IRegionFilesBlobStorageRepository>();
-            _cityService = new Mock<ICityService>();
+            _mediator = new Mock<IMediator>();
             _uniqueId = new Mock<IUniqueIdService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _regionService = new RegionService(
                 _repoWrapper.Object, _mapper.Object, _regionFilesBlobStorageRepository.Object,
-                _regionBlobStorage.Object, _cityService.Object, _uniqueId.Object, _userManager.Object
+                _regionBlobStorage.Object, _mediator.Object, _uniqueId.Object, _userManager.Object
                 );
         }
 
@@ -625,9 +627,7 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new Region());
-            _cityService
-                .Setup(x => x.GetCitiesByRegionAsync(It.IsAny<int>()))
-                .ReturnsAsync(cities);
+            _mediator.Setup(x => x.Send(It.IsAny<GetCitiesByRegionQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(cities);
             _mapper
                 .Setup(x => x.Map<RegionDTO, RegionProfileDTO>(It.IsAny<RegionDTO>()))
                 .Returns(regionProfileDTO);

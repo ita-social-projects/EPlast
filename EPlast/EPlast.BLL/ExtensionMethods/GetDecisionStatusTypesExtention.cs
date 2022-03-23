@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EPlast.BLL
+namespace EPlast.BLL.ExtensionMethods
 {
-    public class DecisionVmInitializer : IDecisionVmInitializer
+    public class GetDecisionStatusTypesExtention : IDecisionVmInitializer
     {
         public IEnumerable<SelectListItem> GetDecesionStatusTypes() =>
             (from Enum decisionStatusType in Enum.GetValues(typeof(DecesionStatusType))
