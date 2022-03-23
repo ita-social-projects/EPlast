@@ -208,7 +208,7 @@ namespace EPlast.BLL.Services.Region
 
             return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(headDeputy);
         }
-       
+
         public async Task<int> GetAdminType(string name)
         {
             var type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
