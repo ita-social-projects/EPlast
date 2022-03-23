@@ -64,7 +64,6 @@ namespace EPlast.Tests.Services.Regions
             Assert.IsNotNull(result);
         }
 
-
         [Test]
         public async Task GetUsersPreviousAdministrations_ReturnsIEnumerableRegionAdministrationDTO()
         {
