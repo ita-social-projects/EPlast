@@ -196,7 +196,8 @@ namespace EPlast.WebApi.Controllers
             var user = await _userService.GetUserAsync(userId);
             var currentUserId = _userManager.GetUserId(User);
             var currentUser = await _userService.GetUserAsync(currentUserId);
-            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin)))
+            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin) ||
+                await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead)))
             {
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
@@ -242,8 +243,9 @@ namespace EPlast.WebApi.Controllers
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
                 var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
                 var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+                var isUserOkrugaHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
 
-                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
+                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead || isUserOkrugaHead)
                 {
                     await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
                     _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
@@ -277,8 +279,9 @@ namespace EPlast.WebApi.Controllers
                 var currentUser = await _userService.GetUserAsync(currentUserId);
                 var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
                 var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+                var isUserOkrugaHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
 
-                if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead)
+                if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead || isUserOkrugaHead)
                 {
                     await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User),
                         model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
