@@ -132,6 +132,7 @@ namespace EPlast.BLL.Services.Region
             return regionAdministrationDTO;
 
         }
+        
         public async Task EditStatusAdministration(int adminId, bool status = false)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == adminId);
@@ -142,6 +143,7 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync();
             }
         }
+        
         public async Task DeleteAdminByIdAsync(int Id)
         {
             var Admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
