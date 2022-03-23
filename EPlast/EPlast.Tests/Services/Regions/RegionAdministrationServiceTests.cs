@@ -646,16 +646,11 @@ namespace EPlast.Tests.Services.Regions
                   It.IsAny<Func<IQueryable<RegionAdministration>,
                   IIncludableQueryable<RegionAdministration, object>>>()))
                   .ReturnsAsync((RegionAdministration)null);
-
             // Act
-          await  _servise.EditStatusAdministration(It.IsAny<int>());
-
+            await _servise.EditStatusAdministration(It.IsAny<int>());
             // Assert
             _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()), Times.Never);
-
-
         }
-
 
         [Test]
         public async Task EditStatusAdministration_AdminFound_Update()
@@ -666,19 +661,11 @@ namespace EPlast.Tests.Services.Regions
                   It.IsAny<Func<IQueryable<RegionAdministration>,
                   IIncludableQueryable<RegionAdministration, object>>>()))
                   .ReturnsAsync(new RegionAdministration() { });
-
             // Act
             await _servise.EditStatusAdministration(It.IsAny<int>());
-
             // Assert
             _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()), Times.Once);
-
-
         }
-
-
-
-
 
         private static AdminTypeDTO AdminTypeHead = new AdminTypeDTO
         {

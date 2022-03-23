@@ -797,10 +797,8 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             int id = 2;
-
             // Act
             var result = await _regionController.EditStatus(id);
-
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }

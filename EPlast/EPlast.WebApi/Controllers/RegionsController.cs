@@ -684,6 +684,7 @@ namespace EPlast.WebApi.Controllers
             await _regionAdministrationService.DeleteAdminByIdAsync(Id);
             return Ok();
         }
+
         [HttpPut("ChangeStatusAdministration/{Id}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> EditStatus(int Id)

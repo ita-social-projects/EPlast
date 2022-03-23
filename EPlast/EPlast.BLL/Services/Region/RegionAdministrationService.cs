@@ -218,7 +218,6 @@ namespace EPlast.BLL.Services.Region
                 await _repoWrapper.SaveAsync(); 
                 type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
             }
-
             return type.ID;
         }
 
