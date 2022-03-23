@@ -200,10 +200,18 @@ namespace EPlast.BLL.Services.Region
 
             return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(headDeputy);
         }
-
+      
         public async Task<int> GetAdminType(string name)
         {
-            var type = await _repoWrapper.AdminType.GetFirstAsync(a => a.AdminTypeName == name);
+            var type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
+            if (type == null)
+            {
+                var newAdminType = new AdminType();
+                newAdminType.AdminTypeName = name;
+                _repoWrapper.AdminType.Create(newAdminType);
+                await _repoWrapper.SaveAsync();
+                type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
+            }
             return type.ID;
         }
 
