@@ -137,7 +137,6 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        
         public async Task GetAdminType_Throw_Null_of_AdminType_ReturnsAdminTypeId()
         {
             // Arrange
@@ -156,7 +155,6 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-
 
         public async Task GetAdministrationAsync_ReturnsIEnumerableRegionAdministrationDTO()
         {
