@@ -132,12 +132,22 @@ namespace EPlast.BLL.Services.Region
             return regionAdministrationDTO;
 
         }
-
+        
+        public async Task EditStatusAdministration(int adminId, bool status = false)
+        {
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == adminId);
+            if (admin != null)
+            {
+                admin.Status = status;
+                _repoWrapper.RegionAdministration.Update(admin);
+                await _repoWrapper.SaveAsync();
+            }
+        }
+        
         public async Task DeleteAdminByIdAsync(int Id)
         {
             var Admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
-
             var user = await _userManager.FindByIdAsync(Admin.UserId);
             string role;
             switch (adminType.AdminTypeName)
@@ -153,7 +163,6 @@ namespace EPlast.BLL.Services.Region
                     break;
             }
             await _userManager.RemoveFromRoleAsync(user, role);
-
             _repoWrapper.RegionAdministration.Delete(Admin);
             await _repoWrapper.SaveAsync();
         }
@@ -169,7 +178,6 @@ namespace EPlast.BLL.Services.Region
 
             return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries);
         }
-
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId)
         {
@@ -200,7 +208,7 @@ namespace EPlast.BLL.Services.Region
 
             return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(headDeputy);
         }
-      
+
         public async Task<int> GetAdminType(string name)
         {
             var type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);

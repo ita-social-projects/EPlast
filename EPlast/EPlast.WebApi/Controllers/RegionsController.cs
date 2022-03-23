@@ -685,6 +685,14 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        [HttpPut("ChangeStatusAdministration/{Id}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> EditStatus(int Id)
+        {
+            await _regionAdministrationService.EditStatusAdministration(Id);
+            return Ok();
+        }
+
         [HttpDelete("RemoveRegion/{Id}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
         public async Task<IActionResult> RemoveRegion(int Id)
