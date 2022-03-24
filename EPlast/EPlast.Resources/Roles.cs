@@ -80,7 +80,6 @@ namespace EPlast.Resources
 
         public static List<string> DeleteableListOfRoles = new List<string>
         {
-       
             Roles.OkrugaSecretary,
             Roles.OkrugaHeadDeputy,
             Roles.OkrugaHead,
@@ -88,7 +87,5 @@ namespace EPlast.Resources
             Roles.CityHeadDeputy,
             Roles.CityHead
         };
-
-
     }
 }
