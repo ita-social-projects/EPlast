@@ -84,8 +84,8 @@ namespace EPlast.Resources
             Roles.OkrugaHeadDeputy,
             Roles.OkrugaHead,
             Roles.CitySecretary,
-            Roles.CityHeadDeputy,
-            Roles.CityHead
+            Roles.CityHead,
+            Roles.CityHeadDeputy
         };
     }
 }
