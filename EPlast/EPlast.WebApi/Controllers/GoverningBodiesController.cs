@@ -120,7 +120,7 @@ namespace EPlast.WebApi.Controllers
 
             var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
 
-            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count(), announcementsCount = governingBodyProfileDto.GoverningBody.GoverningBodyAnnouncements.Count() });
+            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count(), announcementsCount = governingBodyProfileDto.GoverningBody.GoverningBodyAnnouncements?.Count() });
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
