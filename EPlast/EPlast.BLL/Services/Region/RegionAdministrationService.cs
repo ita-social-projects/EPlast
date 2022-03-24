@@ -212,10 +212,10 @@ namespace EPlast.BLL.Services.Region
             var type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
             if (type == null)
             {
-                AdminType adminTypenew = new AdminType();
-                adminTypenew.AdminTypeName = name;
-                _repoWrapper.AdminType.Create(adminTypenew);
-                await _repoWrapper.SaveAsync(); 
+                var newAdminType = new AdminType();
+                newAdminType.AdminTypeName = name;
+                _repoWrapper.AdminType.Create(newAdminType);
+                await _repoWrapper.SaveAsync();
                 type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
             }
             return type.ID;

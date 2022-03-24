@@ -7,6 +7,7 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
@@ -17,6 +18,7 @@ namespace EPlast.Tests.Services.UserManager
     public class UserManagerServiceTests
     {
         private UserManagerService _userManagerService;
+        private UserManager<User> userManager;
         private Mock<UserManager<User>> _mockUserManager;
         private Mock<IMapper> _mockMapper;
         private List<string> _roles;
@@ -28,6 +30,7 @@ namespace EPlast.Tests.Services.UserManager
         {
             _roles = new List<string>();
             _userDTO = new UserDTO();
+
             _mockMapper = new Mock<IMapper>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);

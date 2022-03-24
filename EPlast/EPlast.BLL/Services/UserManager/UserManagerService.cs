@@ -14,6 +14,7 @@ namespace EPlast.BLL.Services
     public class UserManagerService : IUserManagerService
     {
         private readonly UserManager<User> _userManager;
+      
         private readonly IMapper _mapper;
         private readonly ILoggerService<UserManagerService> _loggerService;
 
@@ -55,6 +56,13 @@ namespace EPlast.BLL.Services
         {
             var result = await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
             return result;
+        }
+
+        /// <inheritdoc />
+        public async Task<IdentityResult> DeleteRolesAsync(User user, IEnumerable<string> roles)
+        { 
+           var result =  await _userManager.RemoveFromRolesAsync(user, roles);
+           return result;
         }
 
         /// <inheritdoc />

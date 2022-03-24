@@ -72,7 +72,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("accessLevel/{userId}")]
         public async Task<IActionResult> GetAccessLevel(string userId)
         {
-            return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
+           return Ok(await _accessLevelService.GetUserAccessLevelsAsync(userId));
         }
 
         [HttpGet("degree/{userId}")]

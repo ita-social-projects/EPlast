@@ -34,8 +34,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<ICacheService> _cache;
         private readonly Mock<Microsoft.AspNetCore.Identity.UserManager<User>> _userManager;
-        private readonly Mock<IMediator> _mockMediator;
-
+        private readonly Mock<IMediator> _mockMediator;        
         public CityControllerTests()
         {
             _cityAccessService = new Mock<ICityAccessService>();
@@ -58,8 +57,8 @@ namespace EPlast.Tests.Controllers
             _cache.Object,
             _mockMediator.Object
           );
-
-        [Test]
+    
+          [Test]
         public async Task AddAdmin_Valid_Test()
         {
             // Arrange
@@ -204,10 +203,8 @@ namespace EPlast.Tests.Controllers
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
             CitiesController controller = CreateCityController;
-
             // Act
             var result = await controller.AddFollower(GetFakeID());
-
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
