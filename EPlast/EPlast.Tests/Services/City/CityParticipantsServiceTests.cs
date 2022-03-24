@@ -1,17 +1,15 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Queries.City;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.City;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +20,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using System.Threading;
 
 namespace EPlast.Tests.Services.City
 {
@@ -94,8 +91,6 @@ namespace EPlast.Tests.Services.City
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
         private Mock<ICityService> _cityService;
-        private Mock<IUserManagerService> _userManagerService;
-        private Mock<IMediator> _mediator;
         private Mock<UserManager<User>> _userManager;
 
         [SetUp]
@@ -106,10 +101,10 @@ namespace EPlast.Tests.Services.City
             _adminTypeService = new Mock<IAdminTypeService>();
             _user = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _mediator = new Mock<IMediator>();
+            _cityService = new Mock<ICityService>();
             _emailSendingService = new Mock<IEmailSendingService>();
             _emailContentService = new Mock<IEmailContentService>();
-            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _mediator.Object, _emailContentService.Object);
+            _cityParticipantsService = new CityParticipantsService(_repoWrapper.Object, _mapper.Object, _userManager.Object, _adminTypeService.Object, _emailSendingService.Object, _cityService.Object, _emailContentService.Object);
         }
 
         [Test]
@@ -262,7 +257,9 @@ namespace EPlast.Tests.Services.City
                     It.IsAny<string>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
             CityDTO cityDto = new CityDTO() { RegionId = fakeId };
-            _mediator.Setup(x => x.Send(It.IsAny<GetCityByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(cityDto);
+            _cityService
+                .Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDto); 
             _repoWrapper
                 .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
@@ -282,7 +279,6 @@ namespace EPlast.Tests.Services.City
         [Test]
         public async Task RemovePrev_Valid_Test()
         {
-            //Arrange
             _repoWrapper
                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
@@ -339,11 +335,9 @@ namespace EPlast.Tests.Services.City
                 Id = "1234", 
             };
               _userManager.Setup(x => x.GetUserIdAsync(user)).ReturnsAsync(user.Id);
-            
             //act 
+
             await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), user);
-            
-             // Assert
             _userManager.Verify(x => x.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()), Times.Once);
         }
 
@@ -383,7 +377,9 @@ namespace EPlast.Tests.Services.City
             _mapper
                 .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
             CityDTO cityDto = new CityDTO() {RegionId = 1};
-            _mediator.Setup(x => x.Send(It.IsAny<GetCityByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(cityDto);
+            _cityService
+                .Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDto); ;
             _repoWrapper
                 .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
