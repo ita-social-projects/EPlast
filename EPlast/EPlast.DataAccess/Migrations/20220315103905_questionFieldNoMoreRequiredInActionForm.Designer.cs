@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220315103905_questionFieldNoMoreRequiredInActionForm")]
+    partial class questionFieldNoMoreRequiredInActionForm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1505,21 +1507,13 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("GoverningBodyId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GoverningBodyId");
 
                     b.HasIndex("UserId");
 
@@ -1545,27 +1539,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("GoverningBodyAnnouncementId");
 
                     b.ToTable("GoverningBodyAnnouncementImages");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.SectorAnnouncementImage", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SectorAnnouncementId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SectorAnnouncementId");
-
-                    b.ToTable("SectorAnnouncementImage");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.GoverningBodyAdministration", b =>
@@ -1766,37 +1739,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("GoverningBodySectorAdministrations");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorAnnouncement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SectorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SectorId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SectorAnnouncement");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorDocumentType", b =>
@@ -3779,10 +3721,6 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncement", b =>
                 {
-                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Organization", "GoverningBody")
-                        .WithMany("GoverningBodyAnnouncement")
-                        .HasForeignKey("GoverningBodyId");
-
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
@@ -3793,15 +3731,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncement", "GoverningBodyAnnouncement")
                         .WithMany("Images")
                         .HasForeignKey("GoverningBodyAnnouncementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.SectorAnnouncementImage", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorAnnouncement", "SectorAnnouncement")
-                        .WithMany("Images")
-                        .HasForeignKey("SectorAnnouncementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -3870,19 +3799,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorAnnouncement", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Sector.Sector", "Sector")
-                        .WithMany("Announcements")
-                        .HasForeignKey("SectorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorDocuments", b =>
