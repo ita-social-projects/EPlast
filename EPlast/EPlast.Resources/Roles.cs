@@ -77,5 +77,18 @@ namespace EPlast.Resources
             Roles.Admin,
             Roles.GoverningBodySectorSecretary
         };
+
+        public static List<string> DeleteableListOfRoles = new List<string>
+        {
+       
+            Roles.OkrugaSecretary,
+            Roles.OkrugaHeadDeputy,
+            Roles.OkrugaHead,
+            Roles.CitySecretary,
+            Roles.CityHeadDeputy,
+            Roles.CityHead
+        };
+
+
     }
 }
