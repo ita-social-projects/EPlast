@@ -1,7 +1,6 @@
 ﻿using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.DataAccess.Entities.GoverningBody.Sector
 {
