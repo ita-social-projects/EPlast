@@ -144,6 +144,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ISectorService, SectorService>();
             services.AddScoped<ISectorAdministrationService, SectorAdministrationService>();
             services.AddScoped<ISectorDocumentsService, SectorDocumentsService>();
+            services.AddScoped<ISectorAnnouncementsService, SectorAnnouncementsService>();
             services.AddScoped<IGoverningBodySectorBlobStorageRepository, GoverningBodySectorBlobStorageRepository>();
             services.AddScoped<IGoverningBodySectorFilesBlobStorageRepository, GoverningBodySectorFilesBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();

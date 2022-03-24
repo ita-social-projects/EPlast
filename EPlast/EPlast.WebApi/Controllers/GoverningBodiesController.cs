@@ -52,6 +52,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _governingBodiesService.GetGoverningBodiesListAsync());
         }
 
+        [HttpGet("GetSectors/{governingBodyId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetSectors(int governingBodyId)
+        {
+            return Ok(await _governingBodiesService.GetSectorsListAsync(governingBodyId));
+        }
+
         [HttpPost("CreateGoverningBody")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
@@ -113,7 +120,7 @@ namespace EPlast.WebApi.Controllers
 
             var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
 
-            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count() });
+            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count(), announcementsCount = governingBodyProfileDto.GoverningBody.GoverningBodyAnnouncements.Count() });
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
