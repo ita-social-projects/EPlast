@@ -216,8 +216,8 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             Assert.IsNull(result);
         }
 
-        [TestCase(1, 5)]
-        public async Task GetAnnouncementsByPage_ReturnsAnnouncements(int pageNumber, int pageSize)
+        [TestCase(1, 5, 1)]
+        public async Task GetAnnouncementsByPage_ReturnsAnnouncements(int pageNumber, int pageSize, int governingBodyId)
         {
             //Arrange
             _repoWrapper
@@ -235,7 +235,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
               .Returns(GetTestPlastAnnouncementDTO());
 
             //Act
-            var result = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
+            var result = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize, governingBodyId);
 
             //Assert
             Assert.IsNotNull(result);

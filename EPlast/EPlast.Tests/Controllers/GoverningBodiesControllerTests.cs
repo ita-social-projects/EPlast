@@ -554,14 +554,14 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NoContentResult>(result);
         }
 
-        [TestCase(1, 5)]
-        public async Task GetAnnouncementsByPage_Valid(int page, int pageSize)
+        [TestCase(1, 5, 1)]
+        public async Task GetAnnouncementsByPage_Valid(int page, int pageSize, int governingBodyId)
         {
             //Arrange
-            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementsByPageAsync(page, pageSize));
+            _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementsByPageAsync(page, pageSize, governingBodyId));
 
             //Act
-            var result = await _governingBodiesController.GetAnnouncementsByPage(page, pageSize);
+            var result = await _governingBodiesController.GetAnnouncementsByPage(page, pageSize, governingBodyId);
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
