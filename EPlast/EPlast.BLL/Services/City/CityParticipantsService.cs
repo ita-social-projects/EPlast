@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
@@ -33,8 +33,7 @@ namespace EPlast.BLL.Services.City
                                        IAdminTypeService adminTypeService,
                                        IEmailSendingService emailSendingService,
                                        ICityService cityService,
-                                       IEmailContentService emailContentService
-                                    )
+                                       IEmailContentService emailContentService)                           
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
