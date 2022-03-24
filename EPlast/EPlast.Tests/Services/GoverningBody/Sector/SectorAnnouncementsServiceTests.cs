@@ -30,7 +30,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         private Mock<UserManager<User>> _userManager;
         private SectorAnnouncementsService _sectorAnnouncementService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
+        private Mock<IGoverningBodyBlobStorageService> _blobStorageService;
 
         [SetUp]
         public void SetUp()
@@ -39,7 +39,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _mapper = new Mock<IMapper>();
             _context = new Mock<IHttpContextAccessor>();
             _blobStorage = new Mock<IGoverningBodyBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
+            _blobStorageService = new Mock<IGoverningBodyBlobStorageService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
@@ -49,7 +49,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 _context.Object,
                 _blobStorage.Object,
                 _userManager.Object,
-                _uniqueId.Object);
+                _blobStorageService.Object);
         }
 
         [Test]
