@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetText(gfx, "та положень Статуту Пласту НСОУ.", XFontStyle.Regular, 50, 130);
             SetText(gfx, "Відповідно до Закону України „Про захист персональних даних“ надаю згоду проводу Пласту на обробку та ",
                 XFontStyle.Regular, 60, 140);
-            SetText(gfx, "використання моїх персональних даних (прізвище, ім'я, по батькові, паспортні дані, ідентифікаційний номер, дані",
+            SetText(gfx, "використання моїх персональних даних (прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані",
                 XFontStyle.Regular, 50, 150);
             SetText(gfx, "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні",
                 XFontStyle.Regular, 50, 160);
@@ -88,7 +88,7 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetText(gfx, "Ім’я", XFontStyle.Regular, 320, 360);
             SetLine(gfx, 360, 370, 550, 370);
             SetText(gfx, $"{blank.User.FirstName}", XFontStyle.Italic, 420, 358);
-            SetText(gfx, "По батькові", XFontStyle.Regular, 50, 375);
+            SetText(gfx, "По-батькові", XFontStyle.Regular, 50, 375);
             SetLine(gfx, 110, 385, 290, 385);
             SetText(gfx, $"{blank.User.FatherName}", XFontStyle.Italic, 160, 373);
             SetText(gfx, "Дата народження", XFontStyle.Regular, 300, 375);
