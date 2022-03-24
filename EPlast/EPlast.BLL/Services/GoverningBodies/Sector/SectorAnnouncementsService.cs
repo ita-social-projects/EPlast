@@ -26,19 +26,19 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         private readonly IHttpContextAccessor _context;
         private readonly IGoverningBodyBlobStorageRepository _blobStorage;
         private readonly UserManager<User> _userManager;
-        private readonly IUniqueIdService _uniqueId;
+        private readonly IGoverningBodyBlobStorageService _blobStorageService;
 
         public SectorAnnouncementsService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper, IHttpContextAccessor context,
             IGoverningBodyBlobStorageRepository blobStorage,
-            UserManager<User> userManager, IUniqueIdService uniqueId)
+            UserManager<User> userManager, IGoverningBodyBlobStorageService blobStorageService)
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
             _context = context;
             _blobStorage = blobStorage;
             _userManager = userManager;
-            _uniqueId = uniqueId;
+            _blobStorageService = blobStorageService;
         }
 
         public async Task<int?> AddAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO)
@@ -52,7 +52,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             announcement.Images = new List<SectorAnnouncementImage>();
             foreach (var image in announcementDTO.ImagesBase64)
             {
-                announcement.Images.Add(new SectorAnnouncementImage { ImagePath = await UploadImageAsync(image) });
+                announcement.Images.Add(new SectorAnnouncementImage { ImagePath = await _blobStorageService.UploadImageAsync(image) });
             }
             announcement.Date = DateTime.Now;
             await _repoWrapper.GoverningBodySectorAnnouncements.CreateAsync(announcement);
@@ -107,7 +107,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
             foreach (var image in announcement.Images)
             {
-                image.ImageBase64 = await GetImageAsync(image.ImagePath);
+                image.ImageBase64 = await _blobStorageService.GetImageAsync(image.ImagePath);
             }
 
             var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
@@ -148,7 +148,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             {
                 currentAnnouncement.Images.Add(new SectorAnnouncementImage
                 {
-                    ImagePath = await UploadImageAsync(image)
+                    ImagePath = await _blobStorageService.UploadImageAsync(image)
                 });
             }
             currentAnnouncement.Text = announcementDTO.Text;
@@ -157,30 +157,6 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _repoWrapper.GoverningBodySectorAnnouncements.Update(currentAnnouncement);
             await _repoWrapper.SaveAsync();
             return currentAnnouncement.Id;
-        }
-
-        private async Task<string> UploadImageAsync(string imageBase64)
-        {
-            var fileName = "";
-            if (!string.IsNullOrWhiteSpace(imageBase64) && imageBase64.Length > 0)
-            {
-                var logoBase64Parts = imageBase64.Split(',');
-                var extension = logoBase64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-
-                if (!string.IsNullOrEmpty(extension))
-                {
-                    extension = (extension[0] == '.' ? "" : ".") + extension;
-                }
-
-                fileName = $"{_uniqueId.GetUniqueId()}{extension}";
-                await _blobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
-            }
-            return fileName;
-        }
-
-        private async Task<string> GetImageAsync(string imageName)
-        {
-            return await _blobStorage.GetBlobBase64Async(imageName);
         }
 
         private Func<IQueryable<SectorAnnouncement>, IQueryable<SectorAnnouncement>> GetOrder()

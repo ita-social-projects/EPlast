@@ -161,6 +161,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IRegionAccessService, RegionAccessService>();
             services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGoverningBodyAnnouncementService, GoverningBodyAnnouncementService>();
+            services.AddScoped<IGoverningBodyBlobStorageService, GoverningBodyBlobStorageService>();
             services.AddScoped<IRegionAnnualReportService, RegionAnnualReportService>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
             services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();
