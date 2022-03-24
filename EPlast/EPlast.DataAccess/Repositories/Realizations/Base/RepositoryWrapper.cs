@@ -113,6 +113,9 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IRegionAnnualReportsRepository _regionAnnualReports;
         private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
         private IGoverningBodyAnnouncementImageRepository _governingBodyAnnouncementImage;
+        private ISectorAnnouncementsRepository _governingBodySectorAnnouncement;
+        private ISectorAnnouncementImageRepository _governingBodySectorAnnouncementImage;
+
 
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
@@ -356,6 +359,29 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
+        public ISectorAnnouncementsRepository GoverningBodySectorAnnouncements
+        {
+            get
+            {
+                if (_governingBodySectorAnnouncement == null)
+                {
+                    _governingBodySectorAnnouncement = new SectorAnnouncementsRepository(_dbContext);
+                }
+                return _governingBodySectorAnnouncement;
+            }
+        }
+
+        public ISectorAnnouncementImageRepository GoverningBodySectorAnnouncementImage
+        {
+            get
+            {
+                if (_governingBodySectorAnnouncementImage == null)
+                {
+                    _governingBodySectorAnnouncementImage = new SectorAnnouncementImageRepository(_dbContext);
+                }
+                return _governingBodySectorAnnouncementImage;
+            }
+        }
         public IUserRepository User
         {
             get
@@ -1213,6 +1239,5 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             }
         }
-
     }
 }
