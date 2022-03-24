@@ -282,6 +282,7 @@ namespace EPlast.Tests.Services.City
         [Test]
         public async Task RemovePrev_Valid_Test()
         {
+            //Arrange
             _repoWrapper
                .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
                    It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
@@ -338,9 +339,11 @@ namespace EPlast.Tests.Services.City
                 Id = "1234", 
             };
               _userManager.Setup(x => x.GetUserIdAsync(user)).ReturnsAsync(user.Id);
+            
             //act 
-
             await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), user);
+            
+             // Assert
             _userManager.Verify(x => x.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()), Times.Once);
         }
 
