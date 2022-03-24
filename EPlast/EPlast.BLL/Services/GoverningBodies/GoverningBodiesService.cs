@@ -85,6 +85,18 @@ namespace EPlast.BLL.Services.GoverningBodies
             return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive)));
         }
 
+        public async Task<IEnumerable<GoverningBodyDTO>> GetSectorsListAsync(int governingBodyId)
+        {
+            var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
+            if (governingBody == null)
+            {
+                return null;
+            }
+            governingBody.GoverningBodySectors = governingBody.GoverningBodySectors?.Where(x => x.IsActive);
+
+            return _mapper.Map<IEnumerable<GoverningBodyDTO>>(governingBody);
+        }
+
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
         {
             var oldImageName = (await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(i => i.ID == governingBody.Id))?.Logo;
