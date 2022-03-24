@@ -107,7 +107,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var sectorViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
-            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents.Count(), announcementsCount = sectorProfileDto.Announcements?.Count() });
+            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector?.Documents.Count(), announcementsCount = sectorProfileDto.Announcements?.Count() });
         }
 
         [HttpDelete("RemoveSector/{sectorId}")]
