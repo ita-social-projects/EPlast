@@ -111,6 +111,10 @@ namespace EPlast.BLL.Services.EventUser
         {
             await GetAdministrationTypeId();
 
+            var tempAlternate = await repoWrapper.EventAdministration.
+                            GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
+                            && i.EventID == eventId, include: source => source.Include(q => q.User));
+
             return new EventCreateDTO()
             {
                 Event = mapper.Map<Event, EventCreationDTO>(await repoWrapper.Event.GetFirstAsync(predicate: i => i.ID == eventId,
@@ -126,9 +130,7 @@ namespace EPlast.BLL.Services.EventUser
                              GetFirstAsync(predicate: i => i.EventAdministrationTypeID == commandantTypeId
                              && i.EventID == eventId, include: source => source.Include(q => q.User))),
 
-                Alternate = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
-                            GetFirstAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
-                            && i.EventID == eventId, include: source => source.Include(q => q.User))),
+                Alternate = mapper.Map<EventAdministration, EventAdministrationDTO>(tempAlternate),
 
                 Bunchuzhnyi = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
                               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == bunchuzhnyiTypeID
@@ -156,14 +158,6 @@ namespace EPlast.BLL.Services.EventUser
                     ID = (await repoWrapper.EventAdministration.GetFirstAsync(predicate: i => i.EventAdministrationTypeID == commandantTypeId
                          && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User))).ID
                 },
-                 new EventAdministration
-                 {
-                    UserID = model.Alternate.UserId,
-                    EventAdministrationTypeID = alternateTypeId,
-                    EventID = eventToEdit.ID,
-                    ID = (await repoWrapper.EventAdministration.GetFirstAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
-                         && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User))).ID
-                 },
                   new EventAdministration
                   {
                     UserID = model.Bunchuzhnyi.UserId,
@@ -181,6 +175,31 @@ namespace EPlast.BLL.Services.EventUser
                          && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User))).ID
                    }
             };
+
+            if (model.Alternate.UserId != null)
+            {
+                var tempAlter = await repoWrapper.EventAdministration
+                            .GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
+                            && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+
+                if(tempAlter != null)
+                {
+                    repoWrapper.EventAdministration.Delete(tempAlter);
+                }
+                eventToEdit.EventAdministrations.Add(new EventAdministration
+                {
+                    UserID = model.Alternate.UserId,
+                    EventAdministrationTypeID = alternateTypeId,
+                    EventID = eventToEdit.ID
+                });
+            }
+            else
+            {
+                var tempAlter = await repoWrapper.EventAdministration
+                    .GetFirstAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
+                    && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+                repoWrapper.EventAdministration.Delete(tempAlter);
+            }
             repoWrapper.Event.Update(eventToEdit);
             await repoWrapper.SaveAsync();
         }
