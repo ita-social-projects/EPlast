@@ -131,7 +131,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created MethodicDocument object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin)]
         public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
         {
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)
