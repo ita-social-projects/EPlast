@@ -33,8 +33,7 @@ namespace EPlast.BLL.Services.City
                                        IAdminTypeService adminTypeService,
                                        IEmailSendingService emailSendingService,
                                        ICityService cityService,
-                                       IEmailContentService emailContentService
-                                    )
+                                       IEmailContentService emailContentService)                           
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;

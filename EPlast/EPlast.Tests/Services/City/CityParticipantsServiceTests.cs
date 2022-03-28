@@ -91,7 +91,6 @@ namespace EPlast.Tests.Services.City
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
         private Mock<ICityService> _cityService;
-        private Mock<IUserManagerService> _userManagerService;
         private Mock<UserManager<User>> _userManager;
 
         [SetUp]
