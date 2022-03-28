@@ -45,7 +45,7 @@ namespace EPlast.Tests.Services.Event
         }
 
         [Test]
-        public async Task EditEventAsyncTest_UpdatesAndSavesRepo()
+        public async Task EditEventAsyncTest_UpdatesAndSavesRepo_WithoutAlternate()
         {
             //Arrange
             _eventStatusManager
@@ -77,7 +77,7 @@ namespace EPlast.Tests.Services.Event
         }
 
         [Test]  
-        public async Task EditEventAsyncTest_UpdatesAndSavesRepo_WithoutAlternate()
+        public async Task EditEventAsyncTest_UpdatesAndSavesRepo()
         {
             //Arrange
             _eventStatusManager
