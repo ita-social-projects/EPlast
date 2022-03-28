@@ -92,12 +92,16 @@ namespace EPlast.Tests.Services.Event
                     It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
                 .ReturnsAsync(new EventAdministration() { ID = 1 });
             _repoWrapper
+                .Setup(x => x.EventAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+                .ReturnsAsync(new EventAdministration() { ID = 1 });
+            _repoWrapper
                 .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
-            //
             var inputModel = new EventCreateDTO();
             inputModel.Event = new EventCreationDTO();
             inputModel.Сommandant = new EventAdministrationDTO();
-            inputModel.Alternate = new EventAdministrationDTO() { UserId = null };
+            inputModel.Alternate = new EventAdministrationDTO() { UserId = "Nazario Nazario" };
             inputModel.Bunchuzhnyi = new EventAdministrationDTO();
             inputModel.Pysar = new EventAdministrationDTO();
 
