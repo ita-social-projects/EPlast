@@ -111,10 +111,6 @@ namespace EPlast.BLL.Services.EventUser
         {
             await GetAdministrationTypeId();
 
-            var tempAlternate = await repoWrapper.EventAdministration.
-                            GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
-                            && i.EventID == eventId, include: source => source.Include(q => q.User));
-
             return new EventCreateDTO()
             {
                 Event = mapper.Map<Event, EventCreationDTO>(await repoWrapper.Event.GetFirstAsync(predicate: i => i.ID == eventId,
@@ -130,7 +126,9 @@ namespace EPlast.BLL.Services.EventUser
                              GetFirstAsync(predicate: i => i.EventAdministrationTypeID == commandantTypeId
                              && i.EventID == eventId, include: source => source.Include(q => q.User))),
 
-                Alternate = mapper.Map<EventAdministration, EventAdministrationDTO>(tempAlternate),
+                Alternate = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
+                            GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
+                            && i.EventID == eventId, include: source => source.Include(q => q.User))),
 
                 Bunchuzhnyi = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
                               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == bunchuzhnyiTypeID
