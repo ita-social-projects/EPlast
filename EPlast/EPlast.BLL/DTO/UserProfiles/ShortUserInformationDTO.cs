@@ -14,5 +14,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; }
         public bool IsInLowerRole { get; set; }
+        public bool IsInDeputyRole { get; set; }
     }
 }

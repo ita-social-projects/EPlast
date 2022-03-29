@@ -890,6 +890,51 @@ namespace EPlast.Tests.Services
             //Assert
             Assert.AreEqual(res[0].ID, user.Id);
         }
+
+        [Test]
+        public async Task GetUsersForGoverningBodiesAsync_ReturnsUsers()
+        {
+            //Arrange
+            string[] userRole = new string[] { Roles.PlastMember, "Role2" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersForGoverningBodiesAsync());
+
+            //Assert
+            Assert.AreEqual(res.First().ID, user.Id);
+        }
+
+        [Test]
+        public async Task GetUsersForGoverningBodiesAsync_WithoutPlastMembers_ReturnsEmpty()
+        {
+            //Arrange
+            string[] userRole = new string[] { "Role1", "Role2" };
+            var user = new User() { Id = "1" };
+            _repoWrapper.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(userRole);
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO() { ID = "1" });
+
+            //Acts
+            var res = (await service.GetUsersForGoverningBodiesAsync());
+
+            //Assert
+            Assert.AreEqual(0, res.Count());
+        }
+
         [Test]
         public async Task TableFilterParameters_byRole_OkrugaHead_ReturnsCorrect()
         {
