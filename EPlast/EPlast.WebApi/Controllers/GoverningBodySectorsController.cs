@@ -279,7 +279,7 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
-        [HttpPost("AddAnnouncement")]
+        [HttpPost("AddAnnouncement")] 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
         public async Task<IActionResult> AddAnnouncement([FromBody] SectorAnnouncementWithImagesDTO announcement)
         {
