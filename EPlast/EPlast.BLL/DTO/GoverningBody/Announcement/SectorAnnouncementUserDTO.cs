@@ -1,11 +1,10 @@
-﻿using EPlast.BLL.DTO.AnnualReport;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace EPlast.BLL.DTO.GoverningBody.Announcement
 {
-    public class GoverningBodyAnnouncementUserDTO
+    public class SectorAnnouncementUserDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }
@@ -13,8 +12,8 @@ namespace EPlast.BLL.DTO.GoverningBody.Announcement
         public string UserId { get; set; }
         public DateTime Date { get; set; }
         public UserDTO User { get; set; }
-        public IEnumerable<GoverningBodyAnnouncementImageDTO> Images { get; set; }
-        public int GoverningBodyId { get; set; }
+        public IEnumerable<SectorAnnouncementImageDTO> Images { get; set; }
+        public int SectorId { get; set; }
         public bool ImagesPresent { get; set; }
     }
 }

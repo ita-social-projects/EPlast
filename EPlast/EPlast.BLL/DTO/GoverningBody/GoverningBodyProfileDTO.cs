@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 
 namespace EPlast.BLL.DTO.GoverningBody
@@ -8,6 +9,7 @@ namespace EPlast.BLL.DTO.GoverningBody
         public GoverningBodyDTO GoverningBody { get; set; }
         public IEnumerable<SectorDTO> Sectors { get; set; }
         public IEnumerable<GoverningBodyDocumentsDTO> Documents { get; set; }
+        public IEnumerable<GoverningBodyAnnouncementDTO> Announcements { get; set; }
         public GoverningBodyAdministrationDTO Head { get; set; }
         public IEnumerable<GoverningBodyAdministrationDTO> GoverningBodyAdministration { get; set; }
     }

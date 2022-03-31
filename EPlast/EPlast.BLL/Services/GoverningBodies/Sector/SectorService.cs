@@ -131,12 +131,15 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 .Take(TakingItemsCount)
                 .ToList();
 
+            var sectorAnnouncements = sector.Announcements?.ToList();
+
             var sectorProfileDto = new SectorProfileDTO
             {
                 Sector = sector,
                 Head = sectorHead,
                 Administration = sectorAdmins,
                 Documents = sectorDocuments,
+                Announcements = sectorAnnouncements
             };
 
             return sectorProfileDto;
@@ -152,7 +155,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                     .Include(s => s.Administration)
                         .ThenInclude(a => a.User)
                     .Include(s => s.Documents)
-                    .ThenInclude(d => d.SectorDocumentType));
+                        .ThenInclude(d => d.SectorDocumentType)
+                    .Include(s => s.Announcements));
             return _mapper.Map<GBSector, SectorDTO>(sector);
         }
 

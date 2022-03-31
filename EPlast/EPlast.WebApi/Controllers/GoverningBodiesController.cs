@@ -52,6 +52,13 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _governingBodiesService.GetGoverningBodiesListAsync());
         }
 
+        [HttpGet("GetSectors/{governingBodyId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetSectors(int governingBodyId)
+        {
+            return Ok(await _governingBodiesService.GetSectorsListAsync(governingBodyId));
+        }
+
         [HttpPost("CreateGoverningBody")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
@@ -113,7 +120,7 @@ namespace EPlast.WebApi.Controllers
 
             var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
 
-            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count() });
+            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count(), announcementsCount = governingBodyProfileDto.GoverningBody.GoverningBodyAnnouncements?.Count() });
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
@@ -353,14 +360,15 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="pageNumber">Number of the page</param>
         /// <param name="pageSize">Size of one page</param>
+        /// <param name="governingBodyId">Id of governing body</param>
         /// <returns>Specified by page number and page size list of announcements</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="400">Could not get requested announcements</response>
         [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize)
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize, int governingBodyId)
         {
-            var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
+            var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize, governingBodyId);
 
             return Ok(announcements);
         }

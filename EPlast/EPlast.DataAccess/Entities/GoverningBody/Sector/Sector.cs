@@ -21,6 +21,7 @@ namespace EPlast.DataAccess.Entities.GoverningBody.Sector
         public string Logo { get; set; }
 
         public ICollection<SectorAdministration> Administration { get; set; }
+        public ICollection<SectorAnnouncement> Announcements { get; set; }
         public ICollection<SectorDocuments> Documents { get; set; }
         public bool IsActive { get; set; }
     }
