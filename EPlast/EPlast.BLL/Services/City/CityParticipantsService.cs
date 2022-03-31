@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
@@ -23,6 +24,7 @@ namespace EPlast.BLL.Services.City
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ICityService _cityService;
+        private readonly IUserManagerService _userManagerService;
         private readonly UserManager<User> _userManager;
 
         public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
@@ -147,6 +149,7 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityMembersDTO> AddFollowerAsync(int cityId, User user)
         {
+            await  _userManager.RemoveFromRolesAsync(user, Roles.DeleteableListOfRoles);
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 

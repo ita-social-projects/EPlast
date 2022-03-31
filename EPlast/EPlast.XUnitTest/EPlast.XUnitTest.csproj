@@ -9,11 +9,8 @@
 
   <ItemGroup>
     <Compile Remove="Controllers\**" />
-    <Compile Remove="NewFolder\**" />
     <EmbeddedResource Remove="Controllers\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
     <None Remove="Controllers\**" />
-    <None Remove="NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>

@@ -3,6 +3,7 @@ using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
+using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories;
@@ -28,7 +29,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         private Mock<UserManager<User>> _userManager;
         private GoverningBodyAnnouncementService _governingBodyAnnouncementService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
+        private Mock<IGoverningBodyBlobStorageService> _blobStorageService;
 
         [SetUp]
         public void SetUp()
@@ -37,7 +38,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _mapper = new Mock<IMapper>();
             _context = new Mock<IHttpContextAccessor>();
             _blobStorage = new Mock<IGoverningBodyBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
+            _blobStorageService = new Mock<IGoverningBodyBlobStorageService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
@@ -47,7 +48,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 _context.Object,
                 _blobStorage.Object,
                 _userManager.Object,
-                _uniqueId.Object);
+                _blobStorageService.Object);
         }
 
         [Test]
@@ -216,8 +217,8 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             Assert.IsNull(result);
         }
 
-        [TestCase(1, 5)]
-        public async Task GetAnnouncementsByPage_ReturnsAnnouncements(int pageNumber, int pageSize)
+        [TestCase(1, 5, 1)]
+        public async Task GetAnnouncementsByPage_ReturnsAnnouncements(int pageNumber, int pageSize, int governingBodyId)
         {
             //Arrange
             _repoWrapper
@@ -235,7 +236,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
               .Returns(GetTestPlastAnnouncementDTO());
 
             //Act
-            var result = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize);
+            var result = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize, governingBodyId);
 
             //Assert
             Assert.IsNotNull(result);

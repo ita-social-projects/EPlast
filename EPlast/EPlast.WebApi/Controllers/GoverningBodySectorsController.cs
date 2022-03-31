@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -21,6 +22,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ISectorService _sectorService;
         private readonly ISectorAdministrationService _sectorAdministrationService;
         private readonly ISectorDocumentsService _sectorDocumentsService;
+        private readonly ISectorAnnouncementsService _sectorAnnouncementsService;
         private readonly ILoggerService<GoverningBodiesController> _logger;
         private readonly IMapper _mapper;
 
@@ -28,13 +30,15 @@ namespace EPlast.WebApi.Controllers
                                                 ILoggerService<GoverningBodiesController> logger,
                                                 ISectorAdministrationService governingBodyAdministrationService,
                                                 IMapper mapper,
-                                                ISectorDocumentsService governingBodyDocumentsService)
+                                                ISectorDocumentsService governingBodyDocumentsService,
+                                                ISectorAnnouncementsService sectorAnnouncementsService)
         {
             _sectorService = service;
             _logger = logger;
             _sectorAdministrationService = governingBodyAdministrationService;
             _mapper = mapper;
             _sectorDocumentsService = governingBodyDocumentsService;
+            _sectorAnnouncementsService = sectorAnnouncementsService;
         }
 
         [HttpGet("{governingBodyId}")]
@@ -103,7 +107,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var sectorViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
-            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents.Count() });
+            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents?.Count(), announcementsCount = sectorProfileDto.Announcements?.Count() });
         }
 
         [HttpDelete("RemoveSector/{sectorId}")]
@@ -273,6 +277,72 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Error getting UserAdministration");
             }
+        }
+
+        [HttpPost("AddAnnouncement")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
+        public async Task<IActionResult> AddAnnouncement([FromBody] SectorAnnouncementWithImagesDTO announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = await _sectorAnnouncementsService.AddAnnouncementAsync(announcement);
+
+                return Ok(id);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpPut("EditAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> EditAnnouncement([FromBody] SectorAnnouncementWithImagesDTO announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = await _sectorAnnouncementsService.EditAnnouncementAsync(announcement);
+                if (id == null)
+                    return BadRequest();
+                return Ok(id);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("DeleteAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _sectorAnnouncementsService.DeleteAnnouncementAsync(id);
+
+            return NoContent();
+        }
+
+        [HttpGet("GetAnnouncement/{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            SectorAnnouncementUserDTO sectorAnnouncementUserDTO = await _sectorAnnouncementsService.GetAnnouncementByIdAsync(id);
+
+            if (sectorAnnouncementUserDTO == null)
+            {
+                return NotFound();
+            }
+            return Ok(sectorAnnouncementUserDTO);
+        }
+
+        /// <summary>
+        /// Get specified by page number and page size list of announcements
+        /// </summary>
+        /// <param name="pageNumber">Number of the page</param>
+        /// <param name="pageSize">Size of one page</param>
+        /// <param name="sectorId">Id of governing body</param>
+        /// <returns>Specified by page number and page size list of announcements</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Could not get requested announcements</response>
+        [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize, int sectorId)
+        {
+            var announcements = await _sectorAnnouncementsService.GetAnnouncementsByPageAsync(pageNumber, pageSize, sectorId);
+
+            return Ok(announcements);
         }
     }
 }

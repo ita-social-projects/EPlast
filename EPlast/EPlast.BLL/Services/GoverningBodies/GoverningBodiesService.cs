@@ -85,6 +85,18 @@ namespace EPlast.BLL.Services.GoverningBodies
             return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive)));
         }
 
+        public async Task<IEnumerable<GoverningBodyDTO>> GetSectorsListAsync(int governingBodyId)
+        {
+            var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
+            if (governingBody == null)
+            {
+                return null;
+            }
+            governingBody.GoverningBodySectors = governingBody.GoverningBodySectors?.Where(x => x.IsActive);
+
+            return _mapper.Map<IEnumerable<GoverningBodyDTO>>(governingBody);
+        }
+
         private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
         {
             var oldImageName = (await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(i => i.ID == governingBody.Id))?.Logo;
@@ -142,12 +154,15 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var governingBodySectors = governingBody.GoverningBodySectors?.Take(6).ToList();
 
+            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?.ToList();
+
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {
                 GoverningBody = governingBody,
                 Head = governingBodyHead,
                 GoverningBodyAdministration = governingBodyAdmins,
                 Documents = governingBodyDoc,
+                Announcements = governingBodyAnnouncements,
                 Sectors = governingBodySectors
             };
 
@@ -165,7 +180,11 @@ namespace EPlast.BLL.Services.GoverningBodies
                     .Include(g => g.GoverningBodyAdministration)
                         .ThenInclude(a => a.User)
                     .Include(g => g.GoverningBodyDocuments)
-                        .ThenInclude(d => d.GoverningBodyDocumentType));
+                        .ThenInclude(d => d.GoverningBodyDocumentType)
+                     .Include(g => g.GoverningBodyAnnouncement)
+                        .ThenInclude(d => d.Images)
+                     .Include(g => g.GoverningBodyAnnouncement)
+                        .ThenInclude(d => d.User));
             return _mapper.Map<Organization, GoverningBodyDTO>(governingBody);
         }
 

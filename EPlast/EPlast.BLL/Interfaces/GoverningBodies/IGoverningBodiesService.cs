@@ -10,6 +10,8 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
     {
         Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync();
 
+        Task<IEnumerable<GoverningBodyDTO>> GetSectorsListAsync(int governingBodyId);
+
         Task<int> CreateAsync(GoverningBodyDTO governingBodyDto);
 
         Task<string> GetLogoBase64Async(string logoName);

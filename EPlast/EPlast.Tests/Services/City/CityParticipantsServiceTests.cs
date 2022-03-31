@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.City;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
@@ -273,6 +274,71 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.IsInstanceOf<CityMembersDTO>(result);
+        }
+
+        [Test]
+        public async Task RemovePrev_Valid_Test()
+        {
+            _repoWrapper
+               .Setup(x => x.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
+                   It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>, IIncludableQueryable<DataAccess.Entities.CityMembers, object>>>()))
+               .ReturnsAsync(new CityMembers());
+            _repoWrapper
+                .Setup(x => x.CityMembers.Delete(It.IsAny<CityMembers>()));
+            _repoWrapper
+               .Setup(x => x.SaveAsync());
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(GetCityAdministration());
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { AdminTypeId = 2 });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
+                .ReturnsAsync(new CityAdministration() { AdminTypeId = 76 });
+            _adminTypeService
+                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>())).ReturnsAsync(new AdminTypeDTO() { AdminTypeName = Roles.CityHead });
+            _repoWrapper
+                .Setup(x => x.CityAdministration.Update(new CityAdministration()));
+            _userManager
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _repoWrapper
+                .Setup(x => x.CityMembers.CreateAsync(It.IsAny<CityMembers>()));
+            _repoWrapper
+                .Setup(x => x.SaveAsync());
+            _mapper
+                .Setup(x => x.Map<CityMembers, CityMembersDTO>(It.IsAny<CityMembers>())).Returns(new CityMembersDTO());
+            _userManager
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _emailContentService
+                .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<bool>()))
+                .ReturnsAsync(new EmailModel());
+            CityDTO cityDto = new CityDTO() { RegionId = fakeId };
+            _cityService
+                .Setup(x => x.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(cityDto);
+            _repoWrapper
+                .Setup(x => x.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>, IIncludableQueryable<DataAccess.Entities.RegionAdministration, object>>>()))
+                .ReturnsAsync(value: new List<RegionAdministration>()
+                {
+                    new RegionAdministration() { ID = fakeId, EndDate = new DateTime(2022, 7, 20) },
+                    new RegionAdministration() { ID = fakeId+1, EndDate = new DateTime(2022, 7, 20) }
+                });
+            User user = new User()
+            {
+                Id = "1234", 
+            };
+              _userManager.Setup(x => x.GetUserIdAsync(user)).ReturnsAsync(user.Id);
+            //act 
+
+            await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), user);
+            _userManager.Verify(x => x.RemoveFromRolesAsync(It.IsAny<User>(), It.IsAny<IEnumerable<string>>()), Times.Once);
         }
 
         [Test]
