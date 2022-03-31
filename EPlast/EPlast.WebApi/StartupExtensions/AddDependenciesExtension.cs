@@ -144,6 +144,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ISectorService, SectorService>();
             services.AddScoped<ISectorAdministrationService, SectorAdministrationService>();
             services.AddScoped<ISectorDocumentsService, SectorDocumentsService>();
+            services.AddScoped<ISectorAnnouncementsService, SectorAnnouncementsService>();
             services.AddScoped<IGoverningBodySectorBlobStorageRepository, GoverningBodySectorBlobStorageRepository>();
             services.AddScoped<IGoverningBodySectorFilesBlobStorageRepository, GoverningBodySectorFilesBlobStorageRepository>();
             services.AddScoped<IHomeService, HomeService>();
@@ -160,6 +161,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IRegionAccessService, RegionAccessService>();
             services.AddScoped<IRegionAdministrationService, RegionAdministrationService>();
             services.AddScoped<IGoverningBodyAnnouncementService, GoverningBodyAnnouncementService>();
+            services.AddScoped<IGoverningBodyBlobStorageService, GoverningBodyBlobStorageService>();
             services.AddScoped<IRegionAnnualReportService, RegionAnnualReportService>();
             services.AddScoped<IRegionBlobStorageRepository, RegionBlobStorageRepository>();
             services.AddScoped<IRegionFilesBlobStorageRepository, RegionFilesBlobStorageRepository>();

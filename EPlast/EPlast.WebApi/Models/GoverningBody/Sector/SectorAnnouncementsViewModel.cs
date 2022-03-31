@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace EPlast.BLL.DTO.GoverningBody.Announcement
+namespace EPlast.WebApi.Models.GoverningBody.Sector
 {
-    public class GoverningBodyAnnouncementDTO
+    public class SectorAnnouncementsViewModel
     {
         public string Text { get; set; }
         public string Title { get; set; }
         public string UserId { get; set; }
-        public int GoverningBodyId { get; set; }
+        public int SectorId { get; set; }
     }
 }

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using System;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.Tests.Controllers
 {
@@ -21,6 +22,7 @@ namespace EPlast.Tests.Controllers
         private Mock<ISectorService> _sectorService;
         private Mock<ISectorAdministrationService> _sectorAdministrationService;
         private Mock<ISectorDocumentsService> _sectorDocumentsService;
+        private Mock<ISectorAnnouncementsService> _sectorAnnouncementsService;
         private Mock<IMapper> _mapper;
         private Mock<ILoggerService<GoverningBodiesController>> _logger;
         private GoverningBodySectorsController _controller;
@@ -31,6 +33,7 @@ namespace EPlast.Tests.Controllers
             _sectorService = new Mock<ISectorService>();
             _sectorAdministrationService = new Mock<ISectorAdministrationService>();
             _sectorDocumentsService = new Mock<ISectorDocumentsService>();
+            _sectorAnnouncementsService = new Mock<ISectorAnnouncementsService>();
             _logger = new Mock<ILoggerService<GoverningBodiesController>>();
             _mapper = new Mock<IMapper>();
 
@@ -39,7 +42,8 @@ namespace EPlast.Tests.Controllers
                 _logger.Object,
                 _sectorAdministrationService.Object,
                 _mapper.Object,
-                _sectorDocumentsService.Object);
+                _sectorDocumentsService.Object,
+                _sectorAnnouncementsService.Object);
         }
 
         [TestCase(1)]
@@ -510,6 +514,146 @@ namespace EPlast.Tests.Controllers
             _sectorService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddAnnouncement_Valid_Test()
+        {
+            //Arrange
+            _sectorAnnouncementsService
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()));
+
+            //Act
+            var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            _sectorAnnouncementsService.Verify();
+        }
+
+        [Test]
+        public async Task AddAnnouncement_BadRequest()
+        {
+            //Arrange
+            _controller.ModelState.AddModelError("text", "is required");
+            _sectorAnnouncementsService
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()));
+
+            //Act
+            var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
+
+            //Assert
+            _sectorAnnouncementsService.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_ModelStateIsValid_ReturnsOk()
+        {
+            //Arrange
+            _sectorAnnouncementsService
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_ModeStatIsNotValid_ReturnsBadRequest()
+        {
+            //Arrange
+            _controller.ModelState.AddModelError("key", "error message");
+            _sectorAnnouncementsService
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(1);
+
+            //Act
+            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_IdIsNull_ReturnsBadRequest()
+        {
+            //Arrange
+
+            _sectorAnnouncementsService
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(null as int?);
+
+            //Act
+            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(res);
+        }
+
+        [Test]
+        public async Task DeleteAnnouncement_Valid()
+        {
+            //Arrange
+            _sectorAnnouncementsService.Setup(d => d.DeleteAnnouncementAsync(It.IsAny<int>()));
+
+            //Act
+            var result = await _controller.Delete(It.IsAny<int>());
+
+            //Assert
+            _sectorAnnouncementsService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task GetById_Valid()
+        {
+            //Arrange
+            _sectorAnnouncementsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new SectorAnnouncementUserDTO());
+
+            //Act
+            var result = await _controller.GetById(It.IsAny<int>());
+            var resultValue = (result as ObjectResult).Value;
+
+            //Assert
+            _sectorAnnouncementsService.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(resultValue);
+            Assert.IsInstanceOf<SectorAnnouncementUserDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task GetById_ReturnNoContent()
+        {
+            //Arrange
+            _sectorAnnouncementsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(null as SectorAnnouncementUserDTO);
+
+            //Act
+            var result = await _controller.GetById(It.IsAny<int>());
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [TestCase(1, 5, 1)]
+        public async Task GetAnnouncementsByPage_Valid(int page, int pageSize, int governingBodyId)
+        {
+            //Arrange
+            _sectorAnnouncementsService.Setup(g => g.GetAnnouncementsByPageAsync(page, pageSize, governingBodyId));
+
+            //Act
+            var result = await _controller.GetAnnouncementsByPage(page, pageSize, governingBodyId);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         private SectorDTO CreateSectorDto()
