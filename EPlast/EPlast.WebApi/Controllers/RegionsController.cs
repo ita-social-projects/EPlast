@@ -376,7 +376,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Follower not found</response>
         [HttpGet("GetFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> GetFollower(int followerId)
         {
             var follower = await _regionService.GetFollowerAsync(followerId);
