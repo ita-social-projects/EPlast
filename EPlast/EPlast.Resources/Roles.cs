@@ -27,7 +27,6 @@ namespace EPlast.Resources
         public const string GoverningBodySectorHead = "Голова Напряму Керівного Органу";
         public const string GoverningBodySectorSecretary = "Діловод Напряму Керівного Органу";
 
-
         public const string AdminAndOkrugaHead = Admin + "," + OkrugaHead;
         public const string AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin = Admin + "," + OkrugaHead + "," + RegionBoardHead + "," + CityHead + "," + KurinHead;
         public const string AdminAndRegionBoardHead = Admin + "," + RegionBoardHead;
