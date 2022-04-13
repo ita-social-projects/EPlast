@@ -314,6 +314,42 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task AddMainAdmin_Valid_Test()
+        {
+            // Arrange
+            _governingBodyAdministrationService
+                .Setup(c => c.AddGoverningBodyMainAdminAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .ReturnsAsync(new GoverningBodyAdministrationDTO());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _governingBodiesController.AddMainAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task AddMainAdmin_UserHasRestrictedRoles_ReturnsBadRequest()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(x => x.AddGoverningBodyMainAdminAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+
+            //Act
+            var result = await _governingBodiesController.AddMainAdmin(new GoverningBodyAdministrationDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
         public async Task EditAdmin_Valid_Test()
         {
             // Arrange
@@ -349,6 +385,28 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await _governingBodiesController.RemoveAdmin(TestId);
+
+            // Assert
+            _logger.Verify();
+            _governingBodyAdministrationService.Verify();
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task RemoveMainAdmin_Valid_Test()
+        {
+            // Arrange
+            _governingBodyAdministrationService
+                .Setup(c => c.RemoveMainAdministratorAsync(It.IsAny<string>()));
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .ReturnsAsync(new GoverningBodyAdministrationDTO());
+
+            // Act
+            var result = await _governingBodiesController.RemoveMainAdmin(TestIdString);
 
             // Assert
             _logger.Verify();
@@ -704,6 +762,7 @@ namespace EPlast.Tests.Controllers
         }
 
         private const int TestId = 3;
+        private const string TestIdString = "TestId";
 
         private string GetStringTestId()
         {
