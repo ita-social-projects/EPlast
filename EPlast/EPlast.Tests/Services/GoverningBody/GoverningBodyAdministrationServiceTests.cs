@@ -48,6 +48,11 @@ namespace EPlast.Tests.Services.GoverningBody
             //Arrange
             _repoWrapper
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _repoWrapper
+               .Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                   It.IsAny<Func<IQueryable<Organization>,
+                       IIncludableQueryable<Organization, object>>>()))
+               .ReturnsAsync(GoverningBody);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
@@ -69,6 +74,11 @@ namespace EPlast.Tests.Services.GoverningBody
             //Arrange
             _repoWrapper
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _repoWrapper
+                .Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                    It.IsAny<Func<IQueryable<Organization>,
+                        IIncludableQueryable<Organization, object>>>()))
+                .ReturnsAsync(GoverningBody);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
@@ -90,6 +100,11 @@ namespace EPlast.Tests.Services.GoverningBody
             //Arrange
             _repoWrapper
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _repoWrapper
+               .Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                   It.IsAny<Func<IQueryable<Organization>,
+                       IIncludableQueryable<Organization, object>>>()))
+               .ReturnsAsync(GoverningBody);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.GoverningBodyHead });
@@ -189,6 +204,11 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new GoverningBodyAdministration());
+            _repoWrapper
+               .Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
+                   It.IsAny<Func<IQueryable<Organization>,
+                       IIncludableQueryable<Organization, object>>>()))
+               .ReturnsAsync(GoverningBody);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
@@ -265,6 +285,9 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
                 .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { });
             _repoWrapper
                 .Setup(r => r.GoverningBodyAdministration.Update(It.IsAny<GoverningBodyAdministration>()));
             _repoWrapper
@@ -315,6 +338,11 @@ namespace EPlast.Tests.Services.GoverningBody
             },
             AdminTypeId = AdminType.ID,
             UserId = Roles.GoverningBodyHead
+        };
+
+        private static readonly Organization GoverningBody = new Organization
+        {
+            IsMainStatus = true
         };
 
         private static readonly GoverningBodyAdministrationDTO GoverningBodyAdministrationDtoEndDateToday = new GoverningBodyAdministrationDTO
