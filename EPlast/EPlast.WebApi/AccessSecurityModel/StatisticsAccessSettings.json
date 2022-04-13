@@ -10,6 +10,17 @@
     "CanRegionStatisticsChooseIndicators": true,
     "CanRegionStatisticsFormReport": true
   },
+  "Крайовий Адмін": {
+    "IsAdmin": true,
+    "CanCityStatisticsChooseCity": true,
+    "CanCityStatisticsChooseYears": true,
+    "CanCityStatisticsChooseIndicators": true,
+    "CanCityStatisticsFormReport": true,
+    "CanRegionStatisticsChooseRegion": true,
+    "CanRegionStatisticsСhooseYears": true,
+    "CanRegionStatisticsChooseIndicators": true,
+    "CanRegionStatisticsFormReport": true
+  },
   "Голова Округи": {
     "IsAdmin": true,
     "CanCityStatisticsChooseCity": true,

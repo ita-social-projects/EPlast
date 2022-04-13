@@ -14,7 +14,25 @@
     "ManipulatePoster": true,
     "ManipulateDocument": true,
     "AddGBSector": true,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
+    "ViewDocument": true
+  },
+  "Крайовий Адмін": {
+    "AddAnnouncement": true,
+    "ViewInfo": true,
+    "AddDecision": true,
+    "EditGB": true,
+    "DeleteGB": true,
+    "CreateDirection": true,
+    "AddGBSecretary": true,
+    "GoToSecretaryProfile": true,
+    "EditRBMembers": true,
+    "DeleteGBMembers": true,
+    "BecomeRBMember": true,
+    "ManipulatePoster": true,
+    "ManipulateDocument": true,
+    "AddGBSector": true,
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Керівного Органу": {
@@ -32,7 +50,7 @@
     "ManipulatePoster": true,
     "ManipulateDocument": true,
     "AddGBSector": true,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Округи": {
@@ -50,7 +68,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false,
     "AddGBSector": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Станиці": {
@@ -68,7 +86,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false,
     "AddGBSector": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Куреня": {
@@ -86,7 +104,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false,
     "AddGBSector": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Прихильник": {
@@ -104,7 +122,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false,
     "AddGBSector": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Дійсний член організації": {
@@ -122,7 +140,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false,
     "AddGBSector": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Зареєстрований користувач": {
@@ -140,7 +158,7 @@
     "ManipulatePoster": false,
     "ManipulateDocument": false,
     "AddGBSector": false,
-    "ViewAnnouncements": false, 
+    "ViewAnnouncements": false,
     "ViewDocument": false
   }
 }

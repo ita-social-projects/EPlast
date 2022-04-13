@@ -28,6 +28,10 @@ namespace EPlast.BLL.Services.ActiveMembership
                 {
                     accessLevels.Add(AccessLevelTypeDTO.Admin.GetDescription());
                 };
+                RolesDictionary[Roles.GoverningBodyAdmin] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDTO.GoverningBodyAdmin.GetDescription());
+                };
                 RolesDictionary[Roles.GoverningBodyHead] = () =>
                 {
                     accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription());

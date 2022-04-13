@@ -8,7 +8,19 @@
     "ManipulateDocument": true,
     "AddAnnouncement": true,
     "DeleteAnnouncement": true,
-    "EditAnnouncement": true, 
+    "EditAnnouncement": true,
+    "ViewDocument": true
+  },
+  "Крайовий Адмін": {
+    "CreateGB": true,
+    "ViewInfo": true,
+    "ViewDecisions": true,
+    "AddDecision": true,
+    "EditRB": true,
+    "ManipulateDocument": true,
+    "AddAnnouncement": true,
+    "DeleteAnnouncement": true,
+    "EditAnnouncement": true,
     "ViewDocument": true
   },
   "Голова Керівного Органу": {
@@ -20,7 +32,7 @@
     "ManipulateDocument": true,
     "AddAnnouncement": true,
     "DeleteAnnouncement": true,
-    "EditAnnouncement": true, 
+    "EditAnnouncement": true,
     "ViewDocument": true
   },
   "Голова Округи": {
@@ -32,7 +44,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Заступник Голови Округи": {
@@ -44,7 +56,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Голова Станиці": {
@@ -56,7 +68,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Заступник Голови Станиці": {
@@ -68,7 +80,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Голова Куреня": {
@@ -80,7 +92,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Заступник Голови Куреня": {
@@ -92,7 +104,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Прихильник": {
@@ -104,7 +116,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Дійсний член організації": {
@@ -116,7 +128,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": true
   },
   "Зареєстрований користувач": {
@@ -128,7 +140,7 @@
     "ManipulateDocument": false,
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
-    "EditAnnouncement": false, 
+    "EditAnnouncement": false,
     "ViewDocument": false
   }
 }
