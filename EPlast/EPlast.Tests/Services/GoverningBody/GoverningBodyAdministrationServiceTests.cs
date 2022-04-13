@@ -102,6 +102,59 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
+        public async Task AddGoverningBodyMainAdminAsync_EndDateToday_ReturnsAdministrator()
+        {
+            //Arrange
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.PlastMember });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Act
+            var result = await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateToday);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task AddGoverningBodyMainAdminAsync_EndDateNull_ReturnsAdministrator()
+        {
+            //Arrange
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.PlastMember });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Act
+            var result = await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull);
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+        }
+
+        [Test]
+        public void AddGoverningBodyMainAdminAsync_UserHasRestrictedRoles_ThrowsArgumentException()
+        {
+            //Arrange
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.GoverningBodyHead });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull));
+        }
+
+        [Test]
         public async Task EditGoverningBodyAdministratorAsync_ReturnsEditedAdministratorWithSameId()
         {
             //Arrange
@@ -223,6 +276,25 @@ namespace EPlast.Tests.Services.GoverningBody
             //Assert
             _repoWrapper.Verify();
             _adminTypeService.Verify();
+        }
+
+        [Test]
+        public void RemoveMainAdministratorAsync_Test()
+        {
+            //Arrange
+            _userManager
+                .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
+            _userManager
+                .Setup(u => u.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
+            _userManager
+               .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+               .ReturnsAsync(new List<string> { Roles.PlastMember });
+            //Act
+            var result = _governingBodyAdministrationService.RemoveMainAdministratorAsync(It.IsAny<string>());
+
+            //Assert
+            _repoWrapper.Verify();
+            Assert.NotNull(result);
         }
 
         private const int FakeId = 3;
