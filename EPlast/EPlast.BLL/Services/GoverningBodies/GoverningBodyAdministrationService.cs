@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
 using System.Collections.Generic;
 using System.Linq;
+using EPlast.BLL.DTO.Admin;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -28,10 +29,31 @@ namespace EPlast.BLL.Services.GoverningBodies
             _adminTypeService = adminTypeService;
         }
 
+        public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
+
+            var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (!userRoles.Contains(Roles.PlastMember))
+            {
+                throw new ArgumentException("Can't add user with the roles");
+            }
+
+            await _userManager.AddToRoleAsync(user, adminType.AdminTypeName);
+
+            return governingBodyAdministrationDto;
+        }
+
         /// <inheritdoc />
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
+            var IsMainStatus = (await _repositoryWrapper.GoverningBody.GetFirstAsync(x => x.ID == governingBodyAdministrationDto.GoverningBodyId)).IsMainStatus;
+
             governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
             var governingBodyAdministration = new GoverningBodyAdministration
             {
@@ -52,13 +74,19 @@ namespace EPlast.BLL.Services.GoverningBodies
             {
                 throw new ArgumentException("Can't add user with the roles");
             }
-               
-            var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ? 
-                Roles.GoverningBodyHead : 
-                Roles.GoverningBodySecretary;
-            await _userManager.AddToRoleAsync(user, adminRole);
 
-            await CheckGoverningBodyHasAdmin(governingBodyAdministrationDto.GoverningBodyId, adminType.AdminTypeName);
+            var adminRole = adminType.AdminTypeName == Roles.GoverningBodyHead ?
+                Roles.GoverningBodyHead :
+                Roles.GoverningBodySecretary;
+
+            await CheckGoverningBodyHasAdmin(governingBodyAdministrationDto.GoverningBodyId, adminRole);
+
+            await _userManager.AddToRoleAsync(user, adminRole);
+            if (IsMainStatus
+               && adminType.AdminTypeName == Roles.GoverningBodyHead)
+            {
+                await _userManager.AddToRoleAsync(user, Roles.GoverningBodyAdmin);
+            }
 
             await _repositoryWrapper.GoverningBodyAdministration.CreateAsync(governingBodyAdministration);
             await _repositoryWrapper.SaveAsync();
@@ -100,17 +128,36 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == Roles.GoverningBodyHead ? Roles.GoverningBodyHead : Roles.GoverningBodySecretary;
+            var userRoles = await _userManager.GetRolesAsync(user);
+            var role = adminType.AdminTypeName;
+
             await _userManager.RemoveFromRoleAsync(user, role);
+            if (role == Roles.GoverningBodyHead && userRoles.Contains(Roles.GoverningBodyAdmin))
+            {
+                await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
+            }
 
             _repositoryWrapper.GoverningBodyAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
         }
 
+
+        /// <inheritdoc />
+        public async Task RemoveMainAdministratorAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (userRoles.Contains(Roles.GoverningBodyAdmin))
+            {
+                await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
+            }
+        }
+
         public async Task RemoveAdminRolesByUserIdAsync(string userId)
         {
             var roles = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 await RemoveAdministratorAsync(role.Id);
             }

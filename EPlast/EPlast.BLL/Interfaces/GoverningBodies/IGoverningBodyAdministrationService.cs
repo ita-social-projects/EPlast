@@ -6,6 +6,13 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
     public interface IGoverningBodyAdministrationService
     {
         /// <summary>
+        /// Adds Main Administrator
+        /// </summary>
+        /// <param name="governingBodyAdministrationDto">Governing Body Administration object</param>
+        /// <returns>Governing Body Administration object</returns>
+        Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto);
+
+        /// <summary>
         /// Adds Administrator to specified Governing Body
         /// </summary>
         /// <param name="governingBodyAdministrationDto">Governing Body Administration object</param>
@@ -24,6 +31,13 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// </summary>
         /// <param name="adminId">Governing Body Administration object</param>
         Task RemoveAdministratorAsync(int adminId);
+
+
+        /// <summary>
+        /// Removes Main Administrator of Governing Bodies
+        /// </summary>
+        /// <param name="userId">Governing Body Administration object</param>
+        Task RemoveMainAdministratorAsync(string userId);
 
         /// <summary>
         /// Removes Administration roles of user in Governing Body
