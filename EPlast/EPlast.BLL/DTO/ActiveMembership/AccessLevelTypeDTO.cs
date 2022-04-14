@@ -18,7 +18,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації")]
         LeadershipMember,
 
-        [Description("Доступ адміністратора, Голова Керівного Органу")]
+        [Description("Крайовий Адмін")]
         GoverningBodyAdmin,
 
         [Description("Доступ члена проводу організації, Голова Керівного Органу")]
