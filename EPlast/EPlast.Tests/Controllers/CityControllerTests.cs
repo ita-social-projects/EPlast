@@ -458,7 +458,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _mockMediator
                 .Setup(m => m.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new CityProfileDTO());
+                .ReturnsAsync(new CityAdministrationViewModelDTO());
             _mapper
                 .Setup(m => m.Map<CityProfileDTO, CityViewModel>(It.IsAny<CityProfileDTO>()))
                 .Returns(new CityViewModel());
