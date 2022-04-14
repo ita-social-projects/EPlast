@@ -11,6 +11,18 @@
     "ViewAnnouncements": true,
     "ViewDocument": true
   },
+  "Крайовий Адмін": {
+    "AddAnnouncement": true,
+    "ViewInfo": true,
+    "EditSector": true,
+    "DeleteSector": true,
+    "AddSecretary": true,
+    "GoToSecretaryProfile": true,
+    "ManipulatePoster": true,
+    "ManipulateDocument": true,
+    "ViewAnnouncements": true,
+    "ViewDocument": true
+  },
   "Голова Керівного Органу": {
     "AddAnnouncement": true,
     "ViewInfo": true,

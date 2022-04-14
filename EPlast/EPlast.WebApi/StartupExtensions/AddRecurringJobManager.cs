@@ -102,6 +102,7 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.CityHeadDeputy,
                 Roles.OkrugaHeadDeputy,
                 Roles.KurinHeadDeputy,
+                Roles.GoverningBodyAdmin,
                 Roles.GoverningBodyHead,
                 Roles.GoverningBodySecretary,
                 Roles.GoverningBodySectorHead,

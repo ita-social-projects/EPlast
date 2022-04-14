@@ -8,6 +8,15 @@
     "AddCityHead": true,
     "DownloadDocument": true
   },
+  "Крайовий Адмін": {
+    "IsAdmin": true,
+    "CreateCity": true,
+    "EditCity": true,
+    "DeleteCity": true,
+    "AddCitySecretary": true,
+    "AddCityHead": true,
+    "DownloadDocument": true
+  },
   "Голова Округи": {
     "IsAdmin": true,
     "EditCity": false,
