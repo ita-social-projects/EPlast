@@ -28,10 +28,12 @@ namespace EPlast.Resources
         public const string GoverningBodySectorHead = "Голова Напряму Керівного Органу";
         public const string GoverningBodySectorSecretary = "Діловод Напряму Керівного Органу";
 
+        public const string AdminAndGBAdmin = Admin + "," + GoverningBodyAdmin;
         public const string AdminAndOkrugaHead = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead;
         public const string AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead + "," + RegionBoardHead + "," + CityHead + "," + KurinHead;
         public const string AdminAndRegionBoardHead = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead;
         public const string AdminAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
+
         public const string AdminAndGBHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead;
         public const string DegreeAssignRoles = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," 
             + OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
