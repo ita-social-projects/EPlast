@@ -101,7 +101,8 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin) &&
+                !(await _userManager.GetRolesAsync(user)).Contains(Roles.GoverningBodyAdmin))
                 throw new UnauthorizedAccessException();
         }
 
