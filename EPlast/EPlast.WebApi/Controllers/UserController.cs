@@ -126,7 +126,7 @@ namespace EPlast.WebApi.Controllers
             }
             var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
             var isThisUser = currentUserId == focusUserId;
-            var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+            var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
             var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
             var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
                 || !(isFocusUserSupporter && (await _userService.IsApprovedCityMember(focusUserId) || await _userService.IsApprovedCLubMember(focusUserId)));
@@ -196,7 +196,7 @@ namespace EPlast.WebApi.Controllers
             var user = await _userService.GetUserAsync(userId);
             var currentUserId = _userManager.GetUserId(User);
             var currentUser = await _userService.GetUserAsync(currentUserId);
-            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin)))
+            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin })))
             {
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
@@ -240,7 +240,7 @@ namespace EPlast.WebApi.Controllers
                 var currentUserId = _userManager.GetUserId(User);
                 var currentUser = await _userService.GetUserAsync(currentUserId);
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
                 var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
 
                 if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
@@ -275,7 +275,7 @@ namespace EPlast.WebApi.Controllers
             {
                 var currentUserId = _userManager.GetUserId(User);
                 var currentUser = await _userService.GetUserAsync(currentUserId);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
                 var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
 
                 if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead)
@@ -334,7 +334,7 @@ namespace EPlast.WebApi.Controllers
             var confirmedUsers = _userService.GetConfirmedUsers(user);
             var canApprove = !userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember);
             var canApprovePlastMember = canApprove && _userService.CanApprove(confirmedUsers, userId, currentUserId,
-                    await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
+                    await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin }));
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
@@ -350,7 +350,7 @@ namespace EPlast.WebApi.Controllers
                                                                    && canApprove && userId != currentUserId
                                                                    && (isUserHeadOfClub ||
                                                                        isUserHeadDeputyOfClub))) ||
-                                       await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                                       await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
             var model = new UserApproversViewModel
             {
                 User = userViewModel,
