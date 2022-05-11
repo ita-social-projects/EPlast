@@ -604,7 +604,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(It.IsAny<UserDTO>);
 
             _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string[]>()))
                 .ReturnsAsync(true);
 
             // Act
