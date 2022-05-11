@@ -4,12 +4,9 @@ using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -350,7 +347,8 @@ namespace EPlast.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(announcement);
-
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);
@@ -364,7 +362,7 @@ namespace EPlast.WebApi.Controllers
             {
                 var id = await _governingBodyAnnouncementService.EditAnnouncementAsync(announcement);
                 if (id == null)
-                    return BadRequest();
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);
