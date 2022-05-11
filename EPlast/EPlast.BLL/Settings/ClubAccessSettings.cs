@@ -8,6 +8,7 @@ namespace EPlast.BLL.Settings
     public class ClubAccessSettings
     {
         private const string AdminRoleName = Roles.Admin;
+        private const string GoverningBodyAdminRoleName = Roles.GoverningBodyAdmin;
         private const string ClubAdminRoleName = Roles.KurinHead;
         private const string ClubAdminDeputyRoleName = Roles.KurinHeadDeputy;
 
@@ -25,6 +26,7 @@ namespace EPlast.BLL.Settings
                 return new Dictionary<string, IClubAccessGetter>
                 {
                     { AdminRoleName,  new ClubAccessForAdminGetter(_repositoryWrapper) },
+                    { GoverningBodyAdminRoleName,  new ClubAccessForAdminGetter(_repositoryWrapper) },
                     { ClubAdminRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) },
                     { ClubAdminDeputyRoleName, new ClubAccessForClubAdminGetter(_repositoryWrapper) }
                 };
