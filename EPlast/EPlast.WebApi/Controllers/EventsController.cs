@@ -282,7 +282,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpPut("participants/{participantId:int}/status/approved")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ApproveParticipant(int participantId)
         {
             return StatusCode(await _actionManager.ApproveParticipantAsync(participantId));
@@ -296,7 +296,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpPut("participants/{participantId:int}/status/underReviewed")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UnderReviewParticipant(int participantId)
         {
             return StatusCode(await _actionManager.UnderReviewParticipantAsync(participantId));
@@ -310,7 +310,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpPut("participants/{participantId:int}/status/rejected")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> RejectParticipant(int participantId)
         {
             return StatusCode(await _actionManager.RejectParticipantAsync(participantId));
