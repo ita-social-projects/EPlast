@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
@@ -31,6 +32,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         private SectorAnnouncementsService _sectorAnnouncementService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<IGoverningBodyBlobStorageService> _blobStorageService;
+        private Mock<IHtmlService> _htmlService;
 
         [SetUp]
         public void SetUp()
@@ -42,6 +44,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _blobStorageService = new Mock<IGoverningBodyBlobStorageService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _htmlService = new Mock<IHtmlService>();
 
             _sectorAnnouncementService = new SectorAnnouncementsService(
                 _repoWrapper.Object,
@@ -49,7 +52,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 _context.Object,
                 _blobStorage.Object,
                 _userManager.Object,
-                _blobStorageService.Object);
+                _blobStorageService.Object,
+                _htmlService.Object);
         }
 
         [Test]

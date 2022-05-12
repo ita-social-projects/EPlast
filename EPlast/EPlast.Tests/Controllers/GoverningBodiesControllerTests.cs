@@ -570,8 +570,9 @@ namespace EPlast.Tests.Controllers
         public async Task AddAnnouncement_Valid_Test()
         {
             //Arrange
+            int returnId = 1;
             _governingBodyAnnouncementService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>())).ReturnsAsync(returnId);
 
             //Act
             var result = await _governingBodiesController.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
@@ -588,6 +589,22 @@ namespace EPlast.Tests.Controllers
             _governingBodiesController.ModelState.AddModelError("text", "is required");
             _governingBodyAnnouncementService
                 .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()));
+
+            //Act
+            var result = await _governingBodiesController.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
+
+            //Assert
+            _governingBodyAnnouncementService.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddAnnouncement_TitleOrTextIsWhiteSpace_BadRequest()
+        {
+            //Arrange
+            int? returnId = null;
+            _governingBodyAnnouncementService
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>())).ReturnsAsync(returnId);
 
             //Act
             var result = await _governingBodiesController.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
@@ -716,7 +733,23 @@ namespace EPlast.Tests.Controllers
             var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(res);
+            Assert.IsInstanceOf<BadRequestObjectResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_TitleOrTextIsWhiteSpace_ReturnsBadRequest()
+        {
+            //Arrange
+            int? returnId = null;
+            _governingBodyAnnouncementService
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(returnId);
+
+            //Act
+            var res = await _governingBodiesController.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(res);
         }
 
         [Test]

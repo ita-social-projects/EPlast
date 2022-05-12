@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using AutoMapper;
-using EPlast.BLL.Interfaces.Logging;
+﻿using AutoMapper;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody.Sector;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -286,7 +286,8 @@ namespace EPlast.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _sectorAnnouncementsService.AddAnnouncementAsync(announcement);
-
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);
@@ -300,7 +301,7 @@ namespace EPlast.WebApi.Controllers
             {
                 var id = await _sectorAnnouncementsService.EditAnnouncementAsync(announcement);
                 if (id == null)
-                    return BadRequest();
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);

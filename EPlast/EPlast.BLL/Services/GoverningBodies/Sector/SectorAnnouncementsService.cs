@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
@@ -14,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -27,11 +26,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         private readonly IGoverningBodyBlobStorageRepository _blobStorage;
         private readonly UserManager<User> _userManager;
         private readonly IGoverningBodyBlobStorageService _blobStorageService;
+        private readonly IHtmlService _htmlService;
 
         public SectorAnnouncementsService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper, IHttpContextAccessor context,
             IGoverningBodyBlobStorageRepository blobStorage,
-            UserManager<User> userManager, IGoverningBodyBlobStorageService blobStorageService)
+            UserManager<User> userManager, IGoverningBodyBlobStorageService blobStorageService, IHtmlService htmlService)
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
@@ -39,11 +39,17 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _blobStorage = blobStorage;
             _userManager = userManager;
             _blobStorageService = blobStorageService;
+            _htmlService = htmlService;
         }
 
         public async Task<int?> AddAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO)
         {
             if (announcementDTO == null)
+            {
+                return null;
+            }
+            if (_htmlService.IsHtmlTextEmpty(announcementDTO.Text)
+               || _htmlService.IsHtmlTextEmpty(announcementDTO.Title))
             {
                 return null;
             }
@@ -129,6 +135,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         public async Task<int?> EditAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO)
         {
             if (announcementDTO == null)
+            {
+                return null;
+            }
+            if (_htmlService.IsHtmlTextEmpty(announcementDTO.Text)
+              || _htmlService.IsHtmlTextEmpty(announcementDTO.Title))
             {
                 return null;
             }
