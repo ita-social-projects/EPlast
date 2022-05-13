@@ -186,7 +186,7 @@
     "regions": false,
     "cities": true,
     "clubs": false,
-    "events": false,
+    "events": true,
     "distinctions": false,
     "precaution": false,
     "kadra": false,
