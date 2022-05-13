@@ -521,7 +521,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>())).ReturnsAsync(1); ;
 
             //Act
             var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
@@ -538,6 +538,22 @@ namespace EPlast.Tests.Controllers
             _controller.ModelState.AddModelError("text", "is required");
             _sectorAnnouncementsService
                 .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()));
+
+            //Act
+            var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
+
+            //Assert
+            _sectorAnnouncementsService.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task AddAnnouncement_TitleOrTextIsWhiteSpace_BadRequest()
+        {
+            //Arrange
+            int? returnId = null;
+            _sectorAnnouncementsService
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>())).ReturnsAsync(returnId);
 
             //Act
             var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
@@ -591,7 +607,23 @@ namespace EPlast.Tests.Controllers
             var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
 
             //Assert
-            Assert.IsInstanceOf<BadRequestResult>(res);
+            Assert.IsInstanceOf<BadRequestObjectResult>(res);
+        }
+
+        [Test]
+        public async Task EditAnnouncement_TitleOrTextIsWhiteSpace_ReturnsBadRequest()
+        {
+            //Arrange
+            int? returnId = null;
+            _sectorAnnouncementsService
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .ReturnsAsync(returnId);
+
+            //Act
+            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+
+            //Assert
+            Assert.IsInstanceOf<BadRequestObjectResult>(res);
         }
 
         [Test]

@@ -8,6 +8,7 @@ namespace EPlast.BLL.Settings
     public class CityAccessSettings
     {
         private const string AdminRoleName = Roles.Admin;
+        private const string GoverningBodyAdminRoleName = Roles.GoverningBodyAdmin;
         private const string RegionAdminRoleName = Roles.OkrugaHead;
         private const string RegionAdminDeputyRoleName = Roles.OkrugaHeadDeputy;
         private const string CityAdminRoleName = Roles.CityHead;
@@ -28,6 +29,7 @@ namespace EPlast.BLL.Settings
                 return new Dictionary<string, ICItyAccessGetter>
                 {
                     { AdminRoleName,  new CityAccessForAdminGetter(_repositoryWrapper) },
+                    { GoverningBodyAdminRoleName,  new CityAccessForAdminGetter(_repositoryWrapper) },
                     { RegionAdminRoleName, new CItyAccessForRegionAdminGetter(_repositoryWrapper) },
                     { RegionAdminDeputyRoleName, new CItyAccessForRegionAdminGetter(_repositoryWrapper) },
                     { CityAdminRoleName, new CityAccessForCityAdminGetter(_repositoryWrapper) },

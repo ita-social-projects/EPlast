@@ -53,6 +53,9 @@ namespace EPlast.BLL.Services.City.CityAccess
             if (roles.Contains(Roles.Admin)) 
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.Admin].GetCities(user.Id));
+            else if (roles.Contains(Roles.GoverningBodyAdmin))
+                options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
+                    await _cityAccessGetters[Roles.GoverningBodyAdmin].GetCities(user.Id));
             else if ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && (roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)))
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDTO>>(
                     await _cityAccessGetters[Roles.OkrugaHead].GetCities(user.Id));
