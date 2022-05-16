@@ -30,6 +30,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
         private GoverningBodyAnnouncementService _governingBodyAnnouncementService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
         private Mock<IGoverningBodyBlobStorageService> _blobStorageService;
+        private Mock<IHtmlService> _htmlService;
 
         [SetUp]
         public void SetUp()
@@ -41,6 +42,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             _blobStorageService = new Mock<IGoverningBodyBlobStorageService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _htmlService = new Mock<IHtmlService>();
 
             _governingBodyAnnouncementService = new GoverningBodyAnnouncementService(
                 _repoWrapper.Object,
@@ -48,7 +50,8 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 _context.Object,
                 _blobStorage.Object,
                 _userManager.Object,
-                _blobStorageService.Object);
+                _blobStorageService.Object,
+                _htmlService.Object);
         }
 
         [Test]

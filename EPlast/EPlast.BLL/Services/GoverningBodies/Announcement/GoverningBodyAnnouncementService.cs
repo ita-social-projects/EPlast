@@ -1,20 +1,19 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using EPlast.BLL.Services.GoverningBodies.Sector;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Announcement
 {
@@ -26,11 +25,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
         private readonly IGoverningBodyBlobStorageRepository _blobStorage;
         private readonly UserManager<User> _userManager;
         private readonly IGoverningBodyBlobStorageService _blobStorageService;
+        private readonly IHtmlService _htmlService;
 
         public GoverningBodyAnnouncementService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper, IHttpContextAccessor context,
             IGoverningBodyBlobStorageRepository blobStorage,
-            UserManager<User> userManager, IGoverningBodyBlobStorageService blobStorageService)
+            UserManager<User> userManager, IGoverningBodyBlobStorageService blobStorageService , IHtmlService htmlService)
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
@@ -38,6 +38,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             _blobStorage = blobStorage;
             _userManager = userManager;
             _blobStorageService = blobStorageService;
+            _htmlService = htmlService;
         }
 
         public async Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
@@ -46,6 +47,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             {
                 return null;
             }
+            if (_htmlService.IsHtmlTextEmpty(announcementDTO.Text) 
+                || _htmlService.IsHtmlTextEmpty(announcementDTO.Title))
+            {
+                return null;
+            }
+            
             announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
             var announcement = _mapper.Map<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>(announcementDTO);
             announcement.Images = new List<GoverningBodyAnnouncementImage>();
@@ -131,6 +138,12 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             {
                 return null;
             }
+            if (_htmlService.IsHtmlTextEmpty(announcementDTO.Text)
+               || _htmlService.IsHtmlTextEmpty(announcementDTO.Title))
+            {
+                return null;
+            }
+
             announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
             var currentAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                     d => d.Id == announcementDTO.Id,
