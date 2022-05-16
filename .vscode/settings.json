@@ -1,0 +1,14 @@
+{
+  "omnisharp.enableImportCompletion": true,
+  "omnisharp.enableRoslynAnalyzers": true,
+  "omnisharp.organizeImportsOnFormat": true,
+  "gitlens.codeLens.scopes": [
+    "document",
+    "containers",
+    "blocks"
+  ],
+  "dotnet-test-explorer.addProblems": false,
+  "dotnet-test-explorer.enableTelemetry": false,
+  "dotnet-test-explorer.runInParallel": true,
+  "dotnet-test-explorer.treeMode": "full",
+}

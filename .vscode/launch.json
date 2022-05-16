@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (web)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/EPlast/EPlast.WebApi/bin/Debug/netcoreapp3.1/EPlast.WebApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/EPlast/EPlast.WebApi",
+      "stopAtEntry": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)",
+        "uriFormat": "%s/swagger"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:44350;http://localhost:52780"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}
