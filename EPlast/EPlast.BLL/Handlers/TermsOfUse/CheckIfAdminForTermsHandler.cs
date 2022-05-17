@@ -20,8 +20,10 @@ namespace EPlast.BLL.Handlers.TermsOfUse
 
         public async Task<Unit> Handle(CheckIfAdminForTermsQuery request, CancellationToken cancellationToken)
         {
-            if (!(await _userManager.GetRolesAsync(request.User)).Contains(Roles.Admin))
-                throw new UnauthorizedAccessException();
+            var list = await _userManager.GetRolesAsync(request.User);
+            bool canEditTerms = list.Contains(Roles.Admin) || list.Contains(Roles.GoverningBodyAdmin);
+
+            if (!canEditTerms) throw new UnauthorizedAccessException();
             return Unit.Value;
         }
     }

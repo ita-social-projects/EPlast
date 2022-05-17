@@ -14,8 +14,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles=Roles.Admin)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
     
     public class TermsController : ControllerBase
     {
