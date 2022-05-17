@@ -1,23 +1,23 @@
-﻿using EPlast.BLL.DTO.AnnualReport;
-using EPlast.BLL.ExtensionMethods;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.DTO.Club;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Club;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace EPlast.WebApi.Controllers
 {

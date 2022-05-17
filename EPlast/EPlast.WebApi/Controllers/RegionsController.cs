@@ -1,18 +1,18 @@
+﻿using System;
+using System.Threading.Tasks;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
-using EPlast.BLL.Interfaces.Cache;
+using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
-using EPlast.BLL.Queries.Region;
-using MediatR;
 
 namespace EPlast.WebApi.Controllers
 {

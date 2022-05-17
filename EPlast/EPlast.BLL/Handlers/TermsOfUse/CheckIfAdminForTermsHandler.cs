@@ -1,11 +1,11 @@
-﻿using EPlast.BLL.Queries.TermsOfUse;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL.Queries.TermsOfUse;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.TermsOfUse
 {
