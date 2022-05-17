@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Cache;
@@ -335,7 +335,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateCity")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Create(CityViewModel city)
         {
             if (!ModelState.IsValid)
