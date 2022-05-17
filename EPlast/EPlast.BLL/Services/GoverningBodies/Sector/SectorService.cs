@@ -1,3 +1,7 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO.GoverningBody.Sector;
@@ -8,10 +12,6 @@ using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector

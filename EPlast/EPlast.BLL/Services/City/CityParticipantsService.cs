@@ -1,18 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.City
 {

@@ -1,13 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Region
 {

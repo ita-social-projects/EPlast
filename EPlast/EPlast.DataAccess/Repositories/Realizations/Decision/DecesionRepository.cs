@@ -1,8 +1,8 @@
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Decision;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace EPlast.DataAccess.Repositories
 {

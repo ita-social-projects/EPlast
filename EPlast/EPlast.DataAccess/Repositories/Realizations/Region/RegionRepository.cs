@@ -1,10 +1,10 @@
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories.Contracts;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
 {

@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.Handlers.DecisionHandlers;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL.Handlers.DecisionHandlers;
 using EPlast.BLL.Queries.Decision;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Decision
 {
