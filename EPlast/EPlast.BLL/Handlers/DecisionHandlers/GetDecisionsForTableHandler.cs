@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using EPlast.DataAccess.Repositories;
@@ -25,7 +25,7 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<IEnumerable<DecisionTableObject>>Handle(GetDecisionsForTableQuery request, CancellationToken cancellationToken)
         {
-            return _repositoryWrapper.Decesion.GetDecisions(request.SearchData, request.Page, request.PageSize);
+            return await _repositoryWrapper.Decesion.GetDecisions(request.SearchData, request.Page, request.PageSize);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
         {
-            return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
+            return Task.Run(() => _mapper.Map<GoverningBodyDTO, Organization>(governingBody));
         }
 
         public async Task<int> EditAsync(GoverningBodyDTO governingBody)

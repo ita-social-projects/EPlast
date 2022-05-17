@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
@@ -207,7 +207,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync()
         {
-            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await Task.FromResult(_repositoryWrapper.RegionAnnualReports.FindAll().ToList()));
+            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await Task.Run(() => _repositoryWrapper.RegionAnnualReports.FindAll().ToList()));
         }
 
         public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
