@@ -1,5 +1,4 @@
-﻿using System;
-using EPlast.DataAccess.Entities;
+﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Decision;
@@ -15,13 +14,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess
 {
-    public class EPlastDBContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+    public class EPlastDBContext : IdentityDbContext<User, IdentityRole, string>
     {
         public EPlastDBContext(DbContextOptions<EPlastDBContext> options) : base(options)
         {
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<Nationality> Nationalities { get; set; }
         public DbSet<Religion> Religions { get; set; }
