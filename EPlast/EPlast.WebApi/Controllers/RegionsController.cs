@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
@@ -499,7 +499,7 @@ namespace EPlast.WebApi.Controllers
                 bool isArchive = true;
                 var query = new GetAllRegionsByPageAndIsArchiveQuery(page, pageSize, regionName, isArchive);
                 regionsTuple = await  _mediator.Send(query);
-                if (!String.IsNullOrEmpty(regionName))
+                if (!string.IsNullOrEmpty(regionName))
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
@@ -509,7 +509,14 @@ namespace EPlast.WebApi.Controllers
                     await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
                 }
             }
-            return StatusCode(StatusCodes.Status200OK, new { page = page, pageSize = pageSize, regions = regionsTuple.Item1, total = regionsTuple.Item2, canCreate = User.IsInRole(Roles.Admin) });
+            return StatusCode(StatusCodes.Status200OK, new
+            {
+                page,
+                pageSize,
+                regions = regionsTuple.Item1,
+                total = regionsTuple.Item2,
+                canCreate = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.GoverningBodyAdmin)
+            });
         }
 
         /// <summary>
@@ -668,7 +675,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("ArchiveRegion/{Id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> ArchiveRegion(int Id)
         {
             await _regionService.ArchiveRegionAsync(Id);
@@ -694,7 +701,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpDelete("RemoveRegion/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> RemoveRegion(int Id)
         {
             var admins = await _regionAdministrationService.GetAdministrationAsync(Id);
@@ -728,7 +735,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("UnArchiveRegion/{Id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> UnArchiveRegion(int Id)
         {
             await _regionService.UnArchiveRegionAsync(Id);
