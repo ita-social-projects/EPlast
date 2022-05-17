@@ -44,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of user distinction</response>
         /// <response code="404">The user distinction does not exist</response>
         [HttpGet("UserDistinction/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
             UserDistinctionDTO userDistinction = await _userDistinctionService.GetUserDistinctionAsync(id);
@@ -132,7 +132,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Distinction type was successfully deleted</response>
         /// <response code="404">Distinction type does not exist</response>
         [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteDistinction(int id)
         {
             try
@@ -154,7 +154,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">User distinction was successfully deleted</response>
         /// <response code="404">User distinction does not exist</response>
         [HttpDelete("UserDistinction/Delete/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {
             try
@@ -176,7 +176,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserDistinction/Create/{userId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
             if (ModelState.IsValid)
@@ -201,7 +201,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Distinction type was successfully created</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("Create")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
         {
             if (ModelState.IsValid)
@@ -221,7 +221,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User distinction does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserDistinction/Edit/{userDistinctionId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> EditUserDistinction(UserDistinctionDTO userDistinctionDTO)
         {
             if (ModelState.IsValid)
@@ -247,7 +247,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Distinction type does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("Edit/{distinctionId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
         {
             if (ModelState.IsValid)
@@ -273,7 +273,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("numberExist/{number}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CheckNumberExisting(int number)
         {
             bool distNumber = await _userDistinctionService.IsNumberExistAsync(number);
