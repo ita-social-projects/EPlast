@@ -7,8 +7,11 @@
     "containers",
     "blocks"
   ],
-  "dotnet-test-explorer.addProblems": false,
-  "dotnet-test-explorer.enableTelemetry": false,
-  "dotnet-test-explorer.runInParallel": true,
-  "dotnet-test-explorer.treeMode": "full",
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "modificationsIfAvailable",
+  "editor.unicodeHighlight.allowedLocales": {
+    "ru": true,
+    "ua": true
+  },
+  "files.autoSave": "onWindowChange"
 }
