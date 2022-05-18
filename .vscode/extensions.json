@@ -2,7 +2,6 @@
   "recommendations": [
     "adrianwilczynski.user-secrets",
     "eamodio.gitlens",
-    "fernandoescolar.vscode-solution-explorer",
     "github.vscode-pull-request-github",
     "ms-dotnettools.csharp"
   ]
