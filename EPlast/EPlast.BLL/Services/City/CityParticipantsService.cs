@@ -23,7 +23,6 @@ namespace EPlast.BLL.Services.City
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ICityService _cityService;
-        private readonly IUserManagerService _userManagerService;
         private readonly UserManager<User> _userManager;
 
         public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
