@@ -115,9 +115,16 @@ namespace EPlast.Tests.Services.Precautions
         {
             //Arrange
             mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.GetFirstAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                .Setup(x => x.UserPrecaution.GetFirstAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(userPrecaution);    
+            mockRepoWrapper
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
+            mockMapper
+                .Setup(x => x.Map<UserPrecaution, UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
+                .Returns(userPrecautionDTO);
 
             //Act
 
@@ -453,7 +460,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             mockMapper
-               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable < UserPrecautionDTO >> (It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act 
@@ -537,6 +544,7 @@ namespace EPlast.Tests.Services.Precautions
             },
             UserId = UserId,
             Date = DateTime.Now,
+            EndDate = DateTime.Now.AddDays(30),
             User = new User
             {
                 FirstName = "",
@@ -606,7 +614,7 @@ namespace EPlast.Tests.Services.Precautions
             {
                 new ShortUserInformationDTO { ID = UserId },
                 new ShortUserInformationDTO { ID = UserId }
-                
+
             }.AsEnumerable();
         }
 

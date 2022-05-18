@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -76,6 +77,9 @@ namespace EPlast.BLL.Services.Precautions
                 throw new ArgumentException("Number in register already exists");
             }
 
+            UserPrecautionDTO oldUserPrecaution = await GetUserPrecautionAsync(userPrecautionDTO.Id);
+            DateTime shiftedDateTime = userPrecautionDTO.EndDate.ShiftByDifference(oldUserPrecaution.Date, userPrecautionDTO.Date);
+
             var userPrecaution = new UserPrecaution()
             {
                 Id = userPrecautionDTO.Id,
@@ -85,8 +89,8 @@ namespace EPlast.BLL.Services.Precautions
                 Reason = userPrecautionDTO.Reason,
                 Reporter = userPrecautionDTO.Reporter,
                 Number = userPrecautionDTO.Number,
-                Status = userPrecautionDTO.Status,
-                EndDate = userPrecautionDTO.EndDate,
+                Status = userPrecautionDTO.Status,                
+                EndDate = shiftedDateTime,
                 IsActive = userPrecautionDTO.IsActive
             };
             _repoWrapper.UserPrecaution.Update(userPrecaution);
