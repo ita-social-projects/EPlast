@@ -390,9 +390,10 @@ namespace EPlast.Tests.Controllers
                     Text = "Text2"
                 },
             };
-        public async Task<IEnumerable<DecisionTableObject>> FakedDecisionTableObject()
+            
+        public Task<IEnumerable<DecisionTableObject>> FakedDecisionTableObject()
         {
-            return new List<DecisionTableObject>();
+            return Task.FromResult(new List<DecisionTableObject>().AsEnumerable());
         }
     }
 }

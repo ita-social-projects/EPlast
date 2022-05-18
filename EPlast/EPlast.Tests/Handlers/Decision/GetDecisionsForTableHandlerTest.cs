@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using EPlast.BLL.Handlers.DecisionHandlers;
@@ -14,21 +15,22 @@ namespace EPlast.Tests.Handlers.Decision
     {
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private GetDecisionsForTableHandler _handler;
+
         [SetUp]
         public void SetUp()
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _handler = new GetDecisionsForTableHandler(_mockRepoWrapper.Object);
         }
+
         [Test]
-        public void GetDecisionsForTable_ReturnsUserDistinctionsTableObject()
+        public void GetDecisionsForTable_ReturnsUserDistinctionsTableObjectAsync()
         {
             //Arrange
-
             _mockRepoWrapper
                 .Setup(x => x.Decesion.GetDecisions(It.IsAny<string>(),
                     It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<DecisionTableObject>());
+                .ReturnsAsync(new List<DecisionTableObject>().AsEnumerable());
 
             //Act
             var result = _handler.Handle(It.IsAny<GetDecisionsForTableQuery>(), It.IsAny<CancellationToken>());
