@@ -1,9 +1,11 @@
-﻿using EPlast.BLL;
+﻿using AutoMapper;
+using EPlast.BLL;
 using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using EPlast.WebApi.Models.Precaution;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,15 +27,18 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserPrecautionService _userPrecautionService;                
         private readonly UserManager<User> _userManager;
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
         public PrecautionController(            
             IUserPrecautionService userPrecautionService,
             UserManager<User> userManager,
-            IMediator mediator)
+            IMediator mediator,
+            IMapper mapper)
         {
             _userPrecautionService = userPrecautionService;
             _userManager = userManager;
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         /// <summary>
@@ -177,19 +182,20 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Add user Precaution
         /// </summary>
-        /// <param name="userPrecautionDTO">User Precaution model</param>
+        /// <param name="userPrecaution">User Precaution model</param>
         /// <returns> Answer from backend </returns>
         /// <response code="204">User Precaution was successfully created</response>
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserPrecaution/Create/{userId}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AddUserPrecaution(UserPrecautionDTO userPrecautionDTO)
+        public async Task<IActionResult> AddUserPrecaution(UserPrecautionViewModel userPrecaution)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var userPrecautionDTO = _mapper.Map<UserPrecautionDTO>(userPrecaution);
                     await _userPrecautionService.AddUserPrecautionAsync(userPrecautionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }
@@ -224,19 +230,20 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Edit user Precaution
         /// </summary>
-        /// <param name="userPrecautionDTO">User Precaution model</param>
+        /// <param name="userPrecaution">User Precaution model</param>
         /// <returns> Answer from backend </returns>
         /// <response code="204">User Precaution was successfully edited</response>
         /// <response code="404">User Precaution does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserPrecaution/Edit/{userPrecautionId}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> EditUserPrecaution(UserPrecautionDTO userPrecautionDTO)
+        public async Task<IActionResult> EditUserPrecaution(UserPrecautionViewModel userPrecaution)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var userPrecautionDTO = _mapper.Map<UserPrecautionDTO>(userPrecaution);
                     await _userPrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO, await _userManager.GetUserAsync(User));
                     return NoContent();
                 }

@@ -20,6 +20,8 @@ using MediatR;
 using EPlast.BLL.Queries.Precaution;
 using System.Threading;
 using EPlast.BLL.Commands.Precaution;
+using AutoMapper;
+using EPlast.WebApi.Models.Precaution;
 
 namespace EPlast.Tests.Controllers
 {
@@ -29,7 +31,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IUserPrecautionService> _userPrecautionService;
         private Mock<UserManager<User>> _userManager;
         private Mock<HttpContext> _httpContext = new Mock<HttpContext>();
-
+        private Mock<IMapper> _mapper;
         private PrecautionController _PrecautionController;
         private ControllerContext _context;
 
@@ -45,10 +47,13 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.User.IsInRole(Roles.Admin))
                 .Returns(true);
 
+            _mapper = new Mock<IMapper>();
+
             _PrecautionController = new PrecautionController(
                 _userPrecautionService.Object,
                 _userManager.Object,
-                _mediator.Object
+                _mediator.Object,
+                _mapper.Object
                 );
             _context = new ControllerContext(
                 new ActionContext(
@@ -295,7 +300,7 @@ namespace EPlast.Tests.Controllers
             _userPrecautionService
                 .Setup(x => x.AddUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()));
             //Act
-            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionViewModel>());
             //Assert
             _userPrecautionService.Verify();
             _userManager.Verify();
@@ -311,7 +316,7 @@ namespace EPlast.Tests.Controllers
             _userPrecautionService
                 .Setup(x => x.AddUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()));
             //Act
-            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionViewModel>());
             //Assert
             _userPrecautionService.Verify();
             Assert.IsNotNull(result);
@@ -327,7 +332,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.AddUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()))
                 .Throws(new NullReferenceException());
             //Act
-            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            var result = await _PrecautionController.AddUserPrecaution(It.IsAny<UserPrecautionViewModel>());
             //Assert
             _userPrecautionService.Verify();
             _userManager.Verify();
@@ -377,7 +382,7 @@ namespace EPlast.Tests.Controllers
             _userPrecautionService
                 .Setup(x => x.ChangeUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()));
             //Act
-            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionViewModel>());
             //Assert
             _userPrecautionService.Verify();
             _userManager.Verify();
@@ -393,7 +398,7 @@ namespace EPlast.Tests.Controllers
             _userPrecautionService
                 .Setup(x => x.ChangeUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()));
             //Act
-            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionViewModel>());
             //Assert
             _userPrecautionService.Verify();
             Assert.IsNotNull(result);
@@ -409,7 +414,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.ChangeUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()))
                 .Throws(new NullReferenceException());
             //Act
-            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionDTO>());
+            var result = await _PrecautionController.EditUserPrecaution(It.IsAny<UserPrecautionViewModel>());
             //Assert
             _userPrecautionService.Verify();
             _userManager.Verify();
