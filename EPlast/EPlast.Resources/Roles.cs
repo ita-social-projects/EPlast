@@ -61,6 +61,17 @@ namespace EPlast.Resources
         public const string CanEditClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
         public const string CanCreateClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + GoverningBodyHead;
 
+        public static IEnumerable<string> AllowedRolesToBeAdminOfEvent = new List<string>
+        {
+            Roles.Admin, 
+            Roles.GoverningBodyHead, 
+            Roles.CityHead, 
+            Roles.RegionBoardHead, 
+            Roles.OkrugaHead, 
+            Roles.KurinHead, 
+            Roles.PlastMember
+        };
+
         public static List<string> ListOfRoles = new List<string>
         {
             Roles.GoverningBodyAdmin,

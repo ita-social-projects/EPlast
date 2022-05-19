@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services.EventUser
             return new EventCreateDTO()
             {
                 Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(allUsers.Where(u =>
-                    (_userManager.GetRolesAsync(u).Result).Intersect(AllowedRolesToBeAdminOfEvent.roles).Any())),
+                    (_userManager.GetRolesAsync(u).Result).Intersect(Roles.AllowedRolesToBeAdminOfEvent).Any())),
                 EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDTO>>(await repoWrapper.EventType.GetAllAsync()),
                 EventCategories = await eventCategoryManager.GetDTOAsync()
             };
