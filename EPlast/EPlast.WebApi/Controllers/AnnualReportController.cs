@@ -102,11 +102,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Get(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            var user = await _userManager.GetUserAsync(User);
+            User user = await _userManager.GetUserAsync(User);
             try
             {
-                var list = await _userManager.GetRolesAsync(user);
-                bool isAdminOrGBAdmin = list.Contains(Roles.Admin) || list.Contains(Roles.GoverningBodyAdmin);
+                IList<string> userRoles = await _userManager.GetRolesAsync(user);
+                bool isAdminOrGBAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
                 return StatusCode(StatusCodes.Status200OK, new
                 {
                     annualReports =
@@ -419,11 +419,11 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> GetAllClubAnnualReports(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            var user = await _userManager.GetUserAsync(User);
+            User user = await _userManager.GetUserAsync(User);
             try
             {
-                var list = (await _userManager.GetRolesAsync(user));
-                bool isAdminOrGBAdmin = list.Contains(Roles.Admin) || list.Contains(Roles.GoverningBodyAdmin);
+                IList<string> userRoles = (await _userManager.GetRolesAsync(user));
+                bool isAdminOrGBAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
                 return base.StatusCode(StatusCodes.Status200OK, new
                 {
                     clubAnnualReports = await _clubAnnualReportService.GetAllAsync(

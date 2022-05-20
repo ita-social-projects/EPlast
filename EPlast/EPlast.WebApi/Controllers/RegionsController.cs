@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
@@ -213,9 +214,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            var user = await _userManager.GetUserAsync(User);
-            var list = await _userManager.GetRolesAsync(user);
-            bool isAdmin = list.Contains(Roles.Admin) || list.Contains(Roles.GoverningBodyAdmin);
+            User user = await _userManager.GetUserAsync(User);
+            IList<string> userRoles = await _userManager.GetRolesAsync(user);
+
+            bool isAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
             return base.Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(
                 user,
                 isAdmin,

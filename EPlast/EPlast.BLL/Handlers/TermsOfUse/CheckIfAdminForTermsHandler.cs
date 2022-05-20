@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using EPlast.BLL.Queries.TermsOfUse;
@@ -20,8 +21,8 @@ namespace EPlast.BLL.Handlers.TermsOfUse
 
         public async Task<Unit> Handle(CheckIfAdminForTermsQuery request, CancellationToken cancellationToken)
         {
-            var list = await _userManager.GetRolesAsync(request.User);
-            bool canEditTerms = list.Contains(Roles.Admin) || list.Contains(Roles.GoverningBodyAdmin);
+            IList<string> userRoles = await _userManager.GetRolesAsync(request.User);
+            bool canEditTerms = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
 
             if (!canEditTerms) throw new UnauthorizedAccessException();
             return Unit.Value;
