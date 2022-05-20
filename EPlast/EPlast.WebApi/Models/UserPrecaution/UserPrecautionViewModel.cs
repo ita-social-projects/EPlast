@@ -14,7 +14,7 @@ namespace EPlast.WebApi.Models.Precaution
         public string Reporter { get; set; }
         public string Reason { get; set; }
         [Required]
-        public UserPrecautionStatus? Status { get; set; }
+        public UserPrecautionStatus Status { get; set; }
         public int Number { get; set; }
         public DateTime Date { get; set; }
         public string UserId { get; set; }

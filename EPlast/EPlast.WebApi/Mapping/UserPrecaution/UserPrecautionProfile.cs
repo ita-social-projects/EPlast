@@ -10,7 +10,7 @@ namespace EPlast.WebApi.Mapping.UserPrecaution
         public UserPrecautionProfile()
         {
             CreateMap<UserPrecautionViewModel, UserPrecautionDTO>()
-                .ForMember(vm => vm.Status, dto => dto.MapFrom(t => t.Status.Value.GetDescription()))
+                .ForMember(vm => vm.Status, dto => dto.MapFrom(t => t.Status.GetDescription()))
                 .ReverseMap();
         }
     }
