@@ -64,7 +64,12 @@ namespace EPlast.BLL.Services.EventUser
 
             if (model.Event.EventDateStart >= model.Event.EventDateEnd)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("End date was before start day");
+            }
+
+            if (model.Event.EventDateStart <= DateTime.Now)
+            {
+                throw new InvalidOperationException("Start date can not be before today");
             }
 
             var eventToCreate = mapper.Map<EventCreationDTO, Event>(model.Event);
