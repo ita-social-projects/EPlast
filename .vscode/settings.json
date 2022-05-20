@@ -9,9 +9,6 @@
   ],
   "editor.formatOnSave": true,
   "editor.formatOnSaveMode": "modificationsIfAvailable",
-  "editor.unicodeHighlight.allowedLocales": {
-    "ru": true,
-    "ua": true
-  },
+  "editor.unicodeHighlight.ambiguousCharacters": false,
   "files.autoSave": "onWindowChange"
 }
