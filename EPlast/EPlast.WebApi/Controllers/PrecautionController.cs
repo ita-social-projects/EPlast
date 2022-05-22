@@ -334,5 +334,12 @@ namespace EPlast.WebApi.Controllers
             var result = await _userPrecautionService.UsersTableWithoutPrecautionAsync();
             return Ok(result);
         }
+
+        [HttpGet("getUsersForPrecaution")]
+        public async Task<IActionResult> GetUsersForPrecaution()
+        {
+            var result = await _userPrecautionService.GetUsersForPrecautionAsync();
+            return Ok(result);
+        }
     }
 }
