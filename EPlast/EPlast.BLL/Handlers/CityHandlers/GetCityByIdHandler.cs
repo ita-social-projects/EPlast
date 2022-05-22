@@ -1,15 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
@@ -26,7 +25,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
 
         public async Task<CityDTO> Handle(GetCityByIdQuery request, CancellationToken cancellationToken)
         {
-            var city = await _repoWrapper.City.GetCityById(request.CityId, GetSelector());
+            var city = await _repoWrapper.City.GetFirstOrDefaultAsync(selector: GetSelector());
             
             return _mapper.Map<City, CityDTO>(city);
         }
@@ -40,11 +39,25 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 Name = x.Name,
                 Description = x.Description,
                 IsActive = x.IsActive,
+                Street = x.Street,
+                PhoneNumber = x.PhoneNumber,
+                Email = x.Email,
+                CityURL = x.CityURL,
+                HouseNumber = x.HouseNumber,
+                OfficeNumber = x.OfficeNumber,
+                PostIndex = x.PostIndex,
+
+                Region = new Region
+                {
+                    RegionName = x.Region.RegionName,
+                    ID = x.Region.ID,
+                },
                 CityAdministration = x.CityAdministration.Where(x => x.Status).Select(x => new CityAdministration
                 {
                     ID = x.ID,
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
+                    Status = x.Status,
                     User = new User
                     {
                         Id = x.User.Id,
