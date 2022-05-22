@@ -9,6 +9,16 @@
     "SeeUserTable": true,
     "ApproveParticipant": true
   },
+  "Крайовий Адмін": {
+    "ApproveEvent": true,
+    "CreateEvent": true,
+    "EditEvent": true,
+    "DeleteEvent": true,
+    "SubscribeOnEvent": true,
+    "AddPhotos": true,
+    "SeeUserTable": true,
+    "ApproveParticipant": true
+  },
   "Голова Керівного Органу": {
     "ApproveEvent": true,
     "CreateEvent": true,

@@ -22,44 +22,48 @@ namespace EPlast.Resources
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
         public const string RegionBoardHead = "Голова Краю";
+        public const string GoverningBodyAdmin = "Крайовий Адмін";
         public const string GoverningBodyHead = "Голова Керівного Органу";
         public const string GoverningBodySecretary = "Діловод Керівного Органу";
         public const string GoverningBodySectorHead = "Голова Напряму Керівного Органу";
         public const string GoverningBodySectorSecretary = "Діловод Напряму Керівного Органу";
 
-        public const string AdminAndOkrugaHead = Admin + "," + OkrugaHead;
-        public const string AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin = Admin + "," + OkrugaHead + "," + RegionBoardHead + "," + CityHead + "," + KurinHead;
-        public const string AdminAndRegionBoardHead = Admin + "," + RegionBoardHead;
-        public const string AdminAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
-        public const string AdminAndGBHead = Admin + "," + GoverningBodyHead;
-        public const string DegreeAssignRoles = Admin + "," + GoverningBodyHead + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," 
+        public const string AdminAndGBAdmin = Admin + "," + GoverningBodyAdmin;
+        public const string AdminAndOkrugaHead = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead;
+        public const string AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead + "," + RegionBoardHead + "," + CityHead + "," + KurinHead;
+        public const string AdminAndRegionBoardHead = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead;
+        public const string AdminAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
+
+        public const string AdminAndGBHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead;
+        public const string DegreeAssignRoles = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," 
             + OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
-        public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
             + KurinHead + "," + KurinHeadDeputy + "," + PlastMember;
-        public const string HeadsAndHeadDeputiesAndAdmin = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
+        public const string HeadsAndHeadDeputiesAndAdmin = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
             + KurinHead + "," + KurinHeadDeputy;
-        public const string AdminAndOkrugaHeadAndOkrugaHeadDeputy = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
-        public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
+        public const string AdminAndOkrugaHeadAndOkrugaHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
+        public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
             + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter;
-        public const string HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + ","
+        public const string HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + ","
             + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter + "," + RegisteredUser;
-        public const string StatisticsAccessRoles = Admin + "," + GoverningBodyHead + "," + PlastHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + ","
+        public const string StatisticsAccessRoles = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + ","
             + CityHeadDeputy;
-        public const string AdminPlastMemberAndSupporter = Admin + "," + GoverningBodyHead + "," + PlastMember + "," + Supporter;
-        public const string AdminAndKurinHeadAndKurinHeadDeputy = Admin + "," + GoverningBodyHead + "," + KurinHead + "," + KurinHeadDeputy;
-        public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin + "," + GoverningBodyHead + "," + CityHead + "," + OkrugaHead + "," + CityHeadDeputy + "," + OkrugaHeadDeputy;
-        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputy = Admin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + ","  + OkrugaHeadDeputy + "," 
+        public const string AdminPlastMemberAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastMember + "," + Supporter;
+        public const string AdminAndKurinHeadAndKurinHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + KurinHead + "," + KurinHeadDeputy;
+        public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + CityHead + "," + OkrugaHead + "," + CityHeadDeputy + "," + OkrugaHeadDeputy;
+        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + ","  + OkrugaHeadDeputy + "," 
             + CityHead + "," + CityHeadDeputy;
-        public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
-        public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + GoverningBodyHead + "," + CityHead + "," + CityHeadDeputy;
-        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
+        public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
+        public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + CityHead + "," + CityHeadDeputy;
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
             + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodySectorHead;
-        public const string CanEditCity = Admin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," + GoverningBodyHead;
-        public const string CanEditClub = Admin + "," + RegionBoardHead + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
-        public const string CanCreateClub = Admin + "," + RegionBoardHead + "," + GoverningBodyHead;
+        public const string CanEditCity = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," + GoverningBodyHead;
+        public const string CanEditClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
+        public const string CanCreateClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + GoverningBodyHead;
 
         public static List<string> ListOfRoles = new List<string>
         {
+            Roles.GoverningBodyAdmin,
             Roles.GoverningBodyHead,
             Roles.GoverningBodySectorHead,
             Roles.GoverningBodySecretary,

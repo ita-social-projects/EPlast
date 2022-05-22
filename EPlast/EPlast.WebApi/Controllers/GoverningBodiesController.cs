@@ -4,12 +4,9 @@ using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -156,6 +153,28 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Add a new GoverningBodyAdmin 
+        /// </summary>
+        /// <param name="newAdmin">An information about a new administrator</param>
+        /// <returns>An information about a new administrator</returns>
+        [HttpPost("AddMainAdmin")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> AddMainAdmin(GoverningBodyAdministrationDTO newAdmin)
+        {
+            try
+            {
+                await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(newAdmin);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+            _logger.LogInformation($"User {{{newAdmin.UserId}}} became GoverningBodyAdmin");
+
+            return Ok(newAdmin);
+        }
+
+        /// <summary>
         /// Add a new administrator to the Governing Body
         /// </summary>
         /// <param name="newAdmin">An information about a new administrator</param>
@@ -203,6 +222,20 @@ namespace EPlast.WebApi.Controllers
         {
             await _governingBodyAdministrationService.RemoveAdministratorAsync(adminId);
             _logger.LogInformation($"Admin with ID {{{adminId}}} was removed.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Remove a GoverningBodyAdmin
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        [HttpPut("RemoveMainAdmin/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> RemoveMainAdmin(string userId)
+        {
+            await _governingBodyAdministrationService.RemoveMainAdministratorAsync(userId);
+            _logger.LogInformation($"Admin with ID {{{userId}}} was removed.");
 
             return Ok();
         }
@@ -314,7 +347,8 @@ namespace EPlast.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(announcement);
-
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);
@@ -327,8 +361,8 @@ namespace EPlast.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 var id = await _governingBodyAnnouncementService.EditAnnouncementAsync(announcement);
-                if(id == null)
-                    return BadRequest();
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);
@@ -392,7 +426,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Bad request</response>
         [HttpGet("GetUserAdminsForTable")]
-        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive, 
+        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive,
             [Required] int pageNumber, [Required] int pageSize)
         {
             try

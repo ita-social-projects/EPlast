@@ -17,6 +17,24 @@
     "aboutBase": true,
     "terms": true
   },
+  "Крайовий Адмін": {
+    "decisions": true,
+    "regionBoard": true,
+    "userTable": true,
+    "regions": true,
+    "cities": true,
+    "clubs": true,
+    "events": true,
+    "distinctions": true,
+    "precaution": true,
+    "kadra": true,
+    "renewals": true,
+    "legislation": true,
+    "annualreport": true,
+    "statistics": true,
+    "aboutBase": true,
+    "terms": true
+  },
   "Голова Округи": {
     "decisions": true,
     "regionBoard": true,
@@ -168,7 +186,7 @@
     "regions": false,
     "cities": true,
     "clubs": false,
-    "events": false,
+    "events": true,
     "distinctions": false,
     "precaution": false,
     "kadra": false,

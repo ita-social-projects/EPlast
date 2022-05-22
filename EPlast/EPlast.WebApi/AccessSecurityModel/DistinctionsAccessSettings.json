@@ -9,6 +9,16 @@
     "EditUserDistinctions": true,
     "DeleteUserDistinctions": true
   },
+  "Крайовий Адмін": {
+    "ViewCategory": true,
+    "ViewTable": true,
+    "SearchDistinction": true,
+    "AddDistinction": true,
+    "EditTypeDistinction": true,
+    "ViewUserProfile": true,
+    "EditUserDistinctions": true,
+    "DeleteUserDistinctions": true
+  },
   "Голова Керівного Органу": {
     "ViewCategory": true,
     "ViewTable": true,

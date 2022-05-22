@@ -8,6 +8,15 @@
     "AddRegionHead": true,
     "DownloadDocument": true
   },
+  "Крайовий Адмін": {
+    "IsAdmin": true,
+    "CreateRegion": true,
+    "EditRegion": true,
+    "DeleteRegion": true,
+    "AddRegionSecretary": true,
+    "AddRegionHead": true,
+    "DownloadDocument": true
+  },
   "Голова Округи": {
     "IsAdmin": true,
     "EditRegion": true,

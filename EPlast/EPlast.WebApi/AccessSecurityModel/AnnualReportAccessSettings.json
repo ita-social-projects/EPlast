@@ -14,6 +14,21 @@
     "CanChangeReportStatus": true,
     "CanDeleteReport": true
   },
+  "Крайовий Адмін": {
+    "IsSuperAdmin": true,
+    "IsAdmin": true,
+    "CanViewReportsPage": true,
+    "CanViewCityReportsTable": true,
+    "CanViewClubReportsTable": true,
+    "CanViewRegionReportsTable": true,
+    "CanViewReportDetails": true,
+    "CanSubmitCityReport": true,
+    "CanSubmitClubReport": true,
+    "CanSubmitRegionReport": true,
+    "CanEditReport": true,
+    "CanChangeReportStatus": true,
+    "CanDeleteReport": true
+  },
   "Голова Керівного Органу": {
     "IsSuperAdmin": false,
     "IsAdmin": true,
