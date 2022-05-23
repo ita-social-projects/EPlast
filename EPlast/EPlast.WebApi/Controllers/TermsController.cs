@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.Commands.TermsOfUse;
+using System;
+using System.Threading.Tasks;
+using EPlast.BLL.Commands.TermsOfUse;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.Queries.TermsOfUse;
 using EPlast.DataAccess.Entities;
@@ -7,15 +9,12 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles=Roles.Admin)]
+    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
     
     public class TermsController : ControllerBase
     {
