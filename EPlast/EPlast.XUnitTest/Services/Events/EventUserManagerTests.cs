@@ -11,6 +11,7 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -28,6 +29,16 @@ namespace EPlast.XUnitTest.Services.EventUser
         private readonly Mock<UserManager<User>> _userManager;
 
         private EventUserManager eventUserManager;
+
+        private class DateTimeData : IEnumerable<object[]>
+        {
+            public IEnumerator<object[]> GetEnumerator()
+            {
+                yield return new object[] { "06/03/2023", "06/03/2022" };
+                yield return new object[] { "06/03/2022", DateTime.Now.ToString() };
+            }
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
 
         public EventUserManagerTests()
         {
@@ -124,9 +135,12 @@ namespace EPlast.XUnitTest.Services.EventUser
             Assert.IsType<int>(methodResult);
         }
 
-        [Fact]
-        public async Task CreateEventExceptionTest()
+        [Theory]
+        [ClassData(typeof(DateTimeData))]
+        public async Task CreateEventExceptionTest(string dateStart, string dateEnd)
         {
+            var expectedStartDate = DateTime.Parse(dateStart);
+            var expectedEndDate = DateTime.Parse(dateEnd);
             int statusId = 1;
             _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
 
@@ -137,7 +151,8 @@ namespace EPlast.XUnitTest.Services.EventUser
             _repoWrapper.Setup(r => r.Event.CreateAsync(It.IsAny<Event>()));
 
             //Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() => eventUserManager.CreateEventAsync(GetEventCreateDTOException()));
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                eventUserManager.CreateEventAsync(GetEventCreateDTOException(expectedStartDate, expectedEndDate)));
         }
 
         [Fact]
@@ -168,7 +183,7 @@ namespace EPlast.XUnitTest.Services.EventUser
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { EventDateStart = new DateTime(2020, 04, 30), EventDateEnd = new DateTime(2021, 04, 30) },
+                Event = new EventCreationDTO { EventDateStart = new DateTime(2022, 06, 30), EventDateEnd = new DateTime(2023, 06, 30) },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { },
                 Bunchuzhnyi = new EventAdministrationDTO { },
@@ -193,7 +208,7 @@ namespace EPlast.XUnitTest.Services.EventUser
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { EventDateStart = new DateTime(2020, 04, 30), EventDateEnd = new DateTime(2021, 04, 30) },
+                Event = new EventCreationDTO { EventDateStart = new DateTime(2022, 06, 30), EventDateEnd = new DateTime(2023, 06, 30) },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { UserId = null },
                 Bunchuzhnyi = new EventAdministrationDTO { },
@@ -214,11 +229,11 @@ namespace EPlast.XUnitTest.Services.EventUser
             return eventCreate;
         }
 
-        public EventCreateDTO GetEventCreateDTOException()
+        public EventCreateDTO GetEventCreateDTOException(DateTime startDate, DateTime endDate)
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { EventDateStart = new DateTime(2021, 04, 30), EventDateEnd = new DateTime(2020, 04, 30) },
+                Event = new EventCreationDTO { EventDateStart = startDate, EventDateEnd = endDate },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { },
                 Bunchuzhnyi = new EventAdministrationDTO { },
