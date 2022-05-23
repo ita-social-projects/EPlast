@@ -229,11 +229,11 @@ namespace EPlast.XUnitTest.Services.EventUser
             return eventCreate;
         }
 
-        public EventCreateDTO GetEventCreateDTOException(DateTime x1, DateTime x2)
+        public EventCreateDTO GetEventCreateDTOException(DateTime startDate, DateTime endDate)
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { EventDateStart = new DateTime(2021, 04, 30), EventDateEnd = new DateTime(2020, 04, 30) },
+                Event = new EventCreationDTO { EventDateStart = startDate, EventDateEnd = endDate },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { },
                 Bunchuzhnyi = new EventAdministrationDTO { },
