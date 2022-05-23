@@ -19,8 +19,6 @@ using Xunit;
 
 namespace EPlast.XUnitTest.Services.EventUser
 {
-
-
     public class EventUserManagerTests
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
