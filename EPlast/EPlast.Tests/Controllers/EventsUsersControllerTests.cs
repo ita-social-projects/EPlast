@@ -134,7 +134,6 @@ namespace EPlast.Tests.Controllers
         }
         
         [Test]
-        // bozhenas test for review
         public async Task EventCreate_Returns400BadRequest()
         {
             // Arrange
@@ -296,7 +295,6 @@ namespace EPlast.Tests.Controllers
                     ID = 1,
                 },
             };
-        //bozhenas code for review
         private EventCreateDTO CreateFakeEventCreateDates()
             => new EventCreateDTO()
             {
