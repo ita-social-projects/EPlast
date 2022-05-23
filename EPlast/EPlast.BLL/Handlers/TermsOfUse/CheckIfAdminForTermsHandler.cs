@@ -1,11 +1,12 @@
-﻿using EPlast.BLL.Queries.TermsOfUse;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL.Queries.TermsOfUse;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.TermsOfUse
 {
@@ -20,8 +21,10 @@ namespace EPlast.BLL.Handlers.TermsOfUse
 
         public async Task<Unit> Handle(CheckIfAdminForTermsQuery request, CancellationToken cancellationToken)
         {
-            if (!(await _userManager.GetRolesAsync(request.User)).Contains(Roles.Admin))
-                throw new UnauthorizedAccessException();
+            IList<string> userRoles = await _userManager.GetRolesAsync(request.User);
+            bool canEditTerms = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
+
+            if (!canEditTerms) throw new UnauthorizedAccessException();
             return Unit.Value;
         }
     }
