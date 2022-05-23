@@ -7,9 +7,12 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Queries.City;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,23 +26,25 @@ namespace EPlast.BLL.Services.City
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly ICityService _cityService;
+        private readonly IUserManagerService _userManagerService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
         public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
                                        IMapper mapper,
                                        UserManager<User> userManager,
                                        IAdminTypeService adminTypeService,
                                        IEmailSendingService emailSendingService,
-                                       ICityService cityService,
-                                       IEmailContentService emailContentService)
+                                       IEmailContentService emailContentService,
+                                       IMediator mediator)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
-            _cityService = cityService;
             _emailContentService = emailContentService;
+            _mediator = mediator;
         }
 
         /// <inheritdoc />
@@ -117,13 +122,16 @@ namespace EPlast.BLL.Services.City
                 IsApproved = false,
                 UserId = userId,
                 User = await _userManager.FindByIdAsync(userId)
-                
             };
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
-            var regionId = await _cityService.GetByIdAsync(cityId);
+
+            var cityDTO = await _mediator.Send(
+                new GetCityByIdQuery(cityId)
+            );
+
             var regionAdministrations =
                 await _repositoryWrapper.RegionAdministration.GetAllAsync(d =>
-                    d.UserId == userId && d.Status && d.RegionId != regionId.RegionId);
+                    d.UserId == userId && d.Status && d.RegionId != cityDTO.RegionId);
             if (regionAdministrations != null)
             {
                 foreach (var elem in regionAdministrations)
@@ -147,7 +155,7 @@ namespace EPlast.BLL.Services.City
         /// <inheritdoc />
         public async Task<CityMembersDTO> AddFollowerAsync(int cityId, User user)
         {
-            await  _userManager.RemoveFromRolesAsync(user, Roles.DeleteableListOfRoles);
+            await _userManager.RemoveFromRolesAsync(user, Roles.DeleteableListOfRoles);
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 
@@ -309,7 +317,7 @@ namespace EPlast.BLL.Services.City
                 .GetFirstOrDefaultAsync(u => u.ID == memberId,
                                         m => m.Include(u => u.User)
                                               .Include(u => u.City));
-            cityMember.IsApproved = !cityMember.IsApproved; 
+            cityMember.IsApproved = !cityMember.IsApproved;
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
@@ -446,7 +454,7 @@ namespace EPlast.BLL.Services.City
             foreach (var role in roles)
             {
                 await RemoveAdministratorAsync(role.ID);
-            }    
+            }
         }
     }
 }
