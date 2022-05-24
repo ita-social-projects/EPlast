@@ -58,7 +58,7 @@ namespace EPlast.Tests.Controllers
             );
         }
 
-        private AdminController GetCreateAdminController() => new AdminController(
+        private AdminController GetAdminController() => new AdminController(
             _logger.Object,
             _userManagerService.Object,
             _adminService.Object,
@@ -70,7 +70,7 @@ namespace EPlast.Tests.Controllers
         public void ChangeUserRoleToExpired_UserExists_Test()
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             
             //Act
             var result = adminController.ChangeUserRoleToExpired("user");
@@ -85,7 +85,7 @@ namespace EPlast.Tests.Controllers
         public void ChangeUserRoleToExpired_UserNotExists_Test()
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             
             //Act
             var result = adminController.ChangeUserRoleToExpired(null);
@@ -99,7 +99,7 @@ namespace EPlast.Tests.Controllers
         public void ChangeCurrentUserRole_UserNotExists_Test()
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             //Act
             var result = adminController.ChangeCurrentUserRole(null, It.IsAny<string>());
             //Assert
@@ -111,7 +111,7 @@ namespace EPlast.Tests.Controllers
         public void ChangeCurrentUserRole_UserExists_Test(string username)
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             
             //Act
             var result = adminController.ChangeCurrentUserRole(username, It.IsAny<string>());
@@ -125,7 +125,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public void ConfirmDelete_Invalid_Test()
         {
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = adminController.ConfirmDelete("");
 
@@ -136,7 +136,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public void ConfirmDelete_Valid_Test()
         {
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = adminController.ConfirmDelete("UserId");
 
@@ -149,7 +149,7 @@ namespace EPlast.Tests.Controllers
         {
             _adminService.Setup(a => a.DeleteUserAsync(It.IsAny<string>()));
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = await adminController.Delete("");
 
@@ -162,7 +162,7 @@ namespace EPlast.Tests.Controllers
         {
             _adminService.Setup(a => a.DeleteUserAsync(It.IsAny<string>()));
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = await adminController.Delete("SomeUserId");
 
@@ -174,7 +174,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Edit_Invalid_Test()
         {
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             // Act
             var result = await adminController.Edit(null);
@@ -187,7 +187,7 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_CouldNotFindUser_Test(string username)
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             // Act
             var result = await adminController.Edit(username);
@@ -211,7 +211,7 @@ namespace EPlast.Tests.Controllers
             _adminService.Setup(a => a.GetRolesExceptAdmin())
                 .Returns(It.IsAny<IEnumerable<IdentityRole>>());
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             // Act
             var result = await adminController.Edit("AdminId");
@@ -225,7 +225,7 @@ namespace EPlast.Tests.Controllers
         {
             _adminService.Setup(a => a.EditAsync(It.IsAny<string>(), It.IsAny<List<string>>()));
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             List<string> roles = new List<string>();
             roles.Add("rendomRole");
@@ -242,7 +242,7 @@ namespace EPlast.Tests.Controllers
         {
             _adminService.Setup(a => a.EditAsync(It.IsAny<string>(), It.IsAny<List<string>>()));
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             List<string> roles = new List<string>();
             roles.Add("rendomRole");
@@ -259,7 +259,7 @@ namespace EPlast.Tests.Controllers
         {
             _cityAdministrationService.Setup(c => c.GetAdministrationByIdAsync(It.IsAny<int>()));
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = await adminController.GetAdmins(2);
 
@@ -272,7 +272,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdmins_WrongCityId_Test(int cityId)
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             //Act
             var result = await adminController.GetAdmins(cityId);
@@ -287,7 +287,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetCityAndRegionAdminsOfUser_UserNotExists_Test()
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(null);
@@ -301,7 +301,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetCityAndRegionAdminsOfUser_UserExists_Test(string username)
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
             
             //Act
@@ -317,7 +317,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetCityAndRegionAdminsOfUser_UserNotExists_ReturnsBadRequest(string username)
         {
             //Arrange
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(username);
@@ -335,7 +335,7 @@ namespace EPlast.Tests.Controllers
                 ))
                 .ReturnsAsync(value: null);
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = await adminController.RegionsAdmins();
 
@@ -354,7 +354,7 @@ namespace EPlast.Tests.Controllers
             ))
                 .ReturnsAsync(It.IsAny<IEnumerable<CityDTO>>());
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             var result = await adminController.RegionsAdmins();
 
@@ -371,7 +371,7 @@ namespace EPlast.Tests.Controllers
 
             _httpContext.Setup(t => t.User).Returns(principal);
            
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
             
 
             //Set your controller ControllerContext with fake context
@@ -398,7 +398,7 @@ namespace EPlast.Tests.Controllers
             _adminService.Setup(a => a.GetUsersAsync())
                 .ReturnsAsync(new List<ShortUserInformationDTO>());
 
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             // Act
             var result = await adminController.GetUsers();
@@ -418,7 +418,7 @@ namespace EPlast.Tests.Controllers
             _adminService.Setup(a => a.GetShortUserInfoAsync(It.IsAny<string>()))
                 .ReturnsAsync(new List<ShortUserInformationDTO>());
 
-            var adminController = GetCreateAdminController();
+            var adminController = GetAdminController();
 
             // Act
             var result = await adminController.GetShortUsersInfo(searchString);
@@ -437,7 +437,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
                 .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             //Act
             var res = await adminController.GetUsersByAllRoles("Roles", true);
@@ -452,7 +452,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
                 .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             //Act
             var res = await adminController.GetUsersByAnyRole("Roles", true);
@@ -467,7 +467,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _adminService.Setup(x => x.GetUsersForGoverningBodiesAsync())
                 .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             //Act
             var res = await adminController.GetUsersForGoverningBodies();
@@ -482,7 +482,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
                 .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             //Act
             var res = await adminController.GetUsersByExactRoles("Roles", true);
@@ -495,7 +495,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _adminService.Setup(x => x.IsCityMember(It.IsAny<string>())).ReturnsAsync(true);
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             // Act
             var result = await adminController.IsCityMember(It.IsAny<string>());
@@ -508,7 +508,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _adminService.Setup(x => x.IsCityMember(It.IsAny<string>())).ReturnsAsync(false);
-            AdminController adminController = GetCreateAdminController();
+            AdminController adminController = GetAdminController();
 
             // Act
             var result = await adminController.IsCityMember(It.IsAny<string>());
