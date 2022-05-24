@@ -1,3 +1,6 @@
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
@@ -10,10 +13,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -35,7 +34,7 @@ namespace EPlast.WebApi.Controllers
 
         public AdminController(
             ILoggerService<AdminController> logger,
-                                                    IUserManagerService userManagerService,
+            IUserManagerService userManagerService,
             IAdminService adminService,
             ICityParticipantsService cityAdministrationService,
             IMediator mediator

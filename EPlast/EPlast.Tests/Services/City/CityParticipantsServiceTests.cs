@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
@@ -7,7 +12,6 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Models;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.City;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
@@ -17,11 +21,6 @@ using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.City
 {
@@ -280,7 +279,7 @@ namespace EPlast.Tests.Services.City
                 It.IsAny<GetCityByIdQuery>(),
                 default
             ))
-                .ReturnsAsync(cityDto); 
+                .ReturnsAsync(cityDto);
 
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());

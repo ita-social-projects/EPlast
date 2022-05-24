@@ -1,26 +1,25 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.Admin;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Http;
-using EPlast.Resources;
-using System.Security.Principal;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Controllers;
 
 namespace EPlast.Tests.Controllers
 {
@@ -48,7 +47,7 @@ namespace EPlast.Tests.Controllers
             _cityAdministrationService = new Mock<ICityParticipantsService>();
             _httpContext = new Mock<HttpContext>();
             _mediator = new Mock<IMediator>();
-            
+
             _context = new ControllerContext(
                new ActionContext(
                    _httpContext.Object,
@@ -71,10 +70,10 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             AdminController adminController = GetAdminController();
-            
+
             //Act
             var result = adminController.ChangeUserRoleToExpired("user");
-            
+
             //Assert
             Assert.NotNull(result);
             _adminService.Verify(x => x.ChangeAsync(It.IsAny<string>()), Times.AtLeastOnce);
@@ -86,10 +85,10 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             AdminController adminController = GetAdminController();
-            
+
             //Act
             var result = adminController.ChangeUserRoleToExpired(null);
-            
+
             //Assert
             Assert.NotNull(result);
             _logger.Verify(x => x.LogError(It.IsAny<string>()), Times.AtLeastOnce);
@@ -112,10 +111,10 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             AdminController adminController = GetAdminController();
-            
+
             //Act
             var result = adminController.ChangeCurrentUserRole(username, It.IsAny<string>());
-            
+
             //Assert
             Assert.NotNull(result);
             _adminService.Verify(x => x.ChangeCurrentRoleAsync(It.IsAny<string>(), It.IsAny<string>()), Times.AtLeastOnce);
@@ -291,7 +290,7 @@ namespace EPlast.Tests.Controllers
 
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(null);
-            
+
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestResult>(result);
@@ -303,7 +302,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             AdminController adminController = GetAdminController();
             _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
-            
+
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(username);
 
@@ -370,7 +369,7 @@ namespace EPlast.Tests.Controllers
             var principal = new GenericPrincipal(fakeIdentity, null);
 
             _httpContext.Setup(t => t.User).Returns(principal);
-           
+
             AdminController adminController = GetAdminController();
             
 

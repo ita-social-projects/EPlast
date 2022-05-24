@@ -25,8 +25,6 @@ namespace EPlast.BLL.Services.City
         private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ICityService _cityService;
-        private readonly IUserManagerService _userManagerService;
         private readonly UserManager<User> _userManager;
         private readonly IMediator _mediator;
 
