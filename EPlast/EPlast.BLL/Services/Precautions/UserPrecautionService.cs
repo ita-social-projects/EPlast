@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.PrecautionsDTO;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -21,7 +22,8 @@ namespace EPlast.BLL.Services.Precautions
         private readonly UserManager<User> _userManager;
         private readonly IAdminService _adminService;
 
-        public UserPrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper, UserManager<User> userManager, IAdminService adminService)
+        public UserPrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper,
+            UserManager<User> userManager, IAdminService adminService)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
@@ -188,6 +190,17 @@ namespace EPlast.BLL.Services.Precautions
         public async Task<UserPrecautionDTO> GetUserActivePrecaution(string userId, string type)
         {
             return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
+        }
+
+        public async Task<IEnumerable<AvailableUserDTO>> GetUsersForPrecautionAsync()
+        {
+            var users = await _adminService.GetUsersAsync();
+
+            var sortedUsers = users.OrderBy(u => u.IsInLowerRole).ToList();
+
+            List<AvailableUserDTO> availableUsers = _mapper.Map<List<ShortUserInformationDTO>, List<AvailableUserDTO>>(sortedUsers);
+
+            return availableUsers;
         }
     }
 }

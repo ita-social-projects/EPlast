@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
-using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL
@@ -18,5 +18,6 @@ namespace EPlast.BLL
         Task<bool> IsNumberExistAsync(int number, int? id = null);
         Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync();
         Task<bool> CheckUserPrecautionsType(string userId, string type);
+        Task<IEnumerable<AvailableUserDTO>> GetUsersForPrecautionAsync();
     }
 }

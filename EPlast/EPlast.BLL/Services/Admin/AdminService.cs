@@ -254,19 +254,12 @@ namespace EPlast.BLL.Services
         /// <inheritdoc />
         public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync()
         {
-            var lowerRoles = new List<string>
-            {
-                Roles.RegisteredUser,
-                Roles.Supporter,
-                Roles.FormerPlastMember,
-                Roles.Interested
-            };
             var users = await _repoWrapper.User.GetAllAsync();
             var usersDtos = new List<ShortUserInformationDTO>();
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                var isInLowerRole = roles.Intersect(lowerRoles).Any();
+                var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
                 var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
                 shortUser.IsInLowerRole = isInLowerRole;
                 usersDtos.Add(shortUser);
