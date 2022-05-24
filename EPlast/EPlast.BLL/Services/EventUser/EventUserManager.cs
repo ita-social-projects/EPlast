@@ -143,11 +143,8 @@ namespace EPlast.BLL.Services.EventUser
         public async Task EditEventAsync(EventCreateDTO model)
         {
             await GetAdministrationTypeId();
-            
             var eventToEdit = mapper.Map<EventCreationDTO, Event>(model.Event);
-
-            eventToEdit.EventAdministrations = new List<EventAdministration>
-            {
+            List<EventAdministration> newAdmins = new List<EventAdministration> {
                 new EventAdministration
                 {
                     UserID = model.Сommandant.UserId,
@@ -174,30 +171,23 @@ namespace EPlast.BLL.Services.EventUser
                    }
             };
 
+            var tempAlter = await repoWrapper.EventAdministration
+                  .GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
+                  && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
+
+            if (tempAlter != null)  repoWrapper.EventAdministration.Delete(tempAlter); 
+
             if (model.Alternate.UserId != null)
             {
-                var tempAlter = await repoWrapper.EventAdministration
-                            .GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
-                            && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
-
-                if(tempAlter != null)
-                {
-                    repoWrapper.EventAdministration.Delete(tempAlter);
-                }
-                eventToEdit.EventAdministrations.Add(new EventAdministration
+                newAdmins.Add(new EventAdministration
                 {
                     UserID = model.Alternate.UserId,
                     EventAdministrationTypeID = alternateTypeId,
-                    EventID = eventToEdit.ID
+                    EventID = eventToEdit.ID,
                 });
-            }
-            else
-            {
-                var tempAlter = await repoWrapper.EventAdministration
-                    .GetFirstAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
-                    && i.EventID == eventToEdit.ID, include: source => source.Include(q => q.User));
-                repoWrapper.EventAdministration.Delete(tempAlter);
-            }
+            };
+            
+            eventToEdit.EventAdministrations = newAdmins;
             repoWrapper.Event.Update(eventToEdit);
             await repoWrapper.SaveAsync();
         }
