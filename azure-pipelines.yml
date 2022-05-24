@@ -59,7 +59,7 @@ stages:
   - job: Test
     displayName: Test
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: 'windows-2022'
     steps:
     - task: DotNetCoreCLI@2
       displayName: Restore
