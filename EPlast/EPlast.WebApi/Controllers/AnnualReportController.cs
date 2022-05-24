@@ -1,23 +1,23 @@
-﻿using EPlast.BLL.DTO.AnnualReport;
-using EPlast.BLL.ExtensionMethods;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Services.Interfaces;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.DTO.Club;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Club;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Models.Club;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -102,13 +102,24 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> Get(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            var user = await _userManager.GetUserAsync(User);
+            User user = await _userManager.GetUserAsync(User);
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new { annualReports = 
-                    await _annualReportService.GetAllAsync(user, 
-                        (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), 
-                        searchedData, page, pageSize, sortKey, auth) });
+                IList<string> userRoles = await _userManager.GetRolesAsync(user);
+                bool isAdminOrGBAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
+                return StatusCode(StatusCodes.Status200OK, new
+                {
+                    annualReports =
+                    await _annualReportService.GetAllAsync(
+                        user,
+                        isAdminOrGBAdmin,
+                        searchedData,
+                        page,
+                        pageSize,
+                        sortKey,
+                        auth
+                    )
+                });
             }
             catch (NullReferenceException)
             {
@@ -258,7 +269,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("confirm/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Confirm(int id)
         {
             try
@@ -283,7 +294,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -308,7 +319,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -408,13 +419,22 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> GetAllClubAnnualReports(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            var user = await _userManager.GetUserAsync(User);
+            User user = await _userManager.GetUserAsync(User);
             try
             {
-                return StatusCode(StatusCodes.Status200OK, new
+                IList<string> userRoles = (await _userManager.GetRolesAsync(user));
+                bool isAdminOrGBAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
+                return base.StatusCode(StatusCodes.Status200OK, new
                 {
-                    clubAnnualReports = await _clubAnnualReportService.GetAllAsync(user,
-                        (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), searchedData, page, pageSize, sortKey, auth)
+                    clubAnnualReports = await _clubAnnualReportService.GetAllAsync(
+                        user,
+                        isAdminOrGBAdmin,
+                        searchedData,
+                        page,
+                        pageSize,
+                        sortKey,
+                        auth
+                    )
                 });
             }
             catch (NullReferenceException)
@@ -503,7 +523,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("~/api/Club/confirmClubAnnualReport/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> ConfirmClubAnnualReport(int id)
         {
             try
@@ -530,7 +550,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpPut("~/api/Club/cancelClubAnnualReport/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CancelClubAnnualReport(int id)
         {
             try
@@ -557,7 +577,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpDelete("~/api/Club/deleteClubAnnualReport/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteClubAnnualReport(int id)
         {
             try
