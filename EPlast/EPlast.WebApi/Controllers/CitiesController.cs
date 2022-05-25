@@ -343,6 +343,8 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
+            city.IsActive = true;
+
             var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
 
             var createCityCommand = new CreateCityWthIdCommand(cityDTO);
