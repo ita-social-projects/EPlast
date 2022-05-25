@@ -91,9 +91,9 @@ namespace EPlast.WebApi.Controllers
 
                 return Created(nameof(GetEventUserByUserId), createDTO);
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException error)
             {
-                return StatusCode(StatusCodes.Status400BadRequest, new { message = "End date was before start day" });
+                return StatusCode(StatusCodes.Status400BadRequest, error.Message);
             }
         }
 
