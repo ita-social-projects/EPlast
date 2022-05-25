@@ -221,12 +221,9 @@ namespace EPlast.BLL.Services.Club
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.ClubAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.ClubId == clubId && a.Status);
-
             newAdmin.Status = false;
             if (admin != null)
             {
-
-
                 if (newAdmin.EndDate == null || admin.EndDate < newAdmin.EndDate || admin.EndDate == null)
                 {
                     await RemoveAdministratorAsync(admin.ID);
