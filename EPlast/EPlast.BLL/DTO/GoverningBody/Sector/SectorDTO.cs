@@ -14,7 +14,7 @@ namespace EPlast.BLL.DTO.GoverningBody.Sector
         public string PhoneNumber { get; set; }
         public int AdministrationCount { get; set; }
         public ICollection<SectorDocumentsDTO> Documents { get; set; }
-        public ICollection<SectorAnnouncementDTO> Announcements { get; set; }
+        public ICollection<GoverningBodyAnnouncementDTO> Announcements { get; set; }
         public ICollection<SectorAdministrationDTO> Administration { get; set; }
         public bool IsActive { get; set; }
     }
