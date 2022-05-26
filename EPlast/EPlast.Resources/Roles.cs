@@ -93,5 +93,13 @@ namespace EPlast.Resources
             Roles.CityHead,
             Roles.CityHeadDeputy
         };
+
+        public static List<string> LowerRoles = new List<string>
+        {
+            Roles.RegisteredUser,
+            Roles.Supporter,
+            Roles.FormerPlastMember,
+            Roles.Interested
+        };
     }
 }

@@ -45,6 +45,47 @@ namespace EPlast.Tests.Services.Event
         }
 
         [Test]
+        public async Task EditEventAsyncTest()
+        {
+            //Arrange
+            var tempAlternate = new EventAdministration() { UserID = "2" };
+            List<EventAdministration> tempList = new List<EventAdministration>();
+            var initializedEvent = new DAEvent() { EventAdministrations = tempList, ID = 0 };
+
+            EventCreateDTO model = new EventCreateDTO();
+            model.Сommandant = new EventAdministrationDTO() {UserId="4" } ;
+            model.Alternate = new EventAdministrationDTO() { UserId = "2" };
+            model.Bunchuzhnyi = new EventAdministrationDTO() { UserId = "1" };
+            model.Pysar = new EventAdministrationDTO() { UserId = "3" };
+
+            _mapper
+               .Setup(x => x.Map<EventCreationDTO, DAEvent>(It.IsAny<EventCreationDTO>()))
+               .Returns(initializedEvent);
+            _repoWrapper
+               .Setup(x => x.EventAdministration.GetFirstAsync(
+                   It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+               .ReturnsAsync(new EventAdministration() { ID = 1 });
+            _repoWrapper.Setup(x => x.EventAdministration.GetFirstAsync(It.IsAny<Expression<Func<EventAdministration, bool>>>(), null))
+                .ReturnsAsync(new EventAdministration() { UserID = "1" });
+            _repoWrapper
+                .Setup(x => x.EventAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+                .ReturnsAsync(tempAlternate);
+            _repoWrapper
+               .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
+
+            //Act
+            await _service.EditEventAsync(model);
+
+            //Assert
+            _repoWrapper.Verify(t => t.EventAdministration.Delete(tempAlternate));
+            Assert.AreEqual(4, initializedEvent.EventAdministrations.Count);
+        }
+       
+
+        [Test]
         public async Task EditEventAsyncTest_UpdatesAndSavesRepo_WithoutAlternate()
         {
             //Arrange
