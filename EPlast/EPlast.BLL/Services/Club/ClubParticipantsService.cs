@@ -225,8 +225,6 @@ namespace EPlast.BLL.Services.Club
             newAdmin.Status = false;
             if (admin != null)
             {
-
-
                 if (newAdmin.EndDate == null  || admin.EndDate == null || admin.EndDate < newAdmin.EndDate)
                 {
                     await RemoveAdministratorAsync(admin.ID);
