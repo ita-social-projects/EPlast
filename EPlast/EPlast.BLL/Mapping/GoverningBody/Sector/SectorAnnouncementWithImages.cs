@@ -12,8 +12,8 @@ namespace EPlast.BLL.Mapping.GoverningBody.Sector
     {
         public SectorAnnouncementWithImages()
         {
-            CreateMap<SectorAnnouncementWithImagesDTO, SectorAnnouncement>().ReverseMap();
-            CreateMap<SectorAnnouncementImageDTO, SectorAnnouncementImage>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncementWithImagesDTO, SectorAnnouncement>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncementImageDTO, SectorAnnouncementImage>().ReverseMap();
         }
     }
 }

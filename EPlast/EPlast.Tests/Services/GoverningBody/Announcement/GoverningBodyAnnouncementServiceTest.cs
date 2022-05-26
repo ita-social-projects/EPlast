@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;

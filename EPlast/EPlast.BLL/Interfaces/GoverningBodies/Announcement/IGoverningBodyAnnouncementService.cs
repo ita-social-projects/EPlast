@@ -10,7 +10,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
     {
         Task DeleteAnnouncementAsync(int id);
         Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO);
-        Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id);
+        Task<GoverningBodyAnnouncementUserWithImagesDTO> GetAnnouncementByIdAsync(int id);
         Task<List<string>> GetAllUserAsync();
         Task<int?> EditAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO);
 

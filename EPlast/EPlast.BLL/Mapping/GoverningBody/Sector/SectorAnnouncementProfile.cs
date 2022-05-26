@@ -11,7 +11,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Sector
     {
         public SectorAnnouncementProfile()
         {
-            CreateMap<SectorAnnouncement, SectorAnnouncementDTO>().ReverseMap();
+            CreateMap<SectorAnnouncement, GoverningBodyAnnouncementDTO>().ReverseMap();
         }
     }
 }

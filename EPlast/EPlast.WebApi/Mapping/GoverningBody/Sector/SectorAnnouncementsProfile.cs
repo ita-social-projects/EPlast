@@ -12,8 +12,8 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
     {
         public SectorAnnouncementsProfile()
         {
-            CreateMap<SectorAnnouncementsViewModel, SectorAnnouncementDTO>().ReverseMap();
-            CreateMap<SectorViewModel, SectorAnnouncementDTO>().ReverseMap();
+            CreateMap<SectorAnnouncementsViewModel, GoverningBodyAnnouncementDTO>().ReverseMap();
+            CreateMap<SectorViewModel, GoverningBodyAnnouncementDTO>().ReverseMap();
         }
     }
 }
