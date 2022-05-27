@@ -237,8 +237,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
               It.IsAny<int>(), It.IsAny<int>()))
               .ReturnsAsync(CreateTuple);
             _repoWrapper
-                .Setup(r => r.GoverningBodyAnnouncement.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(), null));
+                .Setup(r => r.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAnnouncementImage, bool>>>(), null));
             _mapper
               .Setup(m => m.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>
               (It.IsAny<IEnumerable<GoverningBodyAnnouncement>>()))
