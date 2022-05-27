@@ -661,7 +661,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new GoverningBodyAnnouncementUserDTO());
+                .ReturnsAsync(new GoverningBodyAnnouncementUserWithImagesDTO());
 
             //Act
             var result = await _governingBodiesController.GetById(It.IsAny<int>());
@@ -672,7 +672,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<GoverningBodyAnnouncementUserDTO>(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(resultValue);
         }
 
         [Test]
@@ -680,7 +680,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _governingBodyAnnouncementService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(null as GoverningBodyAnnouncementUserDTO);
+                .ReturnsAsync(null as GoverningBodyAnnouncementUserWithImagesDTO);
 
             //Act
             var result = await _governingBodiesController.GetById(It.IsAny<int>());

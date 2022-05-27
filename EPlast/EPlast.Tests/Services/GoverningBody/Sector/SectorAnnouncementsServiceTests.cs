@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
@@ -60,10 +61,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         public async Task AddAnnouncement_EmptyImages_Valid()
         {
             //Arrange
-            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementWithImagesDTO, SectorAnnouncement>(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
-                .Returns(GetSectorAnnouncement());
+            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Returns(GetGoverningBodyAnnouncement());
             _repoWrapper
-               .Setup(x => x.GoverningBodySectorAnnouncements.CreateAsync(It.IsAny<SectorAnnouncement>()));
+               .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
             _context.Setup(c => c.HttpContext.User).Returns(new ClaimsPrincipal());
 
@@ -72,7 +73,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.DoesNotThrowAsync(async () => {
+            Assert.DoesNotThrowAsync(async () =>
+            {
                 await _sectorAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
             });
         }
@@ -81,10 +83,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         public async Task AddAnnouncement_Valid()
         {
             //Arrange
-            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementWithImagesDTO, SectorAnnouncement>(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
-                .Returns(GetSectorAnnouncement());
+            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Returns(GetGoverningBodyAnnouncement());
             _repoWrapper
-               .Setup(x => x.GoverningBodySectorAnnouncements.CreateAsync(It.IsAny<SectorAnnouncement>()));
+               .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
             _context.Setup(c => c.HttpContext.User).Returns(new ClaimsPrincipal());
 
@@ -93,7 +95,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.DoesNotThrowAsync(async () => {
+            Assert.DoesNotThrowAsync(async () =>
+            {
                 await _sectorAnnouncementService.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
             });
         }
@@ -136,8 +139,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         public void DeleteAnnouncement_ThrowException()
         {
             //Arrange
-            _repoWrapper.Setup(g => g.GoverningBodySectorAnnouncements.GetFirstAsync(It.IsAny<Expression<Func<SectorAnnouncement, bool>>>(),
-                   It.IsAny<Func<IQueryable<SectorAnnouncement>, IIncludableQueryable<SectorAnnouncement, object>>>()))
+            _repoWrapper.Setup(g => g.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
+                   It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IIncludableQueryable<GoverningBodyAnnouncement, object>>>()))
                 .ReturnsAsync(nullSectorAnnouncement);
 
             //Assert
@@ -151,10 +154,11 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         {
             //Arrange
             _repoWrapper
-                .Setup(x => x.GoverningBodySectorAnnouncements.GetFirstAsync(It.IsAny<Expression<Func<SectorAnnouncement, bool>>>(),
-                    It.IsAny<Func<IQueryable<SectorAnnouncement>, IIncludableQueryable<SectorAnnouncement, object>>>()))
-                .ReturnsAsync(GetSectorAnnouncement());
-            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementUserDTO>(It.IsAny<SectorAnnouncement>()))
+                .Setup(x => x.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IIncludableQueryable<GoverningBodyAnnouncement, object>>>()))
+                .ReturnsAsync(GetGoverningBodyAnnouncement());
+
+            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementUserWithImagesDTO>(It.IsAny<GoverningBodyAnnouncement>()))
                 .Returns(GetSectorAnnouncementUserDTO());
             var a = _repoWrapper.Setup(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
               It.IsAny<Func<IQueryable<User>,
@@ -166,7 +170,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.IsNotNull(res);
-            Assert.IsInstanceOf<GoverningBodyAnnouncementUserDTO>(res);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(res);
         }
 
         [Test]
@@ -190,12 +194,12 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         {
             //Arrange
             _repoWrapper
-                .Setup(x => x.GoverningBodySectorAnnouncements.Update(It.IsAny<SectorAnnouncement>()));
+                .Setup(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()));
             _repoWrapper
-                .Setup(x => x.GoverningBodySectorAnnouncementImage.Delete(It.IsAny<SectorAnnouncementImage>()));
-            _repoWrapper.Setup(x => x.GoverningBodySectorAnnouncements.GetFirstAsync(It.IsAny<Expression<Func<SectorAnnouncement, bool>>>(),
-              It.IsAny<Func<IQueryable<SectorAnnouncement>,
-              IIncludableQueryable<SectorAnnouncement, object>>>())).ReturnsAsync(GetSectorAnnouncement());
+                .Setup(x => x.GoverningBodyAnnouncementImage.Delete(It.IsAny<GoverningBodyAnnouncementImage>()));
+            _repoWrapper.Setup(x => x.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
+              It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>,
+              IIncludableQueryable<GoverningBodyAnnouncement, object>>>())).ReturnsAsync(GetGoverningBodyAnnouncement());
             _repoWrapper
                 .Setup(x => x.SaveAsync());
             _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
@@ -208,7 +212,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
             //Assert
             Assert.IsNotNull(result);
-            _repoWrapper.Verify(x => x.GoverningBodySectorAnnouncements.Update(It.IsAny<SectorAnnouncement>()));
+            _repoWrapper.Verify(x => x.GoverningBodyAnnouncement.Update(It.IsAny<GoverningBodyAnnouncement>()));
             _repoWrapper.Verify(x => x.SaveAsync());
         }
 
@@ -227,9 +231,9 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         {
             //Arrange
             _repoWrapper
-              .Setup(r => r.GoverningBodySectorAnnouncements.GetRangeAsync(It.IsAny<Expression<Func<SectorAnnouncement, bool>>>(),
-              It.IsAny<Expression<Func<SectorAnnouncement, SectorAnnouncement>>>(),
-              It.IsAny<Func<IQueryable<SectorAnnouncement>, IQueryable<SectorAnnouncement>>>(), null,
+              .Setup(r => r.GoverningBodyAnnouncement.GetRangeAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
+              It.IsAny<Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>>>(),
+              It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>>>(), null,
               It.IsAny<int>(), It.IsAny<int>()))
               .ReturnsAsync(CreateTuple);
             _repoWrapper
@@ -248,7 +252,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>>(result);
         }
 
-        readonly SectorAnnouncement nullSectorAnnouncement = null;
+        readonly GoverningBodyAnnouncement nullSectorAnnouncement = null;
 
         private IEnumerable<SectorAnnouncement> GetTestPlastAnnouncement()
         {
@@ -318,11 +322,11 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             };
         }
 
-        private List<SectorAnnouncement> GetAnnouncementsByPage()
+        private List<GoverningBodyAnnouncement> GetAnnouncementsByPage()
         {
-            return new List<SectorAnnouncement>()
+            return new List<GoverningBodyAnnouncement>()
             {
-                new SectorAnnouncement()
+                new GoverningBodyAnnouncement()
                 {
                     Text = "Hello world"
                 }
@@ -344,9 +348,24 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             };
         }
 
-        private GoverningBodyAnnouncementUserDTO GetSectorAnnouncementUserDTO()
+        private GoverningBodyAnnouncement GetGoverningBodyAnnouncement()
         {
-            return new GoverningBodyAnnouncementUserDTO
+            return new GoverningBodyAnnouncement
+            {
+                Id = 1,
+                Text = "Hello world",
+                Images = new List<GoverningBodyAnnouncementImage> {
+                    new GoverningBodyAnnouncementImage
+                    {
+                        ImagePath = "image.png"
+                    }
+                }
+            };
+        }
+
+        private GoverningBodyAnnouncementUserWithImagesDTO GetSectorAnnouncementUserDTO()
+        {
+            return new GoverningBodyAnnouncementUserWithImagesDTO
             {
                 Images = new List<GoverningBodyAnnouncementImageDTO>()
                 {
@@ -358,7 +377,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             };
         }
 
-        private Tuple<IEnumerable<SectorAnnouncement>, int> CreateTuple =>
-            new Tuple<IEnumerable<SectorAnnouncement>, int>(GetAnnouncementsByPage(), 100);
+        private Tuple<IEnumerable<GoverningBodyAnnouncement>, int> CreateTuple =>
+            new Tuple<IEnumerable<GoverningBodyAnnouncement>, int>(GetAnnouncementsByPage(), 100);
     }
 }
