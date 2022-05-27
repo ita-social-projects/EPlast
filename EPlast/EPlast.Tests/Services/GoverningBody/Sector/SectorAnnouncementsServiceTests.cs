@@ -106,10 +106,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         {
             //Arrange
             _mapper
-                .Setup(m => m.Map<GoverningBodyAnnouncementDTO>(It.IsAny<SectorAnnouncement>()))
+                .Setup(m => m.Map<GoverningBodyAnnouncementDTO>(It.IsAny<GoverningBodyAnnouncement>()))
                 .Returns(new GoverningBodyAnnouncementDTO());
             _repoWrapper
-               .Setup(x => x.GoverningBodySectorAnnouncements.CreateAsync(It.IsAny<SectorAnnouncement>()));
+               .Setup(x => x.GoverningBodyAnnouncement.CreateAsync(It.IsAny<GoverningBodyAnnouncement>()));
             _userManager
                 .Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>()));
 
@@ -124,9 +124,9 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         public void DeleteAnnouncement_Valid()
         {
             //Arrange
-            _repoWrapper.Setup(g => g.GoverningBodySectorAnnouncements.GetFirstAsync(It.IsAny<Expression<Func<SectorAnnouncement, bool>>>(),
-                   It.IsAny<Func<IQueryable<SectorAnnouncement>, IIncludableQueryable<SectorAnnouncement, object>>>()))
-                .ReturnsAsync(GetSectorAnnouncement());
+            _repoWrapper.Setup(g => g.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
+                   It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IIncludableQueryable<GoverningBodyAnnouncement, object>>>()))
+                .ReturnsAsync(GetGoverningBodyAnnouncement());
 
             //Act
             var result = _sectorAnnouncementService.DeleteAnnouncementAsync(It.IsAny<int>());
@@ -237,11 +237,11 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
               It.IsAny<int>(), It.IsAny<int>()))
               .ReturnsAsync(CreateTuple);
             _repoWrapper
-                .Setup(r => r.GoverningBodySectorAnnouncementImage.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<SectorAnnouncementImage, bool>>>(), null));
+                .Setup(r => r.GoverningBodyAnnouncement.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(), null));
             _mapper
-              .Setup(m => m.Map<IEnumerable<SectorAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>
-              (It.IsAny<IEnumerable<SectorAnnouncement>>()))
+              .Setup(m => m.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>
+              (It.IsAny<IEnumerable<GoverningBodyAnnouncement>>()))
               .Returns(GetTestPlastAnnouncementDTO());
 
             //Act
@@ -254,13 +254,13 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
 
         readonly GoverningBodyAnnouncement nullSectorAnnouncement = null;
 
-        private IEnumerable<SectorAnnouncement> GetTestPlastAnnouncement()
+        private IEnumerable<GoverningBodyAnnouncement> GetTestPlastAnnouncement()
         {
-            return new List<SectorAnnouncement>
+            return new List<GoverningBodyAnnouncement>
             {
-                new SectorAnnouncement{Id = 1, Text = "За силу"},
-                new SectorAnnouncement{Id = 2, Text = "За волю"},
-                new SectorAnnouncement{Id = 3, Text = "За народ"}
+                new GoverningBodyAnnouncement{Id = 1, Text = "За силу"},
+                new GoverningBodyAnnouncement{Id = 2, Text = "За волю"},
+                new GoverningBodyAnnouncement{Id = 3, Text = "За народ"}
             }.AsEnumerable();
         }
 
@@ -333,20 +333,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             };
         }
 
-        private SectorAnnouncement GetSectorAnnouncement()
-        {
-            return new SectorAnnouncement
-            {
-                Id = 1,
-                Text = "Hello world",
-                Images = new List<SectorAnnouncementImage> {
-                    new SectorAnnouncementImage
-                    {
-                        ImagePath = "image.png"
-                    }
-                }
-            };
-        }
 
         private GoverningBodyAnnouncement GetGoverningBodyAnnouncement()
         {
