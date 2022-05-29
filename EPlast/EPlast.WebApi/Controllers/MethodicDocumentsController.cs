@@ -131,7 +131,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created MethodicDocument object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
-        [Authorize(Roles = Roles.AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin)]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
         {
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)
@@ -158,6 +158,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">MethodicDocument was deleted</response>
         /// <response code="404">MethodicDocument does not exist</response>
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _methodicDocService.DeleteMethodicDocumentAsync(id);
