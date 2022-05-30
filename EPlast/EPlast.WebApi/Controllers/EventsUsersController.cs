@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.DTO.EventUser;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -136,7 +136,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Resource updated successfully</response>
         /// <response code="400">When the Event is not approved</response>
         [HttpPut("approveEvent/{eventId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> ApproveEvent(int eventId)
         {
             var eventApproved = await eventUserManager.ApproveEventAsync(eventId);
