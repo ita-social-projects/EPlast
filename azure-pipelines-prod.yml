@@ -1,0 +1,126 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  branches:
+    include:
+    - eplast-prod
+
+resources:
+  repositories:
+  - repository: 'ita-social-projects/EPlast'
+    type: github
+    endpoint: 'github connection Eplast'
+    name: '_ita-social-projects_EPlast'
+    ref: EPlast/eplast-prod
+
+variables:
+- group: EPlast
+  # Container registry service connection established during pipeline creation
+- name: dockerRegistryServiceConnection
+  value: '00d3f77f-1f99-40ce-a03f-dec6a3922724'
+- name: imageRepository
+  value: 'eplastbackend'
+- name: containerRegistry
+  value: 'eplastregistry.azurecr.io'
+- name: dockerfilePath
+  value: '**/Dockerfile'
+- name: tag
+  value: '$(Build.BuildId)'
+- name: imagePullSecret
+  value: 'eplastregistryd27e-auth'
+
+  # Agent VM image name
+pool:
+  name: vmss-pipeline
+  vmImage: 'ubuntu-latest'
+
+  k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      name: vmss-pipeline
+      vmImage: 'ubuntu-latest' 
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+
+    - upload: manifests
+      artifact: manifests
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: 'EPlast/EPlast.sln'
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        projects: 'EPlast/EPlast.sln'
+        # arguments: '--configuration $(BuildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Add package coverlet.msbuild'
+      inputs:
+        command: custom
+        projects: |
+         EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
+         EPlast/EPlast.Tests/EPlast.Tests.csproj
+        custom: add
+        arguments: 'package coverlet.msbuild'     
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
+
+  jobs:
+  - deployment: Deploy
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    displayName: Deploy
+    pool:
+      name: vmss-pipeline
+      vmImage: 'ubuntu-latest'
+    environment: 'Eplastbackend.eplast'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/manifests
+              targetFiles: '**/*.yml'
+              keepToken: true
+              tokenPrefix: ___
+              tokenSuffix: ___
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/ingress-prod.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
+
