@@ -19,6 +19,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.Tests.Services.Precautions
@@ -519,6 +520,25 @@ namespace EPlast.Tests.Services.Precautions
             Assert.IsNull(result);
         }
 
+        [Test]
+        public async Task GetUsersForPrecautionAsync_ReturnsListOfUsers()
+        {
+
+            //Arrange
+            adminService.Setup(a => a.GetUsersAsync()).ReturnsAsync(GetTestShortUserInfo());
+            mockMapper.Setup(m =>
+                    m.Map<IEnumerable<ShortUserInformationDTO>, IEnumerable<AvailableUserDTO>>(
+                        It.IsAny<IEnumerable<ShortUserInformationDTO>>()))
+                .Returns(getAvailableUserDTOs);
+
+            //Act 
+            var result = await PrecautionService.GetUsersForPrecautionAsync();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AvailableUserDTO>>(result);
+        }
+
         readonly UserPrecaution nullPrecaution = null;
         readonly UserPrecautionDTO nullPrecautionDTO = null;
         readonly List<UserPrecaution> nulluserPrecautions = null;
@@ -688,6 +708,29 @@ namespace EPlast.Tests.Services.Precautions
 
             };
         }
+
+        private IEnumerable<AvailableUserDTO> getAvailableUserDTOs()
+        {
+            return new List<AvailableUserDTO>
+            {
+                new AvailableUserDTO
+                {
+                    ID = UserId,
+                    Email = "test@mail.com",
+                    FirstName = "John",
+                    LastName = "Brian",
+                    IsInLowerRole = false,
+                },
+                new AvailableUserDTO
+                {
+                    ID = UserId,
+                    Email = "test@mail.com",
+                    FirstName = "John",
+                    LastName = "Brian",
+                    IsInLowerRole = false,
+                }
+            }.AsEnumerable();
+         }
     }
 }
 

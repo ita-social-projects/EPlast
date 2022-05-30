@@ -32,6 +32,7 @@ namespace EPlast.Tests.Controllers
 
         private PrecautionController _PrecautionController;
         private ControllerContext _context;
+        private Mock<AvailableUserDTO> _availableUserDTOMock;
 
         [SetUp]
         public void SetUp()
@@ -54,6 +55,8 @@ namespace EPlast.Tests.Controllers
                 new ActionContext(
                     _httpContext.Object, new RouteData(),
                     new ControllerActionDescriptor()));
+
+            _availableUserDTOMock = new Mock<AvailableUserDTO>();
         }
 
         [Test]
@@ -538,6 +541,26 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
+        [Test]
+        public async Task GetAvailableUsersForPrecaution_ReturnsOkObjectResult()
+        {
+            //Arrange
+            List<AvailableUserDTO> availableUsers = new List<AvailableUserDTO>
+            {
+                _availableUserDTOMock.Object
+            };
+            _userPrecautionService.Setup(s => s.GetUsersForPrecautionAsync()).ReturnsAsync(availableUsers);
+
+            //Act
+            var result = await _PrecautionController.GetUsersForPrecaution();
+            var resultValue = (result as OkObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<AvailableUserDTO>>(resultValue);
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
         private List<UserPrecautionsTableObject> GetUsersPrecautionByPage()
         {
             return new List<UserPrecautionsTableObject>()
@@ -555,5 +578,6 @@ namespace EPlast.Tests.Controllers
         }
 
         private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
+
     }
 }

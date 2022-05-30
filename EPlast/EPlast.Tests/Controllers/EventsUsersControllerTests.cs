@@ -295,7 +295,6 @@ namespace EPlast.Tests.Controllers
                     ID = 1,
                 },
             };
-
         private EventCreateDTO CreateFakeEventCreateDates()
             => new EventCreateDTO()
             {
