@@ -12,11 +12,25 @@ trigger:
     - master
 
 resources:
-  repositories:
-  - repository: EPlast
-    type: github
-    name: ita-social-projects/EPlast
-    endpoint: github.com_eplast
+- repo: self
+#   pipelines:
+#   - pipeline: string  # identifier for the resource used in pipeline resource variables
+#     source: string  # name of the pipeline that produces an artifact
+#     branch: eplast-prod
+#     trigger:
+#       branches:
+#         include:
+#         - eplast-prod
+#         exclude:
+#         - master
+
+
+# resources:
+#   repositories:
+#   - repository: EPlast
+#     type: github
+#     name: ita-social-projects/EPlast
+#     endpoint: github.com_eplast
     
 variables:
 - group: EPlast
