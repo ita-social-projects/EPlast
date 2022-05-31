@@ -15,7 +15,5 @@ namespace EPlast.DataAccess.Entities.UserEntities
         public DateTime Date { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsActive { get; set; }
-        public bool IsEditable { get; set; }
-        public bool IsDeletable { get; set; }
     }
 }

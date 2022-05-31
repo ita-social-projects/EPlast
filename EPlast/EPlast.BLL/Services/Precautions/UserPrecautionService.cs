@@ -12,7 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.PrecautionsDTO;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Queries.Precaution;
+using EPlast.BLL.Services.UserAccess;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -195,12 +197,6 @@ namespace EPlast.BLL.Services.Precautions
             var query = new GetUsersPrecautionsForTableQuery(tableSettings);
             var precautionsTuple = await _mediator.Send(query);
             var allInfoPrecautions = precautionsTuple.Item1.ToList();
-            foreach (var precautionObject in allInfoPrecautions)
-            {
-                var canUserChangePrecaution = await CanUserChangePrecautionAsync(precautionObject.Id, user);
-                precautionObject.IsEditable = canUserChangePrecaution;
-                precautionObject.IsDeletable = canUserChangePrecaution;
-            }
 
             var tableInfo = new UserPrecautionsTableInfo
             {
