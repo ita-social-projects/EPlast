@@ -6,8 +6,6 @@ namespace EPlast.DataAccess.Entities.UserEntities
     {
         public int Id { get; set; }
         public int Number { get; set; }
-        public int Count { get; set; }
-        public int Total { get; set; }
         public string PrecautionName { get; set; }
         public string UserId { get; set; }
         public string UserName { get; set; }
@@ -17,5 +15,7 @@ namespace EPlast.DataAccess.Entities.UserEntities
         public DateTime Date { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsActive { get; set; }
+        public bool IsEditable { get; set; }
+        public bool IsDeletable { get; set; }
     }
 }

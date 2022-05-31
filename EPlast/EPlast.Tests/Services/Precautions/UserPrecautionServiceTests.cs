@@ -16,203 +16,277 @@ using System.Linq;
 using System.Linq.Expressions;
 using EPlast.BLL.Services.Interfaces;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Queries.Precaution;
+using MediatR;
 
 namespace EPlast.Tests.Services.Precautions
 {
     class UserPrecautionServiceTests
     {
-        private Mock<IRepositoryWrapper> mockRepoWrapper;
-        private Mock<IMapper> mockMapper;
-        private UserPrecautionService PrecautionService;
-        private Mock<UserManager<User>> userManager;
-        private Mock<IAdminService> adminService;
+        private Mock<IRepositoryWrapper> _repoWrapperMock;
+        private Mock<IMapper> _mapperMock;
+        private UserPrecautionService _precautionService;
+        private Mock<UserManager<User>> _userManagerMock;
+        private Mock<IAdminService> _adminServiceMock;
         private IUniqueIdService _uniqueId;
+        private Mock<IMediator> _mediatorMock;
 
         [SetUp]
         public void SetUp()
         {
-            mockMapper = new Mock<IMapper>();
-            mockRepoWrapper = new Mock<IRepositoryWrapper>();
-            adminService = new Mock<IAdminService>();
+            _mapperMock = new Mock<IMapper>();
+            _repoWrapperMock = new Mock<IRepositoryWrapper>();
+            _adminServiceMock = new Mock<IAdminService>();
             _uniqueId = new UniqueIdService();
             var store = new Mock<IUserStore<User>>();
-            userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
-            PrecautionService = new UserPrecautionService(mockMapper.Object, mockRepoWrapper.Object, userManager.Object, adminService.Object);
+            _userManagerMock = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _mediatorMock = new Mock<IMediator>();
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
+            _precautionService = new UserPrecautionService(_mapperMock.Object, _repoWrapperMock.Object, _userManagerMock.Object,
+                _adminServiceMock.Object, _mediatorMock.Object);
         }
 
         [Test]
-        public void DeleteUserPrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public async Task AddUserPrecautionAsync_SuperAdmin_ReturnsTrue()
         {
             //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.GetFirstAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(new UserPrecaution());
-            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
-
-            //Assert
-            Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await PrecautionService.DeleteUserPrecautionAsync(It.IsAny<int>(), It.IsAny<User>()); });
-            Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
-        }
-
-        [Test]
-        public void DeleteUserPrecautionAsync_IfAdmin_ThrowsNotImplementedException()
-        {
-            //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.GetFirstAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(() => null);
-
+                .ReturnsAsync(nullPrecaution);
             //Act
+            var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO,new User());
 
             //Assert
-            Exception exception = Assert.ThrowsAsync(typeof(NotImplementedException),
-                async () => { await PrecautionService.DeleteUserPrecautionAsync(It.IsAny<int>(), It.IsAny<User>()); });
-            Assert.AreEqual("The method or operation is not implemented.", exception.Message);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
-        public void DeleteUserPrecautionAsync_IfAdmin_WorksCorrectly()
+        public async Task AddUserPrecautionAsync_SuperAdminLowerUserInPrecaution_ReturnsFalse()
         {
             //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(Roles.LowerRoles);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(nullPrecaution);
+            //Act
+            var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
+
+            //Assert
+            Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public async Task AddUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
+        {
+            //Arrange
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(nullPrecaution);
+            //Act
+            var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
+
+            //Assert
+            Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public async Task AddUserPrecautionAsync_NumberExists_ReturnsFalse()
+        {
+            //Arrange
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(userPrecaution);
+            //Act
+            var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
+
+            //Assert
+            Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public async Task ChangeUserPrecautionAsync_SuperAdmin_ReturnsTrue()
+        {
+            //Arrange
+            userPrecaution.IsActive = true;
+
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
 
             //Act
+            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await PrecautionService.DeleteUserPrecautionAsync(It.IsAny<int>(), It.IsAny<User>()); });
+            Assert.AreEqual(true, result);
         }
 
         [Test]
-        public void ChangeUserPrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public async Task ChangeUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
         {
             //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.GetFirstAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(new UserPrecaution());
 
-            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
+            userPrecaution.IsActive = true;
 
-            //Assert
-            Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await PrecautionService.ChangeUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()); });
-            Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
-        }
-
-        [Test]
-        public void ChangeUserPrecautionAsync_IfAdmin_WorksCorrectly()
-        {
-            //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.GetFirstAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
 
             //Act
+            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await PrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO, It.IsAny<User>()); });
+            Assert.AreEqual(false, result);
         }
 
         [Test]
-        public void AddUserPrecautionAsync_IfNotAdmin_ThrowsUnauthorizedAccessException()
+        public async Task ChangeUserPrecautionAsync_GoverningBodyUserInactivePrecaution_ReturnsFalse()
         {
             //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.CreateAsync(It.IsAny<UserPrecaution>()));
+            userPrecaution.IsActive = false;
+            var currentUser = new User();
 
-            userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRolesWithoutAdmin());
-
-            //Assert
-            Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await PrecautionService.AddUserPrecautionAsync(It.IsAny<UserPrecautionDTO>(), It.IsAny<User>()); });
-            Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
-        }
-
-        [Test]
-        public void AddUserPrecautionAsync_IfAdmin_WorksCorrectly()
-        {
-            //Arrange
-            mockRepoWrapper
-                 .Setup(x => x.UserPrecaution.CreateAsync(userPrecaution));
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(currentUser, Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(userPrecaution);
 
             //Act
+            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, currentUser);
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await PrecautionService.AddUserPrecautionAsync(userPrecautionDTO, It.IsAny<User>()); });
+            Assert.AreEqual(false, result);
         }
 
         [Test]
-        public void AddUserPrecaution_RegisternumberExists_ThrowsArgumentException_Test()
+        public async Task DeleteUserPrecautionAsync_SuperAdmin_ReturnsTrue()
         {
-            // Arrange
-            mockRepoWrapper
-               .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            //Arrange
+            userPrecaution.IsActive = true;
+
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(new UserPrecaution());
-            mockMapper
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns(new UserPrecautionDTO());
-            //Act  //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => { await PrecautionService.AddUserPrecautionAsync(userPrecautionDTO, It.IsAny<User>()); });
+                .ReturnsAsync(userPrecaution);
+
+            //Act
+            var result = await _precautionService.DeleteUserPrecautionAsync(1, new User());
+
+            //Assert
+            Assert.AreEqual(true, result);
         }
 
         [Test]
-        public void AddUserPrecaution_PrecautionActive_ThrowsArgumentException_Test()
+        public async Task DeleteUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
         {
-            // Arrange
-            mockRepoWrapper
-               .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            //Arrange
+            userPrecaution.IsActive = true;
+
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(new UserPrecaution());
-            mockMapper
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns(new UserPrecautionDTO());
-            //Act  //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => { await PrecautionService.AddUserPrecautionAsync(userPrecautionDTO2, It.IsAny<User>()); });
+                .ReturnsAsync(userPrecaution);
+
+            //Act
+            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, new User());
+
+            //Assert
+            Assert.AreEqual(false, result);
         }
 
         [Test]
-        public void EditUserPrecaution_RegisternumberExists_ThrowsArgumentException_Test()
+        public async Task DeleteUserPrecautionAsync_GoverningBodyUserInactivePrecaution_ReturnsFalse()
         {
-            // Arrange
-            mockRepoWrapper
-               .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            //Arrange
+            userPrecaution.IsActive = false;
+            var currentUser = new User();
+
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(currentUser, Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(new UserPrecaution());
-            mockMapper
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns(new UserPrecautionDTO());
-            //Act  //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => { await PrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO, It.IsAny<User>()); });
+                .ReturnsAsync(userPrecaution);
+
+            //Act
+            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, currentUser);
+
+            //Assert
+            Assert.AreEqual(false, result);
+        }
+
+        [Test]
+        public async Task GetUserPrecautionsForTableAsync_SuperAdmin_ReturnsUserPrecautionsTableInfo()
+        {
+            //Arrange
+            userPrecaution.IsActive = true;
+
+            _mediatorMock
+                .Setup(x => x.Send(It.IsAny<GetUsersPrecautionsForTableQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(CreateTuple);
+            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(userPrecaution);
+
+            //Act
+            var result =
+                await _precautionService.GetUserPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>(),
+                    It.IsAny<User>());
+
+            //Assert 
+            Assert.IsInstanceOf<UserPrecautionsTableInfo>(result);
+
         }
 
         [Test]
         public async Task IsNumberExistAsync_True()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(new UserPrecaution());
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns(new UserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.IsNumberExistAsync(It.IsAny<int>());
+            var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsNotNull(result);
@@ -222,16 +296,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task IsNumberExistAsync_False()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nullPrecaution);
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns(nullPrecautionDTO);
 
             //Act
-            var result = await PrecautionService.IsNumberExistAsync(It.IsAny<int>());
+            var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsFalse(result);
@@ -241,16 +315,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task IsNumberExistAsync_IsInstanceOf()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(new UserPrecaution());
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns(new UserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.IsNumberExistAsync(It.IsAny<int>());
+            var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -260,17 +334,17 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetAllUsersPrecautionAsync_IsInstanceOf()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(GetTestUserPrecaution());
 
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.GetAllUsersPrecautionAsync();
+            var result = await _precautionService.GetAllUsersPrecautionAsync();
 
             //Assert
             Assert.IsInstanceOf<IEnumerable<UserPrecautionDTO>>(result);
@@ -280,16 +354,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetAllUsersPrecautionAsync_IsNotNull()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.GetAllUsersPrecautionAsync();
+            var result = await _precautionService.GetAllUsersPrecautionAsync();
 
             //Assert
             Assert.IsNotNull(result);
@@ -299,16 +373,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetAllUsersPrecautionAsync_IsEmpty()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nulluserPrecautions);
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                 .Returns(nulluserPrecautionsDTO);
 
             //Act
-            var result = await PrecautionService.GetAllUsersPrecautionAsync();
+            var result = await _precautionService.GetAllUsersPrecautionAsync();
 
             //Assert
             Assert.IsEmpty(result);
@@ -318,16 +392,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionsOfUserAsync_IsInstanceOf()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
+            var result = await _precautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsInstanceOf<IEnumerable<UserPrecautionDTO>>(result);
@@ -337,16 +411,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionsOfUserAsync_IsNotNull()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
+            var result = await _precautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotNull(result);
@@ -356,16 +430,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionsOfUserAsync_IsEmpty()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nulluserPrecautions);
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                 .Returns(nulluserPrecautionsDTO);
 
             //Act
-            var result = await PrecautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
+            var result = await _precautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsEmpty(result);
@@ -375,16 +449,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionAsync_IsNull()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                 .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nullPrecaution);
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns(nullPrecautionDTO);
 
             //Act
-            var result = await PrecautionService.GetUserPrecautionAsync(It.IsAny<int>());
+            var result = await _precautionService.GetUserPrecautionAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsNull(result);
@@ -394,16 +468,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionAsync_IsNotNull()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                 .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<UserPrecaution, UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns((UserPrecaution src) => new UserPrecautionDTO() { Id = src.Id });
 
             //Act
-            var result = await PrecautionService.GetUserPrecautionAsync(1);
+            var result = await _precautionService.GetUserPrecautionAsync(1);
             //Assert
             Assert.IsNotNull(result);
         }
@@ -412,16 +486,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionAsync_IsInstanceOf()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
                 .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
-            mockMapper
+            _mapperMock
                 .Setup(m => m.Map<UserPrecaution, UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
                 .Returns((UserPrecaution src) => new UserPrecautionDTO() { Id = src.Id });
 
             //Act
-            var result = await PrecautionService.GetUserPrecautionAsync(1);
+            var result = await _precautionService.GetUserPrecautionAsync(1);
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<UserPrecautionDTO>(result);
@@ -431,14 +505,14 @@ namespace EPlast.Tests.Services.Precautions
         {
             // Arrange
 
-            adminService.Setup(a => a.GetUsersAsync())
+            _adminServiceMock.Setup(a => a.GetUsersAsync())
                 .ReturnsAsync(GetTestShortUserInfo());
-            mockRepoWrapper.Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+            _repoWrapperMock.Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(GetTestUserPrecaution());
 
             // Act
-            var result = await PrecautionService.UsersTableWithoutPrecautionAsync();
+            var result = await _precautionService.UsersTableWithoutPrecautionAsync();
 
             // Assert
             Assert.NotNull(result);
@@ -449,16 +523,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task CheckUserPrecautionsType_Test()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable < UserPrecautionDTO >> (It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act 
-            var result = await PrecautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу");
+            var result = await _precautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу");
 
             //Assert
             Assert.True(result);
@@ -468,16 +542,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task CheckUserPrecautionsType_False_Test()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act 
-            var result = await PrecautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За славу");
+            var result = await _precautionService.CheckUserPrecautionsType("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За славу");
 
             //Assert
             Assert.False(result);
@@ -486,16 +560,16 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserActivePrecaution_IsNotNull()
         {
             //Arrange
-            mockRepoWrapper
+            _repoWrapperMock
               .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.GetUserActivePrecaution("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу");
+            var result = await _precautionService.GetUserActivePrecaution("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За силу");
 
             //Assert
             Assert.IsNotNull(result);
@@ -505,38 +579,200 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserActivePrecaution_IsNull()
         {
             //Arrange
-            mockRepoWrapper
-              .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
-                   It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-               .ReturnsAsync(GetTestUserPrecaution());
-            mockMapper
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetAllAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(GetTestUserPrecaution());
+            _mapperMock
                .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
-            var result = await PrecautionService.GetUserActivePrecaution("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За славу");
+            var result = await _precautionService.GetUserActivePrecaution("a84473c3-140b-4cae-ac80-b7cd5759d3b5", "За славу");
 
             //Assert
             Assert.IsNull(result);
         }
 
         [Test]
-        public async Task GetUsersForPrecautionAsync_ReturnsListOfUsers()
+        public async Task GetUsersForPrecautionAsync_AdminAllUsersAvailable_ReturnsListOfAvailableUsers()
         {
-
             //Arrange
-            adminService.Setup(a => a.GetUsersAsync()).ReturnsAsync(GetTestShortUserInfo());
-            mockMapper.Setup(m =>
-                    m.Map<IEnumerable<ShortUserInformationDTO>, IEnumerable<AvailableUserDTO>>(
-                        It.IsAny<IEnumerable<ShortUserInformationDTO>>()))
-                .Returns(getAvailableUserDTOs);
+            var suggestedUser = new SuggestedUserDto
+            {
+                ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                Email = "test@mail.com",
+                FirstName = "John",
+                LastName = "Brian",
+            };
+            var assignableRoles = new List<string>
+            {
+                Roles.KurinHead,
+                Roles.CityHead
+            };
+            var currentUser = new User();
 
-            //Act 
-            var result = await PrecautionService.GetUsersForPrecautionAsync();
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(true);
+
+            _repoWrapperMock.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>())).ReturnsAsync(GetTestUsers());
+            _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
+
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(assignableRoles);
+            var expected = GetAvailableSuggestedUsers().ToList();
+ 
+            //Act
+            var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
+            var resultList = result.ToList();
 
             //Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<AvailableUserDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<SuggestedUserDto>>(result);
+            Assert.AreEqual(expected.Count, resultList.Count);
+            Assert.AreEqual(expected[0].IsAvailable, resultList[0].IsAvailable);
+            Assert.AreEqual(expected[1].IsAvailable, resultList[1].IsAvailable);
+        }
+
+        [Test]
+        public async Task GetUsersForPrecautionAsync_AdminUsersHaveLowerRole_ReturnsListOfUnavailableUsers()
+        {
+            //Arrange
+            var suggestedUser = new SuggestedUserDto
+            {
+                ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                Email = "test@mail.com",
+                FirstName = "John",
+                LastName = "Brian",
+            };
+
+            var currentUser = new User();
+
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(true);
+
+            _repoWrapperMock.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>())).ReturnsAsync(GetTestUsers());
+            _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
+
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(Roles.LowerRoles);
+            var expected = GetUnavailableSuggestedUsers().ToList();
+
+            //Act
+            var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
+            var resultList = result.ToList();
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<SuggestedUserDto>>(result);
+            Assert.AreEqual(expected.Count, resultList.Count);
+            Assert.AreEqual(expected[0].IsAvailable, resultList[0].IsAvailable);
+            Assert.AreEqual(expected[1].IsAvailable, resultList[1].IsAvailable);
+        }
+
+        [Test]
+        public async Task GetUsersForPrecautionAsync_GoverningBodyAdminAllUsersAvailable_ReturnsListOfAvailableUsers()
+        {
+            //Arrange
+            var suggestedUser = new SuggestedUserDto
+            {
+                ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                Email = "test@mail.com",
+                FirstName = "John",
+                LastName = "Brian",
+            };
+            var assignableRoles = new List<string>
+            {
+                Roles.KurinHead,
+                Roles.CityHead
+            };
+            var currentUser = new User();
+
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+
+            _repoWrapperMock.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>())).ReturnsAsync(GetTestUsers());
+            _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
+
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(assignableRoles);
+            var expected = GetAvailableSuggestedUsers().ToList();
+
+            //Act
+            var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
+            var resultList = result.ToList();
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<SuggestedUserDto>>(result);
+            Assert.AreEqual(expected.Count, resultList.Count);
+            Assert.AreEqual(expected[0].IsAvailable, resultList[0].IsAvailable);
+            Assert.AreEqual(expected[1].IsAvailable, resultList[1].IsAvailable);
+        }
+
+        [Test]
+        public async Task GetUsersForPrecautionAsync_GoverningBodyAdminUsersHaveSameRole_ReturnsListOfUnavailableUsers()
+        {
+            //Arrange
+            var suggestedUser = new SuggestedUserDto
+            {
+                ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                Email = "test@mail.com",
+                FirstName = "John",
+                LastName = "Brian",
+            };
+            var unassignableRoles = new List<string>
+            {
+                Roles.GoverningBodyAdmin
+            };
+            var currentUser = new User();
+
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+
+            _repoWrapperMock.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>())).ReturnsAsync(GetTestUsers());
+            _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
+
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(unassignableRoles);
+            var expected = GetUnavailableSuggestedUsers().ToList();
+
+            //Act
+            var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
+            var resultList = result.ToList();
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<SuggestedUserDto>>(result);
+            Assert.AreEqual(expected.Count, resultList.Count);
+            Assert.AreEqual(expected[0].IsAvailable, resultList[0].IsAvailable);
+            Assert.AreEqual(expected[1].IsAvailable, resultList[1].IsAvailable);
+        }
+
+        [Test]
+        public async Task GetUsersForPrecautionAsync_GoverningBodyAdminUsersHaveLowerRole_ReturnsListOfUnavailableUsers()
+        {
+            //Arrange
+            var suggestedUser = new SuggestedUserDto
+            {
+                ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                Email = "test@mail.com",
+                FirstName = "John",
+                LastName = "Brian",
+            };
+            
+            var currentUser = new User();
+
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
+
+            _repoWrapperMock.Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                It.IsAny<Func<IQueryable<User>, IIncludableQueryable<User, object>>>())).ReturnsAsync(GetTestUsers());
+            _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
+
+            _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(Roles.LowerRoles);
+            var expected = GetUnavailableSuggestedUsers().ToList();
+
+            //Act
+            var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
+            var resultList = result.ToList();
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<SuggestedUserDto>>(result);
+            Assert.AreEqual(expected.Count, resultList.Count);
+            Assert.AreEqual(expected[0].IsAvailable, resultList[0].IsAvailable);
+            Assert.AreEqual(expected[1].IsAvailable, resultList[1].IsAvailable);
         }
 
         readonly UserPrecaution nullPrecaution = null;
@@ -709,28 +945,89 @@ namespace EPlast.Tests.Services.Precautions
             };
         }
 
-        private IEnumerable<AvailableUserDTO> getAvailableUserDTOs()
+        private IEnumerable<User> GetTestUsers()
         {
-            return new List<AvailableUserDTO>
+            return new List<User>
             {
-                new AvailableUserDTO
+                new User
                 {
-                    ID = UserId,
+                    Id = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
                     Email = "test@mail.com",
                     FirstName = "John",
                     LastName = "Brian",
-                    IsInLowerRole = false,
                 },
-                new AvailableUserDTO
+                new User
                 {
-                    ID = UserId,
+                    Id = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
                     Email = "test@mail.com",
                     FirstName = "John",
                     LastName = "Brian",
-                    IsInLowerRole = false,
                 }
             }.AsEnumerable();
          }
+
+        private IEnumerable<SuggestedUserDto> GetAvailableSuggestedUsers()
+        {
+            return new List<SuggestedUserDto>
+            {
+                new SuggestedUserDto
+                {
+                    ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                    Email = "test@mail.com",
+                    FirstName = "John",
+                    LastName = "Brian",
+                    IsAvailable = true
+                },
+                new SuggestedUserDto
+                {
+                    ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                    Email = "test@mail.com",
+                    FirstName = "John",
+                    LastName = "Brian",
+                    IsAvailable = true
+                }
+            }.AsEnumerable();
+        }
+        private IEnumerable<SuggestedUserDto> GetUnavailableSuggestedUsers()
+        {
+            return new List<SuggestedUserDto>
+            {
+                new SuggestedUserDto
+                {
+                    ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                    Email = "test@mail.com",
+                    FirstName = "John",
+                    LastName = "Brian",
+                    IsAvailable = false
+                },
+                new SuggestedUserDto
+                {
+                    ID = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
+                    Email = "test@mail.com",
+                    FirstName = "John",
+                    LastName = "Brian",
+                    IsAvailable = false
+                }
+            }.AsEnumerable();
+        }
+
+        private Tuple<IEnumerable<UserPrecautionsTableObject>, int> CreateTuple => new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(GetUsersPrecautionByPage(), GetFakeUserPrecautionNumber());
+
+        private List<UserPrecautionsTableObject> GetUsersPrecautionByPage()
+        {
+            return new List<UserPrecautionsTableObject>()
+            {
+                new UserPrecautionsTableObject()
+                {
+                    Number = 34,
+                }
+            };
+        }
+
+        private int GetFakeUserPrecautionNumber()
+        {
+            return 100;
+        }
     }
 }
 

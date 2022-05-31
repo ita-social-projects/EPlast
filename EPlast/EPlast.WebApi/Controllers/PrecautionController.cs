@@ -44,10 +44,10 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of user Precaution</response>
         /// <response code="404">The user Precaution does not exist</response>
         [HttpGet("UserPrecaution/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUserPrecaution(int id)
         {
-            UserPrecautionDTO userPrecaution = await _userPrecautionService.GetUserPrecautionAsync(id);
+            var userPrecaution = await _userPrecautionService.GetUserPrecautionAsync(id);
             if (userPrecaution == null)
                 return NotFound();
             return Ok(userPrecaution);
@@ -75,11 +75,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
         {
-            var query = new GetUsersPrecautionsForTableQuery(tableSettings);
-            var precautionsTuple = await _mediator.Send(query);            
-            var allInfoPrecautions = precautionsTuple.Item1.ToList();
-            allInfoPrecautions.ForEach(u => u.Total = precautionsTuple.Item2);
-            return Ok(allInfoPrecautions);
+            var tableInfo =
+                await _userPrecautionService.GetUserPrecautionsForTableAsync(tableSettings,
+                    await _userManager.GetUserAsync(User));
+            return Ok(tableInfo);
         }
 
         /// <summary>
@@ -160,7 +159,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">User Precaution was successfully deleted</response>
         /// <response code="404">User Precaution does not exist</response>
         [HttpDelete("UserPrecaution/Delete/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteUserPrecaution(int id)
         {
             try
@@ -183,21 +182,23 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserPrecaution/Create/{userId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> AddUserPrecaution(UserPrecautionDTO userPrecautionDTO)
         {
             if (ModelState.IsValid)
             {
-                try
+                bool isAdded =
+                    await _userPrecautionService.AddUserPrecautionAsync(userPrecautionDTO,
+                        await _userManager.GetUserAsync(User));
+
+                if (!isAdded)
                 {
-                    await _userPrecautionService.AddUserPrecautionAsync(userPrecautionDTO, await _userManager.GetUserAsync(User));
-                    return NoContent();
+                    return BadRequest();
                 }
-                catch (NullReferenceException)
-                {
-                    return NotFound();
-                }
+
+                return NoContent();
             }
+
             return BadRequest(ModelState);
         }
 
@@ -230,21 +231,22 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User Precaution does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserPrecaution/Edit/{userPrecautionId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> EditUserPrecaution(UserPrecautionDTO userPrecautionDTO)
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-                    await _userPrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO, await _userManager.GetUserAsync(User));
-                    return NoContent();
-                }
-                catch (NullReferenceException)
+                bool isFinished = await _userPrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO,
+                    await _userManager.GetUserAsync(User));
+
+                if (!isFinished)
                 {
                     return NotFound();
                 }
+
+                return NoContent();
             }
+
             return BadRequest(ModelState);
         }
 
@@ -284,7 +286,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("numberExist/{number}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CheckNumberExisting(int number)
         {
             bool distNumber = await _userPrecautionService.IsNumberExistAsync(number);
@@ -300,7 +302,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("checkUserPrecautionsType/{userId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CheckUserPrecautionsType(string userId, string type)
         {
             bool distNumber = await _userPrecautionService.CheckUserPrecautionsType(userId, type);
@@ -316,7 +318,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("getUserActivePrecautionEndDate/{userId}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUserActivePrecautionEndDate(string userId, string type)
         {
             string endDate = (await _userPrecautionService.GetUserActivePrecaution(userId, type)).EndDate.ToShortDateString();
@@ -336,10 +338,12 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("getUsersForPrecaution")]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUsersForPrecaution()
         {
-            var result = await _userPrecautionService.GetUsersForPrecautionAsync();
+            var result = await _userPrecautionService.GetUsersForPrecautionAsync(await _userManager.GetUserAsync(User));
             return Ok(result);
         }
+
     }
 }
