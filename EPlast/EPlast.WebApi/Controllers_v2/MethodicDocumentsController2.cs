@@ -6,6 +6,7 @@ using EPlast.Resources;
 using EPlast.WebApi.Models.MethodicDocument;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,11 +89,19 @@ namespace EPlast.WebApi.Controllers_v2
         /// <param name="filename">File name</param>
         /// <returns>File as base64</returns>
         /// <response code="200">File as base64</response>
+        /// <response code="404">File not found. Filename invalid</response>
         [HttpGet("File/{filename}")]
         public async Task<IActionResult> DownloadFile(string filename)
         {
-            var base64 = await _methodicDocService.DownloadMethodicDocumentFileFromBlobAsync(filename);
-            return Ok(base64);
+            try
+            {
+                var base64 = await _methodicDocService.DownloadMethodicDocumentFileFromBlobAsync(filename);
+                return Ok(base64);
+            }
+            catch (StorageException)
+            {
+                return NotFound("Файл не був знайдений");
+            }
         }
 
         /// <summary>
@@ -101,13 +110,20 @@ namespace EPlast.WebApi.Controllers_v2
         /// <param name="objId">MethodicDocument id</param>
         /// <returns>Pdf file as base64 what was created with MethodicDocument data</returns>
         /// <response code="200">Pdf file as base64</response>
+        /// <response code="404">MethodicDocument not found</response>
         [HttpGet("PDF/{objId}")]
         public async Task<IActionResult> GeneratePdf(int objId)
         {
-            var fileBytes = await _pdfService.MethodicDocumentCreatePdfAsync(objId);
-            var base64EncodedPdf = Convert.ToBase64String(fileBytes);
-
-            return Ok(base64EncodedPdf);
+            try
+            {
+                var fileBytes = await _pdfService.MethodicDocumentCreatePdfAsync(objId);
+                var base64EncodedPdf = Convert.ToBase64String(fileBytes);
+                return Ok(base64EncodedPdf);
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }
         }
 
         /// <summary>
@@ -119,7 +135,7 @@ namespace EPlast.WebApi.Controllers_v2
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
         [Authorize(Roles = Roles.AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin)]
-        public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
+        public async Task<IActionResult> Create(MethodicDocumentWraperDTO documentWrapper)
         {
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)
             {
@@ -130,7 +146,7 @@ namespace EPlast.WebApi.Controllers_v2
                         .GetMethodicDocumentOrganizationAsync(documentWrapper.MethodicDocument.GoverningBody))
                         .GoverningBodyName;
 
-            return Created("MethodicDocument", new
+            return Created(nameof(GetById), new
             {
                 methodicDocument = documentWrapper.MethodicDocument,
                 methodicDocumentOrganization = methodicDocumentOrganizations

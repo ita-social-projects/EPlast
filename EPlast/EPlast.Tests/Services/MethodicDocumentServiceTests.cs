@@ -114,7 +114,7 @@ namespace EPlast.Tests.Services
             //Arrange
             _repository.Setup(rep => rep.MethodicDocument.GetFirstAsync(It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
                     It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
-                .ReturnsAsync(GetTestDocsQueryable().FirstOrDefault(d => d.ID == docId));
+                .ReturnsAsync(GetTestDocsQueryable().FirstOrDefault(d => d.Id == docId));
 
             //Act
             await _service.DeleteMethodicDocumentAsync(docId);
@@ -163,7 +163,7 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _mapper
-                .Setup(x=>x.Map<MethodicDocument>(new MethodicDocumentDTO { ID = Id })).Returns(new MethodicDocument() { ID = Id });
+                .Setup(x=>x.Map<MethodicDocument>(new MethodicDocumentDTO { ID = Id })).Returns(new MethodicDocument() { Id = Id });
             _repository.Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
             _repository.Setup(rep => rep.MethodicDocument.Create(new MethodicDocument()));
 
@@ -180,7 +180,7 @@ namespace EPlast.Tests.Services
             //Arrange
             _mapper
                 .Setup(x => x.Map<MethodicDocument>(It.IsAny<MethodicDocumentDTO>()))
-                .Returns(new MethodicDocument() { ID = id, FileName = "name"});
+                .Returns(new MethodicDocument() { Id = id, FileName = "name"});
             _repository
                 .Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
             _repository
@@ -279,10 +279,10 @@ namespace EPlast.Tests.Services
         {
             return new List<MethodicDocument>
             {
-                new MethodicDocument  {ID = 1,Description = "old"},
-                new MethodicDocument  {ID = 2,Description = "old"},
-                new MethodicDocument  {ID = 3,Description = "old"},
-                new MethodicDocument  {ID = 4,Description = "old"}
+                new MethodicDocument  {Id = 1,Description = "old"},
+                new MethodicDocument  {Id = 2,Description = "old"},
+                new MethodicDocument  {Id = 3,Description = "old"},
+                new MethodicDocument  {Id = 4,Description = "old"}
             }.AsQueryable();
         }
          private static List<GoverningBodyDTO> GetTestOrganizationDtoList()

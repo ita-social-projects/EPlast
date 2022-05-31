@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services
         public async Task<MethodicDocumentDTO> GetMethodicDocumentAsync(int documentId)
         {
             return _mapper.Map<MethodicDocumentDTO>(await _repoWrapper.MethodicDocument
-                .GetFirstAsync(x => x.ID == documentId, include: dec =>
+                .GetFirstAsync(x => x.Id == documentId, include: dec =>
                 dec.Include(d => d.Organization)));
         }
 
@@ -48,7 +48,7 @@ namespace EPlast.BLL.Services
 
         public async Task ChangeMethodicDocumentAsync(MethodicDocumentDTO documentDto)
         {
-            MethodicDocument document = await _repoWrapper.MethodicDocument.GetFirstAsync(x => x.ID == documentDto.ID);
+            MethodicDocument document = await _repoWrapper.MethodicDocument.GetFirstAsync(x => x.Id == documentDto.ID);
             document.Name = documentDto.Name;
             document.Description = documentDto.Description;
             _repoWrapper.MethodicDocument.Update(document);
@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services
 
         public async Task DeleteMethodicDocumentAsync(int id)
         {
-            var document = (await _repoWrapper.MethodicDocument.GetFirstAsync(d => d.ID == id));
+            var document = (await _repoWrapper.MethodicDocument.GetFirstAsync(d => d.Id == id));
             if (document == null)
                 throw new ArgumentNullException($"Document with {id} id not found");
             _repoWrapper.MethodicDocument.Delete(document);

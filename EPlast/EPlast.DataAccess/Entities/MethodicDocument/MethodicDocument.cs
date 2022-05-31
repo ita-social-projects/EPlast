@@ -6,7 +6,7 @@ namespace EPlast.DataAccess.Entities
 {
     public class MethodicDocument
     {
-        public int ID { get; set; }
+        public int Id { get; set; }
 
         [Required(ErrorMessage = "Назва документу не заповнена.")]
         public string Name { get; set; }

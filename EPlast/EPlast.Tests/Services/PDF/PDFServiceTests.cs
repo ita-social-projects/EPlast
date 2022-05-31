@@ -241,38 +241,21 @@ namespace EPlast.Tests.Services.PDF
         public void MethodicDocumentCreatePdfAsync_ReturnsByteArray_Test(int methodicDocumentId)
         {
             // Arrange
-            _repository.Setup(rep => rep.MethodicDocument.GetFirstAsync(
+            _repository.Setup(rep => rep.MethodicDocument.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
                     It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
-                .ReturnsAsync(MethodicDocuments.FirstOrDefault(m => m.ID == methodicDocumentId));
+                .ReturnsAsync(MethodicDocuments.FirstOrDefault(m => m.Id == methodicDocumentId));
             _decisionBlobStorage.Setup(blob => blob.GetBlobBase64Async(It.IsAny<string>())).ReturnsAsync("Blank");
 
             // Act
             var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
 
             // Assert
-            _repository.Verify(rep => rep.MethodicDocument.GetFirstAsync(
+            _repository.Verify(rep => rep.MethodicDocument.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<MethodicDocument, bool>>>(),
                     It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()),
                 Times.Once);
             Assert.IsInstanceOf<byte[]>(actualReturn.Result);
-        }
-
-
-        [TestCase(155)]
-        public void MethodicDocumentCreatePdfAsync_ReturnsNull_Test(int methodicDocumentId)
-        {
-            // Arrange
-            var methodicDocumentRepository = new Mock<IMethodicDocumentRepository>();
-            _repository.Setup(rep => rep.MethodicDocument).Returns(methodicDocumentRepository.Object);
-
-            // Act
-            var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
-
-            // Assert
-            _repository.Verify(rep => rep.MethodicDocument, Times.Once);
-            _logger.Verify();
-            Assert.Null(actualReturn.Result);
         }
 
         [TestCase(155)]
@@ -280,15 +263,16 @@ namespace EPlast.Tests.Services.PDF
         {
             // Arrange
             _repository.Setup(rep => rep.MethodicDocument)
-                .Throws(new Exception("Test"));
+                .Throws(new ArgumentNullException("Test"));
 
             // Act
-            var actualReturn = _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
-
-            // Assert
-            _repository.Verify(rep => rep.MethodicDocument, Times.Once);
-            _logger.Verify(x => x.LogError("Exception: Test"));
-            Assert.Null(actualReturn.Result);
+            Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            {
+                // Assert
+                await _pdfService.MethodicDocumentCreatePdfAsync(methodicDocumentId);
+                _repository.Verify(rep => rep.MethodicDocument, Times.Once);
+                _logger.Verify(x => x.LogError("Exception: Test"));
+            });
         }
 
         private static User GetUserWithFatherName(string userId)
@@ -583,22 +567,22 @@ namespace EPlast.Tests.Services.PDF
         {
             new MethodicDocument
             {
-                ID = 1, Type = "legislation", Date = new DateTime(), Description = LongDescriptionGenerator(),
+                Id = 1, Type = "legislation", Date = new DateTime(), Description = LongDescriptionGenerator(),
                 Name = "Name", FileName = "dsf", Organization = new Organization()
             },
             new MethodicDocument
             {
-                ID = 55, Type = "Methodics", Date = new DateTime(), Description = "Description55",
+                Id = 55, Type = "Methodics", Date = new DateTime(), Description = "Description55",
                 Name = "Name55", FileName = "dsf", Organization = new Organization()
             },
             new MethodicDocument
             {
-                ID = 101, Type = "Other", Date = new DateTime(), Description = "Description55",
+                Id = 101, Type = "Other", Date = new DateTime(), Description = "Description55",
                 Name = "Name55", FileName = "dsf", Organization = new Organization()
             },
             new MethodicDocument
             {
-                ID = 155, Type = "None", Date = new DateTime(), Description = "Description55",
+                Id = 155, Type = "None", Date = new DateTime(), Description = "Description55",
                 Name = "Name55", FileName = "dsf", Organization = new Organization()
             }
         }.AsQueryable();

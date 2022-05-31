@@ -74,26 +74,29 @@ namespace EPlast.BLL.Services.PDF
         {
             try
             {
-                var methodicDocument = await _repoWrapper.MethodicDocument.GetFirstAsync(x => x.ID == methodicDocumentId, include: doc =>
+                var methodicDocument = await _repoWrapper.MethodicDocument.GetFirstOrDefaultAsync(x => x.Id == methodicDocumentId, include: doc =>
                     doc.Include(d => d.Organization));
-                if (methodicDocument != null)
+
+                if (methodicDocument == null)
                 {
-                    var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
-                    IPdfSettings pdfSettings = new PdfSettings
-                    {
-                        Title = $"{methodicDocument.Type} {methodicDocument.ID}",
-                        ImagePath = base64,
-                    };
-                    IPdfCreator creator = new PdfCreator(new MethodicDocumentPdf(methodicDocument, pdfSettings));
-                    return await Task.Run(() => creator.GetPDFBytes());
+                    throw new ArgumentNullException("MethodicDocument not found");
                 }
+
+                var base64 = await _decisionBlobStorage.GetBlobBase64Async("dafaultPhotoForPdf.jpg");
+                IPdfSettings pdfSettings = new PdfSettings
+                {
+                    Title = $"{methodicDocument.Type} {methodicDocument.Id}",
+                    ImagePath = base64,
+                };
+                IPdfCreator creator = new PdfCreator(new MethodicDocumentPdf(methodicDocument, pdfSettings));
+                return await Task.Run(() => creator.GetPDFBytes());
+
             }
-            catch (Exception e)
+            catch (ArgumentNullException e)
             {
                 _logger.LogError($"Exception: {e.Message}");
+                throw;
             }
-
-            return null;
         }
 
         private async Task<BlankModel> GetBlankDataAsync(string userId)
