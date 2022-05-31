@@ -116,7 +116,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _userPrecautionService
-                .Setup(s => s.GetUserPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>(), It.IsAny<User>()))
+                .Setup(s => s.GetUserPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>()))
                 .ReturnsAsync(new UserPrecautionsTableInfo());
 
             //Act

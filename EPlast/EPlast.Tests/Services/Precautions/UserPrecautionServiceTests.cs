@@ -265,8 +265,7 @@ namespace EPlast.Tests.Services.Precautions
 
             //Act
             var result =
-                await _precautionService.GetUserPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>(),
-                    It.IsAny<User>());
+                await _precautionService.GetUserPrecautionsForTableAsync(It.IsAny<PrecautionTableSettings>());
 
             //Assert 
             Assert.IsInstanceOf<UserPrecautionsTableInfo>(result);
