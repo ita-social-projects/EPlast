@@ -192,7 +192,7 @@ namespace EPlast.BLL.Services.Precautions
             return true;
         }
 
-        public async Task<UserPrecautionsTableInfo> GetUserPrecautionsForTableAsync(PrecautionTableSettings tableSettings, User user)
+        public async Task<UserPrecautionsTableInfo> GetUserPrecautionsForTableAsync(PrecautionTableSettings tableSettings)
         {
             var query = new GetUsersPrecautionsForTableQuery(tableSettings);
             var precautionsTuple = await _mediator.Send(query);

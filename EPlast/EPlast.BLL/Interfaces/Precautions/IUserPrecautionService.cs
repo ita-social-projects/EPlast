@@ -9,7 +9,7 @@ namespace EPlast.BLL
 {
     public interface IUserPrecautionService
     {
-        Task<UserPrecautionsTableInfo> GetUserPrecautionsForTableAsync(PrecautionTableSettings tableSettings, User user);
+        Task<UserPrecautionsTableInfo> GetUserPrecautionsForTableAsync(PrecautionTableSettings tableSettings);
         Task<IEnumerable<UserPrecautionDTO>> GetAllUsersPrecautionAsync();
         Task<UserPrecautionDTO> GetUserPrecautionAsync(int id);
         Task<bool> AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user);

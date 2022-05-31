@@ -76,8 +76,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
         {
             var tableInfo =
-                await _userPrecautionService.GetUserPrecautionsForTableAsync(tableSettings,
-                    await _userManager.GetUserAsync(User));
+                await _userPrecautionService.GetUserPrecautionsForTableAsync(tableSettings);
             return Ok(tableInfo);
         }
 
