@@ -8,6 +8,6 @@ namespace EPlast.BLL.DTO.PrecautionsDTO
     public class UserPrecautionsTableInfo
     {
         public IEnumerable<UserPrecautionsTableObject> UserPrecautions { get; set; }
-        public int Total { get; set; }
+        public int TotalItems { get; set; }
     }
 }

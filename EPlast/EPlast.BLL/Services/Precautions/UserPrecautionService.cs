@@ -40,7 +40,7 @@ namespace EPlast.BLL.Services.Precautions
 
         private async Task<bool> CanUserAddPrecaution(UserPrecautionDTO userPrecautionDto, User user)
         {
-            var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.User.ID);
+            var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.UserId);
 
             bool isUserInPrecautionGoverningBodyAdmin =
                 await _userManager.IsInRoleAsync(precautionUser, Roles.GoverningBodyAdmin);
@@ -200,7 +200,7 @@ namespace EPlast.BLL.Services.Precautions
 
             var tableInfo = new UserPrecautionsTableInfo
             {
-                Total = precautionsTuple.Item2,
+                TotalItems = precautionsTuple.Item2,
                 UserPrecautions = allInfoPrecautions
             };
 
