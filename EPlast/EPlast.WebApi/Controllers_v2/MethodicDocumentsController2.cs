@@ -183,9 +183,15 @@ namespace EPlast.WebApi.Controllers_v2
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _methodicDocService.DeleteMethodicDocumentAsync(id);
-
-            return NoContent();
+            try
+            {
+                await _methodicDocService.DeleteMethodicDocumentAsync(id);
+                return NoContent();
+            }
+            catch (ArgumentNullException)
+            {
+                return NotFound();
+            }      
         }
     }
 }
