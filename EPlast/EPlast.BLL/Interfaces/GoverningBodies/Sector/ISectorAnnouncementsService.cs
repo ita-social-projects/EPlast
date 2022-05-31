@@ -9,10 +9,10 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
     public interface ISectorAnnouncementsService
     {
         Task DeleteAnnouncementAsync(int id);
-        Task<int?> AddAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO);
-        Task<SectorAnnouncementUserDTO> GetAnnouncementByIdAsync(int id);
+        Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO);
+        Task<GoverningBodyAnnouncementUserWithImagesDTO> GetAnnouncementByIdAsync(int id);
         Task<List<string>> GetAllUserAsync();
-        Task<int?> EditAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO);
+        Task<int?> EditAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO);
 
         /// <summary>
         /// Get specified by page number and page size list of announcements
@@ -21,6 +21,6 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
         /// <param name="pageSize">Size of one page</param>
         /// <param name="sectorId">Id of sector</param>
         /// <returns>Specified by page number and page size list of announcements and total amount of announcements</returns>
-        Task<Tuple<IEnumerable<SectorAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize, int sectorId);
+        Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize, int sectorId);
     }
 }

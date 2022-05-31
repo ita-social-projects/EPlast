@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -89,7 +90,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             var order = GetOrder();
             var selector = GetSelector();
 
-            var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(x => x.GoverningBodyId == governingBodyId, selector, order, null, pageNumber, pageSize);
+            var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(x => x.GoverningBodyId == governingBodyId && x.SectorId == null, selector, order, null, pageNumber, pageSize);
             var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1);
 
             foreach (var ann in announcements)
@@ -98,15 +99,15 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
                     await _repoWrapper.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(i => i.GoverningBodyAnnouncementId == ann.Id)
                     != null;
             }
-            var rows = announcements.Count();
+            var rows = tuple.Item2;
 
             return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>
                 (announcements, rows);
         }
 
-        public async Task<GoverningBodyAnnouncementUserDTO> GetAnnouncementByIdAsync(int id)
+        public async Task<GoverningBodyAnnouncementUserWithImagesDTO> GetAnnouncementByIdAsync(int id)
         {
-            var announcement = _mapper.Map<GoverningBodyAnnouncementUserDTO>(
+            var announcement = _mapper.Map<GoverningBodyAnnouncementUserWithImagesDTO>(
                 await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                     d => d.Id == id,
                     src => src.Include(g=>g.Images)));
@@ -165,7 +166,6 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
             }
             currentAnnouncement.Text = announcementDTO.Text;
             currentAnnouncement.Title = announcementDTO.Title;
-            currentAnnouncement.Date = DateTime.Now;
             _repoWrapper.GoverningBodyAnnouncement.Update(currentAnnouncement);
             await _repoWrapper.SaveAsync();
             return currentAnnouncement.Id;
@@ -173,8 +173,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
 
         private Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> GetOrder()
         {
-            Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> expr = x =>
-            x.OrderByDescending(y => y.Date);
+            Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> expr = order =>
+            order.OrderByDescending(y => y.IsPined).ThenByDescending(y => y.Date);
             return expr;
         }
         private Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>> GetSelector()
@@ -193,6 +193,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
                     ImagePath = x.User.ImagePath
                 }, 
                 GoverningBodyId = x.GoverningBodyId,
+                IsPined = x.IsPined,
                 Date = x.Date };
             return expr;
         }

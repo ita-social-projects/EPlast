@@ -11,5 +11,7 @@ namespace EPlast.BLL.DTO.GoverningBody.Announcement
         public string UserId { get; set; }
         public ICollection<string> ImagesBase64{ get; set; }
         public int GoverningBodyId { get; set; }
+        public int? SectorId { get; set; }
+        public bool IsPined { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace EPlast.BLL.DTO.GoverningBody.Sector
     {
         public SectorDTO Sector { get; set; }
         public IEnumerable<SectorDocumentsDTO> Documents { get; set; }
-        public IEnumerable<SectorAnnouncementDTO> Announcements { get; set; }
+        public IEnumerable<GoverningBodyAnnouncementDTO> Announcements { get; set; }
         public SectorAdministrationDTO Head { get; set; }
         public IEnumerable<SectorAdministrationDTO> Administration { get; set; }
     }

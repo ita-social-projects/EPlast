@@ -71,8 +71,6 @@ namespace EPlast.DataAccess.Repositories
         IGoverningBodyDocumentTypeRepository GoverningBodyDocumentType { get; }
         ISectorRepository GoverningBodySector { get; }
         ISectorAdministrationRepository GoverningBodySectorAdministration { get; }
-        ISectorAnnouncementsRepository GoverningBodySectorAnnouncements { get; }
-        ISectorAnnouncementImageRepository GoverningBodySectorAnnouncementImage { get; }
         ISectorDocumentsRepository GoverningBodySectorDocuments { get; }
         ISectorDocumentTypeRepository GoverningBodySectorDocumentType { get; }
         ISubsectionRepository Subsection { get; }
