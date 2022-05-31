@@ -191,7 +191,7 @@
     "precaution": false,
     "kadra": false,
     "renewals": false,
-    "legislation": false,
+    "legislation": true,
     "annualreport": false,
     "statistics": false,
     "aboutBase": true,
