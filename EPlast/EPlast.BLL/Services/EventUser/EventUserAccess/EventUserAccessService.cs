@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.EventUser.EventUserAccess
 
             userAccesses["SubscribeOnEvent"] = !access;
 
-            if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
+            if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead) || roles.Contains(Roles.GoverningBodyAdmin)))
             {
                 FunctionalityWithSpecificAccessForEvents.canWhenUserIsAdmin.ForEach(i => userAccesses[i] = access);
                 if (eventStatus == "Затверджено")

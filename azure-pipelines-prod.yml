@@ -2,44 +2,68 @@
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
+# specific branch build with batching
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+    - eplast-prod
+    exclude:
+    - master
 
 resources:
 - repo: self
+#   pipelines:
+#   - pipeline: string  # identifier for the resource used in pipeline resource variables
+#     source: string  # name of the pipeline that produces an artifact
+#     branch: eplast-prod
+#     trigger:
+#       branches:
+#         include:
+#         - eplast-prod
+#         exclude:
+#         - master
 
+
+# resources:
+#   repositories:
+#   - repository: EPlast
+#     type: github
+#     name: ita-social-projects/EPlast
+#     endpoint: github.com_eplast
+    
 variables:
 - group: EPlast
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
-  value: '5aab2e73-307d-46b2-8421-8ac50de15018'
+  value: '00d3f77f-1f99-40ce-a03f-dec6a3922724'
 - name: imageRepository
-  value: 'eplastapi'
+  value: 'eplastbackend'
 - name: containerRegistry
-  value: 'eplast.azurecr.io'
+  value: 'eplastregistry.azurecr.io'
 - name: dockerfilePath
   value: '**/Dockerfile'
 - name: tag
   value: '$(Build.BuildId)'
 - name: imagePullSecret
-  value: 'eplast1348122b-auth'
+  value: 'eplastregistryd27e-auth'
 
   # Agent VM image name
-- name: vmImageName
-  value: 'ubuntu-latest'
-  
-  # Name of the new namespace being created to deploy the PR changes.
-- name: k8sNamespaceForPR
-  value: 'review-app-$(System.PullRequest.PullRequestId)'
+pool:
+  name: vmss-pipeline
+  vmImage: 'ubuntu-latest'
+
+  k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
 
 stages:
 - stage: Build
   displayName: Build stage
-  jobs:  
+  jobs:
   - job: Build
     displayName: Build
     pool:
-      vmImage: $(vmImageName)
+      name: vmss-pipeline
+      vmImage: 'ubuntu-latest' 
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -49,39 +73,30 @@ stages:
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
-          $(tag)          
+          $(tag)
+
     - upload: manifests
       artifact: manifests
-- stage: Test
-  displayName: Test stage
-  dependsOn: []
-  jobs:
-  - job: Test
-    displayName: Test
-    pool:
-      vmImage: 'windows-2022'
-    steps:
+# - stage: Test
+#   displayName: Test stage
+#   dependsOn: []
+#   jobs:
+#   - job: Test
+#     displayName: Test
+#     pool:
+#       name: vmss-pipeline
+#       vmImage: 'ubuntu-latest'
+#     steps:
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
         command: restore
         projects: 'EPlast/EPlast.sln'
-    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
-      displayName: 'Prepare analysis on SonarCloud'
-      inputs:
-        SonarCloud: sonarcloud
-        organization: 'ita-social-projects'
-        projectKey: 'ita-social-projects-eplast'
-        projectName: 'EPlast '
-        extraProperties: |
-          sonar.inclusions= EPlast/EPlast.BLL/Services/**, EPlast/EPlast.WebApi/Controllers/**, EPlast/EPlast.BLL/Handlers/**
-          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
-          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/**/*.trx        
     - task: DotNetCoreCLI@2
       displayName: Build
       inputs:
         projects: 'EPlast/EPlast.sln'
-        arguments: '--configuration $(BuildConfiguration)'
+        # arguments: '--configuration $(BuildConfiguration)'
     - task: DotNetCoreCLI@2
       displayName: 'Add package coverlet.msbuild'
       inputs:
@@ -90,36 +105,24 @@ stages:
          EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
          EPlast/EPlast.Tests/EPlast.Tests.csproj
         custom: add
-        arguments: 'package coverlet.msbuild'
-    - task: DotNetCoreCLI@2
-      displayName: Test
-      inputs:
-        command: test
-        projects: |
-         EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
-         EPlast/EPlast.Tests/EPlast.Tests.csproj
-        arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[EPlast.WebApi]*Controllers*%2c[EPlast.BLL]*Services*%2c[EPlast.BLL]*Handlers*" /p:Exclude="[EPlast.XUnitTest]*%2c[EPlast.Tests]*" --logger trx'
-        publishTestResults: false
-    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
-      displayName: 'Run Code Analysis'
-    - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
-      displayName: 'Publish Quality Gate Result'
+        arguments: 'package coverlet.msbuild'     
 - stage: Deploy
   displayName: Deploy stage
-  dependsOn:
-  - Build
-  - Test
+  dependsOn: Build
+
   jobs:
   - deployment: Deploy
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
     pool:
-      vmImage: $(vmImageName)
-    environment: 'EPlast.eplast'
+      name: vmss-pipeline
+      vmImage: 'ubuntu-latest'
+    environment: 'Eplastbackend.eplast'
     strategy:
       runOnce:
         deploy:
           steps:
+
           - task: qetza.replacetokens.replacetokens-task.replacetokens@3
             displayName: Replace tokens in **/*
             inputs:
@@ -127,24 +130,22 @@ stages:
               targetFiles: '**/*.yml'
               keepToken: true
               tokenPrefix: ___
-              tokenSuffix: ___ 
+              tokenSuffix: ___
+
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
-              
+
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
               manifests: |
                 $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
                 $(Pipeline.Workspace)/manifests/ingress-prod.yml
-                $(Pipeline.Workspace)/manifests/redis-master-deployment.yaml
-                $(Pipeline.Workspace)/manifests/redis-master-service.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
