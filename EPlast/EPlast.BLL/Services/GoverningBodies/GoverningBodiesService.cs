@@ -49,7 +49,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
         {
             var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName && x.IsActive);
-            if(existingGoverningBody != null)
+            if (existingGoverningBody != null)
             {
                 throw new ArgumentException("The governing body with the same name already exists");
             }
@@ -154,7 +154,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var governingBodySectors = governingBody.GoverningBodySectors?.Take(6).ToList();
 
-            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?.ToList();
+            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?.TakeLast(5).ToList();
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {
@@ -181,10 +181,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                         .ThenInclude(a => a.User)
                     .Include(g => g.GoverningBodyDocuments)
                         .ThenInclude(d => d.GoverningBodyDocumentType)
-                     .Include(g => g.GoverningBodyAnnouncement)
-                        .ThenInclude(d => d.Images)
-                     .Include(g => g.GoverningBodyAnnouncement)
-                        .ThenInclude(d => d.User));
+                      .Include(g => g.GoverningBodyAnnouncement));
             return _mapper.Map<Organization, GoverningBodyDTO>(governingBody);
         }
 
@@ -194,7 +191,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             governingBody.IsActive = false;
 
             var sectors = await _sectorService.GetSectorsByGoverningBodyAsync(governingBodyId);
-            foreach(var sector in sectors)
+            foreach (var sector in sectors)
             {
                 await _sectorService.RemoveAsync(sector.Id);
             }
@@ -237,7 +234,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
         {
-            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId  && a.Status,
+            var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
                  source => source.Include(c => c.User).Include(c => c.AdminType).Include(a => a.GoverningBody)
                  );
@@ -256,7 +253,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             admins.Where(x => x.GoverningBody != null).ForAll(x => x.GoverningBody.GoverningBodyAdministration = null);
             return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins).Reverse();
         }
-        
+
         /// <inheritdoc />
         public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetAdministrationForTableAsync(
             string userId, bool isActive, int pageNumber, int pageSize)
@@ -285,7 +282,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             foreach (var admin in admins)
             {
-                if (admin.EndDate == null || DateTime.Compare((DateTime) admin.EndDate, DateTime.Now) >= 0) continue;
+                if (admin.EndDate == null || DateTime.Compare((DateTime)admin.EndDate, DateTime.Now) >= 0) continue;
                 admin.EndDate = admin.EndDate.Value.AddYears(1);
                 _repoWrapper.GoverningBodyAdministration.Update(admin);
             }
