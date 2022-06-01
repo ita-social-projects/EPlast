@@ -817,7 +817,7 @@ namespace EPlast.Tests.Services.Precautions
             Precaution = new PrecautionDTO { Id = 1, Name = "За силу" },
             UserId = UserId,
             Date = DateTime.Now,
-            User = new BLL.DTO.City.CityUserDTO
+            User = new PrecautionUserDTO()
             {
                 FirstName = "",
                 LastName = "",
@@ -839,7 +839,7 @@ namespace EPlast.Tests.Services.Precautions
             Precaution = new PrecautionDTO { Id = 1, Name = "За все" },
             UserId = UserId,
             Date = DateTime.Now,
-            User = new BLL.DTO.City.CityUserDTO
+            User = new PrecautionUserDTO()
             {
                 FirstName = "",
                 LastName = "",
@@ -904,21 +904,21 @@ namespace EPlast.Tests.Services.Precautions
                    IsActive = true,
                    UserId = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
                    Date = DateTime.Now,
-                   User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
                },
                new  UserPrecautionDTO
                {
                    Precaution = new PrecautionDTO{Id = 2, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
                },
                new  UserPrecautionDTO
                {
                    Precaution = new PrecautionDTO{Id = 3, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
                }
             }.AsEnumerable();
         }
