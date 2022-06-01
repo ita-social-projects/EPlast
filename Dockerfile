@@ -18,8 +18,6 @@ RUN apt-get update \
 WORKDIR /EPlast
 
 COPY ./EPlast/*.sln ./
-COPY ./EPlast/EPlast/*.csproj ./EPlast/
-COPY ./EPlast/EPlast.AutomatedTest/*.csproj ./EPlast.AutomatedTest/
 COPY ./EPlast/EPlast.BLL/*.csproj ./EPlast.BLL/
 COPY ./EPlast/EPlast.DataAccess/*.csproj ./EPlast.DataAccess/
 COPY ./EPlast/EPlast.Resources/*.csproj ./EPlast.Resources/
