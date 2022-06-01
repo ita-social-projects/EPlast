@@ -20,6 +20,6 @@ namespace EPlast.BLL
         Task<bool> IsNumberExistAsync(int number, int? id = null);
         Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync();
         Task<bool> CheckUserPrecautionsType(string userId, string type);
-        Task<IEnumerable<SuggestedUserDto>> GetUsersForPrecautionAsync(User user);
+        Task<IEnumerable<SuggestedUserDto>> GetUsersForPrecautionAsync(User currentUser);
     }
 }
