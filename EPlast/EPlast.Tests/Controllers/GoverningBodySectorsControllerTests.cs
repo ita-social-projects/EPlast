@@ -521,10 +521,10 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>())).ReturnsAsync(1); ;
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>())).ReturnsAsync(1); ;
 
             //Act
-            var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
+            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -537,10 +537,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _controller.ModelState.AddModelError("text", "is required");
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()));
 
             //Act
-            var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
+            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
 
             //Assert
             _sectorAnnouncementsService.Verify();
@@ -553,10 +553,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             int? returnId = null;
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>())).ReturnsAsync(returnId);
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>())).ReturnsAsync(returnId);
 
             //Act
-            var result = await _controller.AddAnnouncement(It.IsAny<SectorAnnouncementWithImagesDTO>());
+            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
 
             //Assert
             _sectorAnnouncementsService.Verify();
@@ -568,11 +568,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
                 .ReturnsAsync(1);
 
             //Act
-            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
@@ -584,11 +584,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _controller.ModelState.AddModelError("key", "error message");
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
                 .ReturnsAsync(1);
 
             //Act
-            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);
@@ -600,11 +600,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
 
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
                 .ReturnsAsync(null as int?);
 
             //Act
-            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);
@@ -616,11 +616,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             int? returnId = null;
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<SectorAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
                 .ReturnsAsync(returnId);
 
             //Act
-            var res = await _controller.EditAnnouncement(new SectorAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);
@@ -646,7 +646,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new SectorAnnouncementUserDTO());
+                .ReturnsAsync(new GoverningBodyAnnouncementUserWithImagesDTO());
 
             //Act
             var result = await _controller.GetById(It.IsAny<int>());
@@ -657,7 +657,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<SectorAnnouncementUserDTO>(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(resultValue);
         }
 
         [Test]
@@ -665,7 +665,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(null as SectorAnnouncementUserDTO);
+                .ReturnsAsync(null as GoverningBodyAnnouncementUserWithImagesDTO);
 
             //Act
             var result = await _controller.GetById(It.IsAny<int>());

@@ -13,8 +13,9 @@ namespace EPlast.BLL.DTO.GoverningBody.Announcement
         public string UserId { get; set; }
         public DateTime Date { get; set; }
         public UserDTO User { get; set; }
-        public IEnumerable<GoverningBodyAnnouncementImageDTO> Images { get; set; }
         public int GoverningBodyId { get; set; }
+        public int? SectorId { get; set; }
         public bool ImagesPresent { get; set; }
+        public bool IsPined { get; set; }
     }
 }

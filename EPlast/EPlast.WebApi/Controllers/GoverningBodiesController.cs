@@ -380,7 +380,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAnnouncement/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            GoverningBodyAnnouncementUserDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
+            GoverningBodyAnnouncementUserWithImagesDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
 
             if (governingBodyAnnouncementUserDTO == null)
             {
