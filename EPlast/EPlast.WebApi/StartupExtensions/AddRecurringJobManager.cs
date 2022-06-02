@@ -29,10 +29,11 @@ namespace EPlast.WebApi.StartupExtensions
                                                                  .GetDergeesAsync(),
                                             "59 23 * * *",
                                             TimeZoneInfo.Local);
+
             recurringJobManager.AddOrUpdate("Check and change event status",
                                             () => serviceProvider.GetService<IActionManager>()
                                                                  .CheckEventsStatusesAsync(),
-                                            "59 23 * * *",
+                                            "0 * * * *",
                                             TimeZoneInfo.Local);
 
             recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
