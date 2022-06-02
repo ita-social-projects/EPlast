@@ -145,27 +145,6 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
-        public async Task ChangeUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
-        {
-            //Arrange
-
-            userPrecaution.IsActive = true;
-
-            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
-            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
-            _repoWrapperMock
-                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(userPrecaution);
-
-            //Act
-            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, new User());
-
-            //Assert
-            Assert.AreEqual(false, result);
-        }
-
-        [Test]
         public async Task ChangeUserPrecautionAsync_GoverningBodyUserInactivePrecaution_ReturnsFalse()
         {
             //Arrange
@@ -204,26 +183,6 @@ namespace EPlast.Tests.Services.Precautions
 
             //Assert
             Assert.AreEqual(true, result);
-        }
-
-        [Test]
-        public async Task DeleteUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
-        {
-            //Arrange
-            userPrecaution.IsActive = true;
-
-            _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
-            _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
-            _repoWrapperMock
-                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
-                .ReturnsAsync(userPrecaution);
-
-            //Act
-            var result = await _precautionService.ChangeUserPrecautionAsync(userPrecautionDTO, new User());
-
-            //Assert
-            Assert.AreEqual(false, result);
         }
 
         [Test]
