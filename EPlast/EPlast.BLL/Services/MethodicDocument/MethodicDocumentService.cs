@@ -88,12 +88,12 @@ namespace EPlast.BLL.Services
 
         public IEnumerable<SelectListItem> GetMethodicDocumentTypes()
         {
-           return (from Enum MethodicDocumentType in Enum.GetValues(typeof(MethodicDocumentTypeDTO))
-             select new SelectListItem
-             {
-                 Value = MethodicDocumentType.ToString(),
-                 Text = MethodicDocumentType.GetDescription()
-             }).ToList();
+            return (from Enum MethodicDocumentType in Enum.GetValues(typeof(MethodicDocumentTypeDTO))
+                    select new SelectListItem
+                    {
+                        Value = MethodicDocumentType.ToString(),
+                        Text = MethodicDocumentType.GetDescription()
+                    }).ToList();
         }
 
         public IEnumerable<MethodicDocumentTableObject> GetDocumentsForTable(string searchedData, int page, int pageSize, string status)
@@ -120,6 +120,14 @@ namespace EPlast.BLL.Services
             await _repoWrapper.SaveAsync();
 
             return document.MethodicDocument.ID;
+        }
+
+        public async Task<MethodicDocumentDTO> GetLastAsync()
+        {
+            var documents = await _repoWrapper.MethodicDocument.GetAllAsync(include: dec =>
+                dec.Include(d => d.Organization));
+                       
+            return _mapper.Map<MethodicDocumentDTO>(documents.Last());
         }
 
         private async Task<IEnumerable<MethodicDocumentWraperDTO>> GetMethodicDocumentAsync()
