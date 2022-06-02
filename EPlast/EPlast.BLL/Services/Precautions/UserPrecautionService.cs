@@ -119,16 +119,7 @@ namespace EPlast.BLL.Services.Precautions
                 return false;
             }
 
-            var precautionUser = await _userManager.FindByIdAsync(precaution.UserId);
-            bool isUserInPrecautionGoverningBodyAdmin =
-                await _userManager.IsInRoleAsync(precautionUser, Roles.GoverningBodyAdmin);
             bool isCurrentUserGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
-
-            if (isUserInPrecautionGoverningBodyAdmin && isCurrentUserGoverningBodyAdmin)
-            {
-                return false;
-            }
-
             if (isCurrentUserGoverningBodyAdmin && !precaution.IsActive)
             {
                 return false;
@@ -141,7 +132,6 @@ namespace EPlast.BLL.Services.Precautions
         public async Task<bool> ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
         {
                 bool canUserChangePrecautionAsync = await CanUserChangePrecautionAsync(userPrecautionDTO.Id, user);
-
                 if (!canUserChangePrecautionAsync)
                 {
                     return false;
