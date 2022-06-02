@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -28,6 +29,7 @@ namespace EPlast.XUnitTest.Services.Events
         private readonly Mock<IParticipantStatusManager> _participantStatusManager;
         private readonly Mock<IParticipantManager> _participantManager;
         private readonly Mock<IEventWrapper> _eventWrapper;
+        private readonly Mock<INotificationService> _mockNotificationService;
 
         public ActionManagerTests()
         {
@@ -38,6 +40,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantStatusManager = new Mock<IParticipantStatusManager>();
             _participantManager = new Mock<IParticipantManager>();
             _eventWrapper = new Mock<IEventWrapper>();
+            _mockNotificationService = new Mock<INotificationService>();
         }
 
         [Fact]
@@ -48,7 +51,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventTypeManager.GetEventTypesDTOAsync())
                 .ReturnsAsync(new List<EventTypeDTO>());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventTypesAsync();
             //Assert
             Assert.NotNull(methodResult);
@@ -62,7 +65,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOAsync())
                 .ReturnsAsync(new List<EventCategoryDTO>());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetActionCategoriesAsync();
             //Assert
             Assert.NotNull(methodResult);
@@ -77,7 +80,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOByEventTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(new List<EventCategoryDTO>());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetCategoriesByTypeIdAsync(eventTypeId);
             //Assert
             Assert.NotNull(methodResult);
@@ -91,7 +94,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventSectionManager.GetEventSectionsDTOAsync())
                 .ReturnsAsync(new List<EventSectionDTO>());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventSectionsAsync();
             //Assert
             Assert.NotNull(methodResult);
@@ -125,7 +128,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.EventAdministration.GetAllAsync(It.IsAny<Expression<Func<EventAdministration, bool>>>(), It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
                 .ReturnsAsync(adm);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, user);
             //Assert
             Assert.NotNull(methodResult);
@@ -149,7 +152,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
                 .ReturnsAsync(GetEvents().First());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
             //Assert
             Assert.NotNull(methodResult);
@@ -164,7 +167,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
                 .ReturnsAsync(GetEvents().First());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.DeleteEventAsync(testEventId);
             //Assert
             _repoWrapper.Verify(r => r.Event.Delete(It.IsAny<Event>()), Times.Once());
@@ -180,7 +183,7 @@ namespace EPlast.XUnitTest.Services.Events
             _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), null))
                 .ThrowsAsync(new Exception());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.DeleteEventAsync(testEventId);
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
@@ -199,7 +202,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.SubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
@@ -217,7 +220,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.SubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.SubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
@@ -236,7 +239,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.UnSubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
@@ -254,7 +257,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.UnSubscribeOnEventAsync(It.IsAny<Event>(), It.IsAny<string>()))
                 .ThrowsAsync(new Exception());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.UnSubscribeOnEventAsync(testEventId, new User());
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
@@ -268,7 +271,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.ChangeStatusToApprovedAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.ApproveParticipantAsync(testParticipantId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
@@ -281,7 +284,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.ChangeStatusToUnderReviewAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.UnderReviewParticipantAsync(testParticipantId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
@@ -294,7 +297,7 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager.Setup(x => x.ChangeStatusToRejectedAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.RejectParticipantAsync(testParticipantId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
@@ -307,7 +310,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventGalleryManager.GetPicturesInBase64(It.IsAny<int>()))
                 .ReturnsAsync(new List<EventGalleryDTO>());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetPicturesAsync(eventId);
             //Assert
             Assert.NotNull(methodResult);
@@ -321,7 +324,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventGalleryManager.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
                 .ReturnsAsync(new List<EventGalleryDTO>());
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());
             //Assert
             Assert.NotNull(methodResult);
@@ -335,7 +338,7 @@ namespace EPlast.XUnitTest.Services.Events
             _eventWrapper.Setup(x => x.EventGalleryManager.DeletePictureAsync(It.IsAny<int>()))
                 .ReturnsAsync(StatusCodes.Status200OK);
             //Act
-            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object);
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.DeletePictureAsync(eventId);
             //Assert
             Assert.Equal(StatusCodes.Status200OK, methodResult);
