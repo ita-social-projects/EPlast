@@ -237,7 +237,6 @@ namespace EPlast.WebApi.Controllers
             {
                 bool isFinished = await _userPrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO,
                     await _userManager.GetUserAsync(User));
-
                 if (!isFinished)
                 {
                     return NotFound();
