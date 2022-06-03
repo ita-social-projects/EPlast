@@ -68,7 +68,6 @@ namespace EPlast.BLL.Interfaces.Events
         /// </summary>
         /// <returns>Status code of the changing a present  status of the participant's event operation.</returns>  
         /// <param name="id">The Id of participant</param>
-        /// <response code="204">No content</response>
         Task<int> ChangeUserPresentStatus(int perticipantId);
     }
 }

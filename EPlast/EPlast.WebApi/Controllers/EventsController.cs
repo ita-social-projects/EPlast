@@ -207,13 +207,12 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Status code of the changing a present  status of the participant's event operation.</returns>  
         /// <param name="id">The Id of participant</param>
         /// <response code="204">No content</response>
+        /// <response code="404">Not found a participant</response>
         [HttpGet("participant/{id}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-       // [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangeUserPresentStatus(int id)
         {
-                await _actionManager.ChangeUserPresentStatusAsync(id);
-                return NoContent();
+                return StatusCode(await _actionManager.ChangeUserPresentStatusAsync(id)); 
         }
 
         /// <summary>
