@@ -57,5 +57,7 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// </summary>
         Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId);
 
+        Task<Dictionary<string, bool>> GetUserPrecautionsAccessAsync(string userId);
+
     }
 }

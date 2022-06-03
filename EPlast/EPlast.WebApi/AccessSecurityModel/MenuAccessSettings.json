@@ -15,7 +15,8 @@
     "annualreport": true,
     "statistics": true,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements":  true
   },
   "Крайовий Адмін": {
     "decisions": true,
@@ -33,7 +34,8 @@
     "annualreport": true,
     "statistics": true,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Голова Округи": {
     "decisions": true,
@@ -51,7 +53,8 @@
     "annualreport": true,
     "statistics": true,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Заступник Голови Округи": {
     "decisions": true,
@@ -69,7 +72,8 @@
     "annualreport": true,
     "statistics": true,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Голова Станиці": {
     "decisions": true,
@@ -87,7 +91,8 @@
     "annualreport": true,
     "statistics": true,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Заступник Голови Станиці": {
     "decisions": true,
@@ -105,7 +110,8 @@
     "annualreport": true,
     "statistics": true,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Голова Куреня": {
     "decisions": true,
@@ -123,7 +129,8 @@
     "annualreport": true,
     "statistics": false,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Заступник Голови Куреня": {
     "decisions": true,
@@ -141,7 +148,8 @@
     "annualreport": true,
     "statistics": false,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Прихильник": {
     "decisions": false,
@@ -159,7 +167,8 @@
     "annualreport": true,
     "statistics": false,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Дійсний член організації": {
     "decisions": true,
@@ -177,7 +186,8 @@
     "annualreport": true,
     "statistics": false,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": true
   },
   "Зареєстрований користувач": {
     "decisions": false,
@@ -191,10 +201,11 @@
     "precaution": false,
     "kadra": false,
     "renewals": false,
-    "legislation": false,
+    "legislation": true,
     "annualreport": false,
     "statistics": false,
     "aboutBase": true,
-    "terms": true
+    "terms": true,
+    "announcements": false
   }
 }

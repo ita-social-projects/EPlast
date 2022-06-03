@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -152,7 +153,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
                 .Setup(x => x.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IIncludableQueryable<GoverningBodyAnnouncement, object>>>()))
                 .ReturnsAsync(GetGoverningBodyAnnouncement());
-            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementUserDTO>(It.IsAny<GoverningBodyAnnouncement>()))
+            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementUserWithImagesDTO>(It.IsAny<GoverningBodyAnnouncement>()))
                 .Returns(GetGoverningBodyAnnouncementUserDTO());
             var a = _repoWrapper.Setup(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
               It.IsAny<Func<IQueryable<User>,
@@ -164,7 +165,7 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
 
             //Assert
             Assert.IsNotNull(res);
-            Assert.IsInstanceOf<GoverningBodyAnnouncementUserDTO>(res);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(res);
         }
 
         [Test]
@@ -342,9 +343,9 @@ namespace EPlast.Tests.Services.GoverningBody.Announcement
             };
         }
 
-        private GoverningBodyAnnouncementUserDTO GetGoverningBodyAnnouncementUserDTO()
+        private GoverningBodyAnnouncementUserWithImagesDTO GetGoverningBodyAnnouncementUserDTO()
         {
-            return new GoverningBodyAnnouncementUserDTO
+            return new GoverningBodyAnnouncementUserWithImagesDTO
             {
                 Images = new List<GoverningBodyAnnouncementImageDTO>()
                 {

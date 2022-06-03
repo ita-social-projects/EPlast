@@ -16,6 +16,7 @@ using System.Linq;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Services.Events;
 using Microsoft.AspNetCore.Http;
+using EPlast.BLL.Interfaces.Notifications;
 
 namespace EPlast.Tests.Services.Events
 {
@@ -28,6 +29,7 @@ namespace EPlast.Tests.Services.Events
         private Mock<IParticipantStatusManager> _mockParticipantStatusManager;
         private Mock<IParticipantManager> _mockParticipantManager;
         private Mock<IEventWrapper> _mockEventWrapper;
+        private Mock<INotificationService> _mockNotificationService;
 
         [SetUp]
         public void SetUp()
@@ -37,6 +39,7 @@ namespace EPlast.Tests.Services.Events
             _mockParticipantStatusManager = new Mock<IParticipantStatusManager>();
             _mockParticipantManager = new Mock<IParticipantManager>();
             _mockEventWrapper = new Mock<IEventWrapper>();
+            _mockNotificationService = new Mock<INotificationService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _actionManager = new ActionManager(
@@ -45,7 +48,8 @@ namespace EPlast.Tests.Services.Events
                 _mockMapper.Object,
                 _mockParticipantStatusManager.Object,
                 _mockParticipantManager.Object,
-                _mockEventWrapper.Object
+                _mockEventWrapper.Object,
+                _mockNotificationService.Object
             );
         }
 

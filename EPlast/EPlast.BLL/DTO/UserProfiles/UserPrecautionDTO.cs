@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.City;
 using System;
+using EPlast.BLL.DTO.PrecautionsDTO;
 
 namespace EPlast.BLL
 {
@@ -14,7 +15,7 @@ namespace EPlast.BLL
         public int Number { get; set; }
         public DateTime Date { get; set; }
         public string UserId { get; set; }
-        public CityUserDTO User { get; set; }
+        public PrecautionUserDTO User { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsActive { get; set; }
     }
