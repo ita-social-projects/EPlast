@@ -77,7 +77,6 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
-            
             return await GetEventDtosAsync(events, user);
         }
 
@@ -200,6 +199,11 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        public async Task<int> ChangeUserPresentStatusAsync(int participantId)
+        {
+            return await _participantManager.ChangeUserPresentStatus(participantId);
+        }
+
         public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
         {
             try
@@ -310,7 +314,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
+                    IsUserEventAdmin = ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),

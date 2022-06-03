@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -197,6 +199,21 @@ namespace EPlast.WebApi.Controllers
         {
             var result = await _actionManager.EstimateEventAsync(id, await _userManager.GetUserAsync(User), estimate);
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Change present status of the participant's event.
+        /// </summary>
+        /// <returns>Status code of the changing a present  status of the participant's event operation.</returns>  
+        /// <param name="id">The Id of participant</param>
+        /// <response code="204">No content</response>
+        [HttpGet("participant/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+       // [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeUserPresentStatus(int id)
+        {
+                await _actionManager.ChangeUserPresentStatusAsync(id);
+                return NoContent();
         }
 
         /// <summary>
