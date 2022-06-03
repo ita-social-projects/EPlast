@@ -329,43 +329,5 @@ namespace EPlast.XUnitTest.Services.Events
             //Assert
             Assert.Equal(eventRating, methodResult);
         }
-
-        [Fact]
-        public async Task ChangeParticipantPresentStatustAsyncSuccessTest()
-        {
-            //Arrange
-            var newStatus = true;
-            var collection = new List<Participant>();
-            var participant = new Participant { UserId = "1", EventId = 1, WasPresent = false };
-            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
-                .ReturnsAsync(participant);
-            participant.WasPresent = newStatus;
-            _repoWrapper.Setup(x => x.Participant.Update(participant));
-            _repoWrapper.Setup(x => x.SaveAsync());
-            _repoWrapper.Setup(x => x.Participant.GetAllAsync(a => a.UserId == participant.UserId, null))
-                .ReturnsAsync(collection);
-
-            //Act
-            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = await participantManager.ChangeUserPresentStatus(participant.EventId);
-            //Assert
-            Assert.Equal(204, methodResult);
-        }
-
-        [Fact]
-        public async Task ChangeParticipantPresentStatustAsyncNotFoundTest()
-        {
-            //Arrange
-            var collection = new List<Participant>();
-            var participant = new Participant { UserId = "1", EventId = 1, WasPresent = false };
-            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(), null))
-               .ThrowsAsync(new InvalidOperationException());
-
-            //Act
-            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
-            var methodResult = await participantManager.ChangeUserPresentStatus(2);
-            //Assert
-            Assert.Equal(404, methodResult);
-        }
     }
 }

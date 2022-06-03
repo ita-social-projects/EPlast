@@ -167,23 +167,14 @@ namespace EPlast.BLL.Services.Events
             return participants;
         }
 
-        public async Task<int> ChangeUserPresentStatus(int id)
+        public async Task ChangeUserPresentStatus(int id)
         {
-            try {
-                var participant = await _repoWrapper.Participant
-                                  .GetFirstAsync(predicate: p => p.ID == id);
-                bool currentState = participant.WasPresent;
-                participant.WasPresent = !currentState;
-                _repoWrapper.Participant.Update(participant);
-                await _repoWrapper.SaveAsync();
-                return StatusCodes.Status204NoContent;
-            }
-            catch(InvalidOperationException)
-            {
-                return StatusCodes.Status404NotFound;
-            }
-            
-            
+            var participant = await _repoWrapper.Participant
+                              .GetFirstAsync(predicate: p => p.ID == id);
+            bool currentState = participant.WasPresent;
+            participant.WasPresent = !currentState;
+            _repoWrapper.Participant.Update(participant);
+            await _repoWrapper.SaveAsync();
         }
     }
 }

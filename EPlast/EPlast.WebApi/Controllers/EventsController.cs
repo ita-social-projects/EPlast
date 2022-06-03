@@ -212,7 +212,16 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> ChangeUserPresentStatus(int id)
         {
-                return StatusCode(await _actionManager.ChangeUserPresentStatusAsync(id)); 
+            try
+            {
+                await _actionManager.ChangeUserPresentStatusAsync(id);
+                return NoContent();
+            }
+            catch(InvalidOperationException)
+            {
+                return NotFound();
+            }
+            
         }
 
         /// <summary>
