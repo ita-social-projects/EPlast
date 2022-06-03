@@ -203,9 +203,9 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
-        public async Task<int> ChangeUserPresentStatusAsync(int participantId)
+        public async Task ChangeUserPresentStatusAsync(int participantId)
         {
-            return await _participantManager.ChangeUserPresentStatus(participantId);
+            await _participantManager.ChangeUserPresentStatus(participantId);
         }
 
         public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
@@ -272,9 +272,10 @@ namespace EPlast.BLL.Services.Events
                     List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
                     foreach (var user in eventToCheck.Participants)
                     {
-                        userNotificationsDTO.Add(new UserNotificationDTO { 
-                            Message = "Оцінювання події є доступним протягом 3 днів після її завершення! ", 
-                            NotificationTypeId = 1, 
+                        userNotificationsDTO.Add(new UserNotificationDTO
+                        {
+                            Message = "Оцінювання події є доступним протягом 3 днів після її завершення! ",
+                            NotificationTypeId = 1,
                             OwnerUserId = user.UserId,
                             SenderLink = $"/events/details/{eventToCheck.ID}",
                             SenderName = eventToCheck.EventName
