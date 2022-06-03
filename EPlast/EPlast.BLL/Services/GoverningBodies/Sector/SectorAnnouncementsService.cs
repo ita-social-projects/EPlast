@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
@@ -42,7 +43,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _htmlService = htmlService;
         }
 
-        public async Task<int?> AddAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO)
+        public async Task<int?> AddAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
         {
             if (announcementDTO == null)
             {
@@ -54,21 +55,21 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 return null;
             }
             announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
-            var announcement = _mapper.Map<SectorAnnouncementWithImagesDTO, SectorAnnouncement>(announcementDTO);
-            announcement.Images = new List<SectorAnnouncementImage>();
+            var announcement = _mapper.Map<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>(announcementDTO);
+            announcement.Images = new List<GoverningBodyAnnouncementImage>();
             foreach (var image in announcementDTO.ImagesBase64)
             {
-                announcement.Images.Add(new SectorAnnouncementImage { ImagePath = await _blobStorageService.UploadImageAsync(image) });
+                announcement.Images.Add(new GoverningBodyAnnouncementImage { ImagePath = await _blobStorageService.UploadImageAsync(image) });
             }
             announcement.Date = DateTime.Now;
-            await _repoWrapper.GoverningBodySectorAnnouncements.CreateAsync(announcement);
+            await _repoWrapper.GoverningBodyAnnouncement.CreateAsync(announcement);
             await _repoWrapper.SaveAsync();
             return announcement.Id;
         }
 
         public async Task DeleteAnnouncementAsync(int id)
         {
-            var announcement = await _repoWrapper.GoverningBodySectorAnnouncements.GetFirstAsync(
+            var announcement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                 d => d.Id == id,
                 src => src.Include(g => g.Images));
             if (announcement == null)
@@ -79,35 +80,35 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             {
                 await _blobStorage.DeleteBlobAsync(image.ImagePath);
             }
-            _repoWrapper.GoverningBodySectorAnnouncements.Delete(announcement);
+            _repoWrapper.GoverningBodyAnnouncement.Delete(announcement);
             await _repoWrapper.SaveAsync();
         }
 
         /// <inheritdoc/>
-        public async Task<Tuple<IEnumerable<SectorAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize, int sectorId)
+        public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize, int sectorId)
         {
             var order = GetOrder();
             var selector = GetSelector();
 
-            var tuple = await _repoWrapper.GoverningBodySectorAnnouncements.GetRangeAsync(x => x.SectorId == sectorId, selector, order, null, pageNumber, pageSize);
-            var announcements = _mapper.Map<IEnumerable<SectorAnnouncement>, IEnumerable<SectorAnnouncementUserDTO>>(tuple.Item1);
+            var tuple = await _repoWrapper.GoverningBodyAnnouncement.GetRangeAsync(x => x.SectorId == sectorId, selector, order, null, pageNumber, pageSize);
+            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1);
 
             foreach (var ann in announcements)
             {
                 ann.ImagesPresent =
-                    await _repoWrapper.GoverningBodySectorAnnouncementImage.GetFirstOrDefaultAsync(i => i.SectorAnnouncementId == ann.Id)
+                    await _repoWrapper.GoverningBodyAnnouncementImage.GetFirstOrDefaultAsync(i => i.GoverningBodyAnnouncementId == ann.Id)
                     != null;
             }
-            var rows = announcements.Count();
+            var rows = tuple.Item2;
 
-            return new Tuple<IEnumerable<SectorAnnouncementUserDTO>, int>
+            return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>
                 (announcements, rows);
         }
 
-        public async Task<SectorAnnouncementUserDTO> GetAnnouncementByIdAsync(int id)
+        public async Task<GoverningBodyAnnouncementUserWithImagesDTO> GetAnnouncementByIdAsync(int id)
         {
-            var announcement = _mapper.Map<SectorAnnouncementUserDTO>(
-                await _repoWrapper.GoverningBodySectorAnnouncements.GetFirstAsync(
+            var announcement = _mapper.Map<GoverningBodyAnnouncementUserWithImagesDTO>(
+                await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                     d => d.Id == id,
                     src => src.Include(g => g.Images)));
 
@@ -132,7 +133,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return userIds;
         }
 
-        public async Task<int?> EditAnnouncementAsync(SectorAnnouncementWithImagesDTO announcementDTO)
+        public async Task<int?> EditAnnouncementAsync(GoverningBodyAnnouncementWithImagesDTO announcementDTO)
         {
             if (announcementDTO == null)
             {
@@ -144,43 +145,42 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 return null;
             }
             announcementDTO.UserId = _userManager.GetUserId(_context.HttpContext.User);
-            var currentAnnouncement = await _repoWrapper.GoverningBodySectorAnnouncements.GetFirstAsync(
+            var currentAnnouncement = await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                     d => d.Id == announcementDTO.Id,
                     src => src.Include(g => g.Images));
 
             foreach (var image in currentAnnouncement.Images)
             {
                 await _blobStorage.DeleteBlobAsync(image.ImagePath);
-                _repoWrapper.GoverningBodySectorAnnouncementImage.Delete(image);
+                _repoWrapper.GoverningBodyAnnouncementImage.Delete(image);
             }
             await _repoWrapper.SaveAsync();
-            currentAnnouncement.Images = new List<SectorAnnouncementImage>();
+            currentAnnouncement.Images = new List<GoverningBodyAnnouncementImage>();
             foreach (var image in announcementDTO.ImagesBase64)
             {
-                currentAnnouncement.Images.Add(new SectorAnnouncementImage
+                currentAnnouncement.Images.Add(new GoverningBodyAnnouncementImage
                 {
                     ImagePath = await _blobStorageService.UploadImageAsync(image)
                 });
             }
             currentAnnouncement.Text = announcementDTO.Text;
             currentAnnouncement.Title = announcementDTO.Title;
-            currentAnnouncement.Date = DateTime.Now;
-            _repoWrapper.GoverningBodySectorAnnouncements.Update(currentAnnouncement);
+            _repoWrapper.GoverningBodyAnnouncement.Update(currentAnnouncement);
             await _repoWrapper.SaveAsync();
             return currentAnnouncement.Id;
         }
 
-        private Func<IQueryable<SectorAnnouncement>, IQueryable<SectorAnnouncement>> GetOrder()
+        private Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> GetOrder()
         {
-            Func<IQueryable<SectorAnnouncement>, IQueryable<SectorAnnouncement>> expr = x =>
-            x.OrderByDescending(y => y.Date);
+            Func<IQueryable<GoverningBodyAnnouncement>, IQueryable<GoverningBodyAnnouncement>> expr = order =>
+            order.OrderByDescending(y => y.IsPined).ThenByDescending(y => y.Date);
             return expr;
         }
-        private Expression<Func<SectorAnnouncement, SectorAnnouncement>> GetSelector()
+        private Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>> GetSelector()
         {
 
-            Expression<Func<SectorAnnouncement, SectorAnnouncement>> expr = x =>
-            new SectorAnnouncement
+            Expression<Func<GoverningBodyAnnouncement, GoverningBodyAnnouncement>> expr = x =>
+            new GoverningBodyAnnouncement
             {
                 Id = x.Id,
                 UserId = x.UserId,
@@ -193,6 +193,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                     ImagePath = x.User.ImagePath
                 },
                 SectorId = x.SectorId,
+                IsPined = x.IsPined,
                 Date = x.Date
             };
             return expr;
