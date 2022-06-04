@@ -140,11 +140,11 @@ stages:
             inputs:
               action: deploy
               manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/service.yml
-                $(Pipeline.Workspace)/manifests/ingress-prod.yml
-                $(Pipeline.Workspace)/manifests/redis-master-deployment.yaml
-                $(Pipeline.Workspace)/manifests/redis-master-service.yaml
+                $(Pipeline.Workspace)/manifests/test/deployment.yml
+                $(Pipeline.Workspace)/manifests/test/service.yml
+                $(Pipeline.Workspace)/manifests//test/ingress-prod.yml
+                $(Pipeline.Workspace)/manifests/test/redis-master-deployment.yaml
+                $(Pipeline.Workspace)/manifests/test/redis-master-service.yaml
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
