@@ -142,7 +142,7 @@ stages:
               manifests: |
                 $(Pipeline.Workspace)/manifests/test/deployment.yml
                 $(Pipeline.Workspace)/manifests/test/service.yml
-                $(Pipeline.Workspace)/manifests//test/ingress-prod.yml
+                $(Pipeline.Workspace)/manifests/test/ingress-prod.yml
                 $(Pipeline.Workspace)/manifests/test/redis-master-deployment.yaml
                 $(Pipeline.Workspace)/manifests/test/redis-master-service.yaml
               imagePullSecrets: |
