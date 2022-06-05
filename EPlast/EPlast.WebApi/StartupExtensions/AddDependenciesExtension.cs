@@ -68,6 +68,8 @@ using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using EPlast.BLL.Interfaces.Announcements;
+using EPlast.BLL.Services.Announcements;
 
 namespace EPlast.WebApi.StartupExtensions
 {
@@ -136,6 +138,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IFileStreamManager, FileStreamManager>();
             services.AddScoped<IGlobalLoggerService, GlobalLoggerService>();
             services.AddScoped<IRegionsBoardService, RegionsBoardService>();
+            services.AddScoped<IAnnouncemetsService, AnnouncementsService>();
             services.AddScoped<IGoverningBodiesService, GoverningBodiesService>();
             services.AddScoped<IGoverningBodyAdministrationService, GoverningBodyAdministrationService>();
             services.AddScoped<IGoverningBodyDocumentsService, GoverningBodyDocumentsService>();

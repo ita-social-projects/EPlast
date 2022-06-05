@@ -107,7 +107,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             var sectorViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
-            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents?.Count(), announcementsCount = sectorProfileDto.Announcements?.Count() });
+            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents?.Count(), announcementsCount = sectorProfileDto.Sector.Announcements?.Count() });
         }
 
         [HttpDelete("RemoveSector/{sectorId}")]
@@ -281,7 +281,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
-        public async Task<IActionResult> AddAnnouncement([FromBody] SectorAnnouncementWithImagesDTO announcement)
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
@@ -295,7 +295,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement([FromBody] SectorAnnouncementWithImagesDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
         {
             if (ModelState.IsValid)
             {
@@ -319,7 +319,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAnnouncement/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            SectorAnnouncementUserDTO sectorAnnouncementUserDTO = await _sectorAnnouncementsService.GetAnnouncementByIdAsync(id);
+            GoverningBodyAnnouncementUserWithImagesDTO sectorAnnouncementUserDTO = await _sectorAnnouncementsService.GetAnnouncementByIdAsync(id);
 
             if (sectorAnnouncementUserDTO == null)
             {
