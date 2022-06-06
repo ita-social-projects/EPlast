@@ -10,9 +10,6 @@ namespace EPlast.DataAccess.Migrations
             migrationBuilder.DropTable(
                 name: "SectorAnnouncementImage");
 
-            //migrationBuilder.DropTable(
-            //    name: "UserPrecautionsTableObject");
-
             migrationBuilder.DropTable(
                 name: "SectorAnnouncement");
         }
