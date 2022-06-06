@@ -28,5 +28,8 @@ namespace EPlast.BLL.DTO.Account
         [Required(ErrorMessage = "Поле прізвище є обов'язковим")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ']{1,20}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ']{1,20})*$", ErrorMessage = "Прізвище має містити тільки літери")]
         public string SurName { get; set; }
+
+        [Required(ErrorMessage = "Потрібно обрати станицю")]
+        public int CityId { get; set; }
     }
 }

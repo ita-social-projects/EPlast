@@ -90,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of active cities</returns>
         [HttpGet("Profiles/Active/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name)
         {
             string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}";
@@ -111,7 +111,6 @@ namespace EPlast.WebApi.Controllers
             }
             return StatusCode(StatusCodes.Status200OK, new { page = page, pageSize = pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
         }
-
 
         /// <summary>
         /// Get all not active cities using redis cache

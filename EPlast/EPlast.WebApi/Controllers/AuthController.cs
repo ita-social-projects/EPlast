@@ -1,13 +1,14 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System.Threading.Tasks;
+using System.Web;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
+using EPlast.BLL.Services.City;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -21,6 +22,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
         private readonly ILoggerService<AuthController> _logger;
+        private readonly CityParticipantsService _cityParticipantsService;
         private const int TotalMinutesInOneDay = 1440;
 
         public AuthController(
@@ -29,7 +31,8 @@ namespace EPlast.WebApi.Controllers
             IHomeService homeService,
             IResources resources,
             IAuthEmailService authEmailServices,
-            ILoggerService<AuthController> logger)
+            ILoggerService<AuthController> logger,
+            CityParticipantsService cityParticipantsService)
         {
             _authService = authService;
             _userDatesService = userDatesService;
@@ -37,6 +40,7 @@ namespace EPlast.WebApi.Controllers
             _resources = resources;
             _authEmailServices = authEmailServices;
             _logger = logger;
+            _cityParticipantsService = cityParticipantsService;
         }
 
         /// <summary>
@@ -115,36 +119,30 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(_resources.ResourceForErrors["Register-InCorrectData"]);
-            }
+
             var registeredUser = await _authService.FindByEmailAsync(registerDto.Email);
-            if (registeredUser != null && registeredUser.EmailConfirmed)
-            {
-                return BadRequest(_resources.ResourceForErrors["Register-RegisteredUserExists"]);
-            }
             if (registeredUser != null)
             {
+                if (registeredUser.EmailConfirmed)
+                    return BadRequest(_resources.ResourceForErrors["Register-RegisteredUserExists"]);
+
                 return BadRequest(_resources.ResourceForErrors["Register-RegisteredUser"]);
             }
-            else
-            {
-                var result = await _authService.CreateUserAsync(registerDto);
-                if (!result.Succeeded)
-                {
-                    return BadRequest(_resources.ResourceForErrors["Register-InCorrectPassword"]);
-                }
-                else
-                {
-                    if (!(await _authEmailServices.SendEmailRegistrAsync(registerDto.Email)))
-                    {
-                        return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
-                    }
-                    var userDto = await _authService.FindByEmailAsync(registerDto.Email);
-                    await _userDatesService.AddDateEntryAsync(userDto.Id);
-                    return Ok(_resources.ResourceForErrors["Confirm-Registration"]);
-                }
-            }
+
+            var result = await _authService.CreateUserAsync(registerDto);
+            if (!result.Succeeded)
+                return BadRequest(_resources.ResourceForErrors["Register-InCorrectPassword"]);
+
+            if (!await _authEmailServices.SendEmailRegistrAsync(registerDto.Email))
+                return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
+
+            var userDto = await _authService.FindByEmailAsync(registerDto.Email);
+
+            await _userDatesService.AddDateEntryAsync(userDto.Id);
+            await _cityParticipantsService.AddFollowerAsync(registerDto.CityId, userDto.Id);
+
+            return Ok(_resources.ResourceForErrors["Confirm-Registration"]);
         }
 
         /// <summary>
