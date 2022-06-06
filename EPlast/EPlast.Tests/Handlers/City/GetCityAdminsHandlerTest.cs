@@ -1,12 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Handlers.CityHandlers;
 using EPlast.BLL.Queries.City;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
-using MediatR;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
 
@@ -14,7 +19,8 @@ namespace EPlast.Tests.Handlers.City
 {
     public class GetCityAdminsHandlerTest
     {
-        private Mock<IMediator> _mockMediator;
+        private Mock<IRepositoryWrapper> _mockRepoWrapper;
+        private Mock<IMapper> _mockMapper;
         private GetCityAdminsHandler _handler;
         private GetCityAdminsQuery _query;
 
@@ -23,8 +29,9 @@ namespace EPlast.Tests.Handlers.City
         [SetUp]
         public void SetUp()
         {
-            _mockMediator = new Mock<IMediator>();
-            _handler = new GetCityAdminsHandler(_mockMediator.Object);
+            _mockRepoWrapper = new Mock<IRepositoryWrapper>();
+            _mockMapper = new Mock<IMapper>();
+            _handler = new GetCityAdminsHandler(_mockRepoWrapper.Object, _mockMapper.Object);
             _query = new GetCityAdminsQuery(CityId);
         }
 
@@ -32,25 +39,34 @@ namespace EPlast.Tests.Handlers.City
         public async Task GetCityAdminsHandlerTest_ReturnsCityProfile()
         {
             //Arrange
-            _mockMediator
-                .Setup(m => m.Send(It.IsAny<GetCityByIdWthFullInfoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(GetCity());
+            _mockRepoWrapper
+                .Setup(x => x.CityAdministration.GetAllAsync(
+                    It.IsAny<Expression<Func<CityAdministration,CityAdministration>>>(),
+                    It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()
+                    )).ReturnsAsync(GetCity());
+            _mockMapper
+                    .Setup(m => m.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
+                    .Returns(new List<CityDTO>());
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityAdministrationViewModelDTO>(result);
         }
 
         [Test]
         public async Task GetCityAdminsHandlerTest_ReturnsNull()
         {
             //Arrange
-            _mockMediator
-                .Setup(m => m.Send(It.IsAny<GetCityByIdWthFullInfoQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(() => null);
+            _mockRepoWrapper
+                 .Setup(x => x.CityAdministration.GetAllAsync(
+                     It.IsAny<Expression<Func<CityAdministration, CityAdministration>>>(),
+                     It.IsAny<Expression<Func<CityAdministration, bool>>>(),
+                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()
+                     )).ReturnsAsync(() => null);
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
@@ -59,37 +75,16 @@ namespace EPlast.Tests.Handlers.City
             Assert.IsNull(result);
         }
 
-        private static CityDTO GetCity()
+        private static List<CityAdministration> GetCity()
         {
-            return new CityDTO
-            {
-                CityAdministration = new List<CityAdministrationDTO>
+            return new List<CityAdministration>
                 {
-                    new CityAdministrationDTO
+                    new CityAdministration
                     {
-                        AdminType = new AdminTypeDTO
-                        {
-                            AdminTypeName = Roles.CityHead
-                        },
 
                         Status = true
                     }
-                },
-                CityMembers = new List<CityMembersDTO>
-                {
-                    new CityMembersDTO
-                    {
-                        IsApproved = true
-                    }
-                },
-                CityDocuments = new List<CityDocumentsDTO>
-                {
-                    new CityDocumentsDTO
-                    {
-                        ID = 1
-                    }
-                }
-            };
+                };
         }
     }
 }

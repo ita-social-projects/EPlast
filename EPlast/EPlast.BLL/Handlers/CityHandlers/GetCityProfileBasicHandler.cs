@@ -30,14 +30,13 @@ namespace EPlast.BLL.Handlers.CityHandlers
             const int followersToShow = 6;
             const int adminsToShow = 6;
             const int documentToShow = 6;
-            var cityHead = CityHelpers.GetCityHead(city);
-            var cityHeadDeputy = CityHelpers.GetCityHeadDeputy(city);
+            var cityHead = CityHelpers.GetCityHead(city.CityAdministration);
+            var cityHeadDeputy = CityHelpers.GetCityHeadDeputy(city.CityAdministration);
             var cityAdmins = city.CityAdministration
-                .Where(a => a.Status)
                 .Take(adminsToShow)
                 .ToList();
             city.AdministrationCount = city.CityAdministration == null ? 0
-                : city.CityAdministration.Count(a => a.Status);
+                : city.CityAdministration.Count();
             var members = city.CityMembers
                 .Where(m => m.IsApproved)
                 .Take(membersToShow)
