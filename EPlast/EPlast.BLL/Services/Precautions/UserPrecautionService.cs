@@ -12,6 +12,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.PrecautionsDTO;
+using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Queries.Precaution;
+using EPlast.BLL.Services.UserAccess;
+using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -21,29 +26,63 @@ namespace EPlast.BLL.Services.Precautions
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IAdminService _adminService;
+        private readonly IMediator _mediator;
 
         public UserPrecautionService(IMapper mapper, IRepositoryWrapper repoWrapper,
-            UserManager<User> userManager, IAdminService adminService)
+            UserManager<User> userManager, IAdminService adminService, IMediator mediator)
         {
             _mapper = mapper;
             _repoWrapper = repoWrapper;
             _userManager = userManager;
             _adminService = adminService;
+            _mediator = mediator;
         }
 
-        public async Task AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
+        private async Task<bool> CanUserAddPrecaution(UserPrecautionDTO userPrecautionDto, User user)
         {
-            await CheckIfAdminAsync(user);
+            var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.UserId);
+
+            bool isUserInPrecautionGoverningBodyAdmin =
+                await _userManager.IsInRoleAsync(precautionUser, Roles.GoverningBodyAdmin);
+
+            bool isCreatorGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
+
+            if (isUserInPrecautionGoverningBodyAdmin && isCreatorGoverningBodyAdmin)
+            {
+                return false;
+            }
+
+            var roles = await _userManager.GetRolesAsync(precautionUser);
+            var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
+
+            if (isInLowerRole)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
+        {
+            bool canUserAddPrecaution = await CanUserAddPrecaution(userPrecautionDTO, user);
+
+            if (!canUserAddPrecaution)
+            {
+                return false;
+            }
 
             bool existNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
             if (existNumber)
             {
-                throw new ArgumentException("Can`t add precaution with existing number");
+                return false;
             }
-            bool isActive = await CheckUserPrecautionsType(userPrecautionDTO.UserId, userPrecautionDTO.Precaution.Name);
+
+            bool isActive =
+                await CheckUserPrecautionsType(userPrecautionDTO.UserId, userPrecautionDTO.Precaution.Name);
             if (isActive)
             {
-                throw new ArgumentException("User has the same active precaution");
+                return false;
             }
 
             var userPrecaution = new UserPrecaution()
@@ -60,7 +99,11 @@ namespace EPlast.BLL.Services.Precautions
             };
             await _repoWrapper.UserPrecaution.CreateAsync(userPrecaution);
             await _repoWrapper.SaveAsync();
+            return true;
+
         }
+
+
 
         private DateTime GetPrecautionEndDate(int precautionId, DateTime startDate)
         {
@@ -68,41 +111,90 @@ namespace EPlast.BLL.Services.Precautions
             return precautionId == 2 ? startDate.AddMonths(6) : startDate.AddMonths(12);
         }
 
-        public async Task ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
+        private async Task<bool> CanUserChangePrecautionAsync(int precautionId, User user)
         {
-            await CheckIfAdminAsync(user);
-
-            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
-            if (existRegisterNumber)
+            var precaution = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(p => p.Id == precautionId);
+            if (precaution == null)
             {
-                throw new ArgumentException("Number in register already exists");
+                return false;
             }
 
-            var userPrecaution = new UserPrecaution()
+            bool isCurrentUserGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
+            if (isCurrentUserGoverningBodyAdmin && !precaution.IsActive)
             {
-                Id = userPrecautionDTO.Id,
-                UserId = userPrecautionDTO.UserId,
-                PrecautionId = userPrecautionDTO.PrecautionId,
-                Date = userPrecautionDTO.Date,
-                Reason = userPrecautionDTO.Reason,
-                Reporter = userPrecautionDTO.Reporter,
-                Number = userPrecautionDTO.Number,
-                Status = userPrecautionDTO.Status,
-                EndDate = userPrecautionDTO.EndDate,
-                IsActive = userPrecautionDTO.IsActive
-            };
-            _repoWrapper.UserPrecaution.Update(userPrecaution);
-            await _repoWrapper.SaveAsync();
+                return false;
+            }
+
+            return true;
+
         }
 
-        public async Task DeleteUserPrecautionAsync(int id, User user)
+        public async Task<bool> ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
         {
-            await CheckIfAdminAsync(user);
+                bool canUserChangePrecautionAsync = await CanUserChangePrecautionAsync(userPrecautionDTO.Id, user);
+                if (!canUserChangePrecautionAsync)
+                {
+                    return false;
+                }
+
+                bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+                if (existRegisterNumber)
+                {
+                    return false;
+                }
+
+                var userPrecaution = new UserPrecaution()
+                {
+                    Id = userPrecautionDTO.Id,
+                    UserId = userPrecautionDTO.UserId,
+                    PrecautionId = userPrecautionDTO.PrecautionId,
+                    Date = userPrecautionDTO.Date,
+                    Reason = userPrecautionDTO.Reason,
+                    Reporter = userPrecautionDTO.Reporter,
+                    Number = userPrecautionDTO.Number,
+                    Status = userPrecautionDTO.Status,
+                    EndDate = userPrecautionDTO.EndDate,
+                    IsActive = userPrecautionDTO.IsActive
+                };
+                _repoWrapper.UserPrecaution.Update(userPrecaution);
+                await _repoWrapper.SaveAsync();
+                return true;
+            
+        }
+
+        public async Task<bool> DeleteUserPrecautionAsync(int id, User user)
+        {
             var userPrecaution = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(d => d.Id == id);
             if (userPrecaution == null)
-                throw new NotImplementedException();
+            {
+                return false;
+            }
+
+            bool canUserDeletePrecaution = await CanUserChangePrecautionAsync(userPrecaution.Id, user);
+
+            if (!canUserDeletePrecaution)
+            {
+                return false;
+            }
+
             _repoWrapper.UserPrecaution.Delete(userPrecaution);
             await _repoWrapper.SaveAsync();
+            return true;
+        }
+
+        public async Task<UserPrecautionsTableInfo> GetUserPrecautionsForTableAsync(PrecautionTableSettings tableSettings)
+        {
+            var query = new GetUsersPrecautionsForTableQuery(tableSettings);
+            var precautionsTuple = await _mediator.Send(query);
+            var allInfoPrecautions = precautionsTuple.Item1.ToList();
+
+            var tableInfo = new UserPrecautionsTableInfo
+            {
+                TotalItems = precautionsTuple.Item2,
+                UserPrecautions = allInfoPrecautions
+            };
+
+            return tableInfo;
         }
 
         public async Task<IEnumerable<UserPrecautionDTO>> GetAllUsersPrecautionAsync()
@@ -145,11 +237,6 @@ namespace EPlast.BLL.Services.Precautions
             return distNum.Id != id;   
         }
 
-        public async Task CheckIfAdminAsync(User user)
-        {
-            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
-                throw new UnauthorizedAccessException();
-        }
 
         private async Task<IEnumerable<UserPrecaution>> CheckEndDateAsync(IEnumerable<UserPrecaution> userPrecaution)
         {
@@ -192,15 +279,36 @@ namespace EPlast.BLL.Services.Precautions
             return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
         }
 
-        public async Task<IEnumerable<AvailableUserDTO>> GetUsersForPrecautionAsync()
+        public async Task<IEnumerable<SuggestedUserDto>> GetUsersForPrecautionAsync(User currentUser)
         {
-            var users = await _adminService.GetUsersAsync();
+            bool isCreatorGoverningBodyAdmin = await _userManager.IsInRoleAsync(currentUser, Roles.GoverningBodyAdmin);
+            var allUsers = await _repoWrapper.User.GetAllAsync();
+            var suggestedUsers = new List<SuggestedUserDto>();
 
-            var sortedUsers = users.OrderBy(u => u.IsInLowerRole).ToList();
+            foreach (var user in allUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
 
-            List<AvailableUserDTO> availableUsers = _mapper.Map<List<ShortUserInformationDTO>, List<AvailableUserDTO>>(sortedUsers);
+                var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
+                
+                var suggestedUser = _mapper.Map<User, SuggestedUserDto>(user);
 
-            return availableUsers;
+                if (isCreatorGoverningBodyAdmin)
+                {
+                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin);
+                }
+                else
+                {
+                    suggestedUser.IsAvailable = !isInLowerRole;
+                }
+               
+                suggestedUsers.Add(suggestedUser);
+            }
+
+            suggestedUsers = suggestedUsers.OrderBy(u => !u.IsAvailable).ToList();
+
+            return suggestedUsers;
         }
+
     }
 }
