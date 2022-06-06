@@ -23,5 +23,7 @@ namespace EPlast.DataAccess.Entities.GoverningBody
         public bool Status { get; set; }
 
         public string WorkEmail { get; set; }
+
+        public string GoverningBodyAdminRole { get; set; }
     }
 }
