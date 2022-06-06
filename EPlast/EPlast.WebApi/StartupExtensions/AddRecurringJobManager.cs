@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Events;
@@ -84,6 +85,7 @@ namespace EPlast.WebApi.StartupExtensions
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var adminTypeService = serviceProvider.GetRequiredService<IAdminTypeService>();
             var roles = new[]
             {
                 Roles.Admin,
@@ -103,6 +105,7 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.CityHeadDeputy,
                 Roles.OkrugaHeadDeputy,
                 Roles.KurinHeadDeputy,
+                Roles.RegionBoardHead,
                 Roles.GoverningBodyAdmin,
                 Roles.GoverningBodyHead,
                 Roles.GoverningBodySecretary,
@@ -115,6 +118,11 @@ namespace EPlast.WebApi.StartupExtensions
                 {
                     var idRole = new IdentityRole { Name = role };
                     await roleManager.CreateAsync(idRole);
+                }
+
+                if ((await adminTypeService.GetAdminTypeByNameAsync(role)) == null)
+                {
+                    await adminTypeService.CreateByNameAsync(role);
                 }
             }
             var admin = Configuration.GetSection(Roles.Admin);
