@@ -7,23 +7,76 @@ namespace EPlast.DataAccess.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_GoverningBodyAdministrations_Organization_GoverningBodyId",
+                table: "GoverningBodyAdministrations");
+
             migrationBuilder.DropTable(
                 name: "SectorAnnouncementImage");
 
             migrationBuilder.DropTable(
                 name: "SectorAnnouncement");
 
+            migrationBuilder.DropColumn(
+                name: "Count",
+                table: "UserPrecautionsTableObject");
+
+            migrationBuilder.DropColumn(
+                name: "Total",
+                table: "UserPrecautionsTableObject");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "GoverningBodyId",
+                table: "GoverningBodyAdministrations",
+                nullable: true,
+                oldClrType: typeof(int),
+                oldType: "int");
+
             migrationBuilder.AddColumn<string>(
                 name: "GoverningBodyAdminRole",
                 table: "GoverningBodyAdministrations",
                 nullable: true);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_GoverningBodyAdministrations_Organization_GoverningBodyId",
+                table: "GoverningBodyAdministrations",
+                column: "GoverningBodyId",
+                principalTable: "Organization",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Restrict);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_GoverningBodyAdministrations_Organization_GoverningBodyId",
+                table: "GoverningBodyAdministrations");
+
             migrationBuilder.DropColumn(
                 name: "GoverningBodyAdminRole",
                 table: "GoverningBodyAdministrations");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Count",
+                table: "UserPrecautionsTableObject",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<int>(
+                name: "Total",
+                table: "UserPrecautionsTableObject",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "GoverningBodyId",
+                table: "GoverningBodyAdministrations",
+                type: "int",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldNullable: true);
 
             migrationBuilder.CreateTable(
                 name: "SectorAnnouncement",
@@ -88,6 +141,14 @@ namespace EPlast.DataAccess.Migrations
                 name: "IX_SectorAnnouncementImage_SectorAnnouncementId",
                 table: "SectorAnnouncementImage",
                 column: "SectorAnnouncementId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_GoverningBodyAdministrations_Organization_GoverningBodyId",
+                table: "GoverningBodyAdministrations",
+                column: "GoverningBodyId",
+                principalTable: "Organization",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Cascade);
         }
     }
 }

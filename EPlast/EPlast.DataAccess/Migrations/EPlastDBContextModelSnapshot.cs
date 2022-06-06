@@ -1532,7 +1532,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("GoverningBodyAdminRole")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GoverningBodyId")
+                    b.Property<int?>("GoverningBodyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -2699,9 +2699,6 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserPrecautionsTableObject", b =>
                 {
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
@@ -2728,9 +2725,6 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(max)");
@@ -3758,9 +3752,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Organization", "GoverningBody")
                         .WithMany("GoverningBodyAdministration")
-                        .HasForeignKey("GoverningBodyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("GoverningBodyId");
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("GoverningBodyAdministrations")
