@@ -17,5 +17,6 @@ namespace EPlast.BLL.DTO.GoverningBody
         public DateTime? EndDate { get; set; }
         public bool Status { get; set; }
         public string WorkEmail { get; set; }
+        public string GoverningBodyAdminRole { get; set; }
     }
 }
