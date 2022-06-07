@@ -14,6 +14,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -37,15 +38,15 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize)
         {
-            var order = GetOrder();
             var selector = GetSelector();
             var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
 
             var tuple = await _repositoryWrapper.GoverningBodyAdministration.GetRangeAsync(
-                predicate: admin => admin.Status == true && admin.AdminTypeId == governingBodyAdminType.ID,
+                predicate: admin => admin.AdminTypeId == governingBodyAdminType.ID && admin.Status,
                 selector: selector,
-                sorting: order,
-                null, pageNumber, pageSize
+                null,
+                null,
+                pageNumber, pageSize
             );
 
             var governingBodyAdmins = _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(tuple.Item1);
@@ -233,13 +234,6 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
         }
 
-        private Func<IQueryable<GoverningBodyAdministration>, IQueryable<GoverningBodyAdministration>> GetOrder()
-        {
-            Func<IQueryable<GoverningBodyAdministration>, IQueryable<GoverningBodyAdministration>> expr = order =>
-                order.OrderByDescending(y => y.Status);
-            return expr;
-        }
-
         private Expression<Func<GoverningBodyAdministration, GoverningBodyAdministration>> GetSelector()
         {
 
@@ -249,8 +243,17 @@ namespace EPlast.BLL.Services.GoverningBodies
                 {
                     Id = selector.Id,
                     UserId = selector.UserId,
-                    User = selector.User,
-                    AdminType = selector.AdminType,
+                    User = new User
+                    {
+                        FirstName = selector.User.FirstName,
+                        LastName = selector.User.LastName,
+                        ImagePath = selector.User.ImagePath
+                    },
+                    AdminType = new AdminType 
+                    { 
+                        ID = selector.AdminType.ID,
+                        AdminTypeName = selector.AdminType.AdminTypeName,
+                    },
                     AdminTypeId = selector.AdminTypeId,
                     EndDate = selector.EndDate,
                     StartDate = selector.StartDate,
