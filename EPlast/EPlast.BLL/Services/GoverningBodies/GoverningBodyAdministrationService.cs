@@ -10,7 +10,10 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -19,14 +22,38 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IAdminTypeService _adminTypeService;
+        private readonly IMapper _mapper;
 
         public GoverningBodyAdministrationService(IRepositoryWrapper repositoryWrapper,
             UserManager<User> userManager,
-            IAdminTypeService adminTypeService)
+            IAdminTypeService adminTypeService,
+            IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
+            _mapper = mapper;
+        }
+
+        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize)
+        {
+            var order = GetOrder();
+            var selector = GetSelector();
+            var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+
+            var tuple = await _repositoryWrapper.GoverningBodyAdministration.GetRangeAsync(
+                predicate: admin => admin.Status == true && admin.AdminTypeId == governingBodyAdminType.ID,
+                selector: selector,
+                sorting: order,
+                null, pageNumber, pageSize
+            );
+
+            var governingBodyAdmins = _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(tuple.Item1);
+
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>
+                (governingBodyAdmins, rows);
         }
 
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
@@ -205,5 +232,35 @@ namespace EPlast.BLL.Services.GoverningBodies
                 await RemoveAdministratorAsync(admin.Id);
             }
         }
+
+        private Func<IQueryable<GoverningBodyAdministration>, IQueryable<GoverningBodyAdministration>> GetOrder()
+        {
+            Func<IQueryable<GoverningBodyAdministration>, IQueryable<GoverningBodyAdministration>> expr = order =>
+                order.OrderByDescending(y => y.Status);
+            return expr;
+        }
+
+        private Expression<Func<GoverningBodyAdministration, GoverningBodyAdministration>> GetSelector()
+        {
+
+            Expression<Func<GoverningBodyAdministration, GoverningBodyAdministration>> expr = selector =>
+
+                new GoverningBodyAdministration
+                {
+                    Id = selector.Id,
+                    UserId = selector.UserId,
+                    User = selector.User,
+                    AdminType = selector.AdminType,
+                    AdminTypeId = selector.AdminTypeId,
+                    EndDate = selector.EndDate,
+                    StartDate = selector.StartDate,
+                    GoverningBodyId = selector.GoverningBodyId,
+                    GoverningBodyAdminRole = selector.GoverningBodyAdminRole,
+                    WorkEmail = selector.WorkEmail
+                };
+                
+            return expr;
+        }
+
     }
 }

@@ -152,6 +152,20 @@ namespace EPlast.WebApi.Controllers
             return Ok(new { Admins = governingBodyViewModel.Administration, governingBodyViewModel.Head, governingBodyViewModel.GoverningBodyName });
         }
 
+        [HttpGet("GoverningBodyAdminsByPage/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGoverningBodyAdminsByPage(int pageNumber, [Required] int pageSize)
+        {
+            var governingBodyAdministrators =
+                await _governingBodyAdministrationService.GetGoverningBodyAdministratorsByPageAsync(pageNumber, pageSize);
+            if (governingBodyAdministrators == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(governingBodyAdministrators);
+        }
+
         /// <summary>
         /// Add a new GoverningBodyAdmin 
         /// </summary>

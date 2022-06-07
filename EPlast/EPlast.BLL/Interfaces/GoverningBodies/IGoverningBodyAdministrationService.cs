@@ -1,10 +1,14 @@
-﻿using EPlast.BLL.DTO.GoverningBody;
+﻿using System;
+using System.Collections.Generic;
+using EPlast.BLL.DTO.GoverningBody;
 using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies
 {
     public interface IGoverningBodyAdministrationService
     {
+        Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize);
+
         /// <summary>
         /// Adds Main Administrator
         /// </summary>
