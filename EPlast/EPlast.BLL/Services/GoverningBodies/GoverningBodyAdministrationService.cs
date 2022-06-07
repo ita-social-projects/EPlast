@@ -207,13 +207,19 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
             var admin = await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(u =>
-                u.UserId == userId && u.AdminTypeId == adminType.ID);
-
-            admin.EndDate = DateTime.Now;
-
-            if (admin.Status)
+                u.UserId == userId && u.AdminTypeId == adminType.ID && u.Status);
+            
+            if (admin != null)
             {
-                admin.Status = false;
+                admin.EndDate = DateTime.Now;
+
+                if (admin.Status)
+                {
+                    admin.Status = false;
+                }
+
+                _repositoryWrapper.GoverningBodyAdministration.Update(admin);
+                await _repositoryWrapper.SaveAsync();
             }
 
             var user = await _userManager.FindByIdAsync(userId);
@@ -224,8 +230,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
             }
 
-            _repositoryWrapper.GoverningBodyAdministration.Update(admin);
-            await _repositoryWrapper.SaveAsync();
+            
         }
 
         public async Task RemoveAdminRolesByUserIdAsync(string userId)
