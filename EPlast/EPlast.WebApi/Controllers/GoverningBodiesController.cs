@@ -166,6 +166,20 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyAdministrators);
         }
 
+        [HttpGet("GoverningBodyAdmins")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGoverningBodyAdmins()
+        {
+            var governingBodyAdmins = await _governingBodyAdministrationService.GetGoverningBodyAdministratorsAsync();
+            
+            if (governingBodyAdmins == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(governingBodyAdmins);
+        }
+
         /// <summary>
         /// Add a new GoverningBodyAdmin 
         /// </summary>

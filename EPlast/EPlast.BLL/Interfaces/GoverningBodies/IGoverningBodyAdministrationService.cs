@@ -9,6 +9,8 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
     {
         Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize);
 
+        Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync();
+
         /// <summary>
         /// Adds Main Administrator
         /// </summary>

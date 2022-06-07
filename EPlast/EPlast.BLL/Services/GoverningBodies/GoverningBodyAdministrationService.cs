@@ -57,6 +57,16 @@ namespace EPlast.BLL.Services.GoverningBodies
                 (governingBodyAdmins, rows);
         }
 
+        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync()
+        {
+            var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+            var governingBodyAdmins =
+                await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(a =>
+                    a.Status && a.AdminTypeId == governingBodyAdminType.ID);
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                governingBodyAdmins);
+        }
+
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
