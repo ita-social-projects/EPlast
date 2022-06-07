@@ -15,6 +15,7 @@ using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -36,20 +37,22 @@ namespace EPlast.BLL.Services.GoverningBodies
             _mapper = mapper;
         }
 
-        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize)
+        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>>
+            GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize)
         {
-            var selector = GetSelector();
             var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
 
             var tuple = await _repositoryWrapper.GoverningBodyAdministration.GetRangeAsync(
                 predicate: admin => admin.AdminTypeId == governingBodyAdminType.ID && admin.Status,
-                selector: selector,
                 null,
                 null,
+                include: GetInclude(),
                 pageNumber, pageSize
             );
 
-            var governingBodyAdmins = _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(tuple.Item1);
+            var governingBodyAdmins =
+                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                    tuple.Item1);
 
             var rows = tuple.Item2;
 
@@ -60,9 +63,12 @@ namespace EPlast.BLL.Services.GoverningBodies
         public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync()
         {
             var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+
             var governingBodyAdmins =
-                await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(a =>
-                    a.Status && a.AdminTypeId == governingBodyAdminType.ID);
+                await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(
+                    predicate: a => a.Status && a.AdminTypeId == governingBodyAdminType.ID,
+                    include: GetInclude());
+
             return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
                 governingBodyAdmins);
         }
@@ -244,34 +250,9 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
         }
 
-        private Expression<Func<GoverningBodyAdministration, GoverningBodyAdministration>> GetSelector()
+        private Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>> GetInclude()
         {
-
-            Expression<Func<GoverningBodyAdministration, GoverningBodyAdministration>> expr = selector =>
-
-                new GoverningBodyAdministration
-                {
-                    Id = selector.Id,
-                    UserId = selector.UserId,
-                    User = new User
-                    {
-                        FirstName = selector.User.FirstName,
-                        LastName = selector.User.LastName,
-                        ImagePath = selector.User.ImagePath
-                    },
-                    AdminType = new AdminType 
-                    { 
-                        ID = selector.AdminType.ID,
-                        AdminTypeName = selector.AdminType.AdminTypeName,
-                    },
-                    AdminTypeId = selector.AdminTypeId,
-                    EndDate = selector.EndDate,
-                    StartDate = selector.StartDate,
-                    GoverningBodyId = selector.GoverningBodyId,
-                    GoverningBodyAdminRole = selector.GoverningBodyAdminRole,
-                    WorkEmail = selector.WorkEmail
-                };
-                
+            Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>> expr = x => x.Include(a => a.User).Include(a =>a.AdminType );
             return expr;
         }
 
