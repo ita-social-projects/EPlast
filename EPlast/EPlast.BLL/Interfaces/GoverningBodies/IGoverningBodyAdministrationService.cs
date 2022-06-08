@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using EPlast.BLL.DTO.GoverningBody;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies
 {
@@ -10,6 +11,8 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize);
 
         Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync();
+
+        Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodyAdminFormAsync();
 
         /// <summary>
         /// Adds Main Administrator

@@ -351,8 +351,10 @@ namespace EPlast.BLL.Services
                     if (roles.Contains(Roles.PlastMember))
                     {
                         var IsInDeputyRole = roles.Intersect(adminRoles).Any();
+                        var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
                         var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
                         shortUser.IsInDeputyRole = IsInDeputyRole;
+                        shortUser.IsInLowerRole = isInLowerRole;
                         usersDtos.Add(shortUser);
                     }
             }

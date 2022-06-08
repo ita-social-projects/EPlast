@@ -474,5 +474,17 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest("Error getting UserAdministration");
             }
         }
+
+        [HttpGet("GetUsersForGoverningBodyAdminForm")]
+        public async Task<IActionResult> GetUsersForGoverningBodyAdminForm()
+        {
+            var result = await _governingBodyAdministrationService.GetUsersForGoverningBodyAdminFormAsync();
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
     }
 }

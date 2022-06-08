@@ -14,6 +14,7 @@ using System.Linq.Expressions;
 using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
+using EPlast.BLL.DTO.UserProfiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -75,12 +76,16 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
+            var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            if (await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin))
+            {
+                throw new ArgumentException("User already has GoverningBodyAdmin role");
+            }
+
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
             governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
-
-            var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
-
-            var userRoles = await _userManager.GetRolesAsync(user);
 
             var governingBodyAdministration = new GoverningBodyAdministration
             {
@@ -90,7 +95,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 GoverningBodyId = null,
                 UserId = governingBodyAdministrationDto.UserId,
                 Status = governingBodyAdministrationDto.Status,
-                WorkEmail = governingBodyAdministrationDto.WorkEmail,
+                WorkEmail = user.Email,
                 GoverningBodyAdminRole = governingBodyAdministrationDto.GoverningBodyAdminRole
             };
 
@@ -262,5 +267,31 @@ namespace EPlast.BLL.Services.GoverningBodies
             return expr;
         }
 
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodyAdminFormAsync()
+        {
+            var adminRoles = new List<string>
+            {
+                Roles.GoverningBodyAdmin
+            };
+            var users = await _repositoryWrapper.User.GetAllAsync();
+            var usersDtos = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains(Roles.PlastMember))
+                {
+                    var isInDeputyRole = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
+                    var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
+                    var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                    shortUser.IsInDeputyRole = isInDeputyRole;
+                    shortUser.IsInLowerRole = isInLowerRole;
+                    usersDtos.Add(shortUser);
+                }
+            }
+
+            usersDtos = usersDtos.OrderBy(u => u.IsInDeputyRole||u.IsInLowerRole).ToList();
+
+            return usersDtos;
+    }
     }
 }
