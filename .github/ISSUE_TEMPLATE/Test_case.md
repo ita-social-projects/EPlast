@@ -1,7 +1,7 @@
 ---
 name: Test case
 about: Create a test case to check system
-title: '[Functionality] Clear and concise summary
+title: '[Functionality] Clear and concise summary'
 labels: Test case
 assignees: ''
 
