@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
+using OkObjectResult = Microsoft.AspNetCore.Mvc.OkObjectResult;
 
 namespace EPlast.Tests.Controllers
 {
@@ -792,6 +794,39 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUsersForGoverningBodyAdminForm_ReturnsOk()
+        {
+            //Arrange
+            IEnumerable<ShortUserInformationDTO> users = new List<ShortUserInformationDTO>();
+
+            _governingBodyAdministrationService.Setup(g => g.GetUsersForGoverningBodyAdminFormAsync())
+                .ReturnsAsync(users);
+
+            //Act
+            var result = await _governingBodiesController.GetUsersForGoverningBodyAdminForm();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUsersForGoverningBodyAdminForm_ReturnsBadRequest()
+        {
+            //Arrange
+            IEnumerable<ShortUserInformationDTO> users = null;
+
+            _governingBodyAdministrationService.Setup(g => g.GetUsersForGoverningBodyAdminFormAsync())
+                .ReturnsAsync(users);
+
+            //Act
+            var result = await _governingBodiesController.GetUsersForGoverningBodyAdminForm();
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         private const int TestId = 3;

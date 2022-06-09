@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.Tests.Services.GoverningBody
@@ -26,8 +28,9 @@ namespace EPlast.Tests.Services.GoverningBody
         private Mock<IAdminTypeService> _adminTypeService;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserStore<User>> _user;
+        private Mock<IMapper> _mapperMock;
         private GoverningBodyAdministrationService _governingBodyAdministrationService;
-
+        
         [SetUp]
         public void SetUp()
         {
@@ -37,9 +40,10 @@ namespace EPlast.Tests.Services.GoverningBody
             _userManager = new Mock<UserManager<User>>(_user.Object, It.IsAny<IOptions<IdentityOptions>>(),
                 It.IsAny<IPasswordHasher<User>>(), It.IsAny<IEnumerable<IUserValidator<User>>>(), It.IsAny<IEnumerable<IPasswordValidator<User>>>(),
                 It.IsAny<ILookupNormalizer>(), It.IsAny<IdentityErrorDescriber>(), It.IsAny<IServiceProvider>(), It.IsAny<ILogger<UserManager<User>>>());
+            _mapperMock = new Mock<IMapper>();
             _governingBodyAdministrationService = new GoverningBodyAdministrationService(
                 _repoWrapper.Object, _userManager.Object,
-                _adminTypeService.Object);
+                _adminTypeService.Object, _mapperMock.Object);
         }
 
         [Test]
@@ -120,6 +124,9 @@ namespace EPlast.Tests.Services.GoverningBody
         public async Task AddGoverningBodyMainAdminAsync_EndDateToday_ReturnsAdministrator()
         {
             //Arrange
+            _repoWrapper
+                .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
@@ -139,12 +146,16 @@ namespace EPlast.Tests.Services.GoverningBody
         public async Task AddGoverningBodyMainAdminAsync_EndDateNull_ReturnsAdministrator()
         {
             //Arrange
+            _repoWrapper
+                .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
+
 
             //Act
             var result = await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull);
@@ -158,9 +169,12 @@ namespace EPlast.Tests.Services.GoverningBody
         public void AddGoverningBodyMainAdminAsync_UserHasRestrictedRoles_ThrowsArgumentException()
         {
             //Arrange
+            _repoWrapper
+                .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.GoverningBodyHead });
+                .ReturnsAsync(new List<string> { Roles.GoverningBodyAdmin });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
@@ -339,6 +353,10 @@ namespace EPlast.Tests.Services.GoverningBody
         public void RemoveMainAdministratorAsync_withAdminRole_ValidTest()
         {
             //Arrange
+            _repoWrapper.Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(GoverningBodyAdmin);
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(FakeUser);
@@ -369,6 +387,64 @@ namespace EPlast.Tests.Services.GoverningBody
             //Assert
             _userManager.Verify(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
             Assert.NotNull(result);
+        }
+
+        [Test]
+        public async Task GetUsersForGoverningBodyAdminFormAsync_ReturnsIEnumerableShortUserInformationDTO()
+        {
+            //Arrange
+            List<string> roles = new List<string>
+            {
+                Roles.GoverningBodyAdmin,
+                Roles.PlastMember
+            };
+            _repoWrapper
+                .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                    It.IsAny<Func<IQueryable<User>,
+                        IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(GetTestUsers);
+            _userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
+            _mapperMock.Setup(m => m.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDTO());
+            
+            //Act
+            var result = await _governingBodyAdministrationService.GetUsersForGoverningBodyAdminFormAsync();
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+        }
+
+        private IEnumerable<User> GetTestUsers()
+        {
+            return new List<User>
+            {
+                new  User
+                {
+                    Id = "UserId1",
+                    UserProfile = new UserProfile
+                    {
+                        Gender = new Gender{ ID = 1, Name = UserGenders.Male },
+                        UpuDegree = new UpuDegree
+                        {
+                            Name = "UpuDegreeName"
+                        }
+                    },
+                    UserPlastDegrees = new UserPlastDegree()
+                },
+                new  User
+                {
+                    Id = "UserId2",
+                    UserProfile = new UserProfile
+                    {
+                        Gender = new Gender{ ID = 2, Name = UserGenders.Female },
+                        UpuDegree = new UpuDegree
+                        {
+                            Name = "UpuDegreeName"
+                        }
+                    },
+                    UserPlastDegrees = new UserPlastDegree()
+                },
+            }.AsEnumerable();
         }
 
         private const int FakeId = 3;

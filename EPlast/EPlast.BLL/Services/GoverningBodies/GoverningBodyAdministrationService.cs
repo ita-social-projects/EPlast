@@ -84,6 +84,11 @@ namespace EPlast.BLL.Services.GoverningBodies
                 throw new ArgumentException("User already has GoverningBodyAdmin role");
             }
 
+            if (!userRoles.Contains(Roles.PlastMember))
+            {
+                throw new ArgumentException("Can't add user with the roles");
+            }
+
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
             governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
 
@@ -101,12 +106,6 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             await _repositoryWrapper.GoverningBodyAdministration.CreateAsync(governingBodyAdministration);
             await _repositoryWrapper.SaveAsync();
-
-
-            if (!userRoles.Contains(Roles.PlastMember))
-            {
-                throw new ArgumentException("Can't add user with the roles");
-            }
 
             await _userManager.AddToRoleAsync(user, adminType.AdminTypeName);
 
