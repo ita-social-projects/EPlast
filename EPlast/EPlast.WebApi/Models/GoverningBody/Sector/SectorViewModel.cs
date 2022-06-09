@@ -15,6 +15,6 @@ namespace EPlast.WebApi.Models.GoverningBody.Sector
         public SectorAdministrationViewModel Head { get; set; }
         public IEnumerable<SectorAdministrationViewModel> Administration { get; set; }
         public IEnumerable<SectorDocumentsViewModel> Documents { get; set; }
-        public IEnumerable<SectorAnnouncementsViewModel> Announcements { get; set; }
+        public IEnumerable<GoverningBodyAnnouncementsViewModel> Announcements { get; set; }
     }
 }
