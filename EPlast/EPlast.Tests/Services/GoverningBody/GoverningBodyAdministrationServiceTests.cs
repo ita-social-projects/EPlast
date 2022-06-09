@@ -47,6 +47,53 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
+        public async Task GetGoverningBodyAdministratorsByPageAsync_ReturnsTuple()
+        {
+            //Arrange
+            _repoWrapper.Setup(r => r.GoverningBodyAdministration.GetRangeAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, GoverningBodyAdministration>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IQueryable<GoverningBodyAdministration>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>(), It.IsAny<int>(),
+                    It.IsAny<int>()))
+                .ReturnsAsync(
+                    new Tuple<IEnumerable<GoverningBodyAdministration>, int>(new List<GoverningBodyAdministration>(),
+                        It.IsAny<int>()));
+            _mapperMock.Setup(m =>
+                m.Map<GoverningBodyAdministration, GoverningBodyAdministrationDTO>(
+                    It.IsAny<GoverningBodyAdministration>()));
+
+            //Act
+            var result =
+                await _governingBodyAdministrationService.GetGoverningBodyAdministratorsByPageAsync(It.IsAny<int>(),
+                    It.IsAny<int>());
+
+            //Assert
+            Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdministratorsAsync_ReturnsIEnumerableOfGoverningBodyAdministrationDTO()
+        {
+            //Arrange
+            _adminTypeService.Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>())).ReturnsAsync(It.IsAny<AdminTypeDTO>());
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new List<GoverningBodyAdministration>() { new GoverningBodyAdministration() { Id = 1 } });
+            _mapperMock.Setup(m =>
+                m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                    It.IsAny<IEnumerable<GoverningBodyAdministration>>())).Returns(new List<GoverningBodyAdministrationDTO>() { new GoverningBodyAdministrationDTO() { ID = 1 } });
+
+            //Act
+            var result = await _governingBodyAdministrationService.GetGoverningBodyAdministratorsAsync();
+
+            //Assert
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDTO>>(result);
+        }
+
+        [Test]
         public async Task AddGoverningBodyAdministratorAsync_EndDateToday_ReturnsAdministrator()
         {
             //Arrange
@@ -167,6 +214,24 @@ namespace EPlast.Tests.Services.GoverningBody
 
         [Test]
         public void AddGoverningBodyMainAdminAsync_UserHasRestrictedRoles_ThrowsArgumentException()
+        {
+            //Arrange
+            _repoWrapper
+                .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManager
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
+                .ReturnsAsync(true);
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            //Act
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull));
+        }
+
+        [Test]
+        public void AddGoverningBodyMainAdminAsync_UserDontHaveNeededRoles_ThrowsArgumentException()
         {
             //Arrange
             _repoWrapper

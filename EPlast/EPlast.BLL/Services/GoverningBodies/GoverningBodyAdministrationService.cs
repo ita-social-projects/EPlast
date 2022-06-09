@@ -86,7 +86,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             if (!userRoles.Contains(Roles.PlastMember))
             {
-                throw new ArgumentException("Can't add user with the roles");
+                throw new ArgumentException($"Can't add user without {Roles.PlastMember} roles");
             }
 
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
@@ -268,10 +268,6 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodyAdminFormAsync()
         {
-            var adminRoles = new List<string>
-            {
-                Roles.GoverningBodyAdmin
-            };
             var users = await _repositoryWrapper.User.GetAllAsync();
             var usersDtos = new List<ShortUserInformationDTO>();
             foreach (var user in users)

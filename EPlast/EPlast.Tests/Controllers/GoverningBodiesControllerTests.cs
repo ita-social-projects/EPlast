@@ -829,6 +829,63 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
+        [Test]
+        public async Task GetGoverningBodyAdminsByPage_AdminsFound_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsByPageAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(
+                    new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>(
+                        new List<GoverningBodyAdministrationDTO>(), It.IsAny<int>()));
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdminsByPage(It.IsAny<int>(), It.IsAny<int>());
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdminsByPage_TupleIsNull_ReturnsNotFoundResult()
+        {
+            //Arrange
+            Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int> tuple = null;
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsByPageAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(tuple);
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdminsByPage(It.IsAny<int>(), It.IsAny<int>());
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdmins_AdminsFound_ReturnsOkObjectResult()
+        {
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsAsync())
+                .ReturnsAsync(new List<GoverningBodyAdministrationDTO>());
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdmins();
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdmins_AdminsNotFound_ReturnsNotFoundResult()
+        {
+            //Arrange
+            IEnumerable<GoverningBodyAdministrationDTO> nullList = null;
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsAsync())
+                .ReturnsAsync(nullList);
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdmins();
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
         private const int TestId = 3;
         private const string TestIdString = "TestId";
 
