@@ -249,16 +249,42 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
-        public async Task EditGoverningBodyAdministratorAsync_ReturnsEditedAdministratorWithSameId()
+        public void AddGoverningBodyMainAdminAsync_RoleNameExists_ThrowsArgumentException()
         {
             //Arrange
+
+            _repoWrapper.Setup(w=>w.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new GoverningBodyAdministration());
+            _repoWrapper
+                .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
+            _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
+            _userManager
+                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
+                .ReturnsAsync(new List<string> { Roles.GoverningBodyAdmin });
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull));
+        }
+
+        [Test]
+        public async Task EditGoverningBodyAdministratorAsync_SameTypeId_ReturnsEditedAdministrator()
+        {
+            //Arrange
+            GoverningBodyAdministration nullAdministration = null;
+
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDTO());
             _repoWrapper
-                .Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                .SetupSequence(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(nullAdministration)
                 .ReturnsAsync(new GoverningBodyAdministration());
             _repoWrapper
                 .Setup(r => r.GoverningBodyAdministration.Update(It.IsAny<GoverningBodyAdministration>()));
@@ -278,10 +304,15 @@ namespace EPlast.Tests.Services.GoverningBody
         public async Task EditGoverningBodyAdministratorAsync_WithDifferentAdminTypeId_ReturnsEditedAdministrator()
         {
             //Arrange
+            GoverningBodyAdministration nullAdministration = null;
             _repoWrapper
-                .Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                .SetupSequence(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(nullAdministration)
+                .ReturnsAsync(new GoverningBodyAdministration())
+                .ReturnsAsync(new GoverningBodyAdministration())
+                .ReturnsAsync(new GoverningBodyAdministration())
                 .ReturnsAsync(new GoverningBodyAdministration());
             _repoWrapper
                .Setup(r => r.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
@@ -313,6 +344,28 @@ namespace EPlast.Tests.Services.GoverningBody
             _repoWrapper.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+        }
+
+        [Test]
+        public async Task EditGoverningBodyAdministratorAsync_RoleNameExists_ThrowsArgumentException()
+        {
+            //Arrange
+            _adminTypeService
+                .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
+                .ReturnsAsync(new AdminTypeDTO());
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new GoverningBodyAdministration());
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.Update(It.IsAny<GoverningBodyAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
+
+            //Act
+            //Assert
+            Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDtoEndDateNull));
         }
 
         [Test]
@@ -477,6 +530,40 @@ namespace EPlast.Tests.Services.GoverningBody
 
             //Assert
             Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+        }
+
+        [Test]
+        public async Task CheckRoleNameExistsAsync_RoleNameExists_ReturnsTrue()
+        {
+            //Arrange
+            _repoWrapper.Setup(w => w.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new GoverningBodyAdministration());
+
+            //Act
+            var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.AreEqual(result, true);
+        }
+
+        [Test]
+        public async Task CheckRoleNameExistsAsync_RoleNameDontExist_ReturnsTrue()
+        {
+            //Arrange
+            GoverningBodyAdministration nullValue = null;
+
+            _repoWrapper.Setup(w => w.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(nullValue);
+
+            //Act
+            var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.AreEqual(result, false);
         }
 
         private IEnumerable<User> GetTestUsers()

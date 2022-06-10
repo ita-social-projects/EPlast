@@ -79,6 +79,11 @@ namespace EPlast.BLL.Services.GoverningBodies
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
             var userRoles = await _userManager.GetRolesAsync(user);
 
+            if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
+            {
+                throw new ArgumentException("This role name of GoverningBodyAdmin already exists");
+            }
+
             if (await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin))
             {
                 throw new ArgumentException("User already has GoverningBodyAdmin role");
@@ -162,6 +167,11 @@ namespace EPlast.BLL.Services.GoverningBodies
         /// <inheritdoc />
         public async Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
+            if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
+            {
+                throw new ArgumentException("This role name of GoverningBodyAdmin already exists");
+            }
+
             var admin = await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.Id == governingBodyAdministrationDto.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
 
@@ -247,6 +257,8 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
         }
 
+        
+
         private async Task CheckGoverningBodyHasAdmin(int governingBodyId, string adminTypeName)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
@@ -284,9 +296,18 @@ namespace EPlast.BLL.Services.GoverningBodies
                 }
             }
 
-            usersDtos = usersDtos.OrderBy(u => u.IsInDeputyRole||u.IsInLowerRole).ToList();
+            usersDtos = usersDtos.OrderBy(u => u.IsInDeputyRole || u.IsInLowerRole).ToList();
 
             return usersDtos;
-    }
+        }
+
+        public async Task<bool> CheckRoleNameExistsAsync(string roleName)
+        {
+            var result =
+                await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a =>
+                    a.GoverningBodyAdminRole == roleName);
+            
+            return result != null;
+        }
     }
 }

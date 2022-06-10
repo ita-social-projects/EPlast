@@ -53,5 +53,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// </summary>
         /// <param name="userId">The id of the user</param>
         Task RemoveAdminRolesByUserIdAsync(string userId);
+
+        Task<bool> CheckRoleNameExistsAsync(string roleName);
     }
 }

@@ -234,9 +234,15 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDTO adminDto)
         {
-            await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
+            try
+            {
+                await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"Admin with User-ID {{{adminDto.UserId}}} was edited.");
-
             return Ok(adminDto);
         }
 
@@ -485,6 +491,13 @@ namespace EPlast.WebApi.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet("CheckRoleNameExists/{roleName}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> CheckRoleNameExists(string roleName)
+        {
+            return Ok(await _governingBodyAdministrationService.CheckRoleNameExistsAsync(roleName));
         }
     }
 }

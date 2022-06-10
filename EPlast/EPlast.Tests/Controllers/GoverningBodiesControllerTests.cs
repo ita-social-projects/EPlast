@@ -352,7 +352,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EditAdmin_Valid_Test()
+        public async Task EditAdmin_Valid_ReturnsOkObjectResult()
         {
             // Arrange
 
@@ -371,6 +371,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task EditAdmin_ServiceRoleNameExists_ReturnsBadRequest()
+        {
+            // Arrange
+
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _governingBodiesController.EditAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -884,6 +903,18 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task CheckRoleNameExists_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _governingBodyAdministrationService.Setup(g => g.CheckRoleNameExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<bool>());
+            //Act
+            var result = await _governingBodiesController.CheckRoleNameExists(It.IsAny<string>());
+            //Assert 
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         private const int TestId = 3;
