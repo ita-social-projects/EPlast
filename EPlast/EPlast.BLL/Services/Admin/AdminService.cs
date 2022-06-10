@@ -348,15 +348,13 @@ namespace EPlast.BLL.Services
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
-                    if (roles.Contains(Roles.PlastMember))
-                    {
-                        var IsInDeputyRole = roles.Intersect(adminRoles).Any();
-                        var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
-                        var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
-                        shortUser.IsInDeputyRole = IsInDeputyRole;
-                        shortUser.IsInLowerRole = isInLowerRole;
-                        usersDtos.Add(shortUser);
-                    }
+                if (roles.Contains(Roles.PlastMember))
+                {
+                    var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                    shortUser.IsInDeputyRole = roles.Intersect(adminRoles).Any();
+                    shortUser.IsInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
+                    usersDtos.Add(shortUser);
+                }
             }
             return usersDtos;
         }
