@@ -24,17 +24,8 @@ namespace EPlast.DataAccess.Entities
         public Region Region { get; set; }
 
         [Required, MaxLength(50, ErrorMessage = "Street name can not exceed 50 characters")]
-        public string Street { get; set; }
-
-        [Required, MaxLength(10, ErrorMessage = "House number can not exceed 10 characters")]
-        public string HouseNumber { get; set; }
-
-        [Required, MaxLength(10, ErrorMessage = "Office number can not exceed 10 characters")]
-        public string OfficeNumber { get; set; }
-
-        [Required, MaxLength(10, ErrorMessage = "Post index can not exceed 10 characters")]
-        public string PostIndex { get; set; }
-
+        public string Adress { get; set; }
+        public CityLevel Level { get; set; }
         public string СityURL { get; set; }
 
         [MaxLength(50, ErrorMessage = "Email can not exceed 50 characters")]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EPlast.BLL.DTO.UserProfiles;
 using Newtonsoft.Json;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.City
 {
@@ -26,16 +27,9 @@ namespace EPlast.BLL.DTO.City
         public string Description { get; set; }
 
         [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
-        public string Street { get; set; }
+        public string Adress { get; set; }
 
-        [Required, MaxLength(10, ErrorMessage = "Номер будинку розташування станиці не має перевищувати 10 символів")]
-        public string HouseNumber { get; set; }
-
-        [MaxLength(10, ErrorMessage = "Номер офісу/квартири розташування станиці не має перевищувати 10 символів")]
-        public string OfficeNumber { get; set; }
-
-        [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
-        public string PostIndex { get; set; }
+        public CityLevel Level { get; set; }
         public string Logo { get; set; }
         public bool IsActive { get; set; }
         public int RegionId { get; set; }
