@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
@@ -8,10 +12,6 @@ using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -90,7 +90,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
         private Task<GBSector> CreateSectorAsync(SectorDTO sector)
         {
-            return Task.FromResult(_mapper.Map<SectorDTO, GBSector>(sector));
+            return Task.Run(() => _mapper.Map<SectorDTO, GBSector>(sector));
         }
 
         public async Task<IEnumerable<SectorDTO>> GetSectorsByGoverningBodyAsync(int governingBodyId)

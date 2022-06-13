@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
@@ -10,10 +14,6 @@ using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
         {
-            return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
+            return Task.Run(() => _mapper.Map<GoverningBodyDTO, Organization>(governingBody));
         }
 
         public async Task<int> EditAsync(GoverningBodyDTO governingBody)
