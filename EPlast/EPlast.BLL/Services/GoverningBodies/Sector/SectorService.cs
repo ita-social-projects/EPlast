@@ -131,7 +131,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 .Take(TakingItemsCount)
                 .ToList();
 
-            var sectorAnnouncements = sector.Announcements?.TakeLast(5).ToList();
+            var sectorAnnouncements = sector.Announcements?
+                .OrderByDescending(announcement => announcement.IsPined)
+                .ThenByDescending(announcement => announcement.Date)
+                .Take(5)
+                .ToList();
 
             var sectorProfileDto = new SectorProfileDTO
             {

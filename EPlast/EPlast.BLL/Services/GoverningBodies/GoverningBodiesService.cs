@@ -154,7 +154,12 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var governingBodySectors = governingBody.GoverningBodySectors?.Take(6).ToList();
 
-            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?.TakeLast(5).ToList();
+            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?
+                .Where(announcement => announcement.GoverningBodyId == governingBodyId && announcement.SectorId == null)
+                .OrderByDescending(announcement => announcement.IsPined)
+                .ThenByDescending(announcement => announcement.Date)
+                .Take(5)
+                .ToList();
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {
