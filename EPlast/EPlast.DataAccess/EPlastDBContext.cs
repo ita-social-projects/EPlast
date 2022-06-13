@@ -252,12 +252,6 @@ namespace EPlast.DataAccess
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Gender>(entity =>
-            {
-                entity.HasCheckConstraint("constraint_gender",
-                    "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
-            });
-
             modelBuilder.Entity<AnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Creator)
@@ -271,6 +265,30 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<ClubAnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Club);
+            });
+
+            modelBuilder.Entity<ClubReportAdmins>(reportAdmin =>
+            {
+                reportAdmin.HasOne(a => a.ClubAnnualReport)
+                    .WithMany(r => r.ClubReportAdmins)
+                    .HasForeignKey(a => a.ClubAnnualReportId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                reportAdmin.HasOne(a => a.ClubAdministration)
+                    .WithMany(c => c.ClubReportAdmins)
+                    .HasForeignKey(a => a.ClubAdministrationId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<ClubReportMember>(reportMember =>
+            {
+                reportMember.HasOne(m => m.ClubAnnualReport)
+                    .WithMany(r => r.ClubReportMembers)
+                    .HasForeignKey(m => m.ClubAnnualReportId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                reportMember.HasOne(a => a.ClubMemberHistory)
+                    .WithMany(c => c.ClubReportMembers)
+                    .HasForeignKey(a => a.ClubMemberHistoryId)
+                    .OnDelete(DeleteBehavior.NoAction);
             });
         }
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
