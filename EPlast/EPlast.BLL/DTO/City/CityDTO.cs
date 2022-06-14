@@ -28,7 +28,6 @@ namespace EPlast.BLL.DTO.City
 
         [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
         public string Address { get; set; }
-
         public CityLevel Level { get; set; }
         public string Logo { get; set; }
         public bool IsActive { get; set; }
