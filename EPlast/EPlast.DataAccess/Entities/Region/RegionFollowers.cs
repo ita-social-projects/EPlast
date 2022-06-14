@@ -23,8 +23,8 @@ namespace EPlast.DataAccess.Entities
         public int RegionId { get; set; }
         public Region Region { get; set; }
 
-        [Required, MaxLength(50, ErrorMessage = "Street name can not exceed 50 characters")]
-        public string Adress { get; set; }
+        [Required, MaxLength(50, ErrorMessage = "Address name can not exceed 50 characters")]
+        public string Address { get; set; }
         public CityLevel Level { get; set; }
         public string СityURL { get; set; }
 

@@ -39,7 +39,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 Name = x.Name,
                 Description = x.Description,
                 IsActive = x.IsActive,
-                Adress = x.Adress,
+                Address = x.Address,
                 PhoneNumber = x.PhoneNumber,
                 Email = x.Email,
                 CityURL = x.CityURL,

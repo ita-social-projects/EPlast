@@ -11,7 +11,7 @@ namespace EPlast.BLL.DTO.Region
         public string CityDescription { get; set; }
         public string Logo { get; set; }
         public int RegionId { get; set; }
-        public string Adress { get; set; }
+        public string Address { get; set; }
         public CityLevel Level { get; set; }
         public string СityURL { get; set; }
         public string Email { get; set; }

@@ -22,8 +22,8 @@ namespace EPlast.DataAccess.Entities
         [MaxLength(1024, ErrorMessage = "Історія станиці не має перевищувати 1024 символів")]
         public string Description { get; set; }
 
-        [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
-        public string Adress { get; set; }
+        [Required, MaxLength(60, ErrorMessage = "Назва адреси розташування станиці не має перевищувати 60 символів")]
+        public string Address { get; set; }
 
         public CityLevel Level { get; set; }
 
