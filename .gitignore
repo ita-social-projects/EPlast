@@ -386,3 +386,4 @@ EPlast/EPlast/wwwroot/images/Club/*
 **/azurekeyvault.json
 /EPlast/EPlast/package-lock.json
 appsettings.json 
+manifests/.DS_Store
