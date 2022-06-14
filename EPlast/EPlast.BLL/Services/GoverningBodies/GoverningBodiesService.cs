@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
@@ -10,10 +14,6 @@ using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -65,7 +65,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
         {
-            return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
+            return Task.Run(() => _mapper.Map<GoverningBodyDTO, Organization>(governingBody));
         }
 
         public async Task<int> EditAsync(GoverningBodyDTO governingBody)
@@ -154,7 +154,12 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var governingBodySectors = governingBody.GoverningBodySectors?.Take(6).ToList();
 
-            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?.TakeLast(5).ToList();
+            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?
+                .Where(announcement => announcement.GoverningBodyId == governingBodyId && announcement.SectorId == null)
+                .OrderByDescending(announcement => announcement.IsPined)
+                .ThenByDescending(announcement => announcement.Date)
+                .Take(5)
+                .ToList();
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {

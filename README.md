@@ -1,7 +1,7 @@
 ![ASP.NET Core CI](https://github.com/ITA-Social-Projects/EPlast/workflows/ASP.NET%20Core%20CI/badge.svg)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=alert_status)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=coverage)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=bugs)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=code_smells)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=security_rating)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)
 
 # EPlast
-<img src="https://github.com/ITA-Social-Projects/EPlast/blob/master/EPlast/EPlast/wwwroot/images/homepage/ePlastLogotype.png"  width="150" height="150" />
+<img src="https://github.com/ITA-Social-Projects/EPlast/blob/master/ePlastLogotype.png"  width="150" height="150" />
 
 # 1. About the project
 **EPlast** is project to provide web-based multi-user system solution for digitize and automate Plast organization. The system makes it easy to access Plast's internal data, such as events, reports and document, etc. Information and location of their affiliates and clubs throughout Ukraine. Any interested person can join this system or become a full member of Plast.
