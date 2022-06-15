@@ -73,6 +73,11 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetQuery(predicate, include).ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, T>> selector, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include, selector).ToListAsync();
+        }
+
         public async Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             var query = this.GetQuery(predicate, include);
@@ -82,6 +87,11 @@ namespace EPlast.DataAccess.Repositories
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             return await this.GetQuery(predicate, include).FirstOrDefaultAsync();
+        }
+
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, T>> selector, Expression < Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include, selector).FirstOrDefaultAsync();
         }
 
         public async Task<T> GetLastAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
@@ -114,7 +124,7 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetRangeQuery(filter, selector, sorting, include, pageNumber, pageSize);
         }
 
-        private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, Expression<Func<T, T>> selector = null)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
             if (include != null)
@@ -124,6 +134,10 @@ namespace EPlast.DataAccess.Repositories
             if (predicate != null)
             {
                 query = query.Where(predicate);
+            }
+            if ( selector != null)
+            {
+                query = query.Select(selector);
             }
             return query;
         }

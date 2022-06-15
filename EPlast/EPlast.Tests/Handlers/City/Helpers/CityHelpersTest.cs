@@ -29,7 +29,7 @@ namespace EPlast.Tests.Handlers.City.Helpers
             };
 
             //Act
-            var result = CityHelpers.GetCityHead(city);
+            var result = CityHelpers.GetCityHead(city.CityAdministration);
 
             //Assert
             Assert.IsNotNull(result);
@@ -56,7 +56,7 @@ namespace EPlast.Tests.Handlers.City.Helpers
             };
 
             //Act
-            var result = CityHelpers.GetCityHeadDeputy(city);
+            var result = CityHelpers.GetCityHeadDeputy(city.CityAdministration);
 
             //Assert
             Assert.IsNotNull(result);
@@ -91,7 +91,7 @@ namespace EPlast.Tests.Handlers.City.Helpers
             };
 
             //Act
-            var result = CityHelpers.GetCityAdmins(city);
+            var result = CityHelpers.GetCityAdmins(city.CityAdministration);
 
             //Assert
             Assert.IsNotNull(result);

@@ -34,9 +34,9 @@ RUN dotnet build -c $Configuration -o /app
 
 FROM builder AS publish
 ARG Configuration=debug
-RUN dotnet publish -c $Configuration -o /app
+RUN dotnet publish -c $Configuration -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "EPlast.WebApi.dll"]

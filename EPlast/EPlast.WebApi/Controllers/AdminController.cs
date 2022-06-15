@@ -1,17 +1,18 @@
-﻿using EPlast.BLL.DTO.Admin;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -25,23 +26,25 @@ namespace EPlast.WebApi.Controllers
 
         private readonly ICityParticipantsService _cityAdministrationService;
 
-        private readonly ICityService _cityService;
-
         private readonly ILoggerService<AdminController> _loggerService;
 
         private readonly IUserManagerService _userManagerService;
 
-        public AdminController(ILoggerService<AdminController> logger,
-                                                    IUserManagerService userManagerService,
+        private readonly IMediator _mediator;
+
+        public AdminController(
+            ILoggerService<AdminController> logger,
+            IUserManagerService userManagerService,
             IAdminService adminService,
-            ICityService cityService,
-            ICityParticipantsService cityAdministrationService)
+            ICityParticipantsService cityAdministrationService,
+            IMediator mediator
+            )
         {
             _loggerService = logger;
             _userManagerService = userManagerService;
             _adminService = adminService;
-            _cityService = cityService;
             _cityAdministrationService = cityAdministrationService;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -340,9 +343,13 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("regionsAdmins")]
         public async Task<IActionResult> RegionsAdmins()
         {
+            var citiesDTO = await _mediator.Send(
+                new GetAllCitiesOrByNameQuery(null)
+            );
+
             var model = new CitiesAdminsViewModel()
             {
-                Cities = await _cityService.GetAllCitiesAsync()
+                Cities = citiesDTO
             };
 
             return Ok(model);
