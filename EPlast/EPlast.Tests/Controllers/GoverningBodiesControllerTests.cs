@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
+using OkObjectResult = Microsoft.AspNetCore.Mvc.OkObjectResult;
 
 namespace EPlast.Tests.Controllers
 {
@@ -350,7 +352,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EditAdmin_Valid_Test()
+        public async Task EditAdmin_Valid_ReturnsOkObjectResult()
         {
             // Arrange
 
@@ -369,6 +371,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(resultValue);
+        }
+
+        [Test]
+        public async Task EditAdmin_ServiceRoleNameExists_ReturnsBadRequest()
+        {
+            // Arrange
+
+            _governingBodyAdministrationService
+                .Setup(c => c.EditGoverningBodyAdministratorAsync(It.IsAny<GoverningBodyAdministrationDTO>()))
+                .Throws(new ArgumentException());
+            _logger
+                .Setup(l => l.LogInformation(It.IsAny<string>()));
+
+            // Act
+            var result = await _governingBodiesController.EditAdmin(new GoverningBodyAdministrationDTO { AdminType = new AdminTypeDTO() });
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
@@ -792,6 +813,108 @@ namespace EPlast.Tests.Controllers
             _governingBodiesService.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUsersForGoverningBodyAdminForm_ReturnsOk()
+        {
+            //Arrange
+            IEnumerable<ShortUserInformationDTO> users = new List<ShortUserInformationDTO>();
+
+            _governingBodyAdministrationService.Setup(g => g.GetUsersForGoverningBodyAdminFormAsync())
+                .ReturnsAsync(users);
+
+            //Act
+            var result = await _governingBodiesController.GetUsersForGoverningBodyAdminForm();
+
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetUsersForGoverningBodyAdminForm_ReturnsBadRequest()
+        {
+            //Arrange
+            IEnumerable<ShortUserInformationDTO> users = null;
+
+            _governingBodyAdministrationService.Setup(g => g.GetUsersForGoverningBodyAdminFormAsync())
+                .ReturnsAsync(users);
+
+            //Act
+            var result = await _governingBodiesController.GetUsersForGoverningBodyAdminForm();
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdminsByPage_AdminsFound_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsByPageAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(
+                    new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>(
+                        new List<GoverningBodyAdministrationDTO>(), It.IsAny<int>()));
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdminsByPage(It.IsAny<int>(), It.IsAny<int>());
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdminsByPage_TupleIsNull_ReturnsNotFoundResult()
+        {
+            //Arrange
+            Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int> tuple = null;
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsByPageAsync(It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(tuple);
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdminsByPage(It.IsAny<int>(), It.IsAny<int>());
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdmins_AdminsFound_ReturnsOkObjectResult()
+        {
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsAsync())
+                .ReturnsAsync(new List<GoverningBodyAdministrationDTO>());
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdmins();
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task GetGoverningBodyAdmins_AdminsNotFound_ReturnsNotFoundResult()
+        {
+            //Arrange
+            IEnumerable<GoverningBodyAdministrationDTO> nullList = null;
+            _governingBodyAdministrationService
+                .Setup(s => s.GetGoverningBodyAdministratorsAsync())
+                .ReturnsAsync(nullList);
+            //Act
+            var result = await _governingBodiesController.GetGoverningBodyAdmins();
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task CheckRoleNameExists_ReturnsOkObjectResult()
+        {
+            //Arrange
+            _governingBodyAdministrationService.Setup(g => g.CheckRoleNameExistsAsync(It.IsAny<string>()))
+                .ReturnsAsync(It.IsAny<bool>());
+            //Act
+            var result = await _governingBodiesController.CheckRoleNameExists(It.IsAny<string>());
+            //Assert 
+            Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         private const int TestId = 3;

@@ -152,6 +152,34 @@ namespace EPlast.WebApi.Controllers
             return Ok(new { Admins = governingBodyViewModel.Administration, governingBodyViewModel.Head, governingBodyViewModel.GoverningBodyName });
         }
 
+        [HttpGet("GoverningBodyAdminsByPage/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGoverningBodyAdminsByPage(int pageNumber, [Required] int pageSize)
+        {
+            var governingBodyAdministrators =
+                await _governingBodyAdministrationService.GetGoverningBodyAdministratorsByPageAsync(pageNumber, pageSize);
+            if (governingBodyAdministrators == null)
+            {
+                return NotFound();
+            }
+            
+            return Ok(governingBodyAdministrators);
+        }
+
+        [HttpGet("GoverningBodyAdmins")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGoverningBodyAdmins()
+        {
+            var governingBodyAdmins = await _governingBodyAdministrationService.GetGoverningBodyAdministratorsAsync();
+            
+            if (governingBodyAdmins == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(governingBodyAdmins);
+        }
+
         /// <summary>
         /// Add a new GoverningBodyAdmin 
         /// </summary>
@@ -206,9 +234,15 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
         public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDTO adminDto)
         {
-            await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
+            try
+            {
+                await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"Admin with User-ID {{{adminDto.UserId}}} was edited.");
-
             return Ok(adminDto);
         }
 
@@ -445,6 +479,25 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Error getting UserAdministration");
             }
+        }
+
+        [HttpGet("GetUsersForGoverningBodyAdminForm")]
+        public async Task<IActionResult> GetUsersForGoverningBodyAdminForm()
+        {
+            var result = await _governingBodyAdministrationService.GetUsersForGoverningBodyAdminFormAsync();
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("CheckRoleNameExists/{roleName}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> CheckRoleNameExists(string roleName)
+        {
+            return Ok(await _governingBodyAdministrationService.CheckRoleNameExistsAsync(roleName));
         }
     }
 }
