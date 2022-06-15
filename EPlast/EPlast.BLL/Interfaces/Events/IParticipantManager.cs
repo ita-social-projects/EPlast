@@ -67,6 +67,6 @@ namespace EPlast.BLL.Interfaces.Events
         /// Change present status of the participant's event.
         /// </summary>
         /// <param name="id">The Id of participant</param>
-        Task ChangeUserPresentStatus(int perticipantId);
+        Task ChangeUserPresentStatusAsync(int perticipantId);
     }
 }

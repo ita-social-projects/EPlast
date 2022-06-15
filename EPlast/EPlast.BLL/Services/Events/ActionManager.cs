@@ -203,9 +203,9 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
-        public async Task ChangeUserPresentStatusAsync(int participantId)
+        public async Task ChangeUsersPresentStatusAsync(int participantId)
         {
-            await _participantManager.ChangeUserPresentStatus(participantId);
+            await _participantManager.ChangeUserPresentStatusAsync(participantId);
         }
 
         public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)

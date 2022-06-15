@@ -214,10 +214,10 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _actionManager.ChangeUserPresentStatusAsync(id);
+                await _actionManager.ChangeUsersPresentStatusAsync(id);
                 return NoContent();
             }
-            catch(InvalidOperationException)
+            catch(KeyNotFoundException)
             {
                 return NotFound();
             }
