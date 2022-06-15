@@ -8,5 +8,6 @@
         public string UserId { get; set; }
         public int StatusId { get; set; }
         public string Status { get; set; }
+        public bool WasPresent { get; set; }
     }
 }

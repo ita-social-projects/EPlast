@@ -73,6 +73,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 }).ToList(),
                 CityMembers = x.CityMembers.Select(x => new CityMembers
                 {
+                    ID = x.ID,
                     UserId = x.UserId,
                     User = new User
                     {
