@@ -20,8 +20,7 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
                 .ForMember(r => r.Description, s => s.MapFrom(t => t.Sector.Description))
                 .ForMember(r => r.Logo, s => s.MapFrom(t => t.Sector.Logo))
                 .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.Sector.AdministrationCount))
-                .ForMember(r => r.GoverningBodyId, s => s.MapFrom(t => t.Sector.GoverningBodyId))
-                .ForMember(r => r.Announcements, s => s.MapFrom(t => t.Sector.Announcements));
+                .ForMember(r => r.GoverningBodyId, s => s.MapFrom(t => t.Sector.GoverningBodyId));
         }
 }
 }

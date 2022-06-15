@@ -24,8 +24,8 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 return null;
             }
 
-            var cityHead = CityHelpers.GetCityHead(city);
-            var cityHeadDeputy = CityHelpers.GetCityHeadDeputy(city);
+            var cityHead = CityHelpers.GetCityHead(city.CityAdministration);
+            var cityHeadDeputy = CityHelpers.GetCityHeadDeputy(city.CityAdministration);
 
             var cityHeadId = cityHead != null ? cityHead.UserId : "No Id";
             var cityHeadDeputyId = cityHeadDeputy != null ? cityHeadDeputy.UserId : "No Id";

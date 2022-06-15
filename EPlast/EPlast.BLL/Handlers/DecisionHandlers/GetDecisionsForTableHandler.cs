@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO;
+using EPlast.BLL.Queries.Decision;
+using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using EPlast.BLL.Queries.Decision;
-using EPlast.BLL.DTO;
-using AutoMapper;
-using System.Threading.Tasks;
-using System.Threading;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using EPlast.DataAccess.Entities.Decision;
 
 namespace EPlast.BLL.Handlers.DecisionHandlers
 {
@@ -25,7 +25,7 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
 
         public async Task<IEnumerable<DecisionTableObject>>Handle(GetDecisionsForTableQuery request, CancellationToken cancellationToken)
         {
-            return _repositoryWrapper.Decesion.GetDecisions(request.SearchData, request.Page, request.PageSize);
+            return await _repositoryWrapper.Decesion.GetDecisions(request.SearchData, request.Page, request.PageSize);
         }
     }
 }
