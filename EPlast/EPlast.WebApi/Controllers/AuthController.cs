@@ -169,33 +169,27 @@ namespace EPlast.WebApi.Controllers
             return Ok(_resources.ResourceForErrors["EmailForRegistering-Resended"]);
         }
 
-        /// <summary>
-        /// Method for sending question to Admin in system
-        /// </summary>
-        /// <param name="contactsDto">Contacts model(dto)</param>
-        /// <returns>Answer from backend sending question to Admin in system</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with sending question</response>
-        [HttpPost("sendQuestion")]
-        public async Task<IActionResult> SendContacts([FromBody] ContactsDto contactsDto)
+        [HttpPost("feedback")]
+        public async Task<IActionResult> Feedback(FeedbackDto feedbackDto)
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Дані введені неправильно");
-                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
+                return BadRequest(ModelState);
             }
 
             await _emailSendingService.SendEmailAsync(
                 "eplastdmnstrtr@gmail.com",
                 "Питання користувачів",
-                $"Контактні дані користувача : Електронна пошта {contactsDto.Email}, " +
-                $"Ім'я {contactsDto.Name}," +
-                $"Телефон {contactsDto.PhoneNumber}  " +
-                $"Опис питання : {contactsDto.FeedBackDescription}",
-                contactsDto.Email
+                $@"
+                Ім'я: {feedbackDto.Name}<br/>
+                Пошта: {feedbackDto.Email}<br/>
+                Номер телефону: {feedbackDto.PhoneNumber}<br/>
+                Коментар: {feedbackDto.FeedbackBody}<br/>
+                ",
+                "EPlast"
             );
 
-            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
+            return NoContent();
         }
     }
 }

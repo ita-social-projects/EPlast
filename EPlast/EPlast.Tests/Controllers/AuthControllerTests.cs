@@ -435,25 +435,19 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (_,
                 _,
-                mockResources,
+                _,
                 _,
                 _,
                 AuthController) = CreateAuthController();
-            ContactsDto contactsDto = new ContactsDto();
-            AuthController.ModelState.AddModelError("NameError", "Required");
-
-            mockResources
-                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
+            FeedbackDto contactsDto = new FeedbackDto();
+            AuthController.ModelState.AddModelError("Test", "failed");
 
             //Act
-            var expected = StatusCodes.Status400BadRequest;
-            var result = await AuthController.SendContacts(contactsDto);
-            var actual = (result as BadRequestObjectResult).StatusCode;
+            var result = await AuthController.Feedback(contactsDto);
 
             //Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-            Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
         [Test]
@@ -462,29 +456,25 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (_,
                 _,
-                mockResources,
+                _,
                 _,
                 emailSendingService,
                 AuthController) = CreateAuthController();
-            ContactsDto contactsDto = new ContactsDto();
+
+            FeedbackDto contactsDto = new FeedbackDto();
             emailSendingService.Setup(e => e.SendEmailAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<string>()
             ));
-            mockResources
-                .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
 
             //Act
-            var expected = StatusCodes.Status200OK;
-            var result = await AuthController.SendContacts(contactsDto);
-            var actual = (result as OkObjectResult).StatusCode;
+            var result = await AuthController.Feedback(contactsDto);
 
             //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
+            Assert.IsInstanceOf<NoContentResult>(result);
         }
 
         [Test]
