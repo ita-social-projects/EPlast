@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220606183543_AddGoverningBodyAdminRoleField")]
+    partial class AddGoverningBodyAdminRoleField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1491,6 +1493,8 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Genders");
+
+                    b.HasCheckConstraint("constraint_gender", "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncementImage", b =>
@@ -1979,9 +1983,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("WasPresent")
-                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -3490,13 +3491,13 @@ namespace EPlast.DataAccess.Migrations
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportAdmins", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.ClubAdministration", "ClubAdministration")
-                        .WithMany("ClubReportAdmins")
+                        .WithMany()
                         .HasForeignKey("ClubAdministrationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany("ClubReportAdmins")
+                        .WithMany()
                         .HasForeignKey("ClubAnnualReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3524,15 +3525,15 @@ namespace EPlast.DataAccess.Migrations
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportMember", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany("ClubReportMembers")
+                        .WithMany()
                         .HasForeignKey("ClubAnnualReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.ClubMemberHistory", "ClubMemberHistory")
-                        .WithMany("ClubReportMembers")
+                        .WithMany()
                         .HasForeignKey("ClubMemberHistoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

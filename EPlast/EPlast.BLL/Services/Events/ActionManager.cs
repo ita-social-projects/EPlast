@@ -81,7 +81,6 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
-            
             return await GetEventDtosAsync(events, user);
         }
 
@@ -204,6 +203,11 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        public async Task ChangeUsersPresentStatusAsync(int participantId)
+        {
+            await _participantManager.ChangeUserPresentStatusAsync(participantId);
+        }
+
         public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
         {
             try
@@ -268,9 +272,10 @@ namespace EPlast.BLL.Services.Events
                     List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
                     foreach (var user in eventToCheck.Participants)
                     {
-                        userNotificationsDTO.Add(new UserNotificationDTO { 
-                            Message = "Оцінювання події є доступним протягом 3 днів після її завершення! ", 
-                            NotificationTypeId = 1, 
+                        userNotificationsDTO.Add(new UserNotificationDTO
+                        {
+                            Message = "Оцінювання події є доступним протягом 3 днів після її завершення! ",
+                            NotificationTypeId = 1,
                             OwnerUserId = user.UserId,
                             SenderLink = $"/events/details/{eventToCheck.ID}",
                             SenderName = eventToCheck.EventName
@@ -329,7 +334,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
+                    IsUserEventAdmin = ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),
