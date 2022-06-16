@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20220606135303_DropTableUserPrecautionsTableObjectAndSectorAnnouncement")]
-    partial class DropTableUserPrecautionsTableObjectAndSectorAnnouncement
+    [Migration("20220613112032_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -1493,8 +1493,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Genders");
-
-                    b.HasCheckConstraint("constraint_gender", "(Name = 'Чоловік' AND ID = 1) OR (Name = 'Жінка' AND ID = 2) OR (Name = 'Не маю бажання вказувати' AND ID = 7)");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncementImage", b =>
@@ -3488,13 +3486,13 @@ namespace EPlast.DataAccess.Migrations
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportAdmins", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.ClubAdministration", "ClubAdministration")
-                        .WithMany()
+                        .WithMany("ClubReportAdmins")
                         .HasForeignKey("ClubAdministrationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany()
+                        .WithMany("ClubReportAdmins")
                         .HasForeignKey("ClubAnnualReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3522,15 +3520,15 @@ namespace EPlast.DataAccess.Migrations
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubReportMember", b =>
                 {
                     b.HasOne("EPlast.DataAccess.Entities.ClubAnnualReport", "ClubAnnualReport")
-                        .WithMany()
+                        .WithMany("ClubReportMembers")
                         .HasForeignKey("ClubAnnualReportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.ClubMemberHistory", "ClubMemberHistory")
-                        .WithMany()
+                        .WithMany("ClubReportMembers")
                         .HasForeignKey("ClubMemberHistoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 

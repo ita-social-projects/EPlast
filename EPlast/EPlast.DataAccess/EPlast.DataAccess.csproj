@@ -41,6 +41,10 @@
     <Compile Remove="Migrations\20210818105200_cityReport.Designer.cs" />
     <Compile Remove="Migrations\20220606134526_DropTableUserPrecautionsTableObject.cs" />
     <Compile Remove="Migrations\20220606134526_DropTableUserPrecautionsTableObject.Designer.cs" />
+    <Compile Remove="Migrations\20220613101856_Initial.cs" />
+    <Compile Remove="Migrations\20220613101856_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20220613103531_Initial.cs" />
+    <Compile Remove="Migrations\20220613103531_Initial.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -64,5 +68,9 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>
