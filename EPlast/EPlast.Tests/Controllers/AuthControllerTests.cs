@@ -1,9 +1,12 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Resources;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,9 +17,6 @@ using Microsoft.Extensions.Localization;
 using Moq;
 using NLog.Extensions.Logging;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -29,8 +29,8 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 _,
-                _,
                 mockAuthEmailService,
+                _,
                 AuthController) = CreateAuthController();
             string userId = "userId";
             string token = "token";
@@ -65,8 +65,8 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 _,
-                _,
                 mockAuthEmailService,
+                _,
                 AuthController) = CreateAuthController();
             string userId = "userId";
             string token = "token";
@@ -99,8 +99,8 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 _,
-                _,
                 mockAuthEmailService,
+                _,
                 AuthController) = CreateAuthController();
             string userId = "userId";
             string token = "token";
@@ -177,8 +177,8 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
+                _,
                 _,
                 AuthController) = CreateAuthController();
             string userId = "userId";
@@ -214,8 +214,8 @@ namespace EPlast.Tests.Controllers
             var (mockAuthService,
                 _,
                 _,
-                _,
                 mockAuthEmailService,
+                _,
                 authController) = CreateAuthController();
             string userId = null;
             string token = null;
@@ -241,35 +241,36 @@ namespace EPlast.Tests.Controllers
         public (
             Mock<IAuthService>,
             Mock<IUserDatesService>,
-            Mock<IHomeService>,
             Mock<IResources>,
             Mock<IAuthEmailService>,
+            Mock<IEmailSendingService>,
             AuthController
             ) CreateAuthController()
         {
             Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
             Mock<IUserDatesService> mockUserDataServices = new Mock<IUserDatesService>();
-            Mock<IHomeService> mockHomeService = new Mock<IHomeService>();
             Mock<IResources> mockResources = new Mock<IResources>();
             Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
             Mock<ILoggerService<AuthController>> mockLoggerService = new Mock<ILoggerService<AuthController>>();
+            Mock<IEmailSendingService> emailSendingServiceMock = new Mock<IEmailSendingService>();
 
             AuthController AuthController = new AuthController(
                 mockAuthService.Object,
                 mockUserDataServices.Object,
-                mockHomeService.Object,
                 mockResources.Object,
                 mockAuthEmailService.Object,
-                mockLoggerService.Object
-            );
+                mockLoggerService.Object,
+                emailSendingServiceMock.Object
+                );
 
             return (
                 mockAuthService,
                 mockUserDataServices,
-                mockHomeService,
                 mockResources,
                 mockAuthEmailService,
-                AuthController);
+                emailSendingServiceMock,
+                AuthController
+            );
         }
 
         [Test]
@@ -278,9 +279,9 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
                 mockAuthEmailService,
+                _,
                 authController) = CreateAuthController();
 
             RegisterDto registerDto = new RegisterDto();
@@ -331,9 +332,9 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
                 mockAuthEmailService,
+                _,
                 AuthController) = CreateAuthController();
 
             RegisterDto registerDto = new RegisterDto();
@@ -404,9 +405,9 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
                 mockAuthEmailService,
+                _,
                 AuthController) = CreateAuthController();
             string userId = "userId";
             mockAuthService
@@ -434,8 +435,8 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (_,
                 _,
-                _,
                 mockResources,
+                _,
                 _,
                 AuthController) = CreateAuthController();
             ContactsDto contactsDto = new ContactsDto();
@@ -461,13 +462,17 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (_,
                 _,
-                mockHomeService,
                 mockResources,
                 _,
+                emailSendingService,
                 AuthController) = CreateAuthController();
             ContactsDto contactsDto = new ContactsDto();
-            mockHomeService
-                .Setup(s => s.SendEmailAdmin(contactsDto));
+            emailSendingService.Setup(e => e.SendEmailAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<string>()
+            ));
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
 
@@ -488,8 +493,8 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (_,
                 _,
-                _,
                 mockResources,
+                _,
                 _,
                 AuthController) = CreateAuthController();
             AuthController.ModelState.AddModelError("NameError", "Required");
@@ -513,8 +518,8 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
+                _,
                 _,
                 AuthController) = CreateAuthController();
 
@@ -545,8 +550,8 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
+                _,
                 _,
                 AuthController) = CreateAuthController();
 
@@ -573,8 +578,8 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (mockAuthService,
                 _,
-                _,
                 mockResources,
+                _,
                 _,
                 AuthController) = CreateAuthController();
 

@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System.Threading.Tasks;
+using System.Web;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
@@ -6,8 +8,6 @@ using EPlast.BLL.Interfaces.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -17,26 +17,27 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IAuthEmailService _authEmailServices;
         private readonly IAuthService _authService;
-        private readonly IHomeService _homeService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
         private readonly ILoggerService<AuthController> _logger;
+        private readonly IEmailSendingService _emailSendingService;
         private const int TotalMinutesInOneDay = 1440;
 
         public AuthController(
             IAuthService authService,
             IUserDatesService userDatesService,
-            IHomeService homeService,
             IResources resources,
             IAuthEmailService authEmailServices,
-            ILoggerService<AuthController> logger)
+            ILoggerService<AuthController> logger,
+            IEmailSendingService emailSendingService
+        )
         {
             _authService = authService;
             _userDatesService = userDatesService;
-            _homeService = homeService;
             _resources = resources;
             _authEmailServices = authEmailServices;
             _logger = logger;
+            _emailSendingService = emailSendingService;
         }
 
         /// <summary>
@@ -183,7 +184,16 @@ namespace EPlast.WebApi.Controllers
                 ModelState.AddModelError("", "Дані введені неправильно");
                 return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
             }
-            await _homeService.SendEmailAdmin(contactsDto);
+
+            await _emailSendingService.SendEmailAsync(
+                "eplastdmnstrtr@gmail.com",
+                "Питання користувачів",
+                $"Контактні дані користувача : Електронна пошта {contactsDto.Email}, " +
+                $"Ім'я {contactsDto.Name}," +
+                $"Телефон {contactsDto.PhoneNumber}  " +
+                $"Опис питання : {contactsDto.FeedBackDescription}",
+                contactsDto.Email
+            );
 
             return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
         }
