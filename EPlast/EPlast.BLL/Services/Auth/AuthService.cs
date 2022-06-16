@@ -1,4 +1,12 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
@@ -10,14 +18,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 using NLog.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace EPlast.BLL.Services
 {
@@ -241,19 +241,13 @@ namespace EPlast.BLL.Services
         ///<inheritdoc/>
         public int GetTimeAfterRegister(UserDTO userDto)
         {
-            IDateTimeHelper dateTimeConfirming = new DateTimeHelper();
-            var user = _mapper.Map<UserDTO, User>(userDto);
-            int totalTime = (int)dateTimeConfirming.GetCurrentTime().Subtract(user.EmailSendedOnRegister).TotalMinutes;
-            return totalTime;
+            return (int)(DateTime.Now - userDto.EmailSendedOnRegister).TotalMinutes;
         }
 
         ///<inheritdoc/>
         public int GetTimeAfterReset(UserDTO userDto)
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            dateTimeResetingPassword.GetCurrentTime();
-            int totalTime = (int)dateTimeResetingPassword.GetCurrentTime().Subtract(userDto.EmailSendedOnForgotPassword).TotalMinutes;
-            return totalTime;
+            return (int)(DateTime.Now - userDto.EmailSendedOnForgotPassword).TotalMinutes;
         }
 
         ///<inheritdoc/>
