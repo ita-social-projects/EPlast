@@ -8,6 +8,7 @@ using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.DataAccess.ExtensionMethods;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -217,50 +218,7 @@ namespace EPlast.DataAccess
                 .WithMany(c => c.EventTypes)
                 .HasForeignKey(ct => ct.EventCategoryId);
 
-            modelBuilder.Entity<User>()
-                .HasOne(x => x.UserProfile)
-                .WithOne(x => x.User)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.CityMembers)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.ClubMembers)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasOne(x => x.UserPlastDegrees)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.UserMembershipDates)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-                .HasMany(x => x.GoverningBodyAdministrations)
-                .WithOne(x => x.User)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.RegionAdministrations)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.CityAdministrations)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<User>()
-                .HasMany(x => x.ClubAdministrations)
-                .WithOne(x => x.User)
-                .OnDelete(DeleteBehavior.Cascade);
+            
 
             modelBuilder.Entity<CityDocumentType>()
                 .HasMany(x => x.CityDocuments)
@@ -272,30 +230,79 @@ namespace EPlast.DataAccess
                 .WithOne(x => x.ClubDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.Participants)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<User>(user =>
+            {
+                user
+                    .HasMany(x => x.Participants)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.Events)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
+                user
+                    .HasMany(x => x.Events)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.ConfirmedUsers)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
+                user
+                    .HasMany(x => x.ConfirmedUsers)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-               .HasMany(x => x.Approvers)
-               .WithOne(x => x.User)
-               .OnDelete(DeleteBehavior.Cascade);
+                user
+                    .HasMany(x => x.Approvers)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>()
-                .HasMany(x => x.UserDistinctions)
-                .WithOne(x => x.User)
-                .OnDelete(DeleteBehavior.Cascade);
+                user
+                    .HasMany(x => x.UserDistinctions)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasOne(x => x.UserProfile)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.CityMembers)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.ClubMembers)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasOne(x => x.UserPlastDegrees)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.UserMembershipDates)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.GoverningBodyAdministrations)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.RegionAdministrations)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.CityAdministrations)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                    .HasMany(x => x.ClubAdministrations)
+                    .WithOne(x => x.User)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            });
 
             modelBuilder.Entity<Distinction>()
                 .HasMany(x => x.UserDistinctions)
@@ -340,6 +347,8 @@ namespace EPlast.DataAccess
                     .HasForeignKey(a => a.ClubMemberHistoryId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
+
+            modelBuilder.SeedData();
         }
     }
 }

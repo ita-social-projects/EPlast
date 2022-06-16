@@ -16,6 +16,7 @@ using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -252,6 +253,7 @@ namespace EPlast.Tests.Controllers
             Mock<IResources> mockResources = new Mock<IResources>();
             Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
             Mock<ILoggerService<AuthController>> mockLoggerService = new Mock<ILoggerService<AuthController>>();
+            Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>();
 
             AuthController AuthController = new AuthController(
                 mockAuthService.Object,
@@ -259,7 +261,8 @@ namespace EPlast.Tests.Controllers
                 mockHomeService.Object,
                 mockResources.Object,
                 mockAuthEmailService.Object,
-                mockLoggerService.Object
+                mockLoggerService.Object,
+                mockUserManager.Object
                 );
 
             return (

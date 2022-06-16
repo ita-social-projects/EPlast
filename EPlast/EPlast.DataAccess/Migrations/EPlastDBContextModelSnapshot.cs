@@ -107,6 +107,123 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("AdminTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            AdminTypeName = "Admin"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            AdminTypeName = "Прихильник"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            AdminTypeName = "Дійсний член організації"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            AdminTypeName = "Голова Пласту"
+                        },
+                        new
+                        {
+                            ID = 5,
+                            AdminTypeName = "Адміністратор подій"
+                        },
+                        new
+                        {
+                            ID = 6,
+                            AdminTypeName = "Голова Куреня"
+                        },
+                        new
+                        {
+                            ID = 7,
+                            AdminTypeName = "Діловод Куреня"
+                        },
+                        new
+                        {
+                            ID = 8,
+                            AdminTypeName = "Голова Округи"
+                        },
+                        new
+                        {
+                            ID = 9,
+                            AdminTypeName = "Діловод Округи"
+                        },
+                        new
+                        {
+                            ID = 10,
+                            AdminTypeName = "Голова Станиці"
+                        },
+                        new
+                        {
+                            ID = 11,
+                            AdminTypeName = "Діловод Станиці"
+                        },
+                        new
+                        {
+                            ID = 12,
+                            AdminTypeName = "Колишній член Пласту"
+                        },
+                        new
+                        {
+                            ID = 13,
+                            AdminTypeName = "Зареєстрований користувач"
+                        },
+                        new
+                        {
+                            ID = 14,
+                            AdminTypeName = "Зацікавлений"
+                        },
+                        new
+                        {
+                            ID = 15,
+                            AdminTypeName = "Заступник Голови Станиці"
+                        },
+                        new
+                        {
+                            ID = 16,
+                            AdminTypeName = "Заступник Голови Округи"
+                        },
+                        new
+                        {
+                            ID = 17,
+                            AdminTypeName = "Заступник Голови Куреня"
+                        },
+                        new
+                        {
+                            ID = 18,
+                            AdminTypeName = "Голова Краю"
+                        },
+                        new
+                        {
+                            ID = 19,
+                            AdminTypeName = "Крайовий Адмін"
+                        },
+                        new
+                        {
+                            ID = 20,
+                            AdminTypeName = "Голова Керівного Органу"
+                        },
+                        new
+                        {
+                            ID = 21,
+                            AdminTypeName = "Діловод Керівного Органу"
+                        },
+                        new
+                        {
+                            ID = 22,
+                            AdminTypeName = "Голова Напряму Керівного Органу"
+                        },
+                        new
+                        {
+                            ID = 23,
+                            AdminTypeName = "Діловод Напряму Керівного Органу"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.AnnualReport", b =>
@@ -436,6 +553,18 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("CityDocumentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "Протокол Загального Збору Станиці"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "Протокол сходин Старшої Пластової Старшини"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.CityDocuments", b =>
@@ -737,6 +866,18 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("ClubDocumentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "Протокол Загального Збору Куреня"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "Протокол сходин Старшої Пластової Старшини"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocuments", b =>
@@ -1236,6 +1377,28 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("KVTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "КВ1(УПН)"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "КВ1(УПЮ)"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            Name = "КВ2(УПН)"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            Name = "КВ2(УПЮ)"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Event", b =>
@@ -1362,6 +1525,28 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("EventAdministrationType");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            EventAdministrationTypeName = "Комендант"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            EventAdministrationTypeName = "Заступник коменданта"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            EventAdministrationTypeName = "Писар"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            EventAdministrationTypeName = "Бунчужний"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventCategory", b =>
@@ -1427,6 +1612,28 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("EventSection");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            EventSectionName = "УПЮ"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            EventSectionName = "УПН"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            EventSectionName = "УСП/УПС"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            EventSectionName = "Інші"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventStatus", b =>
@@ -1443,6 +1650,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("EventStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            EventStatusName = "Завершено"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            EventStatusName = "Не затверджено"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            EventStatusName = "Затверджено"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventType", b =>
@@ -1459,6 +1683,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("EventTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            EventTypeName = "Акція"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            EventTypeName = "Вишкіл"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            EventTypeName = "Табір"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.Gallary", b =>
@@ -1491,6 +1732,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Genders");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "Чоловік"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "Жінка"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            Name = "Не маю бажання вказувати"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Announcement.GoverningBodyAnnouncementImage", b =>
@@ -1611,6 +1869,18 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GoverningBodyDocumentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Протокол Загального Збору"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Протокол Старшої Пластової Ради"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.GoverningBodyDocuments", b =>
@@ -1774,6 +2044,18 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GoverningBodySectorDocumentTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Протокол Загального Збору"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Протокол Старшої Пластової Ради"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.GoverningBody.Sector.SectorDocuments", b =>
@@ -1942,6 +2224,18 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Nationalities");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "Українка"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "Українець"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.NotificationType", b =>
@@ -1958,6 +2252,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("NotificationTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Default"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Створення події"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Додавання користувача"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Participant", b =>
@@ -2008,6 +2319,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("ParticipantStatuses");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            ParticipantStatusName = "Учасник"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            ParticipantStatusName = "Відмовлено"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            ParticipantStatusName = "Розглядається"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.PlastDegree", b =>
@@ -2024,6 +2352,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PlastDegrees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Пластун сеніор керівництва / Пластунка сеніорка керівництва"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Пластприят"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Region", b =>
@@ -2078,6 +2423,18 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Regions");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            City = "Львів",
+                            Description = "Пласт — українська скаутська організація. Метою Пласту є сприяти всебічному, патріотичному вихованню та самовихованню української молоді. Пласт виховує молодь як свідомих, відповідальних і повновартісних громадян місцевої, національної та світової спільноти, провідників суспільства.  Також Пласт є неполітичною та позаконфесійною організацією.  Пласт був створений у 1911 році, невдовзі після заснування скаутського руху Робертом Бейден-Пауелом в 1907 р.,  а вже 12 квітня 1912 року у Львові пластуни склали першу Пластову присягу. Серед засновників організації були д-р. Олександр Тисовський, Петро Франко (син Івана Франка) та Іван Чмола.  В основі назви “Пласт” лежить відповідник англійського Scout (розвідник), взятий за прикладом пластунів-козаків-розвідників. Гербом Пласту є трилиста квітка лілії — символ скаутського руху відомий як Fleur-de-lis — та тризуб, сплетенів одну гармонійну цілісність.  Для досягнення виховних цілей Пласт застосовує власну унікальну методу виховання.",
+                            IsActive = true,
+                            PostIndex = 0,
+                            RegionName = "Крайовий Провід Пласту",
+                            Status = 1
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.RegionAdministration", b =>
@@ -2550,6 +2907,123 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("UpuDegrees");
+
+                    b.HasData(
+                        new
+                        {
+                            ID = 1,
+                            Name = "не був/-ла в юнацтві"
+                        },
+                        new
+                        {
+                            ID = 2,
+                            Name = "пластун/-ка учасник/-ця"
+                        },
+                        new
+                        {
+                            ID = 3,
+                            Name = "пластун/-ка розвідувач/-ка"
+                        },
+                        new
+                        {
+                            ID = 4,
+                            Name = "пластун скоб / пластунка вірлиця"
+                        });
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("EmailSendedOnForgotPassword")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EmailSendedOnRegister")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FatherName")
+                        .HasColumnType("nvarchar(25)")
+                        .HasMaxLength(25);
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)")
+                        .HasMaxLength(25);
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(25)")
+                        .HasMaxLength(25);
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(18)")
+                        .HasMaxLength(18);
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("RegistredOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("SocialNetworking")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(256)")
+                        .HasMaxLength(256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.Distinction", b =>
@@ -2582,6 +3056,23 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Precautions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Догана"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Сувора догана"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Догана із загрозою виключення з Пласту"
+                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserDistinction", b =>
@@ -2696,6 +3187,48 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserPrecautions");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserPrecautionsTableObject", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PrecautionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reporter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserPrecautionsTableObject");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserRenewalsTableObject", b =>
@@ -3065,77 +3598,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("AspNetRoleClaims");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(256)")
-                        .HasMaxLength(256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("AspNetUsers");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -3214,42 +3676,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.User", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
-
-                    b.Property<DateTime>("EmailSendedOnForgotPassword")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("EmailSendedOnRegister")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FatherName")
-                        .HasColumnType("nvarchar(25)")
-                        .HasMaxLength(25);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)")
-                        .HasMaxLength(25);
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(25)")
-                        .HasMaxLength(25);
-
-                    b.Property<DateTime>("RegistredOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("SocialNetworking")
-                        .HasColumnType("bit");
-
-                    b.HasDiscriminator().HasValue("User");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.AboutBase.Subsection", b =>
@@ -4019,7 +4445,7 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EPlast.DataAccess.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4028,7 +4454,7 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EPlast.DataAccess.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4043,7 +4469,7 @@ namespace EPlast.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EPlast.DataAccess.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4052,7 +4478,7 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                    b.HasOne("EPlast.DataAccess.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

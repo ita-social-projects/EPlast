@@ -57,7 +57,6 @@ namespace EPlast.DataAccess.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(nullable: false),
-                    PhoneNumber = table.Column<string>(nullable: true),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
@@ -71,15 +70,15 @@ namespace EPlast.DataAccess.Migrations
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
-                    FirstName = table.Column<string>(maxLength: 25, nullable: true),
-                    LastName = table.Column<string>(maxLength: 25, nullable: true),
+                    FirstName = table.Column<string>(maxLength: 25, nullable: false),
+                    LastName = table.Column<string>(maxLength: 25, nullable: false),
                     FatherName = table.Column<string>(maxLength: 25, nullable: true),
-                    RegistredOn = table.Column<DateTime>(nullable: true),
-                    EmailSendedOnRegister = table.Column<DateTime>(nullable: true),
-                    EmailSendedOnForgotPassword = table.Column<DateTime>(nullable: true),
+                    PhoneNumber = table.Column<string>(maxLength: 18, nullable: true),
+                    RegistredOn = table.Column<DateTime>(nullable: false),
+                    EmailSendedOnRegister = table.Column<DateTime>(nullable: false),
+                    EmailSendedOnForgotPassword = table.Column<DateTime>(nullable: false),
                     ImagePath = table.Column<string>(nullable: true),
-                    SocialNetworking = table.Column<bool>(nullable: true)
+                    SocialNetworking = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -680,6 +679,28 @@ namespace EPlast.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserPrecautionsTableObject",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Number = table.Column<int>(nullable: false),
+                    PrecautionName = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true),
+                    UserName = table.Column<string>(nullable: true),
+                    Reporter = table.Column<string>(nullable: true),
+                    Reason = table.Column<string>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    EndDate = table.Column<DateTime>(nullable: false),
+                    IsActive = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPrecautionsTableObject", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserRenewalsTableObjects",
                 columns: table => new
                 {
@@ -1254,11 +1275,12 @@ namespace EPlast.DataAccess.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     StartDate = table.Column<DateTime>(nullable: false),
                     EndDate = table.Column<DateTime>(nullable: true),
-                    GoverningBodyId = table.Column<int>(nullable: false),
+                    GoverningBodyId = table.Column<int>(nullable: true),
                     UserId = table.Column<string>(nullable: false),
                     AdminTypeId = table.Column<int>(nullable: false),
                     Status = table.Column<bool>(nullable: false),
-                    WorkEmail = table.Column<string>(nullable: true)
+                    WorkEmail = table.Column<string>(nullable: true),
+                    GoverningBodyAdminRole = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -1274,7 +1296,7 @@ namespace EPlast.DataAccess.Migrations
                         column: x => x.GoverningBodyId,
                         principalTable: "Organization",
                         principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_GoverningBodyAdministrations_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -2359,6 +2381,7 @@ namespace EPlast.DataAccess.Migrations
                     ParticipantStatusId = table.Column<int>(nullable: false),
                     EventId = table.Column<int>(nullable: false),
                     UserId = table.Column<string>(nullable: false),
+                    WasPresent = table.Column<bool>(nullable: false),
                     Estimate = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
@@ -2432,6 +2455,200 @@ namespace EPlast.DataAccess.Migrations
                         principalTable: "AnnualReports",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AdminTypes",
+                columns: new[] { "ID", "AdminTypeName" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 23, "Діловод Напряму Керівного Органу" },
+                    { 22, "Голова Напряму Керівного Органу" },
+                    { 21, "Діловод Керівного Органу" },
+                    { 20, "Голова Керівного Органу" },
+                    { 19, "Крайовий Адмін" },
+                    { 18, "Голова Краю" },
+                    { 16, "Заступник Голови Округи" },
+                    { 15, "Заступник Голови Станиці" },
+                    { 14, "Зацікавлений" },
+                    { 13, "Зареєстрований користувач" },
+                    { 17, "Заступник Голови Куреня" },
+                    { 11, "Діловод Станиці" },
+                    { 12, "Колишній член Пласту" },
+                    { 3, "Дійсний член організації" },
+                    { 4, "Голова Пласту" },
+                    { 5, "Адміністратор подій" },
+                    { 6, "Голова Куреня" },
+                    { 2, "Прихильник" },
+                    { 8, "Голова Округи" },
+                    { 9, "Діловод Округи" },
+                    { 10, "Голова Станиці" },
+                    { 7, "Діловод Куреня" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "CityDocumentTypes",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Протокол Загального Збору Станиці" },
+                    { 2, "Протокол сходин Старшої Пластової Старшини" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ClubDocumentTypes",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Протокол Загального Збору Куреня" },
+                    { 2, "Протокол сходин Старшої Пластової Старшини" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "EventAdministrationType",
+                columns: new[] { "ID", "EventAdministrationTypeName" },
+                values: new object[,]
+                {
+                    { 2, "Заступник коменданта" },
+                    { 4, "Бунчужний" },
+                    { 1, "Комендант" },
+                    { 3, "Писар" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "EventSection",
+                columns: new[] { "ID", "EventSectionName" },
+                values: new object[,]
+                {
+                    { 4, "Інші" },
+                    { 3, "УСП/УПС" },
+                    { 2, "УПН" },
+                    { 1, "УПЮ" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "EventStatuses",
+                columns: new[] { "ID", "EventStatusName" },
+                values: new object[,]
+                {
+                    { 1, "Завершено" },
+                    { 2, "Не затверджено" },
+                    { 3, "Затверджено" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "EventTypes",
+                columns: new[] { "ID", "EventTypeName" },
+                values: new object[,]
+                {
+                    { 2, "Вишкіл" },
+                    { 1, "Акція" },
+                    { 3, "Табір" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Genders",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 3, "Не маю бажання вказувати" },
+                    { 2, "Жінка" },
+                    { 1, "Чоловік" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GoverningBodyDocumentTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Протокол Загального Збору" },
+                    { 2, "Протокол Старшої Пластової Ради" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GoverningBodySectorDocumentTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Протокол Загального Збору" },
+                    { 2, "Протокол Старшої Пластової Ради" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "KVTypes",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 1, "КВ1(УПН)" },
+                    { 2, "КВ1(УПЮ)" },
+                    { 3, "КВ2(УПН)" },
+                    { 4, "КВ2(УПЮ)" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Nationalities",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 2, "Українець" },
+                    { 1, "Українка" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "NotificationTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Default" },
+                    { 2, "Створення події" },
+                    { 3, "Додавання користувача" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ParticipantStatuses",
+                columns: new[] { "ID", "ParticipantStatusName" },
+                values: new object[,]
+                {
+                    { 1, "Учасник" },
+                    { 2, "Відмовлено" },
+                    { 3, "Розглядається" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "PlastDegrees",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Пластун сеніор прихильник / Пластунка сеніорка прихильниця" },
+                    { 2, "Пластун сеніор керівництва / Пластунка сеніорка керівництва" },
+                    { 3, "Пластприят" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Precautions",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Догана" },
+                    { 2, "Сувора догана" },
+                    { 3, "Догана із загрозою виключення з Пласту" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Regions",
+                columns: new[] { "ID", "City", "Description", "Email", "HouseNumber", "IsActive", "Link", "Logo", "OfficeNumber", "PhoneNumber", "PostIndex", "RegionName", "Status", "Street" },
+                values: new object[] { 1, "Львів", "Пласт — українська скаутська організація. Метою Пласту є сприяти всебічному, патріотичному вихованню та самовихованню української молоді. Пласт виховує молодь як свідомих, відповідальних і повновартісних громадян місцевої, національної та світової спільноти, провідників суспільства.  Також Пласт є неполітичною та позаконфесійною організацією.  Пласт був створений у 1911 році, невдовзі після заснування скаутського руху Робертом Бейден-Пауелом в 1907 р.,  а вже 12 квітня 1912 року у Львові пластуни склали першу Пластову присягу. Серед засновників організації були д-р. Олександр Тисовський, Петро Франко (син Івана Франка) та Іван Чмола.  В основі назви “Пласт” лежить відповідник англійського Scout (розвідник), взятий за прикладом пластунів-козаків-розвідників. Гербом Пласту є трилиста квітка лілії — символ скаутського руху відомий як Fleur-de-lis — та тризуб, сплетенів одну гармонійну цілісність.  Для досягнення виховних цілей Пласт застосовує власну унікальну методу виховання.", null, null, true, null, null, null, null, 0, "Крайовий Провід Пласту", 1, null });
+
+            migrationBuilder.InsertData(
+                table: "UpuDegrees",
+                columns: new[] { "ID", "Name" },
+                values: new object[,]
+                {
+                    { 2, "пластун/-ка учасник/-ця" },
+                    { 3, "пластун/-ка розвідувач/-ка" },
+                    { 4, "пластун скоб / пластунка вірлиця" },
+                    { 1, "не був/-ла в юнацтві" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -3171,6 +3388,9 @@ namespace EPlast.DataAccess.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserPrecautions");
+
+            migrationBuilder.DropTable(
+                name: "UserPrecautionsTableObject");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");
