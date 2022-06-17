@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220603203317_WasPresent-property-for-participant")]
+    partial class WasPresentpropertyforparticipant
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1529,10 +1531,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GoverningBodyAdminRole")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GoverningBodyId")
+                    b.Property<int>("GoverningBodyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -2700,6 +2699,44 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("UserPrecautions");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserPrecautionsTableObject", b =>
+                {
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PrecautionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reporter")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("UserPrecautionsTableObject");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserRenewalsTableObject", b =>
                 {
                     b.Property<bool>("Approved")
@@ -3717,7 +3754,9 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Organization", "GoverningBody")
                         .WithMany("GoverningBodyAdministration")
-                        .HasForeignKey("GoverningBodyId");
+                        .HasForeignKey("GoverningBodyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("GoverningBodyAdministrations")

@@ -9,7 +9,9 @@
     "AddAnnouncement": true,
     "DeleteAnnouncement": true,
     "EditAnnouncement": true,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": true,
+    "EditGoverningBodyAdmin": true
   },
   "Крайовий Адмін": {
     "CreateGB": true,
@@ -21,7 +23,9 @@
     "AddAnnouncement": true,
     "DeleteAnnouncement": true,
     "EditAnnouncement": true,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Голова Керівного Органу": {
     "CreateGB": true,
@@ -33,7 +37,9 @@
     "AddAnnouncement": true,
     "DeleteAnnouncement": true,
     "EditAnnouncement": true,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Голова Округи": {
     "CreateGB": false,
@@ -45,7 +51,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Заступник Голови Округи": {
     "CreateGB": false,
@@ -57,7 +65,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Голова Станиці": {
     "CreateGB": false,
@@ -69,7 +79,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Заступник Голови Станиці": {
     "CreateGB": false,
@@ -81,7 +93,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Голова Куреня": {
     "CreateGB": false,
@@ -93,7 +107,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Заступник Голови Куреня": {
     "CreateGB": false,
@@ -105,7 +121,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Прихильник": {
     "CreateGB": false,
@@ -117,7 +135,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Дійсний член організації": {
     "CreateGB": false,
@@ -129,7 +149,9 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": true
+    "ViewDocument": true,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   },
   "Зареєстрований користувач": {
     "CreateGB": false,
@@ -141,6 +163,8 @@
     "AddAnnouncement": false,
     "DeleteAnnouncement": false,
     "EditAnnouncement": false,
-    "ViewDocument": false
+    "ViewDocument": false,
+    "AddGoverningBodyAdmin": false,
+    "EditGoverningBodyAdmin": false
   }
 }
