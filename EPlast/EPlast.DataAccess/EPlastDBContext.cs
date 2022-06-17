@@ -154,19 +154,22 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<Pictures>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<SubsectionPictures>()
-                .HasKey(x => new { x.SubsectionID, x.PictureID });
+            modelBuilder.Entity<SubsectionPictures>(subsectionPictures =>
+            {
+                subsectionPictures
+                    .HasKey(x => new { x.SubsectionID, x.PictureID });
 
-            modelBuilder.Entity<SubsectionPictures>()
-                .HasOne(x => x.Subsection)
-                .WithMany(m => m.SubsectionsPictures)
-                .HasForeignKey(x => x.SubsectionID);
+                subsectionPictures
+                    .HasOne(x => x.Subsection)
+                    .WithMany(m => m.SubsectionsPictures)
+                    .HasForeignKey(x => x.SubsectionID);
 
-            modelBuilder.Entity<SubsectionPictures>()
-                .HasOne(x => x.Pictures)
-                .WithMany(e => e.Subsections)
-                .HasForeignKey(x => x.PictureID);
-
+                subsectionPictures
+                    .HasOne(x => x.Pictures)
+                    .WithMany(e => e.Subsections)
+                    .HasForeignKey(x => x.PictureID);
+            });
+            
             modelBuilder.Entity<Subsection>()
                 .HasKey(x => x.Id);
 
@@ -176,49 +179,56 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<Gallary>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<EventGallary>()
-                .HasKey(x => new { x.EventID, x.GallaryID });
+            modelBuilder.Entity<EventGallary>(eventGallary =>
+            {
+                eventGallary
+                    .HasKey(x => new { x.EventID, x.GallaryID });
 
-            modelBuilder.Entity<EventGallary>()
-                .HasOne(x => x.Event)
-                .WithMany(m => m.EventGallarys)
-                .HasForeignKey(x => x.EventID);
+                eventGallary
+                    .HasOne(x => x.Event)
+                    .WithMany(m => m.EventGallarys)
+                    .HasForeignKey(x => x.EventID);
 
-            modelBuilder.Entity<EventGallary>()
-                .HasOne(x => x.Gallary)
-                .WithMany(e => e.Events)
-                .HasForeignKey(x => x.GallaryID);
+                eventGallary
+                    .HasOne(x => x.Gallary)
+                    .WithMany(e => e.Events)
+                    .HasForeignKey(x => x.GallaryID);
+            });
 
             modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<EventAdmin>()
-                .HasKey(x => new { x.EventID, x.UserID });
+            modelBuilder.Entity<EventAdmin>(eventAdmin =>
+            {
+                eventAdmin
+                    .HasKey(x => new { x.EventID, x.UserID });
 
-            modelBuilder.Entity<EventAdmin>()
-                .HasOne(x => x.Event)
-                .WithMany(m => m.EventAdmins)
-                .HasForeignKey(x => x.EventID);
+                eventAdmin
+                    .HasOne(x => x.Event)
+                    .WithMany(m => m.EventAdmins)
+                    .HasForeignKey(x => x.EventID);
 
-            modelBuilder.Entity<EventAdmin>()
-                .HasOne(x => x.User)
-                .WithMany(e => e.Events)
-                .HasForeignKey(x => x.UserID);
+                eventAdmin
+                    .HasOne(x => x.User)
+                    .WithMany(e => e.Events)
+                    .HasForeignKey(x => x.UserID);
+            });
 
-            modelBuilder.Entity<EventCategoryType>()
-                .HasKey(ct => new { ct.EventTypeId, ct.EventCategoryId });
+            modelBuilder.Entity<EventCategoryType>(eventCategoryType =>
+            {
+                eventCategoryType
+                    .HasKey(ct => new { ct.EventTypeId, ct.EventCategoryId });
 
-            modelBuilder.Entity<EventCategoryType>()
-                .HasOne(ct => ct.EventType)
-                .WithMany(t => t.EventCategories)
-                .HasForeignKey(ct => ct.EventTypeId);
+                eventCategoryType
+                    .HasOne(ct => ct.EventType)
+                    .WithMany(t => t.EventCategories)
+                    .HasForeignKey(ct => ct.EventTypeId);
 
-            modelBuilder.Entity<EventCategoryType>()
-                .HasOne(ct => ct.EventCategory)
-                .WithMany(c => c.EventTypes)
-                .HasForeignKey(ct => ct.EventCategoryId);
-
-            
+                eventCategoryType
+                    .HasOne(ct => ct.EventCategory)
+                    .WithMany(c => c.EventTypes)
+                    .HasForeignKey(ct => ct.EventCategoryId);
+            });
 
             modelBuilder.Entity<CityDocumentType>()
                 .HasMany(x => x.CityDocuments)
