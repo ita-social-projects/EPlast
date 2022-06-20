@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220614205926_edit-property-address")]
+    partial class editpropertyaddress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1519,10 +1521,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GoverningBodyAdminRole")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GoverningBodyId")
+                    b.Property<int>("GoverningBodyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
@@ -1971,9 +1970,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("WasPresent")
-                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -3695,7 +3691,9 @@ namespace EPlast.DataAccess.Migrations
 
                     b.HasOne("EPlast.DataAccess.Entities.GoverningBody.Organization", "GoverningBody")
                         .WithMany("GoverningBodyAdministration")
-                        .HasForeignKey("GoverningBodyId");
+                        .HasForeignKey("GoverningBodyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany("GoverningBodyAdministrations")

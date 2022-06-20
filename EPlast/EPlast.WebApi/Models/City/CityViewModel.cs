@@ -12,10 +12,7 @@ namespace EPlast.WebApi.Models.City
         public string Email { get; set; }
         public string CityURL { get; set; }
         public string Description { get; set; }
-        public string Street { get; set; }
-        public string HouseNumber { get; set; }
-        public string OfficeNumber { get; set; }
-        public string PostIndex { get; set; }
+        public string Address { get; set; }
         public string Logo { get; set; }
         public string Region { get; set; }
         public bool CanCreate { get; set; }
@@ -33,5 +30,6 @@ namespace EPlast.WebApi.Models.City
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
         public int DocumentsCount { get; set; }
+        public int Level { get; set; }
     }
 }
