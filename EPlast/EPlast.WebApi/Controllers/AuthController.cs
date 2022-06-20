@@ -8,8 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
 using System.Threading.Tasks;
 using System.Web;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -23,7 +21,6 @@ namespace EPlast.WebApi.Controllers
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
         private readonly ILoggerService<AuthController> _logger;
-        private readonly UserManager<User> _userManager;
         private const int TotalMinutesInOneDay = 1440;
 
         public AuthController(
@@ -32,7 +29,7 @@ namespace EPlast.WebApi.Controllers
             IHomeService homeService,
             IResources resources,
             IAuthEmailService authEmailServices,
-            ILoggerService<AuthController> logger, UserManager<User> userManager)
+            ILoggerService<AuthController> logger)
         {
             _authService = authService;
             _userDatesService = userDatesService;
@@ -40,7 +37,6 @@ namespace EPlast.WebApi.Controllers
             _resources = resources;
             _authEmailServices = authEmailServices;
             _logger = logger;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -140,14 +136,11 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    //if (!(await _authEmailServices.SendEmailRegistrAsync(registerDto.Email)))
-                    //{
-                    //    return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
-                    //}
-                    await _authService.AddRoleAndTokenAsync(registerDto.Email);
-                    var user = await _userManager.FindByEmailAsync(registerDto.Email);
-                    var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    await _userManager.ConfirmEmailAsync(user, confirmationToken);
+                    if (!(await _authEmailServices.SendEmailRegistrAsync(registerDto.Email)))
+                    {
+                        return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
+                    }
+                    
                     var userDto = await _authService.FindByEmailAsync(registerDto.Email);
                     await _userDatesService.AddDateEntryAsync(userDto.Id);
                     return Ok(_resources.ResourceForErrors["Confirm-Registration"]);
