@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20220614205926_edit-property-address")]
+    [Migration("20220620205926_edit-property-address")]
     partial class editpropertyaddress
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

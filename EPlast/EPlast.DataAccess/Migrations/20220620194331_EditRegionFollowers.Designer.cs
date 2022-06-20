@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20220609194331_EditRegionFollowers")]
+    [Migration("20220620194331_EditRegionFollowers")]
     partial class EditRegionFollowers
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

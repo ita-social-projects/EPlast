@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20220606234349_addnewfunctional")]
+    [Migration("20220617234349_addnewfunctional")]
     partial class addnewfunctional
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
