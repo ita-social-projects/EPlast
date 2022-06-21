@@ -633,7 +633,8 @@ namespace EPlast.Tests.Services.GoverningBody
             StartDate = DateTime.Now,
             EndDate = DateTime.Today,
             User = new GoverningBodyUserDTO(),
-            UserId = Roles.GoverningBodyHead
+            UserId = Roles.GoverningBodyHead,
+            GoverningBodyAdminRole = "Admin"
         };
 
         private readonly GoverningBodyAdministrationDTO GoverningBodyAdministrationDtoEndDateNull = new GoverningBodyAdministrationDTO
@@ -646,7 +647,8 @@ namespace EPlast.Tests.Services.GoverningBody
             EndDate = null,
             Status = true,
             User = new GoverningBodyUserDTO(),
-            UserId = Roles.GoverningBodyHead
+            UserId = Roles.GoverningBodyHead,
+            GoverningBodyAdminRole = "Admin"
         };
 
         private readonly User FakeUser = new User
