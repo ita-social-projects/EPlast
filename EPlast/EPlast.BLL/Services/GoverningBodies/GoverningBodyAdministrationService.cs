@@ -78,6 +78,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
             var userRoles = await _userManager.GetRolesAsync(user);
+            governingBodyAdministrationDto.GoverningBodyAdminRole ??= "";
 
             if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
             {
@@ -303,6 +304,8 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<bool> CheckRoleNameExistsAsync(string roleName)
         {
+            if (String.IsNullOrEmpty(roleName))
+                return false;
             var result =
                 await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a =>
                     a.GoverningBodyAdminRole == roleName);

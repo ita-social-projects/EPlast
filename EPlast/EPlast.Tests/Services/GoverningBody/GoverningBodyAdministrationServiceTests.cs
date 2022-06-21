@@ -542,14 +542,14 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new GoverningBodyAdministration());
 
             //Act
-            var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync(It.IsAny<string>());
+            var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync("Test role");
 
             //Assert
             Assert.AreEqual(result, true);
         }
 
         [Test]
-        public async Task CheckRoleNameExistsAsync_RoleNameDontExist_ReturnsTrue()
+        public async Task CheckRoleNameExistsAsync_RoleNameDontExist_ReturnsFalse()
         {
             //Arrange
             GoverningBodyAdministration nullValue = null;
@@ -633,7 +633,8 @@ namespace EPlast.Tests.Services.GoverningBody
             StartDate = DateTime.Now,
             EndDate = DateTime.Today,
             User = new GoverningBodyUserDTO(),
-            UserId = Roles.GoverningBodyHead
+            UserId = Roles.GoverningBodyHead,
+            GoverningBodyAdminRole = "Admin"
         };
 
         private readonly GoverningBodyAdministrationDTO GoverningBodyAdministrationDtoEndDateNull = new GoverningBodyAdministrationDTO
@@ -646,7 +647,8 @@ namespace EPlast.Tests.Services.GoverningBody
             EndDate = null,
             Status = true,
             User = new GoverningBodyUserDTO(),
-            UserId = Roles.GoverningBodyHead
+            UserId = Roles.GoverningBodyHead,
+            GoverningBodyAdminRole = "Admin"
         };
 
         private readonly User FakeUser = new User
