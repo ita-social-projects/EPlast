@@ -304,7 +304,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task<bool> CheckRoleNameExistsAsync(string roleName)
         {
-            if (roleName == null)
+            if (String.IsNullOrEmpty(roleName))
                 return false;
             var result =
                 await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a =>
