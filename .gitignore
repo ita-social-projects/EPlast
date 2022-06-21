@@ -387,3 +387,4 @@ EPlast/EPlast/wwwroot/images/Club/*
 /EPlast/EPlast/package-lock.json
 appsettings.json 
 manifests/.DS_Store
+.DS_Store

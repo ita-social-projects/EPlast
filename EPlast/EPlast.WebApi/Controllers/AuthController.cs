@@ -140,6 +140,7 @@ namespace EPlast.WebApi.Controllers
                     {
                         return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
                     }
+                    
                     var userDto = await _authService.FindByEmailAsync(registerDto.Email);
                     await _userDatesService.AddDateEntryAsync(userDto.Id);
                     return Ok(_resources.ResourceForErrors["Confirm-Registration"]);

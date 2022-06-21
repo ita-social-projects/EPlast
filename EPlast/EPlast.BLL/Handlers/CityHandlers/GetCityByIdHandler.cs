@@ -39,13 +39,11 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 Name = x.Name,
                 Description = x.Description,
                 IsActive = x.IsActive,
-                Street = x.Street,
+                Address = x.Address,
                 PhoneNumber = x.PhoneNumber,
                 Email = x.Email,
                 CityURL = x.CityURL,
-                HouseNumber = x.HouseNumber,
-                OfficeNumber = x.OfficeNumber,
-                PostIndex = x.PostIndex,
+                Level = x.Level,
 
                 Region = new Region
                 {
