@@ -78,10 +78,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         {
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
             var userRoles = await _userManager.GetRolesAsync(user);
-            if (governingBodyAdministrationDto.GoverningBodyAdminRole == null)
-            {
-                governingBodyAdministrationDto.GoverningBodyAdminRole = "";
-            }
+            governingBodyAdministrationDto.GoverningBodyAdminRole ??= "";
 
             if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
             {
