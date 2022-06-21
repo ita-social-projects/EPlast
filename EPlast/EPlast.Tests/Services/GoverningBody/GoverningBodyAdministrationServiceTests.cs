@@ -542,14 +542,14 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new GoverningBodyAdministration());
 
             //Act
-            var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync(It.IsAny<string>());
+            var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync("Test role");
 
             //Assert
             Assert.AreEqual(result, true);
         }
 
         [Test]
-        public async Task CheckRoleNameExistsAsync_RoleNameDontExist_ReturnsTrue()
+        public async Task CheckRoleNameExistsAsync_RoleNameDontExist_ReturnsFalse()
         {
             //Arrange
             GoverningBodyAdministration nullValue = null;
