@@ -16,6 +16,7 @@ using NLog.Extensions.Logging;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -260,7 +261,7 @@ namespace EPlast.Tests.Controllers
                 mockResources.Object,
                 mockAuthEmailService.Object,
                 mockLoggerService.Object
-                );
+            );
 
             return (
                 mockAuthService,

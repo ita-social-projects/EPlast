@@ -2,41 +2,12 @@
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-# specific branch build with batching
-trigger:
-  batch: true
-  branches:
-    include:
-    - eplast-prod
-    exclude:
-    - master
 
-resources:
-- repo: self
-#   pipelines:
-#   - pipeline: string  # identifier for the resource used in pipeline resource variables
-#     source: string  # name of the pipeline that produces an artifact
-#     branch: eplast-prod
-#     trigger:
-#       branches:
-#         include:
-#         - eplast-prod
-#         exclude:
-#         - master
-
-
-# resources:
-#   repositories:
-#   - repository: EPlast
-#     type: github
-#     name: ita-social-projects/EPlast
-#     endpoint: github.com_eplast
-    
 variables:
-- group: EPlast
+- group: EPlast-PROD
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
-  value: '00d3f77f-1f99-40ce-a03f-dec6a3922724'
+  value: '6ed81c59-e17e-4f6e-b772-e7a2b4d0d06f'
 - name: imageRepository
   value: 'eplastbackend'
 - name: containerRegistry
@@ -47,13 +18,13 @@ variables:
   value: '$(Build.BuildId)'
 - name: imagePullSecret
   value: 'eplastregistryd27e-auth'
+- name: k8sNamespaceForPR
+  value: 'review-app-$(System.PullRequest.PullRequestId)'
+- name: vmImageName
+  value: 'ubuntu-latest'
 
-  # Agent VM image name
-pool:
-  name: vmss-pipeline
-  vmImage: 'ubuntu-latest'
-
-  k8sNamespaceForPR: 'review-app-$(System.PullRequest.PullRequestId)'
+- name: vmImageName
+  value: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -62,8 +33,7 @@ stages:
   - job: Build
     displayName: Build
     pool:
-      name: vmss-pipeline
-      vmImage: 'ubuntu-latest' 
+      vmImage: $(vmImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -77,16 +47,15 @@ stages:
 
     - upload: manifests
       artifact: manifests
-# - stage: Test
-#   displayName: Test stage
-#   dependsOn: []
-#   jobs:
-#   - job: Test
-#     displayName: Test
-#     pool:
-#       name: vmss-pipeline
-#       vmImage: 'ubuntu-latest'
-#     steps:
+- stage: Test
+  displayName: Test stage
+  dependsOn: []
+  jobs:
+  - job: Test
+    displayName: Test
+    pool:
+      vmImage: 'windows-2022'
+    steps:
     - task: DotNetCoreCLI@2
       displayName: Restore
       inputs:
@@ -96,7 +65,7 @@ stages:
       displayName: Build
       inputs:
         projects: 'EPlast/EPlast.sln'
-        # arguments: '--configuration $(BuildConfiguration)'
+        arguments: '--configuration $(BuildConfiguration)'
     - task: DotNetCoreCLI@2
       displayName: 'Add package coverlet.msbuild'
       inputs:
@@ -105,19 +74,29 @@ stages:
          EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
          EPlast/EPlast.Tests/EPlast.Tests.csproj
         custom: add
-        arguments: 'package coverlet.msbuild'     
+        arguments: 'package coverlet.msbuild'
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: |
+         EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
+         EPlast/EPlast.Tests/EPlast.Tests.csproj
+        arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[EPlast.WebApi]*Controllers*%2c[EPlast.BLL]*Services*%2c[EPlast.BLL]*Handlers*" /p:Exclude="[EPlast.XUnitTest]*%2c[EPlast.Tests]*" --logger trx'
+        publishTestResults: false     
 - stage: Deploy
   displayName: Deploy stage
-  dependsOn: Build
+  dependsOn:
+  - Build
+  - Test
 
   jobs:
   - deployment: Deploy
     condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
     pool:
-      name: vmss-pipeline
-      vmImage: 'ubuntu-latest'
-    environment: 'Eplastbackend.eplast'
+      vmImage: $(vmImageName)
+    environment: 'EPlast.eplast'
     strategy:
       runOnce:
         deploy:
@@ -135,19 +114,19 @@ stages:
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
-              action: createSecret
-              secretName: $(imagePullSecret)
-              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              action: 'createSecret'
+              kubernetesServiceConnection: 'Eplast-PROD-Kubernetes'
+              secretType: 'dockerRegistry'
+              secretName: '$(imagePullSecret)'
+              dockerRegistryEndpoint: '$(dockerRegistryServiceConnection)'
 
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
-              action: deploy
+              action: 'deploy'
+              kubernetesServiceConnection: 'Eplast-PROD-Kubernetes'
               manifests: |
-                $(Pipeline.Workspace)/manifests/deployment.yml
-                $(Pipeline.Workspace)/manifests/ingress-prod.yml
-              imagePullSecrets: |
-                $(imagePullSecret)
-              containers: |
-                $(containerRegistry)/$(imageRepository):$(tag)
-
+                $(Pipeline.Workspace)/manifests/prod/deployment.yml
+                $(Pipeline.Workspace)/manifests/prod/ingress-prod.yml
+              containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+              imagePullSecrets: '$(imagePullSecret)'

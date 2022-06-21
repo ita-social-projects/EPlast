@@ -14,5 +14,6 @@ namespace EPlast.DataAccess.Entities
         public Club Club { get; set; }
         public bool IsFollower { get; set; }
         public bool IsDeleted { get; set; }
+        public ICollection<ClubReportMember> ClubReportMembers { get; set; }
     }
 }

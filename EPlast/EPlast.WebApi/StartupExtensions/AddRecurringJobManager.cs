@@ -84,6 +84,7 @@ namespace EPlast.WebApi.StartupExtensions
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var userDatesService = serviceProvider.GetRequiredService<IUserDatesService>();
             var roles = new[]
             {
                 Roles.Admin,
@@ -133,7 +134,12 @@ namespace EPlast.WebApi.StartupExtensions
             {
                 var idenResCreateAdmin = await userManager.CreateAsync(profile, admin["Password"]);
                 if (idenResCreateAdmin.Succeeded)
+                {
                     await userManager.AddToRoleAsync(profile, Roles.Admin);
+                    var createdUser = await userManager.FindByEmailAsync(admin["Email"]);
+                    await userDatesService.AddDateEntryAsync(createdUser.Id);
+                }
+                
             }
             else if (!await userManager.IsInRoleAsync(userManager.Users.First(item => item.Email == profile.Email), Roles.Admin))
             {

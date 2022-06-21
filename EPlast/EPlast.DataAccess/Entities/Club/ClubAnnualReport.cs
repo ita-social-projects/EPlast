@@ -45,5 +45,8 @@ namespace EPlast.DataAccess.Entities
         public int ClubId { get; set; }
         public string ClubName { get; set; }
         public Club Club { get; set; }
+
+        public ICollection<ClubReportAdmins> ClubReportAdmins { get; set; }
+        public ICollection<ClubReportMember> ClubReportMembers { get; set; }
     }
 }
