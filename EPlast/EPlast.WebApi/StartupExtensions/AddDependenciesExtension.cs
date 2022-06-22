@@ -112,7 +112,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IClubParticipantsService, ClubParticipantsService>();
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
-            services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
