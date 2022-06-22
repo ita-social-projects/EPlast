@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody;
@@ -15,11 +20,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.GoverningBody
 {
@@ -28,7 +28,6 @@ namespace EPlast.Tests.Services.GoverningBody
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private GoverningBodiesService _governingBodiesService;
-        private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodyAdministrationService> _governingBodyAdministrationService;
         private Mock<ISectorService> _sectorService;
         private Mock<IGoverningBodyBlobStorageRepository> _blobStorage;
@@ -42,7 +41,6 @@ namespace EPlast.Tests.Services.GoverningBody
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _blobStorage = new Mock<IGoverningBodyBlobStorageRepository>();
-            _uniqueIdService = new Mock<IUniqueIdService>();
             _governingBodyAdministrationService = new Mock<IGoverningBodyAdministrationService>();
             _sectorService = new Mock<ISectorService>();
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
@@ -51,11 +49,11 @@ namespace EPlast.Tests.Services.GoverningBody
             _governingBodiesService = new GoverningBodiesService(
                 _repoWrapper.Object,
                 _mapper.Object,
-                _uniqueIdService.Object,
                 _blobStorage.Object,
                 _securityModel.Object,
                 _governingBodyAdministrationService.Object,
-                _sectorService.Object);
+                _sectorService.Object
+            );
         }
 
         [Test]

@@ -1,14 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using EPlast.BLL.Interfaces;
 
 namespace EPlast.BLL.Services.City
 {
@@ -17,17 +16,16 @@ namespace EPlast.BLL.Services.City
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly ICityFilesBlobStorageRepository _cityFilesBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
-        public CityDocumentsService(IRepositoryWrapper repositoryWrapper,
+        public CityDocumentsService(
+            IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            ICityFilesBlobStorageRepository cityFilesBlobStorage,
-            IUniqueIdService uniqueId)
+            ICityFilesBlobStorageRepository cityFilesBlobStorage
+        )
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _cityFilesBlobStorage = cityFilesBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         private async Task<IEnumerable<CityDocumentType>> GetAllCityDocumentTypeEntities()
@@ -50,7 +48,7 @@ namespace EPlast.BLL.Services.City
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
             var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
-            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+            var fileName = $"{Guid.NewGuid()}{extension}";
 
             await _cityFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;

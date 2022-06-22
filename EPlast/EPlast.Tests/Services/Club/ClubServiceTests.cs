@@ -1,24 +1,23 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
-using EPlast.Resources;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Services.Club
@@ -32,10 +31,8 @@ namespace EPlast.Tests.Services.Club
         private Mock<IWebHostEnvironment> _env;
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repoWrapper;
-        private Mock<IUniqueIdService> _uniqueId;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
-        private string ClubName => "Club";
 
         private int Count => 2;
 
@@ -998,10 +995,14 @@ namespace EPlast.Tests.Services.Club
             _clubBlobStorage = new Mock<IClubBlobStorageRepository>();
             _clubAccessService = new Mock<IClubAccessService>();
             _user = new Mock<IUserStore<User>>();
-            _uniqueId = new Mock<IUniqueIdService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object,
-                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+            _clubService = new ClubService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _clubBlobStorage.Object,
+                _userManager.Object
+            );
         }
 
         private ClubService CreateClubService()
@@ -1039,7 +1040,13 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestNewClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+            return new ClubService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _clubBlobStorage.Object,
+                _userManager.Object
+            );
         }
 
         private IQueryable<DataAccessClub.Club> CreateFakeCities(int count)
