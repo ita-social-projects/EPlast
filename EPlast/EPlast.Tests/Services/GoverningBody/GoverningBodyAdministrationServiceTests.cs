@@ -30,7 +30,7 @@ namespace EPlast.Tests.Services.GoverningBody
         private Mock<IUserStore<User>> _user;
         private Mock<IMapper> _mapperMock;
         private GoverningBodyAdministrationService _governingBodyAdministrationService;
-        
+
         [SetUp]
         public void SetUp()
         {
@@ -253,7 +253,7 @@ namespace EPlast.Tests.Services.GoverningBody
         {
             //Arrange
 
-            _repoWrapper.Setup(w=>w.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+            _repoWrapper.Setup(w => w.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new GoverningBodyAdministration());
@@ -460,7 +460,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(r => r.SaveAsync());
 
             //Act
-             await _governingBodyAdministrationService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+            await _governingBodyAdministrationService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
 
             //Assert
             _repoWrapper.Verify();
@@ -524,7 +524,7 @@ namespace EPlast.Tests.Services.GoverningBody
             _userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapperMock.Setup(m => m.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
                 .Returns(new ShortUserInformationDTO());
-            
+
             //Act
             var result = await _governingBodyAdministrationService.GetUsersForGoverningBodyAdminFormAsync();
 
@@ -545,7 +545,7 @@ namespace EPlast.Tests.Services.GoverningBody
             var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync("Test role");
 
             //Assert
-            Assert.AreEqual(result, true);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
@@ -563,7 +563,7 @@ namespace EPlast.Tests.Services.GoverningBody
             var result = await _governingBodyAdministrationService.CheckRoleNameExistsAsync(It.IsAny<string>());
 
             //Assert
-            Assert.AreEqual(result, false);
+            Assert.AreEqual(false, result);
         }
 
         private IEnumerable<User> GetTestUsers()

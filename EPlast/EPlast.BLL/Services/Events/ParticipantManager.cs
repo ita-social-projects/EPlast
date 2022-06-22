@@ -167,10 +167,10 @@ namespace EPlast.BLL.Services.Events
             return participants;
         }
 
-        public async Task ChangeUserPresentStatusAsync(int id)
+        public async Task ChangeUserPresentStatusAsync(int perticipantId)
         {
             var participant = await _repoWrapper.Participant
-                              .GetFirstOrDefaultAsync(predicate: p => p.ID == id);
+                              .GetFirstOrDefaultAsync(predicate: p => p.ID == perticipantId);
             if (participant == null) throw new KeyNotFoundException();
             bool currentState = participant.WasPresent;
             participant.WasPresent = !currentState;
