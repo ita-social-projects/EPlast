@@ -20,23 +20,22 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodySectorBlobStorageRepository _sectorBlobStorage;
         private readonly ISecurityModel _securityModel;
         private readonly ISectorAdministrationService _sectorAdministrationService;
         private const string SecuritySettingsFile = "GoverningBodySectorAccessSettings.json";
         private const int TakingItemsCount = 6;
 
-        public SectorService(IRepositoryWrapper repoWrapper,
-                             IMapper mapper,
-                             IUniqueIdService uniqueId,
-                             IGoverningBodySectorBlobStorageRepository sectorBlobStorage,
-                             ISecurityModel securityModel,
-                             ISectorAdministrationService sectorAdministrationService)
+        public SectorService(
+            IRepositoryWrapper repoWrapper,
+            IMapper mapper,
+            IGoverningBodySectorBlobStorageRepository sectorBlobStorage,
+            ISecurityModel securityModel,
+            ISectorAdministrationService sectorAdministrationService
+        )
         {
             _securityModel = securityModel;
             _securityModel.SetSettingsFile(SecuritySettingsFile);
-            _uniqueId = uniqueId;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _sectorBlobStorage = sectorBlobStorage;
@@ -58,7 +57,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                var fileName = $"{Guid.NewGuid()}{extension}";
 
                 await _sectorBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 sectorDto.Logo = fileName;

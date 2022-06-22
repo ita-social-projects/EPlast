@@ -1,19 +1,15 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.AboutBase;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.AboutBase;
-using EPlast.DataAccess.Entities.AboutBase;
-using EPlast.DataAccess.Repositories;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.AboutBase;
+using EPlast.BLL.Interfaces.AboutBase;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.DataAccess.Entities.AboutBase;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.AboutBase
 {
@@ -21,13 +17,14 @@ namespace EPlast.BLL.Services.AboutBase
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IAboutBaseBlobStorageRepository _aboutBaseBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
-        public AboutBasePicturesManager(IRepositoryWrapper repoWrapper, IAboutBaseBlobStorageRepository aboutBaseBlobStorage, IUniqueIdService uniqueId)
+        public AboutBasePicturesManager(
+            IRepositoryWrapper repoWrapper,
+            IAboutBaseBlobStorageRepository aboutBaseBlobStorage
+        )
         {
             _repoWrapper = repoWrapper;
             _aboutBaseBlobStorage = aboutBaseBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -40,7 +37,7 @@ namespace EPlast.BLL.Services.AboutBase
             {
                 if (file != null && file.Length > 0)
                 {
-                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                     await _aboutBaseBlobStorage.UploadBlobAsync(file, fileName);
                     var gallery = new Pictures() { PictureFileName = fileName };
                     await _repoWrapper.Pictures.CreateAsync(gallery);

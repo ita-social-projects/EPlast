@@ -1,7 +1,7 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using EPlast.BLL.Commands.City;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.DataAccess.Repositories;
 using MediatR;
@@ -12,15 +12,14 @@ namespace EPlast.BLL.Handlers.CityHandlers
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
-        public UploadCityPhotoHandler(IRepositoryWrapper repoWrapper, 
-            ICityBlobStorageRepository cityBlobStorage,
-            IUniqueIdService uniqueId)
+        public UploadCityPhotoHandler(
+            IRepositoryWrapper repoWrapper,
+            ICityBlobStorageRepository cityBlobStorage
+        )
         {
             _repoWrapper = repoWrapper;
             _cityBlobStorage = cityBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         public async Task<Unit> Handle(UploadCityPhotoCommand request, CancellationToken cancellationToken)
@@ -38,7 +37,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                var fileName = $"{Guid.NewGuid()}{extension}";
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 request.City.Logo = fileName;

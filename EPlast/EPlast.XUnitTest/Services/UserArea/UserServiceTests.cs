@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
@@ -10,13 +13,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using EPlast.Resources;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -30,7 +27,6 @@ namespace EPlast.XUnitTest.Services.UserArea
         private readonly Mock<IWebHostEnvironment> _env;
         private protected readonly Mock<IUserManagerService> _userManagerService;
         private protected readonly Mock<IConfirmedUsersService> _confirmedUserService;
-        private readonly Mock<IUniqueIdService> _uniqueId;
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
@@ -40,12 +36,18 @@ namespace EPlast.XUnitTest.Services.UserArea
             _env = new Mock<IWebHostEnvironment>();
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
-            _uniqueId = new Mock<IUniqueIdService>();
         }
 
         private UserService GetService()
         {
-            return new UserService(_repoWrapper.Object, _mapper.Object, _userPersonalDataService.Object, _userBlobStorage.Object, _env.Object, _userManagerService.Object, _uniqueId.Object);
+            return new UserService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _userPersonalDataService.Object,
+                _userBlobStorage.Object,
+                _env.Object,
+                _userManagerService.Object
+            );
         }
         [Fact]
         public async Task GetUserProfileTest()
@@ -249,7 +251,6 @@ namespace EPlast.XUnitTest.Services.UserArea
             _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
             _userBlobStorage.Setup(u => u.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _userBlobStorage.Setup(u => u.DeleteBlobAsync(It.IsAny<string>()));
-            _uniqueId.Setup(u => u.GetUniqueId()).Returns(It.IsAny<Guid>());
 
             var service = GetService();            // Act
             await service.UpdateAsyncForBase64(userDTO, "im/age.png;something,so/me.png;jkjk", 1, 1, 1, 1);
