@@ -1,24 +1,17 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.GoverningBody.Sector;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Services.GoverningBodies.Sector;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
-using EPlast.DataAccess.Entities.GoverningBody;
+using AutoMapper;
+using EPlast.BLL.DTO.GoverningBody.Sector;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
-using EPlast.Resources;
-using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
+using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.GoverningBody.Sector
 {
@@ -26,7 +19,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
     {
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
-        private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodySectorFilesBlobStorageRepository> _blobStorage;
         private SectorDocumentsService _service;
 
@@ -36,13 +28,12 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _blobStorage = new Mock<IGoverningBodySectorFilesBlobStorageRepository>();
-            _uniqueIdService = new Mock<IUniqueIdService>();
 
             _service = new SectorDocumentsService(
                 _repoWrapper.Object,
                 _mapper.Object,
-                _blobStorage.Object,
-                _uniqueIdService.Object);
+                _blobStorage.Object
+            );
         }
 
         [Test]
@@ -80,9 +71,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _mapper
                 .Setup(x => x.Map<SectorDocumentsDTO, SectorDocuments>(It.IsAny<SectorDocumentsDTO>()))
                 .Returns(new SectorDocuments());
-            _uniqueIdService
-                .Setup(x => x.GetUniqueId())
-                .Returns(new Guid());
             _repoWrapper
                 .Setup(x => x.GoverningBodySectorDocumentType.GetAllAsync(
                     It.IsAny<Expression<Func<SectorDocumentType, bool>>>(),

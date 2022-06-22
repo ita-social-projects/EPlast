@@ -1,25 +1,21 @@
-﻿using EPlast.BLL.DTO.Notification;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Notifications;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Notification;
+using EPlast.BLL.Interfaces.Notifications;
 
 namespace EPlast.BLL.Services.Notifications
 {
     public class NotificationConnectionManager : INotificationConnectionManager
     {
-
-        private readonly IUniqueIdService _uniqueId;
         private readonly IUserMapService _userMap;
 
-        public NotificationConnectionManager(IUniqueIdService uniqueId, IUserMapService UserMap)
+        public NotificationConnectionManager(IUserMapService UserMap)
         {
-            _uniqueId = uniqueId;
             _userMap = UserMap;
         }
 
@@ -50,7 +46,7 @@ namespace EPlast.BLL.Services.Notifications
 
         public string AddSocket(string userId, WebSocket socket)
         {
-            var connectionId = _uniqueId.GetUniqueId().ToString();
+            string connectionId = Guid.NewGuid().ToString();
             if (!_userMap.UserConnections.ContainsKey(userId))
             {
                 _userMap.UserConnections.TryAdd(userId, new HashSet<ConnectionDTO>());

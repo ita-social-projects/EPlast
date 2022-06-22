@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using EPlast.BLL.Commands.City;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Handlers.CityHandlers;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.DataAccess.Repositories;
 using MediatR;
@@ -20,7 +19,6 @@ namespace EPlast.Tests.Handlers.City
     {
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<ICityBlobStorageRepository> _mockCityBlobStorage;
-        private Mock<IUniqueIdService> _mockUniqueId;
         private UploadCityPhotoCommand _command;
         private UploadCityPhotoHandler _handler;
 
@@ -31,11 +29,12 @@ namespace EPlast.Tests.Handlers.City
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockCityBlobStorage = new Mock<ICityBlobStorageRepository>();
-            _mockUniqueId = new Mock<IUniqueIdService>();
             _city = new CityDTO {ID = 1, Logo = "Img.png/Pic.png,New.png/Logo.png"};
             _command = new UploadCityPhotoCommand(_city);
-            _handler = new UploadCityPhotoHandler(_mockRepoWrapper.Object, _mockCityBlobStorage.Object,
-                _mockUniqueId.Object);
+            _handler = new UploadCityPhotoHandler(
+                _mockRepoWrapper.Object,
+                _mockCityBlobStorage.Object
+            );
         }
 
         [Test]
@@ -48,8 +47,6 @@ namespace EPlast.Tests.Handlers.City
                     It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
                         IIncludableQueryable<DataAccess.Entities.City, object>>>()))
                 .ReturnsAsync(city);
-            _mockUniqueId
-                .Setup(u => u.GetUniqueId());
             _mockCityBlobStorage
                 .Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _mockCityBlobStorage

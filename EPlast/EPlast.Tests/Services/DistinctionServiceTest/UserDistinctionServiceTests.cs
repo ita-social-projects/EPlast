@@ -1,7 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Services;
 using EPlast.BLL.Services.Distinctions;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -11,11 +14,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.DistinctionServiceTest
 {
@@ -26,14 +24,12 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         private Mock<IMapper> mockMapper;
         private UserDistinctionService distinctionService;
         private Mock<UserManager<User>> userManager;
-        private IUniqueIdService _uniqueId;
 
         [SetUp]
         public void SetUp()
         {
             mockMapper = new Mock<IMapper>();
             mockRepoWrapper = new Mock<IRepositoryWrapper>();
-            _uniqueId = new UniqueIdService();
             var store = new Mock<IUserStore<User>>();
             userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(GetRoles());
@@ -378,8 +374,8 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
         readonly UserDistinctionDTO nullDistinctionDTO = null;
         readonly List<UserDistinction> nulluserDistinctions = null;
         readonly List<UserDistinctionDTO> nulluserDistinctionsDTO = null;
-                
-        private string UserId => _uniqueId.GetUniqueId().ToString();
+
+        private string UserId => Guid.NewGuid().ToString();
 
         private UserDistinction userDistinction => new UserDistinction
         {

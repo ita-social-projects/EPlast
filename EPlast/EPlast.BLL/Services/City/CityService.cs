@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -10,10 +14,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services
@@ -26,15 +26,14 @@ namespace EPlast.BLL.Services
         private readonly ICityBlobStorageRepository _cityBlobStorage;
         private readonly ICityAccessService _cityAccessService;
         private readonly UserManager<DataAccessCity.User> _userManager;
-        private readonly IUniqueIdService _uniqueId;
 
         public CityService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
             ICityBlobStorageRepository cityBlobStorage,
             ICityAccessService cityAccessService,
-            UserManager<DataAccessCity.User> userManager,
-            IUniqueIdService uniqueId)
+            UserManager<DataAccessCity.User> userManager
+        )
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -42,7 +41,6 @@ namespace EPlast.BLL.Services
             _cityBlobStorage = cityBlobStorage;
             _cityAccessService = cityAccessService;
             _userManager = userManager;
-            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -488,9 +486,15 @@ namespace EPlast.BLL.Services
                 predicate: i => i.ID == cityId))
                 ?.Logo;
 
-            city.Logo = GetChangedPhoto("images\\Cities", file, oldImageName, _env.WebRootPath, _uniqueId.GetUniqueId().ToString());
+            city.Logo = GetChangedPhoto(
+                "images\\Cities",
+                file,
+                oldImageName,
+                _env.WebRootPath,
+                Guid.NewGuid().ToString()
+            );
         }
-        
+
         // Method moved to be used with command/handler UploadCityPhoto
         private async Task UploadPhotoAsync(CityDTO city)
         {
@@ -507,7 +511,7 @@ namespace EPlast.BLL.Services
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                var fileName = $"{Guid.NewGuid()}{extension}";
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 city.Logo = fileName;

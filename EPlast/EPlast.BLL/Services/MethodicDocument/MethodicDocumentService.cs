@@ -1,16 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
-using EPlast.BLL.Interfaces;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.BLL.ExtensionMethods;
 
 
 namespace EPlast.BLL.Services
@@ -20,18 +19,16 @@ namespace EPlast.BLL.Services
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMethodicDocumentBlobStorageRepository _metodicDocsBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
 
         public MethodicDocumentService(IRepositoryWrapper repoWrapper,
         IMapper mapper,
-        IMethodicDocumentBlobStorageRepository methodicDocumentBlobStorage,
-        IUniqueIdService uniqueId)
+        IMethodicDocumentBlobStorageRepository methodicDocumentBlobStorage
+        )
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _metodicDocsBlobStorage = methodicDocumentBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         public async Task<MethodicDocumentDTO> GetMethodicDocumentAsync(int documentId)
@@ -88,12 +85,12 @@ namespace EPlast.BLL.Services
 
         public IEnumerable<SelectListItem> GetMethodicDocumentTypes()
         {
-           return (from Enum MethodicDocumentType in Enum.GetValues(typeof(MethodicDocumentTypeDTO))
-             select new SelectListItem
-             {
-                 Value = MethodicDocumentType.ToString(),
-                 Text = MethodicDocumentType.GetDescription()
-             }).ToList();
+            return (from Enum MethodicDocumentType in Enum.GetValues(typeof(MethodicDocumentTypeDTO))
+                    select new SelectListItem
+                    {
+                        Value = MethodicDocumentType.ToString(),
+                        Text = MethodicDocumentType.GetDescription()
+                    }).ToList();
         }
 
         public IEnumerable<MethodicDocumentTableObject> GetDocumentsForTable(string searchedData, int page, int pageSize, string status)
@@ -114,7 +111,7 @@ namespace EPlast.BLL.Services
             _repoWrapper.MethodicDocument.Create(repoDoc);
             if (document.FileAsBase64 != null)
             {
-                repoDoc.FileName = $"{_uniqueId.GetUniqueId()}{repoDoc.FileName}";
+                repoDoc.FileName = $"{Guid.NewGuid()}{repoDoc.FileName}";
                 await UploadFileToBlobAsync(document.FileAsBase64, repoDoc.FileName);
             }
             await _repoWrapper.SaveAsync();
