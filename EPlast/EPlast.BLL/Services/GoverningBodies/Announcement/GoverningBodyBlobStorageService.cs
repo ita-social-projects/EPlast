@@ -1,23 +1,18 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using System;
+using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies.Sector;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Announcement
 {
     public class GoverningBodyBlobStorageService : IGoverningBodyBlobStorageService
     {
         private readonly IGoverningBodyBlobStorageRepository _blobStorage;
-        private readonly IUniqueIdService _uniqueId;
         public GoverningBodyBlobStorageService(
-           IGoverningBodyBlobStorageRepository blobStorage, 
-           IUniqueIdService uniqueId)
+           IGoverningBodyBlobStorageRepository blobStorage
+        )
         {
             _blobStorage = blobStorage;
-            _uniqueId = uniqueId;
         }
         public async Task<string> GetImageAsync(string imageName)
         {
@@ -37,7 +32,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Announcement
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                fileName = $"{Guid.NewGuid()}{extension}";
                 await _blobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
             }
             return fileName;

@@ -1,19 +1,17 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.GoverningBodies;
-using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.GoverningBody
 {
@@ -22,7 +20,6 @@ namespace EPlast.Tests.Services.GoverningBody
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IGoverningBodyFilesBlobStorageRepository> _governingBodyFilesBlobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
         private GoverningBodyDocumentsService _service;
 
         [SetUp]
@@ -31,12 +28,11 @@ namespace EPlast.Tests.Services.GoverningBody
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _governingBodyFilesBlobStorage = new Mock<IGoverningBodyFilesBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
             _service = new GoverningBodyDocumentsService(
                 _repoWrapper.Object,
                 _mapper.Object,
-                _governingBodyFilesBlobStorage.Object,
-                _uniqueId.Object);
+                _governingBodyFilesBlobStorage.Object
+            );
         }
 
         [Test]
@@ -77,9 +73,6 @@ namespace EPlast.Tests.Services.GoverningBody
             _mapper
                 .Setup(m => m.Map<IEnumerable<GoverningBodyDocumentType>, IEnumerable<GoverningBodyDocumentTypeDTO>>(It.IsAny<IEnumerable<GoverningBodyDocumentType>>()))
                 .Returns(GetGoverningBodyDocumentTypeDtoS);
-            _uniqueId
-                .Setup(u => u.GetUniqueId())
-                .Returns(Guid.NewGuid());
 
             // Act
             var result = await _service.AddGoverningBodyDocumentAsync(GetGoverningBodyDocumentsDto);

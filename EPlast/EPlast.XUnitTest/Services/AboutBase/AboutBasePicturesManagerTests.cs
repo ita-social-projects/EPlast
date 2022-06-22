@@ -1,13 +1,4 @@
-﻿using EPlast.BLL.DTO.AboutBase;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Services.AboutBase;
-using EPlast.DataAccess.Entities.AboutBase;
-using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -15,9 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using EPlast.BLL.DTO.Events;
-using EPlast.BLL.Services.Events;
-using EPlast.DataAccess.Entities.Event;
+using EPlast.BLL.DTO.AboutBase;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services.AboutBase;
+using EPlast.DataAccess.Entities.AboutBase;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.AboutBase
@@ -26,13 +22,11 @@ namespace EPlast.XUnitTest.Services.AboutBase
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IAboutBaseBlobStorageRepository> _aboutBaseBlobStorage;
-        private readonly Mock<IUniqueIdService> _uniqueId;
 
         public AboutBasePicturesManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _aboutBaseBlobStorage = new Mock<IAboutBaseBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
         }
 
         [Fact]
@@ -45,7 +39,10 @@ namespace EPlast.XUnitTest.Services.AboutBase
                 .ReturnsAsync(new Pictures { ID = 2, PictureFileName = "picture.jpj" });
             _aboutBaseBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>()));
             //Act
-            var aboutBasePicturesManager = new AboutBasePicturesManager(_repoWrapper.Object, _aboutBaseBlobStorage.Object, _uniqueId.Object);
+            var aboutBasePicturesManager = new AboutBasePicturesManager(
+                _repoWrapper.Object,
+                _aboutBaseBlobStorage.Object
+            );
             var methodResult = await aboutBasePicturesManager.DeletePictureAsync(subsectionId);
             //Assert
             _repoWrapper.Verify(r => r.Pictures.Delete(It.IsAny<Pictures>()), Times.Once());
@@ -63,7 +60,10 @@ namespace EPlast.XUnitTest.Services.AboutBase
                 .ThrowsAsync(new Exception());
             _aboutBaseBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>()));
             //Act
-            var aboutBasePicturesManager = new AboutBasePicturesManager(_repoWrapper.Object, _aboutBaseBlobStorage.Object, _uniqueId.Object);
+            var aboutBasePicturesManager = new AboutBasePicturesManager(
+                _repoWrapper.Object,
+                _aboutBaseBlobStorage.Object
+            );
             var methodResult = await aboutBasePicturesManager.DeletePictureAsync(subsectionId);
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
@@ -81,7 +81,10 @@ namespace EPlast.XUnitTest.Services.AboutBase
             _aboutBaseBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(picture);
             //Act
-            var aboutBasePicturesManager = new AboutBasePicturesManager(_repoWrapper.Object, _aboutBaseBlobStorage.Object, _uniqueId.Object);
+            var aboutBasePicturesManager = new AboutBasePicturesManager(
+                _repoWrapper.Object,
+                _aboutBaseBlobStorage.Object
+            );
             var methodResult = await aboutBasePicturesManager.GetPicturesInBase64(subsectionId);
             //Assert
             Assert.NotNull(methodResult);
@@ -101,7 +104,10 @@ namespace EPlast.XUnitTest.Services.AboutBase
             _aboutBaseBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(picture);
             //Act  
-            var aboutBasePicturesManager = new AboutBasePicturesManager(_repoWrapper.Object, _aboutBaseBlobStorage.Object, _uniqueId.Object);
+            var aboutBasePicturesManager = new AboutBasePicturesManager(
+                _repoWrapper.Object,
+                _aboutBaseBlobStorage.Object
+            );
             var methodResult = await aboutBasePicturesManager.AddPicturesAsync(subsectionId, FakeFiles());
             //Assert
             Assert.NotNull(methodResult);

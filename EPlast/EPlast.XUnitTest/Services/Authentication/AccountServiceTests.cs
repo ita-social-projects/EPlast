@@ -1,8 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.Auth;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
@@ -13,12 +19,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using EPlast.BLL.Services.Auth;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services
@@ -528,10 +528,7 @@ namespace EPlast.XUnitTest.Services
 
         private User GetTestUserWithEmailsSendedTime()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                    .GetCurrentTime()
-                    .AddMinutes(-GetTestDifferenceInTime());
+            var timeEmailSended = DateTime.Now.AddMinutes(-GetTestDifferenceInTime());
 
             return new User()
             {
@@ -542,10 +539,7 @@ namespace EPlast.XUnitTest.Services
 
         private UserDTO GetTestUserDtoWithEmailsSendedTime()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                    .GetCurrentTime()
-                    .AddMinutes(-GetTestDifferenceInTime());
+            var timeEmailSended = DateTime.Now.AddMinutes(-GetTestDifferenceInTime());
 
             return new UserDTO()
             {

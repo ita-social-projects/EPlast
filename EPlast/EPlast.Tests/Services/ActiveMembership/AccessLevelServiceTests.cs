@@ -1,18 +1,16 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.ExtensionMethods;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.ActiveMembership;
-using EPlast.BLL.Services;
-using EPlast.BLL.Services.ActiveMembership;
-using EPlast.BLL.Services.Interfaces;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Services.ActiveMembership;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.ActiveMembership
 {
@@ -22,7 +20,6 @@ namespace EPlast.Tests.Services.ActiveMembership
         private IAccessLevelService _accessLevelService;
         private Mock<IUserManagerService> _userManagerService;
         private Mock<IPlastDegreeService> _plastDegreeService;
-        private IUniqueIdService _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +27,6 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService = new Mock<IUserManagerService>();
             _plastDegreeService = new Mock<IPlastDegreeService>();
             _accessLevelService = new AccessLevelService(_plastDegreeService.Object, _userManagerService.Object);
-            _uniqueId = new UniqueIdService();
         }
 
         [Test]
@@ -62,7 +58,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
                 .ReturnsAsync(GetUserRolesWithNoRoles());
             _plastDegreeService.Setup(pds => pds.GetUserPlastDegreeAsync(It.IsAny<string>()))
-                .ReturnsAsync(getUserPlastDegreeDtos());
+                .ReturnsAsync(GetUserPlastDegreeDtos());
 
             // Act
             var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
@@ -177,7 +173,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription(), listResult[2]);
         }
 
-        private string UserId => _uniqueId.GetUniqueId().ToString();
+        private string UserId => Guid.NewGuid().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
 
         private UserDTO UserDTO => new UserDTO
@@ -187,7 +183,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             UserPlastDegrees = new UserPlastDegreeDTO()
         };
 
-        private UserPlastDegreeDTO getUserPlastDegreeDtos()
+        private UserPlastDegreeDTO GetUserPlastDegreeDtos()
         {
 
             return new UserPlastDegreeDTO

@@ -1,35 +1,36 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.Decision;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
-using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using Moq;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Handlers.Decision
 {
     public class SaveDecisionAsyncHandlerTest
     {
-        private Mock<IMediator> _mockMediator;
-        private Mock<IRepositoryWrapper> _repository;
-        private Mock<IMapper> _mockMapper;
-        private SaveDecisionAsyncHandler _handler;
+        private readonly Mock<IMediator> _mockMediator;
+        private readonly Mock<IRepositoryWrapper> _repository;
+        private readonly Mock<IMapper> _mockMapper;
+        private readonly SaveDecisionAsyncHandler _handler;
         private SaveDecisionAsyncCommand _query;
-        private Mock<IUniqueIdService> _uniqueId;
 
         public SaveDecisionAsyncHandlerTest()
         {
             _repository = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
             _mockMediator = new Mock<IMediator>();
-            _uniqueId = new Mock<IUniqueIdService>();
-            _handler = new SaveDecisionAsyncHandler(_repository.Object, _mockMapper.Object, _uniqueId.Object, _mockMediator.Object);
+            _handler = new SaveDecisionAsyncHandler(
+                _repository.Object,
+                _mockMapper.Object,
+                _mockMediator.Object
+            );
         }
 
         [Theory]

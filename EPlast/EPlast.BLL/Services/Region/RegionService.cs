@@ -1,20 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Queries.City;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DataAccessRegion = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Region
@@ -26,22 +25,22 @@ namespace EPlast.BLL.Services.Region
         private readonly IRegionBlobStorageRepository _regionBlobStorage;
         private readonly IRegionFilesBlobStorageRepository _regionFilesBlobStorageRepository;
         private readonly IMediator _mediator;
-        private readonly IUniqueIdService _uniqueId;
         private readonly UserManager<User> _userManager;
 
-        public RegionService(IRepositoryWrapper repoWrapper,
+        public RegionService(
+            IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IRegionFilesBlobStorageRepository regionFilesBlobStorageRepository,
             IRegionBlobStorageRepository regionBlobStorage,
             IMediator mediator,
-            IUniqueIdService uniqueId, UserManager<User> userManager)
+            UserManager<User> userManager
+        )
         {
             _regionFilesBlobStorageRepository = regionFilesBlobStorageRepository;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _regionBlobStorage = regionBlobStorage;
             _mediator = mediator;
-            _uniqueId = uniqueId;
             _userManager = userManager;
         }
         public async Task ArchiveRegionAsync(int regionId)
@@ -238,7 +237,7 @@ namespace EPlast.BLL.Services.Region
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                var fileName = $"{_uniqueId.GetUniqueId()}.{ext}";
+                var fileName = $"{Guid.NewGuid()}.{ext}";
                 await _regionBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
                 if (!string.IsNullOrEmpty(oldImageName))
                 {
@@ -258,7 +257,7 @@ namespace EPlast.BLL.Services.Region
                 return null;
             }
         }
-    
+
         public async Task EditRegionAsync(int regId, RegionDTO region)
         {
             var ChangedRegion = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regId);
@@ -278,7 +277,7 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        private void ValidateFileName(RegionDocumentDTO documentDTO, out string[] splittedName )
+        private void ValidateFileName(RegionDocumentDTO documentDTO, out string[] splittedName)
         {
             var allowedExtensions = new List<string>() { "pdf", "doc", "docx" };
 
@@ -305,7 +304,7 @@ namespace EPlast.BLL.Services.Region
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
             ValidateFileName(documentDTO, out string[] splittedName);
-            var fileName = $"{_uniqueId.GetUniqueId()}.{splittedName.Last()}";
+            var fileName = $"{Guid.NewGuid()}.{splittedName.Last()}";
             await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;
 

@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces;
@@ -13,12 +19,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
 {
@@ -30,7 +30,6 @@ namespace EPlast.Tests.Services.Regions
         private Mock<IRegionBlobStorageRepository> _regionBlobStorage;
         private Mock<IRegionFilesBlobStorageRepository> _regionFilesBlobStorageRepository;
         private Mock<IMediator> _mediator;
-        private Mock<IUniqueIdService> _uniqueId;
         private Mock<UserManager<User>> _userManager;
         private RegionService _regionService;
 
@@ -42,13 +41,16 @@ namespace EPlast.Tests.Services.Regions
             _regionBlobStorage = new Mock<IRegionBlobStorageRepository>();
             _regionFilesBlobStorageRepository = new Mock<IRegionFilesBlobStorageRepository>();
             _mediator = new Mock<IMediator>();
-            _uniqueId = new Mock<IUniqueIdService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _regionService = new RegionService(
-                _repoWrapper.Object, _mapper.Object, _regionFilesBlobStorageRepository.Object,
-                _regionBlobStorage.Object, _mediator.Object, _uniqueId.Object, _userManager.Object
-                );
+                _repoWrapper.Object,
+                _mapper.Object,
+                _regionFilesBlobStorageRepository.Object,
+                _regionBlobStorage.Object,
+                _mediator.Object,
+                _userManager.Object
+            );
         }
 
         [Test]

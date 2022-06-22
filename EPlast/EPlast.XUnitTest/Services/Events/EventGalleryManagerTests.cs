@@ -1,13 +1,4 @@
-﻿using EPlast.BLL.DTO.Events;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Services.Events;
-using EPlast.DataAccess.Entities.Event;
-using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -15,6 +6,14 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Services.Events;
+using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Repositories;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -23,13 +22,11 @@ namespace EPlast.XUnitTest.Services.Events
     {
         private readonly Mock<IRepositoryWrapper> _repoWrapper;
         private readonly Mock<IEventBlobStorageRepository> _eventBlobStorage;
-        private readonly Mock<IUniqueIdService> _uniqueId;
 
         public EventGalleryManagerTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _eventBlobStorage = new Mock<IEventBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
         }
 
         [Fact]
@@ -42,7 +39,10 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(new Gallary { ID = 2, GalaryFileName = "picture.jpj" });
             _eventBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>()));
             //Act
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object, _uniqueId.Object);
+            var eventGalleryManager = new EventGalleryManager(
+                _repoWrapper.Object,
+                _eventBlobStorage.Object
+            );
             var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
             _repoWrapper.Verify(r => r.Gallary.Delete(It.IsAny<Gallary>()), Times.Once());
@@ -60,7 +60,10 @@ namespace EPlast.XUnitTest.Services.Events
                 .ThrowsAsync(new Exception());
             _eventBlobStorage.Setup(x => x.DeleteBlobAsync(It.IsAny<string>()));
             //Act
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object, _uniqueId.Object);
+            var eventGalleryManager = new EventGalleryManager(
+                _repoWrapper.Object,
+                _eventBlobStorage.Object
+            );
             var methodResult = await eventGalleryManager.DeletePictureAsync(eventId);
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, methodResult);
@@ -78,7 +81,10 @@ namespace EPlast.XUnitTest.Services.Events
             _eventBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(picture);
             //Act
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object, _uniqueId.Object);
+            var eventGalleryManager = new EventGalleryManager(
+                _repoWrapper.Object,
+                _eventBlobStorage.Object
+            );
             var methodResult = await eventGalleryManager.GetPicturesInBase64(eventId);
             //Assert
             Assert.NotNull(methodResult);
@@ -98,7 +104,10 @@ namespace EPlast.XUnitTest.Services.Events
             _eventBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(picture);
             //Act  
-            var eventGalleryManager = new EventGalleryManager(_repoWrapper.Object, _eventBlobStorage.Object, _uniqueId.Object);
+            var eventGalleryManager = new EventGalleryManager(
+                _repoWrapper.Object,
+                _eventBlobStorage.Object
+            );
             var methodResult = await eventGalleryManager.AddPicturesAsync(eventId, FakeFiles());
             //Assert
             Assert.NotNull(methodResult);

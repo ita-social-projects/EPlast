@@ -1,8 +1,16 @@
-﻿using EPlast.BLL.DTO.Admin;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -11,14 +19,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using AutoMapper;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.Tests.Services.GoverningBody
 {
@@ -347,7 +347,7 @@ namespace EPlast.Tests.Services.GoverningBody
         }
 
         [Test]
-        public async Task EditGoverningBodyAdministratorAsync_RoleNameExists_ThrowsArgumentException()
+        public void EditGoverningBodyAdministratorAsync_RoleNameExists_ThrowsArgumentException()
         {
             //Arrange
             _adminTypeService

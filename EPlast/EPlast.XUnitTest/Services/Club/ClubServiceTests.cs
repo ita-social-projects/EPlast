@@ -1,24 +1,24 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.AzureStorage.Base;
 using Xunit;
-using Microsoft.AspNetCore.Hosting;
-using EPlast.BLL.Interfaces;
 
 namespace EPlast.XUnitTest.Services.ClubTests
 {
@@ -28,9 +28,6 @@ namespace EPlast.XUnitTest.Services.ClubTests
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IWebHostEnvironment> _env;
         private readonly Mock<IClubBlobStorageRepository> _ClubBlobStorage;
-        private readonly Mock<IClubAccessService> _ClubAccessService;
-        private readonly Mock<IUniqueIdService> _uniqueId;
-        private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
 
         public ClubServiceTests()
         {
@@ -38,9 +35,6 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _mapper = new Mock<IMapper>();
             _env = new Mock<IWebHostEnvironment>();
             _ClubBlobStorage = new Mock<IClubBlobStorageRepository>();
-            _ClubAccessService = new Mock<IClubAccessService>();
-            _uniqueId = new Mock<IUniqueIdService>();
-            _clubAnnualReportService = new Mock<IClubAnnualReportService>();
         }
 
         private ClubService CreateClubService()
@@ -64,7 +58,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                .ReturnsAsync(GetTestRegion());
             _repoWrapper.Setup(r => r.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
-               .ReturnsAsync(new User() );
+               .ReturnsAsync(new User());
             _repoWrapper.Setup(r => r.Club.Update(It.IsAny<DataAccess.Entities.Club>()))
                 .Verifiable();
             _repoWrapper.Setup(r => r.Club.Create(It.IsAny<DataAccess.Entities.Club>()))
@@ -74,7 +68,13 @@ namespace EPlast.XUnitTest.Services.ClubTests
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _ClubBlobStorage.Object, _ClubAccessService.Object, null, _uniqueId.Object);
+            return new ClubService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _ClubBlobStorage.Object,
+                null
+            );
         }
 
         [Fact]
