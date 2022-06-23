@@ -8,24 +8,25 @@ namespace EPlast.WebApi.Models.City
     public class CityViewModel
     {
         public int ID { get; set; }
-        [Required, MaxLength(50, ErrorMessage = "Назва станиці не має перевищувати 50 символів")]
+        [Required, MaxLength(50)]
         public string Name { get; set; }
 
-        [StringLength(18, ErrorMessage = "Контактний номер станиці повинен містити 12 цифр")]
+        [Phone, StringLength(18)]
         public string PhoneNumber { get; set; }
 
-        [MaxLength(50, ErrorMessage = "Email станиці не має перевищувати 50 символів")]
+        [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; }
 
-        [MaxLength(256, ErrorMessage = "Посилання на web-сторінку станиці не має перевищувати 256 символів")]
+        [Url, MaxLength(256)]
         public string CityURL { get; set; }
 
-        [MaxLength(1024, ErrorMessage = "Історія станиці не має перевищувати 1024 символів")]
+        [MaxLength(1000)]
         public string Description { get; set; }
 
-        [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
+        [Required, MaxLength(50)]
         public string Address { get; set; }
         public string Logo { get; set; }
+        [Required]
         public string Region { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }

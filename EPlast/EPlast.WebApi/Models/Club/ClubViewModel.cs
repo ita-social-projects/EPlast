@@ -6,15 +6,15 @@ namespace EPlast.WebApi.Models.Club
     public class ClubViewModel
     {
         public int ID { get; set; }
-        [Required, MaxLength(200, ErrorMessage = "Назва куреня не може бути довшою за 200 символів.")]
+        [Required, MaxLength(200)]
         public string Name { get; set; }
-        [MaxLength(18, ErrorMessage = "Контактний телефон куреня не може бути довшим за 12 символів.")]
+        [Phone, StringLength(18)]
         public string PhoneNumber { get; set; }
-        [Required, MaxLength(50, ErrorMessage = "Електронна адрес куреня не може бути довшою за 50 символів.")]
+        [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; }
-        [MaxLength(256, ErrorMessage = "Посилання куреня не може бути довшим за 256 символів.")]
+        [Url, MaxLength(256)]
         public string ClubURL { get; set; }
-        [MaxLength(1000, ErrorMessage = "Опис куреня не може бути довшим за 1000 символів.")]
+        [MaxLength(1000)]
         public string Description { get; set; }
         public string Slogan { get; set; }
         public string Logo { get; set; }
