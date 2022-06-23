@@ -1,29 +1,25 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Services;
+using EPlast.BLL.DTO.PrecautionsDTO;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Queries.Precaution;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Precautions;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using EPlast.BLL.Services.Interfaces;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.PrecautionsDTO;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Queries.Precaution;
-using MediatR;
 
 namespace EPlast.Tests.Services.Precautions
 {
@@ -34,7 +30,6 @@ namespace EPlast.Tests.Services.Precautions
         private UserPrecautionService _precautionService;
         private Mock<UserManager<User>> _userManagerMock;
         private Mock<IAdminService> _adminServiceMock;
-        private IUniqueIdService _uniqueId;
         private Mock<IMediator> _mediatorMock;
 
         [SetUp]
@@ -43,7 +38,6 @@ namespace EPlast.Tests.Services.Precautions
             _mapperMock = new Mock<IMapper>();
             _repoWrapperMock = new Mock<IRepositoryWrapper>();
             _adminServiceMock = new Mock<IAdminService>();
-            _uniqueId = new UniqueIdService();
             var store = new Mock<IUserStore<User>>();
             _userManagerMock = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _mediatorMock = new Mock<IMediator>();
@@ -738,7 +732,7 @@ namespace EPlast.Tests.Services.Precautions
         readonly List<UserPrecaution> nulluserPrecautions = null;
         readonly List<UserPrecautionDTO> nulluserPrecautionsDTO = null;
 
-        private string UserId => _uniqueId.GetUniqueId().ToString();
+        private string UserId => Guid.NewGuid().ToString();
 
         private UserPrecaution userPrecaution => new UserPrecaution
         {

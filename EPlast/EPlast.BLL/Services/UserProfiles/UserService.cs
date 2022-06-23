@@ -1,7 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
@@ -11,11 +15,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -27,15 +26,14 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
         private readonly IUserBlobStorageRepository _userBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
         public UserService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IUserPersonalDataService userPersonalDataService,
             IUserBlobStorageRepository userBlobStorage,
             IWebHostEnvironment env,
-            IUserManagerService userManagerService,
-            IUniqueIdService uniqueId)
+            IUserManagerService userManagerService
+        )
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -43,7 +41,6 @@ namespace EPlast.BLL.Services.UserProfiles
             _userBlobStorage = userBlobStorage;
             _userManagerService = userManagerService;
             _env = env;
-            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -249,7 +246,7 @@ namespace EPlast.BLL.Services.UserProfiles
                             File.Delete(oldPath);
                         }
                     }
-                    var fileName = $"{_uniqueId.GetUniqueId()}{Path.GetExtension(file.FileName)}";
+                    var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                     var filePath = Path.Combine(uploads, fileName);
                     img.Save(filePath);
                     return fileName;
@@ -268,7 +265,7 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 var base64Parts = imageBase64.Split(',');
                 var ext = base64Parts[0].Split(new[] { '/', ';' }, 3)[1];
-                var fileName = $"{_uniqueId.GetUniqueId()}.{ext}";
+                var fileName = $"{Guid.NewGuid()}.{ext}";
                 await _userBlobStorage.UploadBlobForBase64Async(base64Parts[1], fileName);
                 if (!string.IsNullOrEmpty(oldImageName) && !string.Equals(oldImageName, "default_user_image.png"))
                 {
