@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Account
 {
@@ -28,10 +29,10 @@ namespace EPlast.BLL.DTO.Account
         [Required(ErrorMessage = "Потрібно вказати адресу проживання")]
         public string Address { get; set; }
 
-        public int? CityId { get; set; }
+        [Required, Range(1, int.MaxValue)]
+        public UkraineOblasts Oblast { get; set; }
 
-        [Required]
-        public int RegionId { get; set; }
+        public int? CityId { get; set; }
 
         [Url]
         public string FacebookLink { get; set; }

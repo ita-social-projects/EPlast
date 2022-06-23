@@ -21,7 +21,8 @@ namespace EPlast.BLL.Mapping.User
                         GenderID = dto.GenderId,
                         TwitterLink = dto.TwitterLink,
                         FacebookLink = dto.FacebookLink,
-                        InstagramLink = dto.InstagramLink
+                        InstagramLink = dto.InstagramLink,
+                        Oblast = dto.Oblast
                     })
                 );
         }

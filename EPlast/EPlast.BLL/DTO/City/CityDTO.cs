@@ -1,9 +1,10 @@
-﻿using EPlast.BLL.DTO.Region;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
-using Newtonsoft.Json;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using Newtonsoft.Json;
 
 namespace EPlast.BLL.DTO.City
 {
@@ -28,6 +29,10 @@ namespace EPlast.BLL.DTO.City
 
         [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
         public string Address { get; set; }
+
+        [Required, Range(1, int.MaxValue)]
+        public UkraineOblasts Oblast { get; set; }
+
         public CityLevel Level { get; set; }
         public string Logo { get; set; }
         public bool IsActive { get; set; }

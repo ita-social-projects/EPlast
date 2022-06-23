@@ -9,6 +9,7 @@ using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Moq;
 using NUnit.Framework;
 
@@ -44,7 +45,7 @@ namespace EPlast.Tests.Handlers.City
             //Arrange
             _mockRepoWrapper
                 .Setup(r => r.City.GetCitiesObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<bool>(), It.IsAny<UkraineOblasts>()))
                 .ReturnsAsync(GetCityObjects());
             _mockBlobStorage
                 .Setup(b => b.GetBlobBase64Async(It.IsAny<string>()));
@@ -66,7 +67,7 @@ namespace EPlast.Tests.Handlers.City
             //Arrange
             _mockRepoWrapper
                 .Setup(r => r.City.GetCitiesObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(),
-                    It.IsAny<bool>()))
+                    It.IsAny<bool>(), It.IsAny<UkraineOblasts>()))
                 .ReturnsAsync(GetCityObjects());
             _mockBlobStorage
                 .Setup(b => b.GetBlobBase64Async(It.IsAny<string>()))

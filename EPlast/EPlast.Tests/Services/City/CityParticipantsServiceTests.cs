@@ -9,6 +9,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Models;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.City;
@@ -92,6 +93,7 @@ namespace EPlast.Tests.Services.City
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
+        private Mock<INotificationService> _notificationServiceMock;
         private Mock<IMediator> _mediator;
 
         [SetUp]
@@ -104,6 +106,7 @@ namespace EPlast.Tests.Services.City
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
             _emailSendingService = new Mock<IEmailSendingService>();
             _emailContentService = new Mock<IEmailContentService>();
+            _notificationServiceMock = new Mock<INotificationService>();
             _mediator = new Mock<IMediator>(); 
             _cityParticipantsService = new CityParticipantsService(
                 _repoWrapper.Object,
@@ -112,7 +115,8 @@ namespace EPlast.Tests.Services.City
                 _adminTypeService.Object,
                 _emailSendingService.Object,
                 _emailContentService.Object,
-                _mediator.Object
+                _mediator.Object,
+                _notificationServiceMock.Object
             );
         }
 

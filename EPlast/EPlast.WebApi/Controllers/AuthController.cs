@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -158,7 +158,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                // TODO
+                await _cityParticipantsService.AddUserWithoutSelectedCity(user);
             }
 
             UserDTO userDto = _mapper.Map<UserDTO>(user);
