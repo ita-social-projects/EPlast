@@ -53,5 +53,6 @@ namespace EPlast.BLL.DTO.City
         public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
         public IEnumerable<CityLegalStatusDTO> CityLegalStatuses { get; set; }
         public IEnumerable<UserRenewalDTO> UserRenewals { get; set; }
+        public AreaDTO Area { get; set; }
     }
 }

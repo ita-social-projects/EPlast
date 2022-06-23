@@ -113,7 +113,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IRegionAnnualReportsRepository _regionAnnualReports;
         private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
         private IGoverningBodyAnnouncementImageRepository _governingBodyAnnouncementImage;
-
+        private IAreaRepository _areaRepository;
 
         private SectionRepository _sectionRepository;
         private SubsectionRepository _subsectionRepository;
@@ -1189,6 +1189,18 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                     _extractFromUPUDocumentsRepository = new ExtractFromUPUDocumentsRepository(_dbContext);
                 }
                 return _extractFromUPUDocumentsRepository;
+            }
+        }
+
+        public IAreaRepository AreaRepository
+        {
+            get
+            {
+                if (_areaRepository == null)
+                {
+                    _areaRepository = new AreaRepository(_dbContext);
+                }
+                return _areaRepository;
             }
         }
 

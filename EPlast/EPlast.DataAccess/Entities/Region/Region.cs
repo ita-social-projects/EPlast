@@ -27,5 +27,8 @@ namespace EPlast.DataAccess.Entities
         public string OfficeNumber { get; set; }
         public int PostIndex { get; set; }
         public RegionsStatusType Status { get; set; }
+
+        public int? AreaId { get; set; }
+        public Area Area { get; set; }
     }
 }

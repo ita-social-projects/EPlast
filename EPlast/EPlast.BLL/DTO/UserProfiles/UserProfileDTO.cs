@@ -51,5 +51,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         public string TwitterLink { get; set; }
         public string InstagramLink { get; set; }
         public UserDTO User { get; set; }
+        public AreaDTO Area { get; set; }
     }
 }

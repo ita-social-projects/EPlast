@@ -65,6 +65,7 @@ namespace EPlast.DataAccess
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
         public DbSet<EducatorsStaffTableObject> EducatorsStaffTableObjects { get; set; }
+        public DbSet<Area> Areas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -274,6 +275,37 @@ namespace EPlast.DataAccess
             {
                 annualReport.HasOne(a => a.Club);
             });
+
+            modelBuilder.Entity<Area>(area => area.HasData
+            (
+                new Area { Id = 1,  Name = "Автономна Республіка Крим" },
+                new Area { Id = 2,  Name = "Вінницька" },
+                new Area { Id = 3,  Name = "Волинська" },
+                new Area { Id = 4,  Name = "Дніпропетровська" },
+                new Area { Id = 5,  Name = "Донецька" },
+                new Area { Id = 6,  Name = "Житомирська" },
+                new Area { Id = 7,  Name = "Закарпатська" },
+                new Area { Id = 8,  Name = "Запорізька" },
+                new Area { Id = 9,  Name = "Івано-Франківська" },
+                new Area { Id = 10, Name = "Київська" },
+                new Area { Id = 11, Name = "Кіровоградська" },
+                new Area { Id = 12, Name = "Луганська" },
+                new Area { Id = 13, Name = "Львівська" },
+                new Area { Id = 14, Name = "м. Київ" },
+                new Area { Id = 15, Name = "м. Севастополь" },
+                new Area { Id = 16, Name = "Миколаївська" },
+                new Area { Id = 17, Name = "Одеська" },
+                new Area { Id = 18, Name = "Полтавська" },
+                new Area { Id = 19, Name = "Рівненська" },
+                new Area { Id = 20, Name = "Сумська" },
+                new Area { Id = 21, Name = "Тернопільська" },
+                new Area { Id = 22, Name = "Харківська" },
+                new Area { Id = 23, Name = "Херсонська" },
+                new Area { Id = 24, Name = "Хмельницька" },
+                new Area { Id = 25, Name = "Черкаська" },
+                new Area { Id = 26, Name = "Чернівецька" },
+                new Area { Id = 27, Name = "Чернігівська" }
+            ));
         }
         public DbSet<RegionAnnualReport> RegionAnnualReports { get; set; }
         public DbSet<DocumentTemplate> DocumentTemplates { get; set; }

@@ -47,5 +47,8 @@ namespace EPlast.DataAccess.Entities
 
         public int RegionId { get; set; }
         public Region Region { get; set; }
+
+        public int? AreaId { get; set; }
+        public Area Area { get; set; }
     }
 }

@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220622210115_AreaMigration")]
+    partial class AreaMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,143 +264,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Areas");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Автономна Республіка Крим"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Вінницька"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Волинська"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Дніпропетровська"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Донецька"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Житомирська"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Закарпатська"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Запорізька"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Івано-Франківська"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Київська"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Кіровоградська"
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Луганська"
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Львівська"
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "м. Київ"
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "м. Севастополь"
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "Миколаївська"
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "Одеська"
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "Полтавська"
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "Рівненська"
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Сумська"
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Name = "Тернопільська"
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "Харківська"
-                        },
-                        new
-                        {
-                            Id = 23,
-                            Name = "Херсонська"
-                        },
-                        new
-                        {
-                            Id = 24,
-                            Name = "Хмельницька"
-                        },
-                        new
-                        {
-                            Id = 25,
-                            Name = "Черкаська"
-                        },
-                        new
-                        {
-                            Id = 26,
-                            Name = "Чернівецька"
-                        },
-                        new
-                        {
-                            Id = 27,
-                            Name = "Чернігівська"
-                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.AchievementDocuments", b =>

@@ -99,7 +99,7 @@ namespace EPlast.DataAccess.Repositories
         ISubsectionRepository AboutBaseSubsection { get; }
         ITermsRepository TermsOfUse { get; }
         IUserRenewalRepository UserRenewal { get; }
-
+        IAreaRepository AreaRepository { get; }
         void Save();
 
         Task SaveAsync();

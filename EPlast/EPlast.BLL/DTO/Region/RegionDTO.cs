@@ -23,5 +23,6 @@ namespace EPlast.BLL.DTO.Region
         public string OfficeNumber { get; set; }
         public int PostIndex { get; set; }
         public RegionsStatusTypeDTO Status { get; set; }
+        public AreaDTO Area { get; set; }
     }
 }
