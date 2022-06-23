@@ -464,7 +464,7 @@ namespace EPlast.XUnitTest.Services
                 LastName = "Shainoha",
                 GenderId = 1,
                 Birthday = DateTime.Now.AddYears(-18),
-                Address = "вулиця Пушкіна дом Колотушкіна",
+                Address = "вулиця Героїв України",
                 PhoneNumber = "+380123456789",
                 Email = "andriishainoha@gmail.com",
                 Password = "andrii123"
