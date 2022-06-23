@@ -61,8 +61,8 @@ namespace EPlast.BLL.Handlers.RegionHandlers
             var regionNameEmpty = string.IsNullOrEmpty(regionName);
             Expression<Func<Region, bool>> expr = (regionNameEmpty) switch
             {
-                true => x => x.IsActive == isArchive,
-                false => x => x.RegionName.Contains(regionName) && x.IsActive == isArchive
+                true => x => x.IsActive == isArchive && x.RegionName != "Крайовий Провід Пласту",
+                false => x => x.RegionName.Contains(regionName) && x.IsActive == isArchive 
             };
             return expr;
         }
