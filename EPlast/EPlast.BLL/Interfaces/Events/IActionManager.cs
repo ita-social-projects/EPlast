@@ -129,6 +129,12 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="id">The Id of picture</param>
         Task<int> DeletePictureAsync(int id);
 
+        /// <summary>
+        /// Change participant's present status.
+        /// </summary>
+        /// <param name="id">The Id of picture</param>
+        Task ChangeUsersPresentStatusAsync(int id);
+
         Task CheckEventsStatusesAsync();
 
         Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user);

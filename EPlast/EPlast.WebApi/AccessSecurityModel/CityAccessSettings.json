@@ -21,7 +21,7 @@
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
-    "DeleteCity": false,
+    "DeleteCity": true,
     "AddCitySecretary": false,
     "AddCityHead": false,
     "DownloadDocument": true
@@ -30,7 +30,7 @@
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
-    "DeleteCity": false,
+    "DeleteCity": true,
     "AddCitySecretary": false,
     "AddCityHead": false,
     "DownloadDocument": true

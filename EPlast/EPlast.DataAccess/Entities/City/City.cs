@@ -22,17 +22,10 @@ namespace EPlast.DataAccess.Entities
         [MaxLength(1024, ErrorMessage = "Історія станиці не має перевищувати 1024 символів")]
         public string Description { get; set; }
 
-        [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
-        public string Street { get; set; }
+        [Required, MaxLength(60, ErrorMessage = "Назва адреси розташування станиці не має перевищувати 60 символів")]
+        public string Address { get; set; }
 
-        [Required, MaxLength(10, ErrorMessage = "Номер будинку розташування станиці не має перевищувати 10 символів")]
-        public string HouseNumber { get; set; }
-
-        [MaxLength(10, ErrorMessage = "Номер офісу/квартири розташування станиці не має перевищувати 10 символів")]
-        public string OfficeNumber { get; set; }
-
-        [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
-        public string PostIndex { get; set; }
+        public CityLevel Level { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public string Logo { get; set; }

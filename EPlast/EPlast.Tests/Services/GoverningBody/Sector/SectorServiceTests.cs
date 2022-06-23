@@ -1,24 +1,24 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.GoverningBody.Sector;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Services.GoverningBodies.Sector;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
-using EPlast.Resources;
-using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
+using EPlast.BLL.DTO.GoverningBody.Sector;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Services.GoverningBodies.Sector;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using NUnit.Framework;
+using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.Tests.Services.GoverningBody.Sector
 {
@@ -27,7 +27,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private SectorService _service;
-        private Mock<IUniqueIdService> _uniqueIdService;
         private Mock<IGoverningBodySectorBlobStorageRepository> _blobStorage;
         private Mock<ISectorAdministrationService> _sectorAdministrationService;
         private Mock<ISecurityModel> _securityModel;
@@ -39,20 +38,19 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _blobStorage = new Mock<IGoverningBodySectorBlobStorageRepository>();
-            _uniqueIdService = new Mock<IUniqueIdService>();
             _securityModel = new Mock<ISecurityModel>();
             _sectorAdministrationService = new Mock<ISectorAdministrationService>();
 
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            
+
             _service = new SectorService(
                 _repoWrapper.Object,
                 _mapper.Object,
-                _uniqueIdService.Object,
                 _blobStorage.Object,
                 _securityModel.Object,
-                _sectorAdministrationService.Object);
+                _sectorAdministrationService.Object
+            );
         }
 
         [Test]
@@ -87,10 +85,6 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         public async Task CreateAsync_LogoNormal()
         {
             //Arrange
-            _uniqueIdService
-                .Setup(x => x.GetUniqueId())
-                .Returns(new Guid());
-
             string oldImageName = "old image name";
             _repoWrapper
                 .SetupSequence(x => x.GoverningBodySector.GetFirstOrDefaultAsync(

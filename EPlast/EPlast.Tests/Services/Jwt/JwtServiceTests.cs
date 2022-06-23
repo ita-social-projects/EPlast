@@ -5,7 +5,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using Microsoft.Extensions.Options;
@@ -19,7 +18,6 @@ namespace EPlast.Tests.Services.Jwt
     {
         private Mock<IOptions<JwtOptions>> _jwtOptionsMock;
         private Mock<IUserManagerService> _userManagerServiceMock;
-        private Mock<IUniqueIdService> _uniqueIdServiceMock;
         private JwtService _jwtService;
 
         [SetUp]
@@ -35,11 +33,10 @@ namespace EPlast.Tests.Services.Jwt
                     Time = 120
                 });
             _userManagerServiceMock = new Mock<IUserManagerService>();
-            _uniqueIdServiceMock = new Mock<IUniqueIdService>();
             _jwtService = new JwtService(
                 _jwtOptionsMock.Object,
-                _userManagerServiceMock.Object,
-                _uniqueIdServiceMock.Object);
+                _userManagerServiceMock.Object
+            );
         }
 
         [Test]
@@ -60,7 +57,6 @@ namespace EPlast.Tests.Services.Jwt
                 "testRole2"
             };
 
-            _uniqueIdServiceMock.Setup(x => x.GetUniqueId()).Returns(uniqueId);
             _userManagerServiceMock.Setup(x => x.GetRolesAsync(userDto))
                 .ReturnsAsync(roles);
 

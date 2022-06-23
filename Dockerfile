@@ -18,8 +18,6 @@ RUN apt-get update \
 WORKDIR /EPlast
 
 COPY ./EPlast/*.sln ./
-COPY ./EPlast/EPlast/*.csproj ./EPlast/
-COPY ./EPlast/EPlast.AutomatedTest/*.csproj ./EPlast.AutomatedTest/
 COPY ./EPlast/EPlast.BLL/*.csproj ./EPlast.BLL/
 COPY ./EPlast/EPlast.DataAccess/*.csproj ./EPlast.DataAccess/
 COPY ./EPlast/EPlast.Resources/*.csproj ./EPlast.Resources/
@@ -36,9 +34,9 @@ RUN dotnet build -c $Configuration -o /app
 
 FROM builder AS publish
 ARG Configuration=debug
-RUN dotnet publish -c $Configuration -o /app
+RUN dotnet publish -c $Configuration -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "EPlast.WebApi.dll"]

@@ -29,10 +29,11 @@ namespace EPlast.WebApi.StartupExtensions
                                                                  .GetDergeesAsync(),
                                             "59 23 * * *",
                                             TimeZoneInfo.Local);
+
             recurringJobManager.AddOrUpdate("Check and change event status",
                                             () => serviceProvider.GetService<IActionManager>()
                                                                  .CheckEventsStatusesAsync(),
-                                            "59 23 * * *",
+                                            "0 * * * *",
                                             TimeZoneInfo.Local);
 
             recurringJobManager.AddOrUpdate("Changes status of region admins when the date expires",
@@ -83,6 +84,7 @@ namespace EPlast.WebApi.StartupExtensions
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var userDatesService = serviceProvider.GetRequiredService<IUserDatesService>();
             var roles = new[]
             {
                 Roles.Admin,
@@ -132,7 +134,12 @@ namespace EPlast.WebApi.StartupExtensions
             {
                 var idenResCreateAdmin = await userManager.CreateAsync(profile, admin["Password"]);
                 if (idenResCreateAdmin.Succeeded)
+                {
                     await userManager.AddToRoleAsync(profile, Roles.Admin);
+                    var createdUser = await userManager.FindByEmailAsync(admin["Email"]);
+                    await userDatesService.AddDateEntryAsync(createdUser.Id);
+                }
+                
             }
             else if (!await userManager.IsInRoleAsync(userManager.Users.First(item => item.Email == profile.Email), Roles.Admin))
             {

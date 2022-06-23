@@ -87,9 +87,9 @@ namespace EPlast.BLL.Services
         {
             var newPlastMember = await _userService.GetUserAsync(newPlastMemberId);
             var query = new GetCityAdminsQuery(newPlastMember.CityMembers.First().CityId);
-            var cityProfile = await _mediator.Send(query);
+            var cityAdmins = await _mediator.Send(query);
 
-            var cityHead = cityProfile.Head.User;
+            var cityHead = cityAdmins.Head.User;
             await SendEmailCityAdminAboutNewPlastMemberAsync(cityHead.Email, newPlastMember.FirstName,
                 newPlastMember.LastName, newPlastMember.UserProfile.Birthday);
         }

@@ -67,21 +67,19 @@ namespace EPlast.Tests.Services.EmailSending
                 }
             };
 
-            var cityProfile = new CityProfileDTO
+            var cityAdministration = new CityAdministrationViewModelDTO
             {
-                Admins = new List<CityAdministrationDTO>
-                {
-                    new CityAdministrationDTO
-                    {
-                        User = new CityUserDTO()
-                    }
-                },
+                Administration = new List<CityAdministrationDTO>(),
                 Head = new CityAdministrationDTO
+                {
+                    User = new CityUserDTO()
+                },
+                HeadDeputy = new CityAdministrationDTO
                 {
                     User = new CityUserDTO()
                 }
             };
-
+               
             var roles = new List<string>()
             {
                 Roles.Supporter,
@@ -117,7 +115,7 @@ namespace EPlast.Tests.Services.EmailSending
                                              It.IsAny<string>()));
             _mockUserService.Setup(x => x.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
-            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(cityProfile);
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(cityAdministration);
             
             _mockEmailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(),

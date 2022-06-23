@@ -1,22 +1,22 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.Tests.Services
 {
@@ -26,16 +26,18 @@ namespace EPlast.Tests.Services
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repository;
         private Mock<IMethodicDocumentBlobStorageRepository> _blobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
         {
             _blobStorage = new Mock<IMethodicDocumentBlobStorageRepository>();
             _repository = new Mock<IRepositoryWrapper>();
-            _uniqueId = new Mock<IUniqueIdService>();
             _mapper = new Mock<IMapper>();
-            _service = new MethodicDocumentService(_repository.Object, _mapper.Object, _blobStorage.Object, _uniqueId.Object);
+            _service = new MethodicDocumentService(
+                _repository.Object,
+                _mapper.Object,
+                _blobStorage.Object
+            );
         }
 
         [Test]
@@ -163,12 +165,12 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _mapper
-                .Setup(x=>x.Map<MethodicDocument>(new MethodicDocumentDTO { ID = Id })).Returns(new MethodicDocument() { ID = Id });
+                .Setup(x => x.Map<MethodicDocument>(new MethodicDocumentDTO { ID = Id })).Returns(new MethodicDocument() { ID = Id });
             _repository.Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
             _repository.Setup(rep => rep.MethodicDocument.Create(new MethodicDocument()));
 
             //Act
-            var actualReturn = await _service.SaveMethodicDocumentAsync(new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID= Id } }); 
+            var actualReturn = await _service.SaveMethodicDocumentAsync(new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID = Id } });
 
             //Assert
             Assert.AreEqual(Id, actualReturn);
@@ -180,14 +182,11 @@ namespace EPlast.Tests.Services
             //Arrange
             _mapper
                 .Setup(x => x.Map<MethodicDocument>(It.IsAny<MethodicDocumentDTO>()))
-                .Returns(new MethodicDocument() { ID = id, FileName = "name"});
+                .Returns(new MethodicDocument() { ID = id, FileName = "name" });
             _repository
                 .Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
             _repository
                 .Setup(rep => rep.MethodicDocument.Create(new MethodicDocument()));
-            _uniqueId
-                .Setup(x => x.GetUniqueId())
-                .Returns(Guid.NewGuid());
 
             //Act
             int res = await _service.SaveMethodicDocumentAsync(

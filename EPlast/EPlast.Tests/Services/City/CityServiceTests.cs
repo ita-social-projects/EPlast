@@ -1,27 +1,24 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
-using EPlast.Resources;
 
 namespace EPlast.Tests.Services.City
 {
@@ -36,7 +33,6 @@ namespace EPlast.Tests.Services.City
         private Mock<ICityAccessService> _cityAccessService;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserStore<User>> _user;
-        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -47,10 +43,15 @@ namespace EPlast.Tests.Services.City
             _cityBlobStorage = new Mock<ICityBlobStorageRepository>();
             _cityAccessService = new Mock<ICityAccessService>();
             _user = new Mock<IUserStore<User>>();
-            _uniqueId = new Mock<IUniqueIdService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _cityService = new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object,
-                   _cityAccessService.Object, _userManager.Object, _uniqueId.Object);
+            _cityService = new CityService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _cityBlobStorage.Object,
+                _cityAccessService.Object,
+                _userManager.Object
+            );
         }
 
         [Test]
@@ -91,8 +92,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityDTO cityDTO = new CityDTO();
-            cityDTO.CityAdministration = new List<CityAdministrationDTO>() 
-            { 
+            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            {
                 new CityAdministrationDTO()
                 {
                     AdminType = new AdminTypeDTO()
@@ -248,7 +249,7 @@ namespace EPlast.Tests.Services.City
             // Arrange
             _repoWrapper.Setup(rw => rw.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
                 It.IsAny<Func<IQueryable<DataAccessCity.City>, IIncludableQueryable<DataAccessCity.City, object>>>()))
-                .ReturnsAsync(() => new List<DataAccessCity.City> ());
+                .ReturnsAsync(() => new List<DataAccessCity.City>());
 
             // Act
             var result = await _cityService.GetAllAsync();
@@ -316,7 +317,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             _mapper
-                .Setup(m => m.Map< IEnumerable < DataAccessCity.City > ,IEnumerable <CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(GetTestCityDTO());
             _repoWrapper
                 .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
@@ -383,10 +384,10 @@ namespace EPlast.Tests.Services.City
             // Arrange
             _repoWrapper
                 .Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
-                .ReturnsAsync(new DataAccessCity.City());        
+                .ReturnsAsync(new DataAccessCity.City());
             _mapper
                 .Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns( new CityDTO());
+                .Returns(new CityDTO());
 
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
@@ -448,10 +449,10 @@ namespace EPlast.Tests.Services.City
             // Arrange
             _repoWrapper
                 .Setup(u => u.CityMembers.GetAllAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null));
-            
+
             // Act
             var result = await _cityService.GetCityUsersAsync(Id);
-            
+
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<CityUserDTO[]>(result);
@@ -462,7 +463,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m=>m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
                 .Returns((CityDTO)null);
 
             // Act
@@ -557,7 +558,7 @@ namespace EPlast.Tests.Services.City
         public async Task PlastMemberCheck_UserId_ReturnTrue()
         {
             // Arrange
-            User user = new User() {Id = "a"}; 
+            User user = new User() { Id = "a" };
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
@@ -683,7 +684,7 @@ namespace EPlast.Tests.Services.City
             // Assert
             Assert.Null(result);
         }
-      
+
         [Test]
         public async Task GetAdministrationAsync_CityId_ReturnClubAdministrtionGetDTO()
         {
@@ -1231,7 +1232,14 @@ namespace EPlast.Tests.Services.City
                      It.IsAny<Func<IQueryable<CityMembers>, IIncludableQueryable<CityMembers, object>>>()))
                  .ReturnsAsync(new List<CityMembers>());
 
-            return new CityService(_repoWrapper.Object, _mapper.Object, _env.Object, _cityBlobStorage.Object, _cityAccessService.Object, _userManager.Object, _uniqueId.Object);
+            return new CityService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _cityBlobStorage.Object,
+                _cityAccessService.Object,
+                _userManager.Object
+            );
         }
 
         private IQueryable<DataAccessCity.City> CreateFakeCities(int count)

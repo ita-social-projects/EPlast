@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System.Threading.Tasks;
+using System.Web;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
@@ -6,8 +8,6 @@ using EPlast.BLL.Interfaces.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -17,26 +17,27 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IAuthEmailService _authEmailServices;
         private readonly IAuthService _authService;
-        private readonly IHomeService _homeService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
         private readonly ILoggerService<AuthController> _logger;
+        private readonly IEmailSendingService _emailSendingService;
         private const int TotalMinutesInOneDay = 1440;
 
         public AuthController(
             IAuthService authService,
             IUserDatesService userDatesService,
-            IHomeService homeService,
             IResources resources,
             IAuthEmailService authEmailServices,
-            ILoggerService<AuthController> logger)
+            ILoggerService<AuthController> logger,
+            IEmailSendingService emailSendingService
+        )
         {
             _authService = authService;
             _userDatesService = userDatesService;
-            _homeService = homeService;
             _resources = resources;
             _authEmailServices = authEmailServices;
             _logger = logger;
+            _emailSendingService = emailSendingService;
         }
 
         /// <summary>
@@ -140,6 +141,7 @@ namespace EPlast.WebApi.Controllers
                     {
                         return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
                     }
+                    
                     var userDto = await _authService.FindByEmailAsync(registerDto.Email);
                     await _userDatesService.AddDateEntryAsync(userDto.Id);
                     return Ok(_resources.ResourceForErrors["Confirm-Registration"]);
@@ -167,24 +169,27 @@ namespace EPlast.WebApi.Controllers
             return Ok(_resources.ResourceForErrors["EmailForRegistering-Resended"]);
         }
 
-        /// <summary>
-        /// Method for sending question to Admin in system
-        /// </summary>
-        /// <param name="contactsDto">Contacts model(dto)</param>
-        /// <returns>Answer from backend sending question to Admin in system</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with sending question</response>
-        [HttpPost("sendQuestion")]
-        public async Task<IActionResult> SendContacts([FromBody] ContactsDto contactsDto)
+        [HttpPost("feedback")]
+        public async Task<IActionResult> Feedback(FeedbackDto feedbackDto)
         {
             if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Дані введені неправильно");
-                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
+                return BadRequest(ModelState);
             }
-            await _homeService.SendEmailAdmin(contactsDto);
 
-            return Ok(_resources.ResourceForErrors["Feedback-Sended"]);
+            await _emailSendingService.SendEmailAsync(
+                "eplastdmnstrtr@gmail.com",
+                "Питання користувачів",
+                $@"
+                Ім'я: {feedbackDto.Name}<br/>
+                Пошта: {feedbackDto.Email}<br/>
+                Номер телефону: {feedbackDto.PhoneNumber}<br/>
+                Коментар: {feedbackDto.FeedbackBody}<br/>
+                ",
+                "EPlast"
+            );
+
+            return NoContent();
         }
     }
 }

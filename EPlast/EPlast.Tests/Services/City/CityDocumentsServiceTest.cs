@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
@@ -10,12 +16,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 
@@ -27,7 +27,6 @@ namespace EPlast.Tests.Services.City
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<ICityFilesBlobStorageRepository> _cityFilesBlobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -35,10 +34,9 @@ namespace EPlast.Tests.Services.City
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _cityFilesBlobStorage = new Mock<ICityFilesBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
         }
 
-        [Test] 
+        [Test]
         public async Task GetAllCityDocumentTypesAsync_ReturnsDocumentTypes()
         {
             // Arrange
@@ -125,11 +123,12 @@ namespace EPlast.Tests.Services.City
             _cityFilesBlobStorage
                 .Setup(c => c.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(fakeFile);
-            _uniqueId
-                .Setup(u => u.GetUniqueId())
-                .Returns(Guid.NewGuid());
 
-            return new CityDocumentsService(_repoWrapper.Object, _mapper.Object, _cityFilesBlobStorage.Object, _uniqueId.Object);
+            return new CityDocumentsService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _cityFilesBlobStorage.Object
+            );
         }
 
         private CityDocumentsDTO cityDocumentsDTO => new CityDocumentsDTO

@@ -32,7 +32,7 @@ namespace EPlast.WebApi.Controllers
         {
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
             var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(x));
-            if(role != null)
+            if (role != null)
             {
                 return true;
             }
@@ -55,7 +55,6 @@ namespace EPlast.WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
-
             var eventUserModel = await eventUserService.EventUserAsync(userId, await _userManager.GetUserAsync(User));
             return Ok(eventUserModel);
         }

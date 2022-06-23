@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
+using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -24,10 +26,11 @@ namespace EPlast.BLL.Services.Events
         private readonly IParticipantStatusManager _participantStatusManager;
         private readonly IParticipantManager _participantManager;
         private readonly IEventWrapper _eventWrapper;
+        private readonly INotificationService _notificationService;
 
         public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper,
             IParticipantStatusManager participantStatusManager, IParticipantManager participantManager,
-            IEventWrapper eventWrapper)
+            IEventWrapper eventWrapper, INotificationService notificationService)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
@@ -35,6 +38,7 @@ namespace EPlast.BLL.Services.Events
             _participantStatusManager = participantStatusManager;
             _participantManager = participantManager;
             _eventWrapper = eventWrapper;
+            _notificationService = notificationService;
         }
 
         /// <inheritdoc />
@@ -77,7 +81,6 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
-            
             return await GetEventDtosAsync(events, user);
         }
 
@@ -200,6 +203,11 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        public async Task ChangeUsersPresentStatusAsync(int participantId)
+        {
+            await _participantManager.ChangeUserPresentStatusAsync(participantId);
+        }
+
         public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
         {
             try
@@ -253,14 +261,30 @@ namespace EPlast.BLL.Services.Events
         {
             int finishedEventStatus = 1;
             var eventsToCheck = await _repoWrapper.Event
-                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && (DateTime.Compare(e.EventDateEnd, DateTime.Now) < 0));
-
-            foreach (var eventToCheck in eventsToCheck)
+                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && DateTime.Compare(e.EventDateEnd, DateTime.Now) < 0, include: users =>
+              users.Include(d => d.Participants));
+            if (eventsToCheck.Any())
             {
-                eventToCheck.EventStatusID = finishedEventStatus;
-                _repoWrapper.Event.Update(eventToCheck);
+                foreach (var eventToCheck in eventsToCheck)
+                {
+                    eventToCheck.EventStatusID = finishedEventStatus;
+                    _repoWrapper.Event.Update(eventToCheck);
+                    List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+                    foreach (var user in eventToCheck.Participants)
+                    {
+                        userNotificationsDTO.Add(new UserNotificationDTO
+                        {
+                            Message = "Оцінювання події є доступним протягом 3 днів після її завершення! ",
+                            NotificationTypeId = 1,
+                            OwnerUserId = user.UserId,
+                            SenderLink = $"/events/details/{eventToCheck.ID}",
+                            SenderName = eventToCheck.EventName
+                        });
+                    }
+                    await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
+                }
+                await _repoWrapper.SaveAsync();
             }
-            await _repoWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user)
@@ -310,7 +334,7 @@ namespace EPlast.BLL.Services.Events
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
+                    IsUserEventAdmin = ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),
