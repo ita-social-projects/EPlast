@@ -88,6 +88,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CreateRegion(RegionDTO region)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             await _regionService.AddRegionAsync(region);
             await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
