@@ -7,25 +7,23 @@ namespace EPlast.BLL.Handlers.CityHandlers.Helpers
 {
     public static class CityHelpers
     {
-        public static CityAdministrationDTO GetCityHead(CityDTO city)
+        public static CityAdministrationDTO GetCityHead(IEnumerable<CityAdministrationDTO> admins)
         {
-            var cityHead = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead && a.Status);
+            var cityHead = admins
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead);
             return cityHead;
         }
 
-        public static CityAdministrationDTO GetCityHeadDeputy(CityDTO city)
+        public static CityAdministrationDTO GetCityHeadDeputy(IEnumerable<CityAdministrationDTO> admins)
         {
-            var cityHeadDeputy = city.CityAdministration?
-                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
-                                     && a.Status);
+            var cityHeadDeputy = admins
+                .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy);
             return cityHeadDeputy;
         }
 
-        public static List<CityAdministrationDTO> GetCityAdmins(CityDTO city)
+        public static List<CityAdministrationDTO> GetCityAdmins(IEnumerable<CityAdministrationDTO> admins)
         {
-            var cityAdmins = city.CityAdministration
-                .Where(a => a.Status)
+            var cityAdmins = admins
                 .ToList();
             return cityAdmins;
         }

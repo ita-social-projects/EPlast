@@ -1,11 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.Commands.Decision;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using EPlast.BLL.Commands.Decision;
-using AutoMapper;
-using EPlast.BLL.Interfaces;
 
 namespace EPlast.BLL.Handlers.DecisionHandlers
 {
@@ -13,13 +13,16 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        private readonly IUniqueIdService _uniqueId;
         private readonly IMediator _mediator;
-        public SaveDecisionAsyncHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper, IUniqueIdService uniqueId, IMediator mediator)
+
+        public SaveDecisionAsyncHandler(
+            IRepositoryWrapper repositoryWrapper,
+            IMapper mapper,
+            IMediator mediator
+        )
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
-            _uniqueId = uniqueId;
             _mediator = mediator;
         }
 
@@ -32,7 +35,7 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
             _repoWrapper.Decesion.Create(repoDecision);
             if (request.Decision.FileAsBase64 != null)
             {
-                repoDecision.FileName = $"{_uniqueId.GetUniqueId()}{repoDecision.FileName}";
+                repoDecision.FileName = $"{Guid.NewGuid()}{repoDecision.FileName}";
                 var uploadFileToBlobAsync = new UploadFileToBlobAsyncCommand(request.Decision.FileAsBase64, repoDecision.FileName);
                 await _mediator.Send(uploadFileToBlobAsync);
             }

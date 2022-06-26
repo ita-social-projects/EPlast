@@ -1,7 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
@@ -13,11 +17,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.UserProfiles
 {
@@ -30,7 +29,6 @@ namespace EPlast.Tests.Services.UserProfiles
         private Mock<IUserPersonalDataService> _mockUserPersonalDataService;
         private Mock<IUserBlobStorageRepository> _mockUserBlobStorage;
         private Mock<IWebHostEnvironment> _mockEnv;
-        private Mock<IUniqueIdService> _mockUniqueId;
         private UserDTO _userDTO;
         private ConfirmedUserDTO _confirmedUserDTO;
         private Mock<IUserManagerService> _mockUserManageService;
@@ -53,9 +51,15 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserPersonalDataService = new Mock<IUserPersonalDataService>();
             _mockUserBlobStorage = new Mock<IUserBlobStorageRepository>();
             _mockEnv = new Mock<IWebHostEnvironment>();
-            _mockUniqueId = new Mock<IUniqueIdService>();
             _mockUserManageService = new Mock<IUserManagerService>();
-            _userService = new UserService(_mockRepoWrapper.Object, _mockMapper.Object, _mockUserPersonalDataService.Object, _mockUserBlobStorage.Object, _mockEnv.Object, _mockUserManageService.Object, _mockUniqueId.Object);
+            _userService = new UserService(
+                _mockRepoWrapper.Object,
+                _mockMapper.Object,
+                _mockUserPersonalDataService.Object,
+                _mockUserBlobStorage.Object,
+                _mockEnv.Object,
+                _mockUserManageService.Object
+            );
             _confirmedUserDTO = new ConfirmedUserDTO();
             _userDTO = new UserDTO()
             {

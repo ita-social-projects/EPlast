@@ -1,9 +1,9 @@
 ﻿using EPlast.BLL;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AboutBase;
-using EPlast.BLL.Interfaces.Terms;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Admin;
+using EPlast.BLL.Interfaces.Announcements;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.AzureStorage.Base;
 using EPlast.BLL.Interfaces.Blank;
@@ -24,14 +24,15 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.RegionBoard;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.BLL.Interfaces.Statistics;
+using EPlast.BLL.Interfaces.Terms;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.SecurityModel;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.AboutBase;
-using EPlast.BLL.Services.TermsOfUse;
 using EPlast.BLL.Services.ActiveMembership;
 using EPlast.BLL.Services.Admin;
+using EPlast.BLL.Services.Announcements;
 using EPlast.BLL.Services.Auth;
 using EPlast.BLL.Services.AzureStorage;
 using EPlast.BLL.Services.AzureStorage.Base;
@@ -60,6 +61,7 @@ using EPlast.BLL.Services.Redis;
 using EPlast.BLL.Services.Region;
 using EPlast.BLL.Services.Region.RegionAccess;
 using EPlast.BLL.Services.Statistics;
+using EPlast.BLL.Services.TermsOfUse;
 using EPlast.BLL.Services.UserAccess;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
@@ -68,8 +70,6 @@ using EPlast.DataAccess.Repositories.Realizations.Base;
 using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using EPlast.BLL.Interfaces.Announcements;
-using EPlast.BLL.Services.Announcements;
 
 namespace EPlast.WebApi.StartupExtensions
 {
@@ -112,7 +112,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IClubParticipantsService, ClubParticipantsService>();
             services.AddScoped<IClubService, ClubService>();
             services.AddScoped<IConfirmedUsersService, ConfirmedUsersService>();
-            services.AddScoped<IDateTimeHelper, DateTimeHelper>();
             services.AddScoped<IDecisionBlobStorageRepository, DecisionBlobStorageRepository>();
             services.AddScoped<IDirectoryManager, DirectoryManager>();
             services.AddScoped<IEducatorsStaffService, EducatorsStaffService>();
@@ -150,7 +149,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<ISectorAnnouncementsService, SectorAnnouncementsService>();
             services.AddScoped<IGoverningBodySectorBlobStorageRepository, GoverningBodySectorBlobStorageRepository>();
             services.AddScoped<IGoverningBodySectorFilesBlobStorageRepository, GoverningBodySectorFilesBlobStorageRepository>();
-            services.AddScoped<IHomeService, HomeService>();
             services.AddScoped<IMethodicDocumentBlobStorageRepository, MethodicDocumentBlobStarageRepository>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
             services.AddScoped<IMethodicDocumentService, MethodicDocumentService>();
@@ -200,7 +198,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IJwtService, JwtService>();
-            services.AddTransient<IUniqueIdService, UniqueIdService>();
             services.AddSingleton<IUserMapService, UserMapService>();
             services.AddSingleton<ICacheService, RedisCacheService>();
             return services;

@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.Decision;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
@@ -8,9 +11,6 @@ using EPlast.DataAccess.Repositories;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 namespace EPlast.Tests.Handlers.Decision
 {
     public class SaveDecisionAsyncHandlerTest
@@ -20,15 +20,17 @@ namespace EPlast.Tests.Handlers.Decision
         private Mock<IMapper> _mockMapper;
         private SaveDecisionAsyncHandler _handler;
         private SaveDecisionAsyncCommand _query;
-        private Mock<IUniqueIdService> _uniqueId;
         [SetUp]
         public void SetUp()
         {
             _repository = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
             _mockMediator = new Mock<IMediator>();
-            _uniqueId = new Mock<IUniqueIdService>();
-            _handler = new SaveDecisionAsyncHandler(_repository.Object, _mockMapper.Object, _uniqueId.Object, _mockMediator.Object);
+            _handler = new SaveDecisionAsyncHandler(
+                _repository.Object,
+                _mockMapper.Object,
+                _mockMediator.Object
+            );
         }
         [TestCase(2)]
         [TestCase(4)]

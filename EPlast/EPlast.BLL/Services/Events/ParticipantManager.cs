@@ -134,7 +134,7 @@ namespace EPlast.BLL.Services.Events
                 int rejectedStatus = await _participantStatusManager.GetStatusIdAsync("Відмовлено");
                 var targetEvent = await _repoWrapper.Event.GetFirstAsync(e => e.ID == participant.EventId);
                 int finishedEvent = await _eventStatusManager.GetStatusIdAsync("Завершено");
-                
+
                 if (participant.ParticipantStatusId == rejectedStatus || targetEvent.EventStatusID == finishedEvent)
                 {
                     return StatusCodes.Status409Conflict;
@@ -146,7 +146,7 @@ namespace EPlast.BLL.Services.Events
                 await _repoWrapper.SaveAsync();
 
                 return StatusCodes.Status200OK;
-               
+
             }
             catch
             {
@@ -165,6 +165,17 @@ namespace EPlast.BLL.Services.Events
                 );
 
             return participants;
+        }
+
+        public async Task ChangeUserPresentStatusAsync(int perticipantId)
+        {
+            var participant = await _repoWrapper.Participant
+                              .GetFirstOrDefaultAsync(predicate: p => p.ID == perticipantId);
+            if (participant == null) throw new KeyNotFoundException();
+            bool currentState = participant.WasPresent;
+            participant.WasPresent = !currentState;
+            _repoWrapper.Participant.Update(participant);
+            await _repoWrapper.SaveAsync();
         }
     }
 }

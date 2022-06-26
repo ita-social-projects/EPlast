@@ -10,7 +10,13 @@ using System.Threading.Tasks;
 using EPlast.DataAccess.Entities.GoverningBody;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
+using EPlast.BLL.DTO.UserProfiles;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -19,29 +25,93 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IAdminTypeService _adminTypeService;
+        private readonly IMapper _mapper;
 
         public GoverningBodyAdministrationService(IRepositoryWrapper repositoryWrapper,
             UserManager<User> userManager,
-            IAdminTypeService adminTypeService)
+            IAdminTypeService adminTypeService,
+            IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
+            _mapper = mapper;
+        }
+
+        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>>
+            GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize)
+        {
+            var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+
+            var tuple = await _repositoryWrapper.GoverningBodyAdministration.GetRangeAsync(
+                predicate: admin => admin.AdminTypeId == governingBodyAdminType.ID && admin.Status,
+                null,
+                null,
+                include: GetInclude(),
+                pageNumber, pageSize
+            );
+
+            var governingBodyAdmins =
+                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                    tuple.Item1);
+
+            var rows = tuple.Item2;
+
+            return new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>
+                (governingBodyAdmins, rows);
+        }
+
+        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync()
+        {
+            var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+
+            var governingBodyAdmins =
+                await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(
+                    predicate: a => a.Status && a.AdminTypeId == governingBodyAdminType.ID,
+                    include: GetInclude());
+
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                governingBodyAdmins);
         }
 
         public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
-            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
-
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
-
             var userRoles = await _userManager.GetRolesAsync(user);
+            governingBodyAdministrationDto.GoverningBodyAdminRole ??= "";
+
+            if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
+            {
+                throw new ArgumentException("This role name of GoverningBodyAdmin already exists");
+            }
+
+            if (await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin))
+            {
+                throw new ArgumentException("User already has GoverningBodyAdmin role");
+            }
 
             if (!userRoles.Contains(Roles.PlastMember))
             {
-                throw new ArgumentException("Can't add user with the roles");
+                throw new ArgumentException($"Can't add user without {Roles.PlastMember} roles");
             }
+
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+            governingBodyAdministrationDto.Status = DateTime.Now < governingBodyAdministrationDto.EndDate || governingBodyAdministrationDto.EndDate == null;
+
+            var governingBodyAdministration = new GoverningBodyAdministration
+            {
+                StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now,
+                EndDate = governingBodyAdministrationDto.EndDate,
+                AdminTypeId = adminType.ID,
+                GoverningBodyId = null,
+                UserId = governingBodyAdministrationDto.UserId,
+                Status = governingBodyAdministrationDto.Status,
+                WorkEmail = user.Email,
+                GoverningBodyAdminRole = governingBodyAdministrationDto.GoverningBodyAdminRole
+            };
+
+            await _repositoryWrapper.GoverningBodyAdministration.CreateAsync(governingBodyAdministration);
+            await _repositoryWrapper.SaveAsync();
 
             await _userManager.AddToRoleAsync(user, adminType.AdminTypeName);
 
@@ -98,6 +168,11 @@ namespace EPlast.BLL.Services.GoverningBodies
         /// <inheritdoc />
         public async Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
         {
+            if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
+            {
+                throw new ArgumentException("This role name of GoverningBodyAdmin already exists");
+            }
+
             var admin = await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a => a.Id == governingBodyAdministrationDto.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
 
@@ -106,6 +181,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 admin.StartDate = governingBodyAdministrationDto.StartDate ?? DateTime.Now;
                 admin.EndDate = governingBodyAdministrationDto.EndDate;
                 admin.WorkEmail = governingBodyAdministrationDto.WorkEmail;
+                admin.GoverningBodyAdminRole = governingBodyAdministrationDto.GoverningBodyAdminRole;
 
                 _repositoryWrapper.GoverningBodyAdministration.Update(admin);
                 await _repositoryWrapper.SaveAsync();
@@ -145,6 +221,23 @@ namespace EPlast.BLL.Services.GoverningBodies
         /// <inheritdoc />
         public async Task RemoveMainAdministratorAsync(string userId)
         {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
+            var admin = await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(u =>
+                u.UserId == userId && u.AdminTypeId == adminType.ID && u.Status);
+            
+            if (admin != null)
+            {
+                admin.EndDate = DateTime.Now;
+
+                if (admin.Status)
+                {
+                    admin.Status = false;
+                }
+
+                _repositoryWrapper.GoverningBodyAdministration.Update(admin);
+                await _repositoryWrapper.SaveAsync();
+            }
+
             var user = await _userManager.FindByIdAsync(userId);
             var userRoles = await _userManager.GetRolesAsync(user);
 
@@ -152,6 +245,8 @@ namespace EPlast.BLL.Services.GoverningBodies
             {
                 await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
             }
+
+            
         }
 
         public async Task RemoveAdminRolesByUserIdAsync(string userId)
@@ -162,6 +257,8 @@ namespace EPlast.BLL.Services.GoverningBodies
                 await RemoveAdministratorAsync(role.Id);
             }
         }
+
+        
 
         private async Task CheckGoverningBodyHasAdmin(int governingBodyId, string adminTypeName)
         {
@@ -174,6 +271,46 @@ namespace EPlast.BLL.Services.GoverningBodies
             {
                 await RemoveAdministratorAsync(admin.Id);
             }
+        }
+
+        private Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>> GetInclude()
+        {
+            Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>> expr = x => x.Include(a => a.User).Include(a =>a.AdminType );
+            return expr;
+        }
+
+        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodyAdminFormAsync()
+        {
+            var users = await _repositoryWrapper.User.GetAllAsync();
+            var usersDtos = new List<ShortUserInformationDTO>();
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Contains(Roles.PlastMember))
+                {
+                    var isInDeputyRole = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
+                    var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
+                    var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                    shortUser.IsInDeputyRole = isInDeputyRole;
+                    shortUser.IsInLowerRole = isInLowerRole;
+                    usersDtos.Add(shortUser);
+                }
+            }
+
+            usersDtos = usersDtos.OrderBy(u => u.IsInDeputyRole || u.IsInLowerRole).ToList();
+
+            return usersDtos;
+        }
+
+        public async Task<bool> CheckRoleNameExistsAsync(string roleName)
+        {
+            if (String.IsNullOrEmpty(roleName))
+                return false;
+            var result =
+                await _repositoryWrapper.GoverningBodyAdministration.GetFirstOrDefaultAsync(a =>
+                    a.GoverningBodyAdminRole == roleName);
+            
+            return result != null;
         }
     }
 }

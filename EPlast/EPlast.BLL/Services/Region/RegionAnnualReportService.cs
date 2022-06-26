@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -207,7 +207,7 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<IEnumerable<RegionAnnualReportDTO>> GetAllRegionsReportsAsync()
         {
-            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await Task.FromResult(_repositoryWrapper.RegionAnnualReports.FindAll().ToList()));
+            return _mapper.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(await Task.Run(() => _repositoryWrapper.RegionAnnualReports.FindAll().ToList()));
         }
 
         public async Task<IEnumerable<RegionAnnualReportTableObject>> GetAllRegionsReportsAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)

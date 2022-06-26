@@ -1,14 +1,20 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Models.Club
 {
     public class ClubViewModel
     {
         public int ID { get; set; }
+        [Required, MaxLength(200)]
         public string Name { get; set; }
+        [Phone, StringLength(18)]
         public string PhoneNumber { get; set; }
+        [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; }
+        [Url, MaxLength(256)]
         public string ClubURL { get; set; }
+        [MaxLength(1000)]
         public string Description { get; set; }
         public string Slogan { get; set; }
         public string Logo { get; set; }

@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
@@ -10,10 +14,6 @@ using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -21,24 +21,23 @@ namespace EPlast.BLL.Services.GoverningBodies
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
         private readonly IGoverningBodyBlobStorageRepository _governingBodyBlobStorage;
         private readonly ISectorService _sectorService;
         private readonly ISecurityModel _securityModel;
         private const string SecuritySettingsFile = "GoverningBodyAccessSettings.json";
 
-        public GoverningBodiesService(IRepositoryWrapper repoWrapper,
-                                      IMapper mapper,
-                                      IUniqueIdService uniqueId,
-                                      IGoverningBodyBlobStorageRepository governingBodyBlobStorage,
-                                      ISecurityModel securityModel,
-                                      IGoverningBodyAdministrationService governingBodyAdministrationService,
-                                      ISectorService sectorService)
+        public GoverningBodiesService(
+            IRepositoryWrapper repoWrapper,
+            IMapper mapper,
+            IGoverningBodyBlobStorageRepository governingBodyBlobStorage,
+            ISecurityModel securityModel,
+            IGoverningBodyAdministrationService governingBodyAdministrationService,
+            ISectorService sectorService
+        )
         {
             _securityModel = securityModel;
             _securityModel.SetSettingsFile(SecuritySettingsFile);
-            _uniqueId = uniqueId;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _governingBodyBlobStorage = governingBodyBlobStorage;
@@ -65,7 +64,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
         {
-            return Task.FromResult(_mapper.Map<GoverningBodyDTO, Organization>(governingBody));
+            return Task.Run(() => _mapper.Map<GoverningBodyDTO, Organization>(governingBody));
         }
 
         public async Task<int> EditAsync(GoverningBodyDTO governingBody)
@@ -112,7 +111,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                var fileName = $"{Guid.NewGuid()}{extension}";
 
                 await _governingBodyBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 governingBody.Logo = fileName;
@@ -154,7 +153,12 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var governingBodySectors = governingBody.GoverningBodySectors?.Take(6).ToList();
 
-            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?.TakeLast(5).ToList();
+            var governingBodyAnnouncements = governingBody.GoverningBodyAnnouncements?
+                .Where(announcement => announcement.GoverningBodyId == governingBodyId && announcement.SectorId == null)
+                .OrderByDescending(announcement => announcement.IsPined)
+                .ThenByDescending(announcement => announcement.Date)
+                .Take(5)
+                .ToList();
 
             var governingBodyProfileDto = new GoverningBodyProfileDTO
             {

@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using AutoMapper.Internal;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces;
@@ -8,10 +12,6 @@ using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GBSector = EPlast.DataAccess.Entities.GoverningBody.Sector.Sector;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
@@ -20,23 +20,22 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        private readonly IUniqueIdService _uniqueId;
         private readonly IGoverningBodySectorBlobStorageRepository _sectorBlobStorage;
         private readonly ISecurityModel _securityModel;
         private readonly ISectorAdministrationService _sectorAdministrationService;
         private const string SecuritySettingsFile = "GoverningBodySectorAccessSettings.json";
         private const int TakingItemsCount = 6;
 
-        public SectorService(IRepositoryWrapper repoWrapper,
-                             IMapper mapper,
-                             IUniqueIdService uniqueId,
-                             IGoverningBodySectorBlobStorageRepository sectorBlobStorage,
-                             ISecurityModel securityModel,
-                             ISectorAdministrationService sectorAdministrationService)
+        public SectorService(
+            IRepositoryWrapper repoWrapper,
+            IMapper mapper,
+            IGoverningBodySectorBlobStorageRepository sectorBlobStorage,
+            ISecurityModel securityModel,
+            ISectorAdministrationService sectorAdministrationService
+        )
         {
             _securityModel = securityModel;
             _securityModel.SetSettingsFile(SecuritySettingsFile);
-            _uniqueId = uniqueId;
             _repoWrapper = repoWrapper;
             _mapper = mapper;
             _sectorBlobStorage = sectorBlobStorage;
@@ -58,7 +57,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                var fileName = $"{Guid.NewGuid()}{extension}";
 
                 await _sectorBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 sectorDto.Logo = fileName;
@@ -90,7 +89,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
         private Task<GBSector> CreateSectorAsync(SectorDTO sector)
         {
-            return Task.FromResult(_mapper.Map<SectorDTO, GBSector>(sector));
+            return Task.Run(() => _mapper.Map<SectorDTO, GBSector>(sector));
         }
 
         public async Task<IEnumerable<SectorDTO>> GetSectorsByGoverningBodyAsync(int governingBodyId)
@@ -131,7 +130,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 .Take(TakingItemsCount)
                 .ToList();
 
-            var sectorAnnouncements = sector.Announcements?.TakeLast(5).ToList();
+            var sectorAnnouncements = sector.Announcements?
+                .OrderByDescending(announcement => announcement.IsPined)
+                .ThenByDescending(announcement => announcement.Date)
+                .Take(5)
+                .ToList();
 
             var sectorProfileDto = new SectorProfileDTO
             {

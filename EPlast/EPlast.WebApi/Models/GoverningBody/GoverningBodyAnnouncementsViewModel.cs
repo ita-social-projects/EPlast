@@ -11,7 +11,6 @@ namespace EPlast.WebApi.Models.GoverningBody
         public string Text { get; set; }
         public string Title { get; set; }
         public DateTime Date { get; set; }
-        public string UserId { get; set; }
-        public int GoverningBodyId { get; set; }
+        public bool IsPined { get; set; }
     }
 }

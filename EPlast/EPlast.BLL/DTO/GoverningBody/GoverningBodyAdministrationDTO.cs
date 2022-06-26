@@ -11,11 +11,12 @@ namespace EPlast.BLL.DTO.GoverningBody
         public GoverningBodyUserDTO User { get; set; }
         public int GoverningBodyId { get; set; }
         public GoverningBodyDTO GoverningBody { get; set; }
-        public int AdminTypeId { get; set; }
+        public int? AdminTypeId { get; set; }
         public AdminTypeDTO AdminType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool Status { get; set; }
         public string WorkEmail { get; set; }
+        public string GoverningBodyAdminRole { get; set; }
     }
 }

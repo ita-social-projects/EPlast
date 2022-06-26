@@ -239,16 +239,13 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAdmins(int cityId)
         {
             var query = new GetCityAdminsQuery(cityId);
-            var cityProfileDto = await _mediator.Send(query);
-            if (cityProfileDto == null)
+            var cityAdministration = await _mediator.Send(query);
+            if (cityAdministration == null)
             {
                 return NotFound();
             }
 
-            var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
-            cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), cityId);
-
-            return Ok(new { cityProfile.Administration, cityProfile.Head, cityProfile.HeadDeputy, cityProfile.CanEdit, cityProfile.Name });
+            return Ok(cityAdministration);
         }
 
         /// <summary>

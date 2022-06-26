@@ -1,22 +1,32 @@
 ﻿using EPlast.WebApi.Models.Region;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Models.City
 {
     public class CityViewModel
     {
         public int ID { get; set; }
+        [Required, MaxLength(50)]
         public string Name { get; set; }
+
+        [Phone, StringLength(18)]
         public string PhoneNumber { get; set; }
+
+        [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; }
+
+        [Url, MaxLength(256)]
         public string CityURL { get; set; }
+
+        [MaxLength(1000)]
         public string Description { get; set; }
-        public string Street { get; set; }
-        public string HouseNumber { get; set; }
-        public string OfficeNumber { get; set; }
-        public string PostIndex { get; set; }
+
+        [Required, MaxLength(50)]
+        public string Address { get; set; }
         public string Logo { get; set; }
+        [Required]
         public string Region { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
@@ -33,5 +43,6 @@ namespace EPlast.WebApi.Models.City
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
         public int DocumentsCount { get; set; }
+        public int Level { get; set; }
     }
 }

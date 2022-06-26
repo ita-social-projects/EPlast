@@ -1,6 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -8,17 +15,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using NUnit.Framework;
-using System;
-using System.Globalization;
-using System.Linq.Expressions;
-using EPlast.BLL.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using NLog.Extensions.Logging;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.Auth
 {
@@ -229,10 +229,11 @@ namespace EPlast.Tests.Services.Auth
         public void GetGoogleUserAsync_Valid()
         {
             //Arrange
-            var memoryConfig = new Dictionary<string, string>();
-            memoryConfig["Mode"] = "Test";
+            var memoryConfig = new Dictionary<string, string>
+            {
+                ["Mode"] = "Test"
+            };
             ConfigSettingLayoutRenderer.DefaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(memoryConfig).Build();
-            var layoutRenderer = new ConfigSettingLayoutRenderer { Item = "Mode" };
 
             //Act
             var result =  _authService.GetGoogleUserAsync("providerToken");
@@ -276,12 +277,14 @@ namespace EPlast.Tests.Services.Auth
                 .Returns(GetTestUserWithEmailsSendedTime());
             _repoWrapper = new Mock<IRepositoryWrapper>();
 
-            _authService = new AuthService(_userManager.Object,
-                                          _signInManager.Object,
-                                          _emailSendingService.Object,
-                                          _mockEmailContentService.Object,
-                                          _mapper.Object,
-                                          _repoWrapper.Object);
+            _authService = new AuthService(
+                _userManager.Object,
+                _signInManager.Object,
+                _emailSendingService.Object,
+                _mockEmailContentService.Object,
+                _mapper.Object,
+                _repoWrapper.Object
+            );
             _gender = new Mock<IGenderRepository>();
         }
 
@@ -314,9 +317,7 @@ namespace EPlast.Tests.Services.Auth
         }
         private User GetTestUserWithEmailsSendedTime()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                .GetCurrentTime()
+            var timeEmailSended = DateTime.Now
                 .AddMinutes(-GetTestDifferenceInTime());
 
             return new User()
