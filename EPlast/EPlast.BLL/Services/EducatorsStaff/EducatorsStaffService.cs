@@ -155,12 +155,7 @@ namespace EPlast.BLL.Services.EducatorsStaff
             return eduStaff.UserId;
         }
 
-        /// <inheritdoc />
-        public IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData,
-            int page, int pageSize)
-        {
-            return _repositoryWrapper.KVs.GetEducatorsStaff(kadraType, searchedData, page, pageSize);
-        }
+        
         public async Task<Tuple<IEnumerable<DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject>, int>> GetEducatorsStaffTableAsync
                (int kadraType, IEnumerable<string> sortByOrder, string searchedData, int page, int pageSize)
         {

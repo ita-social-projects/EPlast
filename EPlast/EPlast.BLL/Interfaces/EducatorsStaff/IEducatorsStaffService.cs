@@ -33,15 +33,6 @@ namespace EPlast.BLL.Interfaces.EducatorsStaff
         Task<string> GetUserByEduStaff(int EduStaffId);
         Task DeleteKadra(int kadra_id);
 
-        /// <summary>
-        /// Returns EducatorsStaff with params
-        /// </summary>
-        /// <param name="kadraType">Type of Kadra</param>
-        /// <param name="searchedData">Search string</param>
-        /// <param name="page">Current page</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>EducatorsStaff</returns>
-        IEnumerable<EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData, int page, int pageSize);
         Task<Tuple<IEnumerable<EducatorsStaffTableObject>, int>> GetEducatorsStaffTableAsync(int kadraType, IEnumerable<string> sortByOrder, string searchedData, int page, int pageSize);
         Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByUserName();
         Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByNumberInRegister();
