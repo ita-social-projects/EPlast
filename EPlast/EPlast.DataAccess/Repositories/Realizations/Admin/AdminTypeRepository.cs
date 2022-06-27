@@ -1,6 +1,5 @@
 ﻿using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
