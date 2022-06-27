@@ -103,8 +103,9 @@ namespace EPlast.DataAccess.Repositories
             //search
             if (!string.IsNullOrWhiteSpace(searchData))
             {
-                items = items.Where(r => string.IsNullOrWhiteSpace(searchData) ||
-                r.FirstName.ToLower().Contains(searchData)
+                items = items.Where(r => string.IsNullOrWhiteSpace(searchData) 
+                    || r.FirstName.ToLower().Contains(searchData)
+                    || r.LastName.ToLower().Contains(searchData)
                     || r.RegionName.ToLower().Contains(searchData)
                     || r.CityName.ToLower().Contains(searchData)
                     || r.ClubName.ToLower().Contains(searchData)
