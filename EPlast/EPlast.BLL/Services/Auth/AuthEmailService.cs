@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
@@ -7,8 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using NLog.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Auth
 {
@@ -79,7 +79,9 @@ namespace EPlast.BLL.Services.Auth
                                                _contextAccessor.HttpContext.Request.Scheme);
             user.EmailSendedOnRegister = DateTime.Now;
             var emailContent = _emailContentService.GetAuthRegisterEmail(confirmationLink);
-            return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
+            // return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
+            await _userManager.ConfirmEmailAsync(user, token);
+            return true;
         }
 
         /// <inheritdoc />

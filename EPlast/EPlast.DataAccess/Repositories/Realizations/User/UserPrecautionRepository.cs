@@ -10,12 +10,6 @@ namespace EPlast.DataAccess.Repositories
             : base(dBContext)
         {
         }
-
-        public IEnumerable<UserPrecautionsTableObject> GetUsersPrecautions(string searchData, int page, int pageSize)
-        {
-            return EPlastDBContext.Set<UserPrecautionsTableObject>().FromSqlRaw(
-                "dbo.getPrecautionsInfo  @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchData, page,
-                pageSize);
-        }
+        
     }
 }
