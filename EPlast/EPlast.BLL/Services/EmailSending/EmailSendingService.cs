@@ -1,12 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces;
+﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Settings;
 using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services
 {
@@ -39,7 +38,7 @@ namespace EPlast.BLL.Services
             try
             {
                 using var client = new SmtpClient();
-                await client.ConnectAsync(SMTPServer, Port, SecureSocketOptions.StartTls);
+                await client.ConnectAsync(SMTPServer, Port, true);
                 await client.AuthenticateAsync(SMTPServerLogin, SMTPServerPassword);
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
