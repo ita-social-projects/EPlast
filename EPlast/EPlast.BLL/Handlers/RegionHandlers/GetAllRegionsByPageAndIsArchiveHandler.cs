@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -59,10 +61,11 @@ namespace EPlast.BLL.Handlers.RegionHandlers
         private Expression<Func<Region, bool>> GetFilter(string regionName, bool isArchive)
         {
             var regionNameEmpty = string.IsNullOrEmpty(regionName);
+            var governingBodyName = EnumExtensions.GetDescription(RegionsStatusType.RegionBoard);
             Expression<Func<Region, bool>> expr = (regionNameEmpty) switch
             {
-                true => x => x.IsActive == isArchive,
-                false => x => x.RegionName.Contains(regionName) && x.IsActive == isArchive
+                true => x => x.IsActive == isArchive && x.RegionName != governingBodyName,
+                false => x => x.RegionName.Contains(regionName) && x.IsActive == isArchive 
             };
             return expr;
         }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#nullable enable
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,12 +16,30 @@ namespace EPlast.DataAccess.Repositories
             : base(dbContext)
         {
         }
-        public async Task<Tuple<IEnumerable<RegionObject>, int>> GetRegionsObjects(int pageNum, int pageSize,  string searchData, bool isArchive)
+        public async Task<Tuple<IEnumerable<RegionObject>, int>> GetRegionsObjects(int pageNum, int pageSize, string? searchData, bool isArchive)
         {
-            var items = await Task.Run(() => EPlastDBContext.Set<RegionObject>().FromSqlRaw("dbo.sp_GetRegions @PageIndex = {0}, @PageSize = {1}, @IsArhivated = {2}, @searchData = {3}", pageNum, pageSize, isArchive, searchData));
-            var num = items.Select(u => u.Count).ToList();
-            int rowCount = num.Count > 0 ? num[0] : 0;
-            return new Tuple<IEnumerable<RegionObject>, int>(items, rowCount);        
+            searchData = searchData?.ToLower();
+
+            IQueryable<Region> found = EPlastDBContext.Set<Region>()
+                .Where(r => r.IsActive ^ isArchive)
+                .Where(r =>
+                    string.IsNullOrWhiteSpace(searchData)
+                    || r.RegionName.ToLower().Contains(searchData)
+                );
+
+            var result = await found
+                .Skip(pageSize * (pageNum - 1))
+                .Take(pageSize)
+                .Select(r => new RegionObject()
+                {
+                    ID = r.ID,
+                    RegionName = r.RegionName,
+                    Logo = r.Logo,
+                    Count = found.Count()
+                })
+                .ToListAsync();
+
+            return new Tuple<IEnumerable<RegionObject>, int>(result, result.FirstOrDefault()?.Count ?? 0);
         }
 
         public IQueryable<RegionNamesObject> GetActiveRegionsNames()
