@@ -1,7 +1,8 @@
-﻿using EPlast.WebApi.Models.Region;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
+using EPlast.WebApi.Models.Region;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.Models.City
 {
@@ -25,6 +26,10 @@ namespace EPlast.WebApi.Models.City
 
         [Required, MaxLength(50)]
         public string Address { get; set; }
+
+        [Required, Range(1, int.MaxValue)]
+        public UkraineOblasts Oblast { get; set; }
+
         public string Logo { get; set; }
         [Required]
         public string Region { get; set; }
