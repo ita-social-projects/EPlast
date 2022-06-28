@@ -86,32 +86,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get all active cities using redis cache
-        /// </summary>
-        /// <returns>List of active cities</returns>
-        [HttpGet("Profiles/Active/{page}")]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name)
-        {
-            string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}";
-            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
-
-            if (citiesTuple is null)
-            {
-                const bool isArchive = false;
-                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive);
-                citiesTuple = await _mediator.Send(query);
-
-                if (!string.IsNullOrEmpty(name))
-                {
-                    TimeSpan expireTime = TimeSpan.FromMinutes(5);
-                    await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, expireTime);
-                }
-            }
-            return StatusCode(StatusCodes.Status200OK, new { page, pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="page">Page number</param>
@@ -121,15 +95,14 @@ namespace EPlast.WebApi.Controllers
         /// <returns></returns>
         [HttpGet("Profiles/Active/{page}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name, UkraineOblasts oblast)
+        public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
             var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
 
             if (citiesTuple is null)
             {
-                const bool isArchive = false;
-                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive, oblast); 
+                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, false, oblast);
                 citiesTuple = await _mediator.Send(query);
 
                 if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified) 
@@ -146,25 +119,23 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of not active cities</returns>
         [HttpGet("Profiles/NotActive/{page}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name)
+        public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             string cityRecordKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
             var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
 
             if (citiesTuple is null)
             {
-                const bool isArchive = true;
-                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive);
+                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, true, oblast);
                 citiesTuple = await _mediator.Send(query);
 
-                if (!String.IsNullOrEmpty(name))
+                if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified)
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, expireTime);
                 }
-                await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple);
             }
-            return StatusCode(StatusCodes.Status200OK, new { cities = citiesTuple.Item1, total = citiesTuple.Item2 });
+            return Ok(new { page, pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
         }
 
         /// <summary>
