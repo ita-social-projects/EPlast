@@ -52,7 +52,6 @@ namespace EPlast.DataAccess.Repositories
                        .Select(y => y.RoleId))
                        .Contains(r.Id)))
                 });
-
             //tab sorting
             if (tab == "confirmed" || tab == "registered")
             {
