@@ -252,6 +252,7 @@ namespace EPlast.DataAccess.ExtensionMethods
                     EventTypeName = "Табір"
                 }
             );
+
             modelBuilder.Entity<Precaution>().HasData(
                 new Precaution
                 {
@@ -267,6 +268,7 @@ namespace EPlast.DataAccess.ExtensionMethods
                     Id = 3,
                     Name = "Догана із загрозою виключення з Пласту"
                 });
+
             modelBuilder.Entity<CityDocumentType>().HasData(
                 new CityDocumentType
                 {
