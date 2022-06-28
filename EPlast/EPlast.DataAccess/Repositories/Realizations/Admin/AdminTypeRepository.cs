@@ -39,6 +39,7 @@ namespace EPlast.DataAccess.Repositories
                     ClubName = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.Name,
                     PlastDegree = x.UserPlastDegrees.PlastDegree.Name,
                     Email = x.Email,
+                    EmailConfirmed = x.EmailConfirmed,
                     UPUDegree = x.UserProfile.UpuDegree.Name,
                     UserSystemId = x.UserProfile.ID,
                     RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID,
@@ -52,6 +53,15 @@ namespace EPlast.DataAccess.Repositories
                        .Contains(r.Id)))
                 });
 
+            //tab sorting
+            if (tab == "confirmed" || tab == "registered")
+            {
+                items = items.Where(r => r.EmailConfirmed);
+            }
+            if (tab == "unconfirmed")
+            {
+                items = items.Where(r => !r.EmailConfirmed);
+            }
             //region sorting
             if (!string.IsNullOrEmpty(regions))
             {
@@ -103,7 +113,7 @@ namespace EPlast.DataAccess.Repositories
             //search
             if (!string.IsNullOrWhiteSpace(searchData))
             {
-                items = items.Where(r => string.IsNullOrWhiteSpace(searchData) 
+                items = items.Where(r => string.IsNullOrWhiteSpace(searchData)
                     || r.FirstName.ToLower().Contains(searchData)
                     || r.LastName.ToLower().Contains(searchData)
                     || r.RegionName.ToLower().Contains(searchData)
