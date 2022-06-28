@@ -90,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of active cities</returns>
         [HttpGet("Profiles/Active/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name)
         {
             string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}";
@@ -102,16 +102,43 @@ namespace EPlast.WebApi.Controllers
                 var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive);
                 citiesTuple = await _mediator.Send(query);
 
-                if (!String.IsNullOrEmpty(name))
+                if (!string.IsNullOrEmpty(name))
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
                     await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, expireTime);
                 }
-                await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple);
             }
-            return StatusCode(StatusCodes.Status200OK, new { page = page, pageSize = pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
+            return StatusCode(StatusCodes.Status200OK, new { page, pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page">Page number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="name">Name filter for cities</param>
+        /// <param name="oblast">Oblast filter for cities</param>
+        /// <returns></returns>
+        [HttpGet("Profiles/Active/{page}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name, UkraineOblasts oblast)
+        {
+            string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
+            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
+
+            if (citiesTuple is null)
+            {
+                const bool isArchive = false;
+                var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, isArchive, oblast); 
+                citiesTuple = await _mediator.Send(query);
+
+                if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified) 
+                {
+                    await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, TimeSpan.FromMinutes(5));
+                }
+            }
+            return Ok(new { page, pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
+        }
 
         /// <summary>
         /// Get all not active cities using redis cache
