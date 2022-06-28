@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
@@ -14,14 +15,15 @@ namespace EPlast.DataAccess.Repositories
     {
         public CityRepository(EPlastDBContext dbContext) : base(dbContext) { }
 
-        public async Task<Tuple<IEnumerable<CityObject>, int>> GetCitiesObjects(int pageNum, int pageSize, string? searchData, bool isArchive)
+        public async Task<Tuple<IEnumerable<CityObject>, int>> GetCitiesObjects(int pageNum, int pageSize, string? searchData, bool isArchive, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             searchData = searchData?.ToLower();
 
             var total = await EPlastDBContext.Set<City>().CountAsync();
 
             IQueryable<City> found = EPlastDBContext.Set<City>()
-                .Where(s => string.IsNullOrWhiteSpace(searchData) || s.Name.ToLower().Contains(searchData));
+                .Where(s => string.IsNullOrWhiteSpace(searchData) || s.Name.ToLower().Contains(searchData))
+                .Where(s => oblast == UkraineOblasts.NotSpecified || s.Oblast == oblast);
 
             IEnumerable<CityObject> result = await found
                 .Skip(pageSize * (pageNum - 1))

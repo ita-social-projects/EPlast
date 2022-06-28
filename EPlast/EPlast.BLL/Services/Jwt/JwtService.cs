@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -17,11 +19,13 @@ namespace EPlast.BLL.Services.Jwt
     {
         private readonly JwtOptions _jwtOptions;
         private readonly IUserManagerService _userManagerService;
+        private readonly UserManager<User> _userManager;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IUserManagerService userManagerService)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IUserManagerService userManagerService, UserManager<User> userManager)
         {
             _jwtOptions = jwtOptions.Value;
             _userManagerService = userManagerService;
+            _userManager = userManager;
         }
 
         ///<inheritdoc/>
@@ -45,6 +49,34 @@ namespace EPlast.BLL.Services.Jwt
               claims: claims,
               expires: DateTime.Now.AddMinutes(_jwtOptions.Time),
               signingCredentials: creds);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
+        }
+
+        public async Task<string> GenerateJWTTokenAsync(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+              issuer: _jwtOptions.Issuer,
+              audience: _jwtOptions.Audience,
+              claims: claims,
+              expires: DateTime.Now.AddMinutes(_jwtOptions.Time),
+              signingCredentials: creds
+            );
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);

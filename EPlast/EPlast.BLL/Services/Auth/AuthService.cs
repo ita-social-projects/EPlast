@@ -77,14 +77,23 @@ namespace EPlast.BLL.Services
         {
             var user = new User()
             {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                FatherName = registerDto.FatherName,
                 Email = registerDto.Email,
+                PhoneNumber = registerDto.PhoneNumber,
                 UserName = registerDto.Email,
-                LastName = registerDto.SurName,
-                FirstName = registerDto.Name,
                 RegistredOn = DateTime.Now,
                 ImagePath = "default_user_image.png",
-                SocialNetworking = false,
                 UserProfile = new UserProfile()
+                {
+                    Birthday = registerDto.Birthday,
+                    TwitterLink = registerDto.TwitterLink,
+                    InstagramLink = registerDto.InstagramLink,
+                    FacebookLink = registerDto.FacebookLink,
+                    Address = registerDto.Address,
+                    GenderID = registerDto.GenderId
+                }
             };
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);

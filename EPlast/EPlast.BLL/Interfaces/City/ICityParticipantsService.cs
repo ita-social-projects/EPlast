@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.City;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Interfaces.City
 {
@@ -74,6 +75,13 @@ namespace EPlast.BLL.Interfaces.City
         /// <returns>An information about a new follower</returns>
         /// See <see cref="ICityMembersService.AddFollowerAsync(int, string)"/> to add user by id
         Task<CityMembersDTO> AddFollowerAsync(int cityId, User user);
+
+        /// <summary>
+        /// Add user to the table of users with not selected city
+        /// </summary>
+        /// <param name="userId">User's ID</param>
+        /// <param name="oblast">Oblast</param>
+        Task AddUserWithoutSelectedCity(User user);
 
         /// <summary>
         /// Returns either given user is approved or not
