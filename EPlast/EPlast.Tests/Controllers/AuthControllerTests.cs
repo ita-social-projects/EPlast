@@ -359,8 +359,7 @@ namespace EPlast.Tests.Controllers
             var response = _controller.SignUp(registerDto).Result;
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<UserDTO>(((OkObjectResult)response).Value);
+            Assert.IsInstanceOf<NoContentResult>(response);
             _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
             _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
             _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
@@ -417,8 +416,7 @@ namespace EPlast.Tests.Controllers
             var response = _controller.SignUp(registerDto).Result;
 
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(response);
-            Assert.IsInstanceOf<UserDTO>(((OkObjectResult)response).Value);
+            Assert.IsInstanceOf<NoContentResult>(response);
             _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
             _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
             _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);

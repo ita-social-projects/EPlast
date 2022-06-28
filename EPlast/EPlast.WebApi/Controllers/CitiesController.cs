@@ -105,7 +105,7 @@ namespace EPlast.WebApi.Controllers
                 var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, false, oblast);
                 citiesTuple = await _mediator.Send(query);
 
-                if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified) 
+                if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified)
                 {
                     await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, TimeSpan.FromMinutes(5));
                 }
@@ -498,7 +498,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> IsUserApproved(int userId)
         {
             var isApproved = await _cityParticipantsService.CheckIsUserApproved(userId);
-            if(isApproved==null)
+            if (isApproved == null)
             {
                 return BadRequest();
             }
