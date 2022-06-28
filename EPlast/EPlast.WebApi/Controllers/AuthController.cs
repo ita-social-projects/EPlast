@@ -161,8 +161,7 @@ namespace EPlast.WebApi.Controllers
                 await _cityParticipantsService.AddUserWithoutSelectedCity(user);
             }
 
-            UserDTO userDto = _mapper.Map<UserDTO>(user);
-            return Ok(userDto);
+            return NoContent();
         }
 
         /// <summary>

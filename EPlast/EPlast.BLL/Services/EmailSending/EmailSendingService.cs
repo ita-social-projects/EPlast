@@ -51,7 +51,7 @@ namespace EPlast.BLL.Services
             );
         }
 
-        public async Task<bool> SendEmailAsync(string email, string subject, string message, string title)
+        public async Task<bool> SendEmailAsync(string reciever, string subject, string body, string senderName)
         {
             var SMTPServer = Settings.Value.SMTPServer;
             var Port = Settings.Value.Port;
@@ -59,10 +59,10 @@ namespace EPlast.BLL.Services
             var SMTPServerPassword = Settings.Value.SMTPServerPassword;
 
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress(title, SMTPServerLogin));
-            emailMessage.To.Add(new MailboxAddress("", email));
+            emailMessage.From.Add(new MailboxAddress(senderName, SMTPServerLogin));
+            emailMessage.To.Add(new MailboxAddress("", reciever));
             emailMessage.Subject = subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = message };
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = body };
             try
             {
                 using var client = new SmtpClient();
