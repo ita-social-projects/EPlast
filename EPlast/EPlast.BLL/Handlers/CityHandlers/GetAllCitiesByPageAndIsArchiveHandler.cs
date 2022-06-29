@@ -28,7 +28,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
 
         public async Task<Tuple<IEnumerable<CityObjectDTO>, int>> Handle(GetAllCitiesByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
         {
-            var tuple = await _repoWrapper.City.GetCitiesObjects(request.Page, request.PageSize, request.Name, request.IsArchive);
+            var tuple = await _repoWrapper.City.GetCitiesObjects(request.Page, request.PageSize, request.Name, request.IsArchive, request.Oblast);
             var cities = tuple.Item1;
             //get images from blob storage
             foreach (var city in cities)

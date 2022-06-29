@@ -139,6 +139,7 @@ namespace EPlast.BLL.Services.Region
             if (admin != null)
             {
                 admin.Status = status;
+                admin.EndDate = DateTime.Now;
                 _repoWrapper.RegionAdministration.Update(admin);
                 await _repoWrapper.SaveAsync();
             }
@@ -163,8 +164,6 @@ namespace EPlast.BLL.Services.Region
                     break;
             }
             await _userManager.RemoveFromRoleAsync(user, role);
-            _repoWrapper.RegionAdministration.Delete(Admin);
-            await _repoWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)

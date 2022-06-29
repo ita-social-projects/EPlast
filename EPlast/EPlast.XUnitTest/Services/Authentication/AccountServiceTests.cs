@@ -460,11 +460,14 @@ namespace EPlast.XUnitTest.Services
         {
             var registerDto = new RegisterDto
             {
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                GenderId = 1,
+                Birthday = DateTime.Now.AddYears(-18),
+                Address = "вулиця Героїв України",
+                PhoneNumber = "+380123456789",
                 Email = "andriishainoha@gmail.com",
-                Name = "Andrii",
-                SurName = "Shainoha",
-                Password = "andrii123",
-                ConfirmPassword = "andrii123"
+                Password = "andrii123"
             };
             return registerDto;
         }

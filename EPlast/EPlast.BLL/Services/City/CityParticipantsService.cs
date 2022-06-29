@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Queries.City;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
@@ -26,15 +27,19 @@ namespace EPlast.BLL.Services.City
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
+        private readonly INotificationService _notificationService;
         private readonly IMediator _mediator;
 
-        public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
-                                       IMapper mapper,
-                                       UserManager<User> userManager,
-                                       IAdminTypeService adminTypeService,
-                                       IEmailSendingService emailSendingService,
-                                       IEmailContentService emailContentService,
-                                       IMediator mediator)
+        public CityParticipantsService(
+            IRepositoryWrapper repositoryWrapper,
+            IMapper mapper,
+            UserManager<User> userManager,
+            IAdminTypeService adminTypeService,
+            IEmailSendingService emailSendingService,
+            IEmailContentService emailContentService,
+            IMediator mediator,
+            INotificationService notificationService
+        )
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
@@ -43,6 +48,7 @@ namespace EPlast.BLL.Services.City
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
             _mediator = mediator;
+            _notificationService = notificationService;
         }
 
         /// <inheritdoc />
@@ -164,6 +170,27 @@ namespace EPlast.BLL.Services.City
         {
             await _userManager.RemoveFromRolesAsync(user, Roles.DeleteableListOfRoles);
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
+        }
+
+        public async Task AddUserWithoutSelectedCity(User user)
+        {
+            List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+
+            var governingBodyAdmins = await _userManager.GetUsersInRoleAsync(Roles.GoverningBodyAdmin);
+
+            foreach (var u in governingBodyAdmins)
+            {
+                userNotificationsDTO.Add(new UserNotificationDTO
+                {
+                    Message = $"Користувач {user.FirstName} {user.LastName} не обрав станицю! ",
+                    NotificationTypeId = 1,
+                    OwnerUserId = u.Id,
+                    SenderLink = $"/user/table",
+                    SenderName = "Переглянути"
+                });
+            }
+
+            await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
         }
 
         public async Task ContinueAdminsDueToDate()

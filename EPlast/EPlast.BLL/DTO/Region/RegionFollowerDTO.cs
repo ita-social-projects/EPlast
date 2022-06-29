@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Region
 {
@@ -12,6 +13,7 @@ namespace EPlast.BLL.DTO.Region
         public string Logo { get; set; }
         public int RegionId { get; set; }
         public string Address { get; set; }
+        public UkraineOblasts Oblast { get; set; }
         public CityLevel Level { get; set; }
         public string СityURL { get; set; }
         public string Email { get; set; }

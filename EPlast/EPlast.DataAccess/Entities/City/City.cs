@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -24,6 +25,8 @@ namespace EPlast.DataAccess.Entities
 
         [Required, MaxLength(60, ErrorMessage = "Назва адреси розташування станиці не має перевищувати 60 символів")]
         public string Address { get; set; }
+
+        public UkraineOblasts Oblast { get; set; }
 
         public CityLevel Level { get; set; }
 
