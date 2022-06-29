@@ -72,6 +72,15 @@ namespace EPlast.BLL.Services.City
                 case Roles.CityHeadDeputy:
                     role = Roles.CityHeadDeputy;
                     break;
+                case Roles.CityReferentUPS:
+                    role = Roles.CityReferentUPS;
+                    break;
+                case Roles.CityReferentUSP:
+                    role = Roles.CityReferentUSP;
+                    break;
+                case Roles.CityReferentOfActiveMembership:
+                    role = Roles.CityReferentOfActiveMembership;
+                    break;
                 default:
                     role = Roles.CitySecretary;
                     break;

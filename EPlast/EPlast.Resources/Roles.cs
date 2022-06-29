@@ -15,9 +15,15 @@ namespace EPlast.Resources
         public const string OkrugaHead = "Голова Округи";
         public const string OkrugaHeadDeputy = "Заступник Голови Округи";
         public const string OkrugaSecretary = "Діловод Округи";
+        public const string OkrugaReferentUPS = "Референт/-ка УПС Округи";
+        public const string OkrugaReferentUSP = "Референт/-ка УСП Округи";
+        public const string OkrugaReferentOfActiveMembership = "Референт дійсного членства Округи";
         public const string CityHead = "Голова Станиці";
         public const string CityHeadDeputy = "Заступник Голови Станиці";
         public const string CitySecretary = "Діловод Станиці";
+        public const string CityReferentUPS = "Референт/-ка УПС Станиці";
+        public const string CityReferentUSP = "Референт/-ка УСП Станиці";
+        public const string CityReferentOfActiveMembership = "Референт дійсного членства Станиці";
         public const string FormerPlastMember = "Колишній член Пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
@@ -50,17 +56,54 @@ namespace EPlast.Resources
             + CityHeadDeputy;
         public const string AdminPlastMemberAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastMember + "," + Supporter;
         public const string AdminAndKurinHeadAndKurinHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + KurinHead + "," + KurinHeadDeputy;
-        public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + CityHead + "," + OkrugaHead + "," + CityHeadDeputy + "," + OkrugaHeadDeputy;
-        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + ","  + OkrugaHeadDeputy + "," 
-            + CityHead + "," + CityHeadDeputy;
+
+        public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin +
+                                                                                    "," + GoverningBodyAdmin +
+                                                                                    "," + GoverningBodyHead +
+                                                                                    "," + CityHead +
+                                                                                    "," + OkrugaHead +
+                                                                                    "," + CityHeadDeputy +
+                                                                                    "," + OkrugaHeadDeputy;
+
+        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputy = Admin +
+                                                                          "," + GoverningBodyAdmin +
+                                                                          "," + GoverningBodyHead +
+                                                                          "," + RegionBoardHead +
+                                                                          "," + OkrugaHead +
+                                                                          "," + OkrugaHeadDeputy +
+                                                                          "," + CityHead +
+                                                                          "," + CityHeadDeputy;
         public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + CityHead + "," + CityHeadDeputy;
         public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
             + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodySectorHead;
-        public const string CanEditCity = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + "," + GoverningBodyHead;
+
+        
+        
+        public const string CanEditCity = Admin +
+                                          "," + GoverningBodyAdmin +
+                                          "," + RegionBoardHead +
+                                          "," + OkrugaHead +
+                                          "," + OkrugaHeadDeputy +
+                                          "," + CityHead +
+                                          "," + CityHeadDeputy +
+                                          "," + GoverningBodyHead +
+                                          "," + CityReferentUPS +
+                                          "," + CityReferentUSP +
+                                          "," + CityReferentOfActiveMembership;
         public const string CanEditClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
         public const string CanCreateClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + GoverningBodyHead;
-
+        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputyReferent= Admin +
+                                                                                "," + GoverningBodyAdmin +
+                                                                                "," + GoverningBodyHead +
+                                                                                "," + RegionBoardHead +
+                                                                                "," + OkrugaHead +
+                                                                                "," + OkrugaHeadDeputy +
+                                                                                "," + CityHead +
+                                                                                "," + CityHeadDeputy+
+                                                                                "," + CityReferentUPS +
+                                                                                "," + CityReferentUSP +
+                                                                                "," + CityReferentOfActiveMembership;
         public static List<string> ListOfRoles = new List<string>
         {
             Roles.GoverningBodyAdmin,
