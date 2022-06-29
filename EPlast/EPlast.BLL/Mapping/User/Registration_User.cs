@@ -22,8 +22,13 @@ namespace EPlast.BLL.Mapping.User
                         TwitterLink = dto.TwitterLink,
                         FacebookLink = dto.FacebookLink,
                         InstagramLink = dto.InstagramLink,
-                        Oblast = dto.Oblast
+                        Oblast = dto.Oblast,
+                        Referal = dto.Referal
                     })
+                )
+                .ForMember(
+                    u => u.ImagePath,
+                    o => o.MapFrom(_ => "default_user_image.png")
                 );
         }
     }
