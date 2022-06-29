@@ -97,20 +97,26 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            string cityRecordKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
-            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
+            string cacheKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
+            Tuple<IEnumerable<CityObjectDTO>, int> cache = null;
 
-            if (citiesTuple is null)
+            try
+            {
+                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cacheKey);
+            }
+            catch { }
+
+            if (cache is null)
             {
                 var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, false, oblast);
-                citiesTuple = await _mediator.Send(query);
+                cache = await _mediator.Send(query);
 
                 if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified)
                 {
-                    await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, TimeSpan.FromMinutes(5));
+                    await _cache.SetCacheRecordAsync(cacheKey, cache, TimeSpan.FromMinutes(5));
                 }
             }
-            return Ok(new { page, pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
+            return Ok(new { page, pageSize, cities = cache.Item1, total = cache.Item2 });
         }
 
         /// <summary>
@@ -121,21 +127,26 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            string cityRecordKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
-            var citiesTuple = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cityRecordKey);
+            string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
+            Tuple<IEnumerable<CityObjectDTO>, int> cache = null;
+            try
+            {
+                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cacheKey);
+            }
+            catch { }
 
-            if (citiesTuple is null)
+            if (cache is null)
             {
                 var query = new GetAllCitiesByPageAndIsArchiveQuery(page, pageSize, name, true, oblast);
-                citiesTuple = await _mediator.Send(query);
+                cache = await _mediator.Send(query);
 
                 if (!string.IsNullOrWhiteSpace(name) || oblast != UkraineOblasts.NotSpecified)
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
-                    await _cache.SetCacheRecordAsync(cityRecordKey, citiesTuple, expireTime);
+                    await _cache.SetCacheRecordAsync(cacheKey, cache, expireTime);
                 }
             }
-            return Ok(new { page, pageSize, cities = citiesTuple.Item1, total = citiesTuple.Item2 });
+            return Ok(new { page, pageSize, cities = cache.Item1, total = cache.Item2 });
         }
 
         /// <summary>
