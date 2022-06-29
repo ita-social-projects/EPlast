@@ -51,6 +51,7 @@ namespace EPlast.BLL.Services
             );
         }
 
+        [Obsolete("Use SendEmailAsync(MimeMessage message) method instead")]
         public async Task<bool> SendEmailAsync(string reciever, string subject, string body, string senderName)
         {
             var SMTPServer = Settings.Value.SMTPServer;

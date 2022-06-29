@@ -15,6 +15,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="body">Text of the message</param>
         /// <param name="senderName">Our organisation name to be shown in letter</param>
         /// <returns>Result of sending email</returns>
+        [Obsolete("Use SendEmailAsync(MimeMessage message) method instead")]
         Task<bool> SendEmailAsync(string reciever, string subject, string body, string senderName);
 
         /// <summary>

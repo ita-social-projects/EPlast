@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.Jwt
             _userManager = userManager;
         }
 
-        ///<inheritdoc/>
+        [Obsolete("Use GenerateJWTTokenAsync(User user) method instead")]
         public async Task<string> GenerateJWTTokenAsync(UserDto userDTO)
         {
             var claims = new List<Claim>

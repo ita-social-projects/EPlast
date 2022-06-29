@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.UserProfiles;
@@ -6,6 +7,7 @@ using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Interfaces
 {
+    [Obsolete("Use ASP.NET provided UserManager<User> instead")]
     public interface IUserManagerService
     {
         /// <summary>

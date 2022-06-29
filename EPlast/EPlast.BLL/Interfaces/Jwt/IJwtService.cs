@@ -1,3 +1,4 @@
+﻿using System;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
@@ -11,6 +12,7 @@ namespace EPlast.BLL.Interfaces.Jwt
         /// </summary>
         /// <param name="user">Authenticated user</param>
         /// <returns>JWT token</returns>
+        [Obsolete("Use GenerateJWTTokenAsync(User user) method instead")]
         Task<string> GenerateJWTTokenAsync(UserDto userDTO);
 
         /// <summary>

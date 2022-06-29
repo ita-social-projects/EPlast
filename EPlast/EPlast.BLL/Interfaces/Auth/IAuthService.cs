@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Interfaces
 {
+    [Obsolete("Planned to be removed")]
     public interface IAuthService
     {
         /// <summary>
@@ -16,6 +18,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="registerDto"></param>
         /// <returns>Result of adding role and token</returns>
+        [Obsolete("Logic was moved to AuthController")]
         Task<string> AddRoleAndTokenAsync(string email);
 
         /// <summary>
@@ -38,6 +41,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="registerDto"></param>
         /// <returns>Result of creating user in system</returns>
+        [Obsolete("Logic was moved to AuthController")]
         Task<IdentityResult> CreateUserAsync(RegisterDto registerDto);
 
         /// <summary>
@@ -51,6 +55,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="email"></param>
         /// <returns>Returns user from database</returns>
+        [Obsolete("Use UserManager<User>.FindByEmail(id)")]
         Task<UserDto> FindByEmailAsync(string email);
 
         /// <summary>
@@ -58,6 +63,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Returns user from database</returns>
+        [Obsolete("Use UserManager<User>.FindById(id)")]
         Task<UserDto> FindByIdAsync(string id);
 
         /// <summary>
@@ -100,6 +106,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns>Returns id of user</returns>
+        [Obsolete("Use UserManager<User>.FindBy___(___).Id")]
         Task<string> GetIdForUserAsync(User user);
 
         /// <summary>
@@ -120,6 +127,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Time after registration</returns>
+        [Obsolete("Use UserManager<User>.FindBy___(___).RegisteredOn")]
         int GetTimeAfterRegister(UserDto userDto);
 
         /// <summary>
@@ -134,6 +142,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="user"></param>
         /// <returns>User who was logged in</returns>
+        [Obsolete("Use AutoMapper directly")]
         UserDto GetUser(User user);
 
         /// <summary>
@@ -141,6 +150,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Result of confirming email</returns>
+        [Obsolete("Use UserManager<User>.FindBy___(___).EmailComfirmed")]
         Task<bool> IsEmailConfirmedAsync(UserDto userDto);
 
         /// <summary>

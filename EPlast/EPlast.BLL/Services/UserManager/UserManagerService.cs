@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services
 {
+    [Obsolete("Use ASP.NET provided UserManager<User> instead")]
     public class UserManagerService : IUserManagerService
     {
         private readonly UserManager<User> _userManager;

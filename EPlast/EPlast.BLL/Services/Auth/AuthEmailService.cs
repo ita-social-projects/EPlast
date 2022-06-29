@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
@@ -7,11 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using NLog.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Auth
 {
+    [Obsolete("Use EmailSendingService instead")]
     public class AuthEmailService : IAuthEmailService
     {
         private readonly IActionContextAccessor _actionContextAccessor;

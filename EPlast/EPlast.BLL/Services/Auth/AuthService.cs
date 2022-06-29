@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -21,6 +21,7 @@ using NLog.Extensions.Logging;
 
 namespace EPlast.BLL.Services
 {
+    [Obsolete("Planned to be removed")]
     public class AuthService : IAuthService
     {
         private readonly IMapper _mapper;
@@ -66,7 +67,6 @@ namespace EPlast.BLL.Services
             }
         }
 
-        ///<inheritdoc/>
         public async Task<IdentityResult> CreateUserAsync(RegisterDto registerDto)
         {
             var user = new User()

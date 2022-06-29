@@ -1,9 +1,11 @@
-﻿using EPlast.BLL.DTO.Account;
-using Microsoft.AspNetCore.Identity;
+﻿using System;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Interfaces
 {
+    [Obsolete("Use IEmailSendingService instead")]
     public interface IAuthEmailService
     {
         /// <summary>
