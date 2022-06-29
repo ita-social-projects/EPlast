@@ -34,13 +34,10 @@ namespace EPlast.BLL.DTO.Account
 
         public int? CityId { get; set; }
 
-        [Url]
         public string FacebookLink { get; set; }
 
-        [Url]
         public string TwitterLink { get; set; }
 
-        [Url]
         public string InstagramLink { get; set; }
 
         [Required]
@@ -53,5 +50,7 @@ namespace EPlast.BLL.DTO.Account
 
         [Required]
         public string Password { get; set; }
+
+        public string Referal { get; set; }
     }
 }
