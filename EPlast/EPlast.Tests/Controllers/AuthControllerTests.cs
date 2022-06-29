@@ -9,7 +9,6 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Interfaces.Notifications;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
@@ -45,7 +44,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void ConfirmEmail_InvalidModelState_ReturnsBadRequest()
+        public void ConfirmEmail_InvalidModelState_ReturnsRedirectWithError400()
         {
             // Arrange
             _controller.ModelState.AddModelError("", "");
@@ -54,11 +53,12 @@ namespace EPlast.Tests.Controllers
             var response = _controller.ConfirmEmail("", "").Result;
 
             // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+            Assert.IsInstanceOf<RedirectResult>(response);
+            Assert.True((response as RedirectResult)?.Url.Contains("error=400"));
         }
 
         [Test]
-        public void ConfirmEmail_UserDoesNotExist_ReturnsNotFound()
+        public void ConfirmEmail_UserDoesNotExist_ReturnsRedirectWithError404()
         {
             // Arrange
             _userManagerMock
@@ -69,11 +69,12 @@ namespace EPlast.Tests.Controllers
             var response = _controller.ConfirmEmail("", "").Result;
 
             // Assert
-            Assert.IsInstanceOf<NotFoundResult>(response);
+            Assert.IsInstanceOf<RedirectResult>(response);
+            Assert.True((response as RedirectResult)?.Url.Contains("error=404"));
         }
 
         [Test]
-        public void ConfirmEmail_12HrElapsed_DeletesUserAndReturnsStatusCode410()
+        public void ConfirmEmail_12HrElapsed_DeletesUserAndRedirectsWithError410()
         {
             // Arrange
             var user = new User()
@@ -92,13 +93,13 @@ namespace EPlast.Tests.Controllers
             var response = _controller.ConfirmEmail("", "").Result;
 
             // Assert
-            Assert.IsInstanceOf<StatusCodeResult>(response);
-            Assert.AreEqual(410, ((StatusCodeResult)response).StatusCode);
+            Assert.IsInstanceOf<RedirectResult>(response);
+            Assert.True((response as RedirectResult)?.Url.Contains("error=410"));
             _userManagerMock.Verify(m => m.DeleteAsync(It.IsAny<User>()), Times.Once);
         }
 
         [Test]
-        public void ConfirmEmail_UserManagerReturnsError_ReturnsBadRequest()
+        public void ConfirmEmail_UserManagerReturnsError_ReturnsRedirectWithError400()
         {
             // Arrange
             var user = new User()
@@ -117,12 +118,13 @@ namespace EPlast.Tests.Controllers
             var response = _controller.ConfirmEmail("", "").Result;
 
             // Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
+            Assert.IsInstanceOf<RedirectResult>(response);
+            Assert.True((response as RedirectResult)?.Url.Contains("error=400"));
             _userManagerMock.Verify(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]
-        public void ConfirmEmail_Valid_SendsEmailAndReturnsNoContent()
+        public void ConfirmEmail_Valid_RedirectsWithNoError()
         {
             // Arrange
             var user = new User()
@@ -141,7 +143,8 @@ namespace EPlast.Tests.Controllers
             var response = _controller.ConfirmEmail("", "").Result;
 
             // Assert
-            Assert.IsInstanceOf<NoContentResult>(response);
+            Assert.IsInstanceOf<RedirectResult>(response);
+            Assert.False((response as RedirectResult)?.Url.Contains("error"));
             _userManagerMock.Verify(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
         }
 
@@ -299,6 +302,9 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
                 .ReturnsAsync(value: null!);
 
+            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
+            _controller.Url = urlHelper.Object;
+
             // Act
             AsyncTestDelegate action = () => _controller.SignUp(registerDto);
 
@@ -345,6 +351,9 @@ namespace EPlast.Tests.Controllers
             _emailSendingServiceMock
                 .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
                 .Returns(Task.CompletedTask);
+            _userManagerMock
+                .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(value: null!);
             _userDatesServiceMock
                 .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
                 .ReturnsAsync(true);
@@ -354,6 +363,9 @@ namespace EPlast.Tests.Controllers
             _mapperMock
                 .Setup(m => m.Map<UserDTO>(It.Is<User>(v => v == user)))
                 .Returns(new UserDTO());
+
+            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
+            _controller.Url = urlHelper.Object;
 
             // Act
             var response = _controller.SignUp(registerDto).Result;
@@ -402,6 +414,9 @@ namespace EPlast.Tests.Controllers
             _emailSendingServiceMock
                 .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
                 .Returns(Task.CompletedTask);
+            _userManagerMock
+                .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(value: null!);
             _userDatesServiceMock
                 .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
                 .ReturnsAsync(true);
@@ -411,6 +426,9 @@ namespace EPlast.Tests.Controllers
             _mapperMock
                 .Setup(m => m.Map<UserDTO>(It.Is<User>(v => v == user)))
                 .Returns(new UserDTO());
+
+            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
+            _controller.Url = urlHelper.Object;
 
             // Act
             var response = _controller.SignUp(registerDto).Result;
@@ -497,6 +515,9 @@ namespace EPlast.Tests.Controllers
             _emailSendingServiceMock
                 .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
                 .Returns(Task.CompletedTask);
+
+            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
+            _controller.Url = urlHelper.Object;
 
             // Act
             var response = _controller.ResendConfirmationEmail("").Result;

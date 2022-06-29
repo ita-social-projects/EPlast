@@ -25,6 +25,10 @@ namespace EPlast.BLL.Mapping.User
                         Oblast = dto.Oblast,
                         Referal = dto.Referal
                     })
+                )
+                .ForMember(
+                    u => u.ImagePath,
+                    o => o.MapFrom(_ => "default_user_image.png")
                 );
         }
     }
