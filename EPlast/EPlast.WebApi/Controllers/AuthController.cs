@@ -5,11 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -64,18 +64,29 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Successful operation</response>
         /// <response code="400">UserId or Token were found invalid</response>
         /// <response code="404">User by specified id is not found</response>
-        [HttpPost("confirmEmail")]
+        [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token)
         {
+            var frontendUrl = Request?.Host.Host ?? "localhost";
+            if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
+            {
+                frontendUrl = "http://" + frontendUrl + ":3000";
+            }
+            else
+            {
+                frontendUrl = "https://" + frontendUrl;
+            }
+            frontendUrl += "/signin";
+
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return Redirect(frontendUrl + "?error=400");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                return Redirect(frontendUrl + "?error=404");
             }
 
             TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
@@ -83,16 +94,16 @@ namespace EPlast.WebApi.Controllers
             {
                 // 410 GONE - User should be deleted, because 12hrs elapsed from registration and email is still is not confirmed
                 await _userManager.DeleteAsync(user);
-                return StatusCode(410);
+                return Redirect(frontendUrl + "?error=410");
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
-                return BadRequest(new { error = result.Errors });
+                return Redirect(frontendUrl + "?error=400");
             }
 
-            return NoContent();
+            return Redirect(frontendUrl);
         }
 
         /// <summary>
@@ -132,6 +143,7 @@ namespace EPlast.WebApi.Controllers
             }
 
             user = _mapper.Map<User>(registerDto);
+            user.RegistredOn = DateTime.Now;
 
             var result = await _userManager.CreateAsync(user, registerDto.Password);
 
@@ -151,6 +163,8 @@ namespace EPlast.WebApi.Controllers
             }
 
             await _userDatesService.AddDateEntryAsync(user.Id);
+
+            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
 
             if (registerDto.CityId != null)
             {
@@ -227,13 +241,17 @@ namespace EPlast.WebApi.Controllers
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            // 3000 is the port of the front-end
-            var url = $"https://{Request?.Host.Host ?? "localhost"}:3000/confirmEmail?userId={user.Id}&token={token}";
+            string url = Url.Action(
+                "ConfirmEmail",
+                "Auth",
+                new { userId = user.Id, token },
+                "https"
+            );
 
             var message = _emailSendingService.Compose(
                 reciever,
                 "Підтвердження пошти",
-                $"Перейдіть за посиланням, щоб підтвердити пошту: <br/>{url}"
+                $"Перейдіть за посиланням, щоб підтвердити пошту: <br/><a href={url}>посилання</a>"
             );
 
             await _emailSendingService.SendEmailAsync(message);
