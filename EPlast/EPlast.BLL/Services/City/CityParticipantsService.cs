@@ -449,6 +449,13 @@ namespace EPlast.BLL.Services.City
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityReferentUPS =
+                cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityReferentUPS);
+            var cityReferentUSP =
+                cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityReferentUSP);
+            var cityReferentOfActiveMembership = cityAdministration.FirstOrDefault(a =>
+                a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership);
+            
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
                 user.FirstName, user.LastName, false);
             if (cityHead != null)
@@ -460,6 +467,25 @@ namespace EPlast.BLL.Services.City
             if (cityHeadDeputy != null)
             {
                 await _emailSendingService.SendEmailAsync(cityHeadDeputy.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+
+            if (cityReferentUPS != null)
+            {
+                await _emailSendingService.SendEmailAsync(cityReferentUPS.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+            if (cityReferentUSP != null)
+            {
+                await _emailSendingService.SendEmailAsync(cityReferentUSP.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+            if (cityReferentOfActiveMembership != null)
+            {
+                await _emailSendingService.SendEmailAsync(cityReferentOfActiveMembership.User.Email, emailContent.Subject,
                     emailContent.Message,
                     emailContent.Title);
             }
