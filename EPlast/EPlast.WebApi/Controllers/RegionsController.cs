@@ -501,7 +501,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of active regions</returns>
         [HttpGet("Profiles/Active/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName = null)
         {
             string regionRecordKey = $"{ActiveRegionsCacheKey}_{page}_{pageSize}_{regionName}";
@@ -663,7 +663,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Profiles/Active")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> ActiveRegions()
         {
             var regions = await _regionService.GetAllActiveRegionsAsync();
