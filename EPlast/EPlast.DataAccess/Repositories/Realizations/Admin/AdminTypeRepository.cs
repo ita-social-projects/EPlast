@@ -1,10 +1,10 @@
-﻿using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories.Contracts;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -42,7 +42,7 @@ namespace EPlast.DataAccess.Repositories
                     EmailConfirmed = x.EmailConfirmed,
                     UPUDegree = x.UserProfile.UpuDegree.Name,
                     UserSystemId = x.UserProfile.ID,
-                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID,
+                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault() != null ? x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID : x.RegionId,
                     CityId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.ID,
                     ClubId = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.ID,
                     DegreeId = x.UserPlastDegrees.PlastDegree.Id,
