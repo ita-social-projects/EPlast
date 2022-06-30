@@ -1,10 +1,10 @@
-﻿using System;
+﻿using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories.Contracts;
-using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -34,7 +34,8 @@ namespace EPlast.DataAccess.Repositories
                     LastName = x.LastName,
                     Birthday = x.UserProfile.Birthday,
                     Gender = x.UserProfile.Gender.Name,
-                    RegionName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
+                    RegionName = EPlastDBContext.Set<Region>().FirstOrDefault(y => y.ID == x.RegionId).RegionName
+                        ?? x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
                     CityName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Name,
                     ClubName = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.Name,
                     PlastDegree = x.UserPlastDegrees.PlastDegree.Name,
