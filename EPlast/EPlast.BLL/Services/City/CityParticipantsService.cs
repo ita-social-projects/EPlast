@@ -160,6 +160,7 @@ namespace EPlast.BLL.Services.City
             if (await _userManager.IsInRoleAsync(cityMember.User, Roles.RegisteredUser))
             {
                 await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
+                await SendNotificationCityAdminAboutNewFollowerAsync(cityId, cityMember.User);
             }
 
             return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
@@ -172,20 +173,39 @@ namespace EPlast.BLL.Services.City
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 
-        public async Task AddUserWithoutSelectedCity(User user)
+        public async Task AddNotificationUserWithoutSelectedCity(User user, int? regionID)
         {
             List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
 
-            var governingBodyAdmins = await _userManager.GetUsersInRoleAsync(Roles.GoverningBodyAdmin);
+            var regionAdministration = await _repositoryWrapper.RegionAdministration
+                .GetAllAsync(i => i.RegionId == regionID,
+           i => i
+               .Include(c => c.AdminType)
+               .Include(a => a.User));
 
-            foreach (var u in governingBodyAdmins)
+            var regionHead = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHead
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var regionHeadDeputy = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy
+                                                                 && (DateTime.Now < a.EndDate || a.EndDate == null));
+            if (regionHead != null)
             {
                 userNotificationsDTO.Add(new UserNotificationDTO
                 {
-                    Message = $"Користувач {user.FirstName} {user.LastName} не обрав станицю! ",
+                    Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                     NotificationTypeId = 1,
-                    OwnerUserId = u.Id,
-                    SenderLink = $"/user/table",
+                    OwnerUserId = regionHead.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+            }
+            if (regionHeadDeputy != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDTO
+                {
+                    Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = regionHeadDeputy.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
                     SenderName = "Переглянути"
                 });
             }
@@ -498,6 +518,44 @@ namespace EPlast.BLL.Services.City
                     emailContent.Message,
                     emailContent.Title);
             }
+        }
+
+        public async Task SendNotificationCityAdminAboutNewFollowerAsync(int cityId, User user)
+        {
+            var cityAdministration = await _repositoryWrapper.CityAdministration
+                .GetAllAsync(i => i.CityId == cityId,
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
+            var cityHead = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+            List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+
+            if (cityHead != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDTO
+                {
+                    Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = cityHead.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+            }
+            if (cityHeadDeputy != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDTO
+                {
+                    Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = cityHeadDeputy.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+            }
+            await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
         }
 
         private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)

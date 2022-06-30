@@ -34,7 +34,8 @@ namespace EPlast.DataAccess.Repositories
                     LastName = x.LastName,
                     Birthday = x.UserProfile.Birthday,
                     Gender = x.UserProfile.Gender.Name,
-                    RegionName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
+                    RegionName = EPlastDBContext.Set<Region>().FirstOrDefault(y => y.ID == x.RegionId).RegionName
+                        ?? x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
                     CityName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Name,
                     ClubName = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.Name,
                     PlastDegree = x.UserPlastDegrees.PlastDegree.Name,
@@ -42,7 +43,7 @@ namespace EPlast.DataAccess.Repositories
                     EmailConfirmed = x.EmailConfirmed,
                     UPUDegree = x.UserProfile.UpuDegree.Name,
                     UserSystemId = x.UserProfile.ID,
-                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID,
+                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault() != null ? x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID : x.RegionId,
                     CityId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.ID,
                     ClubId = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.ID,
                     DegreeId = x.UserPlastDegrees.PlastDegree.Id,
@@ -115,6 +116,7 @@ namespace EPlast.DataAccess.Repositories
                 items = items.Where(r => string.IsNullOrWhiteSpace(searchData)
                     || r.FirstName.ToLower().Contains(searchData)
                     || r.LastName.ToLower().Contains(searchData)
+                    || (r.FirstName.ToLower() + " " + r.LastName.ToLower()).Contains(searchData)
                     || r.RegionName.ToLower().Contains(searchData)
                     || r.CityName.ToLower().Contains(searchData)
                     || r.ClubName.ToLower().Contains(searchData)

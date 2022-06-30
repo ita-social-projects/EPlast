@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220630101538_AddRegionIdToUser")]
+    partial class AddRegionIdToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,36 +225,6 @@ namespace EPlast.DataAccess.Migrations
                         {
                             ID = 23,
                             AdminTypeName = "Діловод Напряму Керівного Органу"
-                        },
-                        new
-                        {
-                            ID = 24,
-                            AdminTypeName = "Референт/-ка УПС Округи"
-                        },
-                        new
-                        {
-                            ID = 25,
-                            AdminTypeName = "Референт/-ка УСП Округи"
-                        },
-                        new
-                        {
-                            ID = 26,
-                            AdminTypeName = "Референт дійсного членства Округи"
-                        },
-                        new
-                        {
-                            ID = 27,
-                            AdminTypeName = "Референт/-ка УПС Станиці"
-                        },
-                        new
-                        {
-                            ID = 28,
-                            AdminTypeName = "Референт/-ка УСП Станиці"
-                        },
-                        new
-                        {
-                            ID = 29,
-                            AdminTypeName = "Референт дійсного членства Станиці"
                         });
                 });
 
@@ -2380,46 +2352,16 @@ namespace EPlast.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Старший пластун прихильник / Старша пластунка прихильниця"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Старший пластун / Старша пластунка"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Старший пластун скоб / Cтарша пластунка вірлиця"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Старший пластун гетьманський скоб / Старша пластунка гетьманська вірлиця"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Старший пластун скоб гребець / Старша пластунка  вірлиця гребець"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Старший пластун скоб обсерватор / Старша пластунка  вірлиця обсерватор"
-                        },
-                        new
-                        {
-                            Id = 7,
                             Name = "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 2,
                             Name = "Пластун сеніор керівництва / Пластунка сеніорка керівництва"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 3,
                             Name = "Пластприят"
                         });
                 });
