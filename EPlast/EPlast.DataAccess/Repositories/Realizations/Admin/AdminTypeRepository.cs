@@ -37,12 +37,13 @@ namespace EPlast.DataAccess.Repositories
                     RegionName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
                     CityName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Name,
                     ClubName = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.Name,
+                    Oblast = x.UserProfile.Oblast,
                     PlastDegree = x.UserPlastDegrees.PlastDegree.Name,
                     Email = x.Email,
                     EmailConfirmed = x.EmailConfirmed,
                     UPUDegree = x.UserProfile.UpuDegree.Name,
                     UserSystemId = x.UserProfile.ID,
-                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID,
+                    RegionId = x.UserProfile.ReligionId,
                     CityId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.ID,
                     ClubId = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.ID,
                     DegreeId = x.UserPlastDegrees.PlastDegree.Id,
@@ -52,6 +53,7 @@ namespace EPlast.DataAccess.Repositories
                        .Select(y => y.RoleId))
                        .Contains(r.Id)))
                 });
+            var i = await items.ToListAsync();
             //tab sorting
             if (tab == "confirmed" || tab == "registered")
             {
@@ -115,6 +117,7 @@ namespace EPlast.DataAccess.Repositories
                 items = items.Where(r => string.IsNullOrWhiteSpace(searchData)
                     || r.FirstName.ToLower().Contains(searchData)
                     || r.LastName.ToLower().Contains(searchData)
+                    || (r.FirstName.ToLower() + " " + r.LastName.ToLower()).Contains(searchData)
                     || r.RegionName.ToLower().Contains(searchData)
                     || r.CityName.ToLower().Contains(searchData)
                     || r.ClubName.ToLower().Contains(searchData)
