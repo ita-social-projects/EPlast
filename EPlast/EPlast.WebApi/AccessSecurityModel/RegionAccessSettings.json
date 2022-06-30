@@ -97,5 +97,32 @@
     "AddRegionSecretary": false,
     "AddRegionHead": false,
     "DownloadDocument": false
+  },
+  "Референт/-ка УПС Округи": {
+    "IsAdmin": false,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Референт/-ка УСП Округи": {
+    "IsAdmin": false,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Референт дійсного членства Округи": {
+    "IsAdmin": false,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
   }
 }

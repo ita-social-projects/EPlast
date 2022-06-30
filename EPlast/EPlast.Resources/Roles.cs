@@ -75,11 +75,37 @@ namespace EPlast.Resources
                                                                           "," + CityHeadDeputy;
         public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + CityHead + "," + CityHeadDeputy;
-        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
-            + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + GoverningBodySectorHead;
 
-        
-        
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin +
+                                                                                            "," + GoverningBodyAdmin +
+                                                                                            "," + GoverningBodyHead +
+                                                                                            "," + OkrugaHead +
+                                                                                            "," + OkrugaHeadDeputy +
+                                                                                            "," + CityHead +
+                                                                                            "," + CityHeadDeputy +
+                                                                                            "," + KurinHead +
+                                                                                            "," + KurinHeadDeputy +
+                                                                                            "," + PlastMember +
+                                                                                            "," + GoverningBodySectorHead;
+
+        public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputyAndReferentKurinHeadDeputyAndPlastMember = Admin +
+                                                                                                                    "," + GoverningBodyAdmin +
+                                                                                                                    "," + GoverningBodyHead +
+                                                                                                                    "," + OkrugaHead +
+                                                                                                                    "," + OkrugaHeadDeputy +
+                                                                                                                    "," + CityHead +
+                                                                                                                    "," + CityHeadDeputy +
+                                                                                                                    "," + KurinHead +
+                                                                                                                    "," + KurinHeadDeputy +
+                                                                                                                    "," + PlastMember +
+                                                                                                                    "," + GoverningBodySectorHead +
+                                                                                                                    "," + OkrugaReferentUPS +
+                                                                                                                    "," + OkrugaReferentUSP +
+                                                                                                                    "," + OkrugaReferentOfActiveMembership +
+                                                                                                                    "," + CityReferentUPS +
+                                                                                                                    "," + CityReferentUSP +
+                                                                                                                    "," + CityReferentOfActiveMembership;
+
         public const string CanEditCity = Admin +
                                           "," + GoverningBodyAdmin +
                                           "," + RegionBoardHead +
@@ -96,7 +122,6 @@ namespace EPlast.Resources
         public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputyReferent= Admin +
                                                                                 "," + GoverningBodyAdmin +
                                                                                 "," + GoverningBodyHead +
-                                                                                "," + RegionBoardHead +
                                                                                 "," + OkrugaHead +
                                                                                 "," + OkrugaHeadDeputy +
                                                                                 "," + CityHead +

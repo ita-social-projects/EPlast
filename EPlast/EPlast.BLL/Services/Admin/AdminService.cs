@@ -233,10 +233,7 @@ namespace EPlast.BLL.Services
             string strCities = tableFilterParameters.Cities == null ? null : string.Join(",", tableFilterParameters.Cities.ToArray());
             string strClubs = tableFilterParameters.Clubs == null ? null : string.Join(",", tableFilterParameters.Clubs.ToArray());
             if (!roles.Contains(Roles.Admin)
-                && !roles.Contains(Roles.GoverningBodyAdmin)
-                && !roles.Contains(Roles.CityReferentUPS)
-                && !roles.Contains(Roles.CityReferentUSP)
-                && !roles.Contains(Roles.CityReferentOfActiveMembership))
+                && !roles.Contains(Roles.GoverningBodyAdmin))
             {
                 FilterTableParametersByRole filterTableParametersByRole = TableFilterParameters_byRole(roles, userId).Result;
                 strAndClubs = filterTableParametersByRole.AndClubs;

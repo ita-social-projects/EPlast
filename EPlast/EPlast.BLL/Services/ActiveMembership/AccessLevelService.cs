@@ -98,6 +98,18 @@ namespace EPlast.BLL.Services.ActiveMembership
             {
                 accessLevels.Add(AccessLevelTypeDTO.PlastMember.GetDescription());
             };
+            RolesDictionary[Roles.OkrugaReferentUPS] = () =>
+            {
+                accessLevels.Add(AccessLevelTypeDTO.OkrugaReferentUPS.GetDescription());
+            };
+            RolesDictionary[Roles.OkrugaReferentUSP] = () =>
+            {
+                accessLevels.Add(AccessLevelTypeDTO.OkrugaReferentUSP.GetDescription());
+            };
+            RolesDictionary[Roles.OkrugaReferentOfActiveMembership] = () =>
+            {
+                accessLevels.Add(AccessLevelTypeDTO.OkrugaReferentOfActiveMembership.GetDescription());
+            };
             RolesDictionary[Roles.CityReferentUPS] = () =>
             {
                 accessLevels.Add(AccessLevelTypeDTO.CityReferentUPS.GetDescription());

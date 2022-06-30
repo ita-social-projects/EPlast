@@ -58,6 +58,15 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ колишнього члена організації")]
         FormerPlastMember,
 
+        [Description("Доступ члена проводу організації, Референт УПС Округи")]
+        OkrugaReferentUPS,
+
+        [Description("Доступ члена проводу організації, Референт УСП Округи")]
+        OkrugaReferentUSP,
+
+        [Description("Доступ члена проводу організації, Референт Дійсного Членства Станиці")]
+        OkrugaReferentOfActiveMembership,
+
         [Description("Доступ члена проводу організації, Референт УПС Станиці")]
         CityReferentUPS,
 
