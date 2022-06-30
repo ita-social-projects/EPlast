@@ -127,7 +127,7 @@ namespace EPlast.Tests.Services.Auth
             //Act
             var result = await _authService.FacebookLoginAsync(facebookUser);
             //Assert
-            Assert.IsNotNull(result);
+            Assert.IsNull(result);
         }
 
         [Test]
