@@ -7,16 +7,16 @@ namespace EPlast.BLL.DTO.Account
     public class RegisterDto
     {
         [Required]
-        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ' ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
+        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ'\- ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
         [MaxLength(20)]
         public string FirstName { get; set; }
 
         [Required]
-        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ' ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
+        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ'\- ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
         [MaxLength(20)]
         public string LastName { get; set; }
 
-        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ' ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
+        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ'\- ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
         [MaxLength(20)]
         public string FatherName { get; set; }
 
