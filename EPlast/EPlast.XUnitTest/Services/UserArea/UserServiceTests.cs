@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserProfiles;
@@ -13,7 +10,12 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -27,6 +29,9 @@ namespace EPlast.XUnitTest.Services.UserArea
         private readonly Mock<IWebHostEnvironment> _env;
         private protected readonly Mock<IUserManagerService> _userManagerService;
         private protected readonly Mock<IConfirmedUsersService> _confirmedUserService;
+        private readonly Mock<INotificationService> _mockNotificationService;
+        private Mock<UserManager<User>> _mockUserManager;
+
         public UserServiceTests()
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
@@ -36,6 +41,9 @@ namespace EPlast.XUnitTest.Services.UserArea
             _env = new Mock<IWebHostEnvironment>();
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
+            _mockNotificationService = new Mock<INotificationService>();
+            var store = new Mock<IUserStore<User>>();
+            _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
         }
 
         private UserService GetService()
@@ -46,7 +54,9 @@ namespace EPlast.XUnitTest.Services.UserArea
                 _userPersonalDataService.Object,
                 _userBlobStorage.Object,
                 _env.Object,
-                _userManagerService.Object
+                _userManagerService.Object,
+                _mockNotificationService.Object,
+                _mockUserManager.Object
             );
         }
         [Fact]

@@ -172,7 +172,7 @@ namespace EPlast.WebApi.Controllers
             }
             else
             {
-                await _cityParticipantsService.AddUserWithoutSelectedCity(user);
+                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, registerDto.RegionId);
             }
 
             return NoContent();
