@@ -103,37 +103,12 @@ namespace EPlast.BLL.Services
         public async Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser)
         {
             var user = await _userManager.FindByEmailAsync(facebookUser.Email);
-            if (user == null)
+            if (user != null)
             {
-                user = new User
-                {
-                    SocialNetworking = true,
-                    UserName = facebookUser.Email ?? facebookUser.UserId,
-                    FirstName = facebookUser.Name.Split(' ')[0],
-                    Email = facebookUser.Email ?? "facebookdefaultmail@gmail.com",
-                    LastName = facebookUser.Name.Split(' ')[1],
-                    ImagePath = "default_user_image.png",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile
-                    {
-                        Birthday = DateTime.Parse(facebookUser.Birthday, CultureInfo.InvariantCulture),
-                        GenderID = _repoWrapper
-                            .Gender
-                            .FindByCondition(x => x.Name == facebookUser.Gender)
-                            .FirstOrDefault()?.ID,
-                    }
-                };
-                var createResult = await _userManager.CreateAsync(user);
-                if (createResult.Succeeded && user.Email != "facebookdefaultmail@gmail.com")
-                {
-                    var emailContent = _emailContentService.GetAuthFacebookRegisterEmail();
-                    await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
-                }
-                await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
+                await _signInManager.SignInAsync(user, false, null);
+                return _mapper.Map<User, UserDTO>(user);
             }
-            await _signInManager.SignInAsync(user, false, null);
-            return _mapper.Map<User, UserDTO>(user);
+            return null;
         }
 
         ///<inheritdoc/>
@@ -197,32 +172,12 @@ namespace EPlast.BLL.Services
             var response = await httpResponseMessage.Content.ReadAsStringAsync();
             var googleApiTokenInfo = JsonConvert.DeserializeObject<GoogleApiTokenInfo>(response);
             var user = await _userManager.FindByEmailAsync(googleApiTokenInfo.Email);
-            if (user == null)
+            if (user != null)
             {
-                user = new User
-                {
-                    UserName = googleApiTokenInfo.Email,
-                    Email = googleApiTokenInfo.Email,
-                    FirstName = googleApiTokenInfo.GivenName,
-                    LastName = googleApiTokenInfo.FamilyName ?? googleApiTokenInfo.GivenName,
-                    SocialNetworking = true,
-                    ImagePath = "default_user_image.png",
-                    EmailConfirmed = true,
-                    RegistredOn = DateTime.Now,
-                    UserProfile = new UserProfile()
-                };
-                var createResult = await _userManager.CreateAsync(user);
-                if (createResult.Succeeded)
-                {
-                    var emailContent = _emailContentService.GetAuthGoogleRegisterEmail();
-                    await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
-                }
-                else
-                    throw new ArgumentException("Failed creation of user");
-                await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return _mapper.Map<User, UserDTO>(user);
             }
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return _mapper.Map<User, UserDTO>(user);
+            return null;
         }
 
         ///<inheritdoc/>
