@@ -37,13 +37,12 @@ namespace EPlast.DataAccess.Repositories
                     RegionName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
                     CityName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Name,
                     ClubName = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.Name,
-                    Oblast = x.UserProfile.Oblast,
                     PlastDegree = x.UserPlastDegrees.PlastDegree.Name,
                     Email = x.Email,
                     EmailConfirmed = x.EmailConfirmed,
                     UPUDegree = x.UserProfile.UpuDegree.Name,
                     UserSystemId = x.UserProfile.ID,
-                    RegionId = x.UserProfile.ReligionId,
+                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID,
                     CityId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.ID,
                     ClubId = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.ID,
                     DegreeId = x.UserPlastDegrees.PlastDegree.Id,
@@ -53,7 +52,6 @@ namespace EPlast.DataAccess.Repositories
                        .Select(y => y.RoleId))
                        .Contains(r.Id)))
                 });
-            var i = await items.ToListAsync();
             //tab sorting
             if (tab == "confirmed" || tab == "registered")
             {
