@@ -113,7 +113,7 @@ namespace EPlast.DataAccess
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
-        public DbSet<EducatorsStaffTableObject> EducatorsStaffTableObjects { get; set; }
+      
         public DbSet<Course> Courses { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
