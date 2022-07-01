@@ -55,6 +55,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 CityAdministration = x.CityAdministration.Where(x => x.Status).Select(x => new CityAdministration
                 {
                     ID = x.ID,
+                    UserId = x.User.Id,
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     Status = x.Status,
