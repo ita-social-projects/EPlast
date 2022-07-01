@@ -108,6 +108,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IEducatorsStaffTypesRepository _KVtypes;
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
+        private ICourseRepository _courseRepository;
+        private IUserCourseRepository _userCourseRepository;
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
         private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
         private IRegionAnnualReportsRepository _regionAnnualReports;
@@ -1143,6 +1145,31 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return _biographyDocumentsRepository;
             }
         }
+
+        public ICourseRepository Course
+        {
+            get
+            {
+                if (_courseRepository == null)
+                {
+                    _courseRepository = new CourseRepository(_dbContext);
+                }
+                return _courseRepository;
+            }
+        }
+
+        public IUserCourseRepository UserCourse
+        {
+            get
+            {
+                if (_userCourseRepository == null)
+                {
+                    _userCourseRepository = new UserCourseRepository(_dbContext);
+                }
+                return _userCourseRepository;
+            }
+        }
+
 
         public IUserNotificationRepository UserNotifications
         {
