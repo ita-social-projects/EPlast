@@ -310,6 +310,43 @@ namespace EPlast.BLL.Services.EmailSending
             };
         }
 
+        public async Task<EmailModel> GetRegionAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder)
+        {
+            var userGender = await _userService.GetUserGenderAsync(userId);
+
+            var volunteered = userGender switch
+            {
+                UserGenders.Male => "зголосився",
+                UserGenders.Female => "зголосилась",
+                _ => "зголосився/зголосилась"
+            };
+
+            var follower = userGender switch
+            {
+                UserGenders.Male => "прихильника",
+                UserGenders.Female => "прихильниці",
+                _ => "прихильника/прихильниці"
+            };
+
+            var title = isReminder
+                ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
+                : "Підтвердіть профіль нового волонтера в системі ePlast";
+
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = $"{title}",
+                Message = "<h3>СКОБ!</h3>"
+                          + $"<p>До Твоєї округи {volunteered} волонтер {userFirstName} {userLastName}."
+                          + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
+                          + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
+                          + $"'{follower}'. Або аргументовано його не підтвердити."
+                          + "Дякуємо Тобі за роботу.</p>"
+                          + "<p>Гарного дня.</p>"
+                          + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
+            };
+        }
+
         /// <inheritdoc />
         public EmailModel GetUserRenewalConfirmationEmail(string cityName)
         {
