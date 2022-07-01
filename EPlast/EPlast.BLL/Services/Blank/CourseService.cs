@@ -24,8 +24,6 @@ namespace EPlast.BLL.Services.Blank
         public async Task<IEnumerable<CourseDTO>> GetAllAsync()
         {
             var result = (await _repositoryWrapper.Course.GetAllAsync()).Select(c => _mapper.Map<CourseDTO>(c));
-           
-
             return result;
         }
     }
