@@ -113,6 +113,8 @@ namespace EPlast.DataAccess
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<Work> Works { get; set; }
 
@@ -130,6 +132,18 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
             modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
             modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
+
+            modelBuilder.Entity<UserCourse>()
+                .HasKey(bc => bc.ID);
+            modelBuilder.Entity<UserCourse>()
+                .HasOne(bc => bc.Сourse)
+                .WithMany(b => b.UserCourses)
+                .HasForeignKey(bc => bc.CourseId);
+            modelBuilder.Entity<UserCourse>()
+                .HasOne(bc => bc.User)
+                .WithMany(c => c.UserCourses)
+                .HasForeignKey(bc => bc.UserId);
+
             modelBuilder.Entity<UserRenewal>(entity =>
             {
                 entity.HasKey(e => e.Id);
