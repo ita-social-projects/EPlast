@@ -35,6 +35,7 @@ namespace EPlast.DataAccess.Repositories
                     Logo = c.Logo,
                     Count = found.Count()
                 })
+                .OrderBy(c => c.Name)
                 .ToListAsync();
 
             return new Tuple<IEnumerable<CityObject>, int>(result, result.FirstOrDefault()?.Count ?? 0);
