@@ -313,6 +313,18 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get a list of users who have Super Admin access rights.
+        /// </summary>
+        /// <returns>A list of users with only the Admin role</returns>
+        [HttpGet("superAdmins")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSuperAdmins()
+        {
+            var users = await _adminService.GetUsersByRolesAsync("Admin", true, _adminService.FilterByExactRoles);
+            return Ok(users);
+        }
+
+        /// <summary>
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
