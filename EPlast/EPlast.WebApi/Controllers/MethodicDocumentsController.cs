@@ -88,6 +88,26 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Returns last MethodicDocument
+        /// </summary>
+        /// <returns>Last MethodicDocuments</returns>
+        /// <response code="200">MethodicDocuments object</response>
+        /// <response code="404">Any MethodicDocument not exist</response>
+        [HttpGet("Last")]
+        public async Task<IActionResult> GetLast()
+        {
+            try
+            {
+                var methodic = await _methodicDocService.GetLastAsync();
+                return Ok(methodic);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
         /// Updates MethodicDocument
         /// </summary>
         /// <param name="id">MethodicDocument id</param>
