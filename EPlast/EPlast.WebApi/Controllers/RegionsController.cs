@@ -411,9 +411,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateFollower(RegionFollowerDTO follower)
         {
-            await _regionService.CreateFollowerAsync(follower);
+            int id = await _regionService.CreateFollowerAsync(follower);
 
-            return Ok();
+            return Ok(id);
         }
 
         /// <summary>

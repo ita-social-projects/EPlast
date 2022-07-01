@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EPlast.Resources;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -25,6 +26,7 @@ namespace EPlast.DataAccess.Entities
 
         [Required, MaxLength(50, ErrorMessage = "Address name can not exceed 50 characters")]
         public string Address { get; set; }
+        public UkraineOblasts Oblast { get; set; }
         public CityLevel Level { get; set; }
         public string СityURL { get; set; }
 
