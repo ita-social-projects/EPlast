@@ -3,7 +3,8 @@ namespace EPlast.BLL.DTO.ActiveMembership
 {
     public enum AccessLevelTypeDTO
     {
-        [Description("Адміністратор")] Admin,
+        [Description("Адміністратор")]
+        Admin,
 
         [Description("Зареєстрований користувач")]
         RegisteredUser,
@@ -17,7 +18,8 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації")]
         LeadershipMember,
 
-        [Description("Крайовий Адмін")] GoverningBodyAdmin,
+        [Description("Крайовий Адмін")]
+        GoverningBodyAdmin,
 
         [Description("Доступ члена проводу організації, Голова Керівного Органу")]
         LeadershipMemberForGoverningBodyHead,
@@ -37,7 +39,8 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації, Заступник Голови Куреня")]
         LeadershipMemberForKurinHeadDeputy,
 
-        [Description("Діловод Куреня")] LeadershipMemberForKurinSecretary,
+        [Description("Діловод Куреня")]
+        LeadershipMemberForKurinSecretary,
 
         [Description("Доступ члена проводу організації, Голова Станиці")]
         LeadershipMemberForCityHead,
@@ -45,7 +48,8 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації, Заступник Голови Станиці")]
         LeadershipMemberForCityHeadDeputy,
 
-        [Description("Діловод Станиці")] LeadershipMemberForCitySecretary,
+        [Description("Діловод Станиці")]
+        LeadershipMemberForCitySecretary,
 
         [Description("Доступ члена проводу організації, Голова Округи")]
         LeadershipMemberForOkrugaHead,
@@ -53,7 +57,8 @@ namespace EPlast.BLL.DTO.ActiveMembership
         [Description("Доступ члена проводу організації, Заступник Голови Округи")]
         LeadershipMemberForOkrugaHeadDeputy,
 
-        [Description("Діловод Округи")] LeadershipMemberForOkrugaSecretary,
+        [Description("Діловод Округи")]
+        LeadershipMemberForOkrugaSecretary,
 
         [Description("Доступ колишнього члена організації")]
         FormerPlastMember,
@@ -74,6 +79,15 @@ namespace EPlast.BLL.DTO.ActiveMembership
         CityReferentUSP,
 
         [Description("Доступ члена проводу організації, Референт Дійсного Членства Станиці")]
-        CityReferentOfActiveMembership
+        CityReferentOfActiveMembership,
+
+        [Description("Доступ члена проводу організації, Адміністратор подій")]
+        EventAdministrator,
+
+        [Description("Доступ члену проводу організації, Голова Пласту")]
+        PlastHead,
+
+        [Description("Зацікавлений")]
+        Interested
     }
 }

@@ -51,6 +51,9 @@ namespace EPlast.WebApi.Controllers
             var isUserHeadDeputyOfClub = roles.Contains(Roles.KurinHeadDeputy);
             var isUserHeadOfRegion = roles.Contains(Roles.OkrugaHead);
             var isUserHeadDeputyOfRegion = roles.Contains(Roles.OkrugaHeadDeputy);
+            var isUserRegionReferentUPS = roles.Contains(Roles.OkrugaReferentUPS);
+            var isUserRegionReferentUSP = roles.Contains(Roles.OkrugaReferentUSP);
+            var isUserRegionReferentOfActiveMemebership = roles.Contains(Roles.OkrugaReferentOfActiveMembership);
             var isUserCityReferentUPS=roles.Contains(Roles.CityReferentUPS);
             var isUserCityReferentUSP = roles.Contains(Roles.CityReferentUSP);
             var isUserCityReferentOfActiveMemebership = roles.Contains(Roles.CityReferentOfActiveMembership);
@@ -61,6 +64,9 @@ namespace EPlast.WebApi.Controllers
                 || (isUserHeadDeputyOfCity && _userService.IsUserSameCity(currentUser, focusUser))
                 || (isUserHeadOfRegion && _userService.IsUserSameRegion(currentUser, focusUser))
                 || (isUserHeadDeputyOfRegion && _userService.IsUserSameRegion(currentUser, focusUser))
+                || (isUserRegionReferentUPS && _userService.IsUserSameCity(currentUser, focusUser))
+                || (isUserRegionReferentUSP && _userService.IsUserSameCity(currentUser, focusUser))
+                || (isUserRegionReferentOfActiveMemebership && _userService.IsUserSameCity(currentUser, focusUser))
                 || (isUserCityReferentUPS && _userService.IsUserSameCity(currentUser, focusUser))
                 || (isUserCityReferentUSP && _userService.IsUserSameCity(currentUser, focusUser))
                 || (isUserCityReferentOfActiveMemebership && _userService.IsUserSameCity(currentUser, focusUser))) 
@@ -87,7 +93,7 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _plastDegreeService.GetUserPlastDegreeAsync(userId));
         }
 
-        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputyReferent)]
+        [Authorize(Roles = Roles.CanEditCity)]
         [HttpPost("degree")]
         public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
         {

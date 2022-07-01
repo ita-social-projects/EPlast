@@ -111,6 +111,9 @@ namespace EPlast.Resources
                                           "," + RegionBoardHead +
                                           "," + OkrugaHead +
                                           "," + OkrugaHeadDeputy +
+                                          "," + OkrugaReferentUPS +
+                                          "," + OkrugaReferentUSP +
+                                          "," + OkrugaReferentOfActiveMembership +
                                           "," + CityHead +
                                           "," + CityHeadDeputy +
                                           "," + GoverningBodyHead +

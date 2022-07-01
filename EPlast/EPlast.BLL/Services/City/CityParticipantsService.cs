@@ -179,14 +179,30 @@ namespace EPlast.BLL.Services.City
 
             var regionAdministration = await _repositoryWrapper.RegionAdministration
                 .GetAllAsync(i => i.RegionId == regionID,
-           i => i
-               .Include(c => c.AdminType)
-               .Include(a => a.User));
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
 
             var regionHead = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHead
-                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var regionHeadDeputy = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy
-                                                                 && (DateTime.Now < a.EndDate || a.EndDate == null));
+                                                                      && (DateTime.Now < a.EndDate ||
+                                                                          a.EndDate == null));
+            var regionHeadDeputy = regionAdministration.FirstOrDefault(a =>
+                a.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy
+                && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            var regionReferentsUPS =
+                regionAdministration.Where(a => a.AdminType.AdminTypeName == Roles.OkrugaReferentUPS
+                                                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var regionReferentsUSP =
+                regionAdministration.Where(a => a.AdminType.AdminTypeName == Roles.OkrugaReferentUSP
+                                                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var regionReferentsOfActiveMembership = regionAdministration.Where(a =>
+                a.AdminType.AdminTypeName == Roles.OkrugaReferentOfActiveMembership
+                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+
+            var emailContent = await _emailContentService.GetRegionAdminAboutNewFollowerEmailAsync(user.Id,
+                user.FirstName, user.LastName, false);
+
             if (regionHead != null)
             {
                 userNotificationsDTO.Add(new UserNotificationDTO
@@ -197,7 +213,12 @@ namespace EPlast.BLL.Services.City
                     SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
                     SenderName = "Переглянути"
                 });
+
+                await _emailSendingService.SendEmailAsync(regionHead.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
             }
+
             if (regionHeadDeputy != null)
             {
                 userNotificationsDTO.Add(new UserNotificationDTO
@@ -208,6 +229,65 @@ namespace EPlast.BLL.Services.City
                     SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
                     SenderName = "Переглянути"
                 });
+
+                await _emailSendingService.SendEmailAsync(regionHeadDeputy.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+
+            if (regionReferentsUPS.Count!=0)
+            {
+                foreach (var referent in regionReferentsUPS)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDTO
+                    {
+                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+
+            if (regionReferentsUSP.Count != 0)
+            {
+                foreach (var referent in regionReferentsUSP)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDTO
+                    {
+                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+
+            if (regionReferentsOfActiveMembership.Count != 0)
+            {
+                foreach (var referent in regionReferentsOfActiveMembership)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDTO
+                    {
+                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
             }
 
             await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
@@ -478,13 +558,16 @@ namespace EPlast.BLL.Services.City
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
-            var cityReferentUPS =
-                cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityReferentUPS);
-            var cityReferentUSP =
-                cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityReferentUSP);
-            var cityReferentOfActiveMembership = cityAdministration.FirstOrDefault(a =>
-                a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership);
-            
+            var cityReferentsUPS =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUPS
+                                              && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsUSP =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUSP
+                                              && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsOfActiveMembership = cityAdministration.Where(a =>
+                a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership
+                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
                 user.FirstName, user.LastName, false);
             if (cityHead != null)
@@ -500,23 +583,32 @@ namespace EPlast.BLL.Services.City
                     emailContent.Title);
             }
 
-            if (cityReferentUPS != null)
+            if (cityReferentsUPS.Count != 0)
             {
-                await _emailSendingService.SendEmailAsync(cityReferentUPS.User.Email, emailContent.Subject,
-                    emailContent.Message,
-                    emailContent.Title);
+                foreach (var referent in cityReferentsUPS)
+                {
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
             }
-            if (cityReferentUSP != null)
+            if (cityReferentsUSP.Count != 0)
             {
-                await _emailSendingService.SendEmailAsync(cityReferentUSP.User.Email, emailContent.Subject,
-                    emailContent.Message,
-                    emailContent.Title);
+                foreach (var referent in cityReferentsUSP)
+                {
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
             }
-            if (cityReferentOfActiveMembership != null)
+            if (cityReferentsOfActiveMembership.Count != 0)
             {
-                await _emailSendingService.SendEmailAsync(cityReferentOfActiveMembership.User.Email, emailContent.Subject,
-                    emailContent.Message,
-                    emailContent.Title);
+                foreach (var referent in cityReferentsOfActiveMembership)
+                {
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
             }
         }
 
@@ -531,6 +623,16 @@ namespace EPlast.BLL.Services.City
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            var cityReferentsUPS =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUPS
+                                                       && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsUSP =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUSP
+                                              && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsOfActiveMembership = cityAdministration.Where(a =>
+                a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership
+                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
             List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
 
             if (cityHead != null)
@@ -554,6 +656,48 @@ namespace EPlast.BLL.Services.City
                     SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
                     SenderName = "Переглянути"
                 });
+            }
+            if (cityReferentsUPS.Count != 0)
+            {
+                foreach (var referent in cityReferentsUPS)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDTO
+                    {
+                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                }
+            }
+            if (cityReferentsUSP.Count != 0)
+            {
+                foreach (var referent in cityReferentsUSP)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDTO
+                    {
+                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                }
+            }
+            if (cityReferentsOfActiveMembership.Count != 0)
+            {
+                foreach (var referent in cityReferentsOfActiveMembership)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDTO
+                    {
+                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                }
             }
             await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
         }

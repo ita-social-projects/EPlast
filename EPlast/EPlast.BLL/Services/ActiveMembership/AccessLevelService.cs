@@ -122,6 +122,18 @@ namespace EPlast.BLL.Services.ActiveMembership
             {
                 accessLevels.Add(AccessLevelTypeDTO.CityReferentOfActiveMembership.GetDescription());
             };
+            RolesDictionary[Roles.EventAdministrator] = () =>
+            {
+                accessLevels.Add(AccessLevelTypeDTO.EventAdministrator.GetDescription());
+            };
+            RolesDictionary[Roles.PlastHead] = () =>
+            {
+                accessLevels.Add(AccessLevelTypeDTO.PlastHead.GetDescription());
+            };
+            RolesDictionary[Roles.Interested] = () =>
+            {
+                accessLevels.Add(AccessLevelTypeDTO.Interested.GetDescription());
+            };
             RolesDictionary[role].Invoke();
         }
 

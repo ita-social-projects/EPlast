@@ -76,6 +76,8 @@ namespace EPlast.BLL.Interfaces
         /// <returns>Email content</returns>
         Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
 
+        Task<EmailModel> GetRegionAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
+
         /// <summary>
         /// Get email to inform user about approve in city
         /// </summary>
