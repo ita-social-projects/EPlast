@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220629042130_SeedingReferentAdminTypes")]
+    partial class SeedingReferentAdminTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -506,9 +508,6 @@ namespace EPlast.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
-
-                    b.Property<byte>("Oblast")
-                        .HasColumnType("tinyint");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(18)")
@@ -1769,7 +1768,7 @@ namespace EPlast.DataAccess.Migrations
                         },
                         new
                         {
-                            ID = 7,
+                            ID = 3,
                             Name = "Не маю бажання вказувати"
                         });
                 });
@@ -2380,46 +2379,16 @@ namespace EPlast.DataAccess.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Старший пластун прихильник / Старша пластунка прихильниця"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Старший пластун / Старша пластунка"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Старший пластун скоб / Cтарша пластунка вірлиця"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Старший пластун гетьманський скоб / Старша пластунка гетьманська вірлиця"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Старший пластун скоб гребець / Старша пластунка  вірлиця гребець"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Старший пластун скоб обсерватор / Старша пластунка  вірлиця обсерватор"
-                        },
-                        new
-                        {
-                            Id = 7,
                             Name = "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"
                         },
                         new
                         {
-                            Id = 8,
+                            Id = 2,
                             Name = "Пластун сеніор керівництва / Пластунка сеніорка керівництва"
                         },
                         new
                         {
-                            Id = 9,
+                            Id = 3,
                             Name = "Пластприят"
                         });
                 });
@@ -2754,9 +2723,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("Oblast")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(20)")
                         .HasMaxLength(20);
@@ -3049,9 +3015,6 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<int>("RegionId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("RegistredOn")
                         .HasColumnType("datetime2");
@@ -3450,9 +3413,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int?>("NationalityId")
                         .HasColumnType("int");
 
-                    b.Property<byte>("Oblast")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("Pseudo")
                         .HasColumnType("nvarchar(30)")
                         .HasMaxLength(30);
@@ -3460,10 +3420,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("PublicPoliticalActivity")
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
-
-                    b.Property<string>("Referal")
-                        .HasColumnType("nvarchar(2560)")
-                        .HasMaxLength(2560);
 
                     b.Property<int?>("ReligionId")
                         .HasColumnType("int");
@@ -3551,14 +3507,11 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("ClubName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DegreeId")
+                    b.Property<int>("Count")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
@@ -3571,9 +3524,6 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<byte>("Oblast")
-                        .HasColumnType("tinyint");
 
                     b.Property<string>("PlastDegree")
                         .HasColumnType("nvarchar(max)");

@@ -282,12 +282,14 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void CreateFollowerAsync_ReturnsSuccess()
+        public void CreateFollowerAsync_ReturnsFollowerId()
         {
             // Arrange
+            int id = 1;
+
             _mapper
                .Setup(x => x.Map<RegionFollowerDTO, RegionFollowers>(It.IsAny<RegionFollowerDTO>()))
-               .Returns(new RegionFollowers());
+               .Returns(new RegionFollowers() { ID = id });
             _repoWrapper.Setup(x => x.RegionFollowers.CreateAsync(new RegionFollowers()));
             _repoWrapper.Setup(x => x.SaveAsync());
 
@@ -295,8 +297,8 @@ namespace EPlast.Tests.Services.Regions
             var result = _regionService.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>());
 
             // Assert
-            _repoWrapper.Verify();
             Assert.NotNull(result);
+            Assert.AreEqual(id, result.Result);
         }
 
         [Test]

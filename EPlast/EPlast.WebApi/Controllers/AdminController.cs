@@ -18,8 +18,7 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer")]
-    [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
+   
     public class AdminController : ControllerBase
     {
         private readonly IAdminService _adminService;
@@ -54,6 +53,8 @@ namespace EPlast.WebApi.Controllers
         /// <param name="role">The new current role of user</param>
         /// <response code="201">Successful operation</response>
         /// <response code="404">User not found</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpPut("changeRole/{userId}/{role}")]
         public async Task<IActionResult> ChangeCurrentUserRole(string userId, string role)
         {
@@ -73,6 +74,8 @@ namespace EPlast.WebApi.Controllers
         /// <param name="userId">The id of the user</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpPut("changeRole/{userId}")]
         public async Task<IActionResult> ChangeUserRoleToExpired(string userId)
         {
@@ -94,6 +97,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>User with roles</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Roles are null</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
@@ -113,6 +118,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>User with roles</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Roles are null</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("GetUsersByAnyRole/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAnyRole([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
@@ -130,6 +137,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>User with roles</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Roles are null</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("GetUsersForGoverningBodies")]
         public async Task<IActionResult> GetUsersForGoverningBodies()
         {
@@ -149,6 +158,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>User with roles</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Roles are null</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("GetUsersByExactRoles/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByExactRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
@@ -167,8 +178,9 @@ namespace EPlast.WebApi.Controllers
         /// <returns>The id of the user</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("confirmDelete/{userId}")]
-        [Authorize(Roles = Roles.Admin)]
         [ActionName("Delete")]
         public ActionResult ConfirmDelete(string userId)
         {
@@ -186,7 +198,8 @@ namespace EPlast.WebApi.Controllers
         /// <param name="userId">The id of the user, which must be deleted</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User id is null</response>
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpDelete("deleteUser/{userId}")]
         public async Task<IActionResult> Delete(string userId)
         {
@@ -208,6 +221,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A data of roles for editing user roles</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("editRole/{userId}")]
         public async Task<IActionResult> Edit(string userId)
         {
@@ -243,6 +258,8 @@ namespace EPlast.WebApi.Controllers
         /// <param name="roles">List of new user roles</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpPut("editedRole/{userId}")]
         public async Task<IActionResult> Edit(string userId, [FromBody] List<string> roles)
         {
@@ -262,6 +279,8 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All administartion of selected city</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">City id is 0</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("cityAdmins/{cityId}")]
         public async Task<IActionResult> GetAdmins(int cityId)
         {
@@ -281,6 +300,8 @@ namespace EPlast.WebApi.Controllers
         /// <response code="500">
         /// userId is empty/null or user not contained in database
         /// </response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("CityRegionAdmins/{userId}")]
         public async Task<IActionResult> GetCityAndRegionAdminsOfUser(string userId)
         {
@@ -301,6 +322,8 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="tableFilterParameters">Items to filter</param>
         /// <returns>A specific number of users</returns>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputyAndReferentKurinHeadDeputyAndPlastMember)]
         [HttpGet("Profiles")]
         public async Task<IActionResult> GetUsersTable([FromQuery] TableFilterParameters tableFilterParameters)
         {
@@ -313,10 +336,24 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get a list of users who have Super Admin access rights.
+        /// </summary>
+        /// <returns>A list of users with only the Admin role</returns>
+        [HttpGet("superAdmins")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSuperAdmins()
+        {
+            var users = await _adminService.GetUsersByRolesAsync("Admin", true, _adminService.FilterByExactRoles);
+            return Ok(users);
+        }
+
+        /// <summary>
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
         /// <response code="200">Successful operation</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("usersTable")]
         public async Task<IActionResult> GetUsers()
         {
@@ -329,6 +366,8 @@ namespace EPlast.WebApi.Controllers
         /// <param name="searchString">Search string</param>
         /// <returns>Short information about searched users</returns>
         /// <response code="200">Successful operation</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("ShortUsersInfo/{searchString}")]
         public async Task<IActionResult> GetShortUsersInfo(string searchString)
         {
@@ -340,6 +379,8 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>All cities in specify model</returns>
         /// <response code="200">Successful operation</response>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("regionsAdmins")]
         public async Task<IActionResult> RegionsAdmins()
         {
@@ -358,6 +399,8 @@ namespace EPlast.WebApi.Controllers
         ///  Check if user is member of city
         /// </summary>
         /// <param name="userId">The id of the user</param>
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
         [HttpGet("IsCityMember/{userId}")]
         public async Task<bool> IsCityMember(string userId)
         {        

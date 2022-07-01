@@ -490,7 +490,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="memberId">The id of the member</param>
         /// <returns>An information about a specific member</returns>
         [HttpPut("ChangeApproveStatus/{memberId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditCity)]
         public async Task<IActionResult> ChangeApproveStatus(int memberId)
         {
             var member = await _cityParticipantsService.ToggleApproveStatusAsync(memberId);
@@ -536,7 +536,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="newAdmin">An information about a new administrator</param>
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditCity)]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         {
             var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
@@ -590,7 +590,7 @@ namespace EPlast.WebApi.Controllers
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
         [HttpPost("AddDocument/{cityId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditCity)]
         public async Task<IActionResult> AddDocument(CityDocumentsViewModel document)
         {
             var documentDTO = _mapper.Map<CityDocumentsViewModel, CityDocumentsDTO>(document);
