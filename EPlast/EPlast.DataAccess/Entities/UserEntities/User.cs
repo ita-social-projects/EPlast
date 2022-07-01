@@ -39,6 +39,7 @@ namespace EPlast.DataAccess.Entities
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
         public UserProfile UserProfile { get; set; }
+        public int RegionId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
         public ICollection<ConfirmedUser> ConfirmedUsers { get; set; }
         public ICollection<Approver> Approvers { get; set; }
         public ICollection<EventAdmin> Events { get; set; }
