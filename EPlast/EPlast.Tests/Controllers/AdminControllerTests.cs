@@ -391,6 +391,29 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
         }
+
+        [Test]
+        public async Task GetSuperAdmins_ReturnsArrayOfUsers()
+        {
+            // Arrange
+            AdminController adminController = GetAdminController();
+
+            string userRole = "Admin";
+            bool onlyIncludeUsers = true;
+            Type functionType = typeof(Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>);
+
+            _adminService.Setup(a => a.GetUsersByRolesAsync(userRole, onlyIncludeUsers, It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
+                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+
+            // Act
+            var result = await adminController.GetSuperAdmins() as ObjectResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
+            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(result.Value);
+        }
+
         [Test]
         public async Task GetUsers_Valid_Test()
         {
