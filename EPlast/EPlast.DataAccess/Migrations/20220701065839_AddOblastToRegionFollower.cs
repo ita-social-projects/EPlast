@@ -8,12 +8,6 @@ namespace EPlast.DataAccess.Migrations
         {
             migrationBuilder.AddColumn<byte>(
                 name: "Oblast",
-                table: "UserTableObjects",
-                nullable: false,
-                defaultValue: (byte)0);
-
-            migrationBuilder.AddColumn<byte>(
-                name: "Oblast",
                 table: "RegionFollowers",
                 nullable: false,
                 defaultValue: (byte)0);
@@ -21,10 +15,6 @@ namespace EPlast.DataAccess.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Oblast",
-                table: "UserTableObjects");
-
             migrationBuilder.DropColumn(
                 name: "Oblast",
                 table: "RegionFollowers");
