@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -25,6 +26,9 @@ namespace EPlast.DataAccess.Entities
         public Gender Gender { get; set; }
         public int UpuDegreeID { get; set; } = 1;
         public UpuDegree UpuDegree { get; set; }
+        public UkraineOblasts Oblast { get; set; }
+        [StringLength(2560)]
+        public string Referal { get; set; }
         [Display(Name = "Домашня адреса")]
         [MaxLength(50,ErrorMessage = "Адреса не може перевищувати 50 символів")]
         public string Address { get; set; }

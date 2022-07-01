@@ -152,6 +152,36 @@ namespace EPlast.DataAccess.ExtensionMethods
                 {
                     ID = 23,
                     AdminTypeName = "Діловод Напряму Керівного Органу"
+                },
+                new AdminType
+                {
+                    ID = 24,
+                    AdminTypeName = "Референт/-ка УПС Округи"
+                },
+                new AdminType
+                {
+                    ID = 25,
+                    AdminTypeName = "Референт/-ка УСП Округи"
+                },
+                new AdminType
+                {
+                    ID = 26,
+                    AdminTypeName = "Референт дійсного членства Округи"
+                },
+                new AdminType
+                {
+                    ID = 27,
+                    AdminTypeName = "Референт/-ка УПС Станиці"
+                },
+                new AdminType
+                {
+                    ID = 28,
+                    AdminTypeName = "Референт/-ка УСП Станиці"
+                },
+                new AdminType
+                {
+                    ID = 29,
+                    AdminTypeName = "Референт дійсного членства Станиці"
                 });
 
             modelBuilder.Entity<Nationality>().HasData(
@@ -179,7 +209,7 @@ namespace EPlast.DataAccess.ExtensionMethods
                 },
                 new Gender
                 {
-                    ID = 3,
+                    ID = 7,
                     Name = "Не маю бажання вказувати"
                 });
 
@@ -252,6 +282,7 @@ namespace EPlast.DataAccess.ExtensionMethods
                     EventTypeName = "Табір"
                 }
             );
+
             modelBuilder.Entity<Precaution>().HasData(
                 new Precaution
                 {
@@ -267,6 +298,7 @@ namespace EPlast.DataAccess.ExtensionMethods
                     Id = 3,
                     Name = "Догана із загрозою виключення з Пласту"
                 });
+
             modelBuilder.Entity<CityDocumentType>().HasData(
                 new CityDocumentType
                 {
@@ -437,18 +469,49 @@ namespace EPlast.DataAccess.ExtensionMethods
                 new PlastDegree
                 {
                     Id = 1,
-                    Name = "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"
+                    Name = "Старший пластун прихильник / Старша пластунка прихильниця"
 
                 },
                 new PlastDegree
                 {
                     Id = 2,
-                    Name = "Пластун сеніор керівництва / Пластунка сеніорка керівництва"
+                    Name = "Старший пластун / Старша пластунка"
 
                 },
                 new PlastDegree
                 {
                     Id = 3,
+                    Name = "Старший пластун скоб / Cтарша пластунка вірлиця"
+
+                },
+                new PlastDegree
+                {
+                    Id = 4,
+                    Name = "Старший пластун гетьманський скоб / Старша пластунка гетьманська вірлиця"
+
+                }, new PlastDegree
+                {
+                    Id = 5,
+                    Name = "Старший пластун скоб гребець / Старша пластунка  вірлиця гребець"
+
+                }, new PlastDegree
+                {
+                    Id = 6,
+                    Name = "Старший пластун скоб обсерватор / Старша пластунка  вірлиця обсерватор"
+
+                }, new PlastDegree
+                {
+                    Id = 7,
+                    Name = "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"
+
+                }, new PlastDegree
+                {
+                    Id = 8,
+                    Name = "Пластун сеніор керівництва / Пластунка сеніорка керівництва"
+
+                }, new PlastDegree
+                {
+                    Id = 9,
                     Name = "Пластприят"
 
                 });

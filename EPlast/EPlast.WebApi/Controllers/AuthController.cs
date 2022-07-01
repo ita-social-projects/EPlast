@@ -1,172 +1,213 @@
-﻿using System.Threading.Tasks;
-using System.Web;
+#nullable enable
+
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Interfaces.Resources;
+using EPlast.BLL.Interfaces.City;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using NLog.Extensions.Logging;
+using MimeKit;
 
 namespace EPlast.WebApi.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthEmailService _authEmailServices;
-        private readonly IAuthService _authService;
-        private readonly IResources _resources;
+        public struct ConflictErrorObject
+        {
+            public ConflictErrorObject(string error, bool isEmailConfirmed)
+            {
+                Error = error;
+                IsEmailConfirmed = isEmailConfirmed;
+            }
+
+            public string Error { get; }
+            public bool IsEmailConfirmed { get; }
+        }
+
         private readonly IUserDatesService _userDatesService;
-        private readonly ILoggerService<AuthController> _logger;
         private readonly IEmailSendingService _emailSendingService;
-        private const int TotalMinutesInOneDay = 1440;
+        private readonly UserManager<User> _userManager;
+        private readonly IMapper _mapper;
+        private readonly ICityParticipantsService _cityParticipantsService;
 
         public AuthController(
-            IAuthService authService,
             IUserDatesService userDatesService,
-            IResources resources,
-            IAuthEmailService authEmailServices,
-            ILoggerService<AuthController> logger,
-            IEmailSendingService emailSendingService
+            IEmailSendingService emailSendingService,
+            IMapper mapper,
+            ICityParticipantsService cityParticipantsService,
+            UserManager<User> userManager
         )
         {
-            _authService = authService;
             _userDatesService = userDatesService;
-            _resources = resources;
-            _authEmailServices = authEmailServices;
-            _logger = logger;
             _emailSendingService = emailSendingService;
+            _mapper = mapper;
+            _cityParticipantsService = cityParticipantsService;
+            _userManager = userManager;
         }
 
         /// <summary>
-        /// Method for confirming email in system
+        /// Email confirmation
         /// </summary>
-        /// <param name="userId">Id of user</param>
-        /// <param name="token">Token for confirming email</param>
-        /// <returns>Answer from backend for confirming email method</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with confirming email</response>
-        [HttpGet("confirmingEmail")]
-        [AllowAnonymous]
-        public async Task<IActionResult> ConfirmingEmailAsync(string userId, string token)
+        /// <param name="userId">Id of the user</param>
+        /// <param name="token">Email confirmation token</param>
+        /// <returns>Action response</returns>
+        /// <response code="204">Successful operation</response>
+        /// <response code="400">UserId or Token were found invalid</response>
+        /// <response code="404">User by specified id is not found</response>
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token)
         {
-            _logger.LogInformation($"Executing method ConfirmingEmailAsync for user {userId} and token: {token}");
-            _logger.LogInformation($"Executing method FindByIdAsync in ConfirmingEmailAsync for user {userId}");
-            var userDto = await _authService.FindByIdAsync(userId);
-            if (userDto == null)
+            var frontendUrl = Request?.Host.Host ?? "localhost";
+            if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
             {
-                _logger.LogInformation($"Method FindByIdAsync in ConfirmingEmailAsync can not find user {userId}");
-                return BadRequest();
-            }
-            _logger.LogInformation($"Executing method GetTimeAfterRegister in ConfirmingEmailAsync for user {userId}");
-            int totalTime = _authService.GetTimeAfterRegister(userDto);
-            _logger.LogInformation($"Method GetTimeAfterRegister in ConfirmingEmailAsync for user {userId} returned time = {totalTime}");
-            if (totalTime < TotalMinutesInOneDay)
-            {
-                _logger.LogInformation($"Total time {totalTime} is less when 1440 for user {userId} in method ConfirmingEmailAsync");
-                if (string.IsNullOrWhiteSpace(userId) && string.IsNullOrWhiteSpace(token))
-                {
-                    _logger.LogInformation($"User {userId} and {token} are null or empty in method ConfirmingEmailAsync");
-                    return BadRequest();
-                }
-                _logger.LogInformation($"Executing method ConfirmEmailAsync in ConfirmingEmailAsync for user {userId}");
-                var result = await _authEmailServices.ConfirmEmailAsync(userDto.Id, HttpUtility.UrlDecode(token));
-
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation($"Method ConfirmEmailAsync is successfully executed in ConfirmingEmailAsync for user {userId}");
-                    string signInUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["SignIn"];
-                    _logger.LogInformation($"Executing method SendEmailGreetingAsync in ConfirmingEmailAsync for user {userId}");
-                    var greetingSendResult = await _authEmailServices.SendEmailGreetingAsync(userDto.Email);
-                    if (greetingSendResult)
-                    {
-                        _logger.LogInformation($"Method SendEmailGreetingAsync is successfully executed in ConfirmingEmailAsync for user {userId}");
-                        return Redirect(signInUrl);
-                    }
-                    else
-                    {
-                        _logger.LogError($"Method SendEmailGreetingAsync is executed with errors in ConfirmingEmailAsync for user {userId}");
-                        return BadRequest();
-                    }
-                }
-                else
-                {
-                    _logger.LogError($"Method ConfirmEmailAsync is executed with errors in ConfirmingEmailAsync for user {userId}");
-                    return BadRequest();
-                }
+                frontendUrl = "http://" + frontendUrl + ":3000";
             }
             else
             {
-                _logger.LogInformation($"Total time {totalTime} in ConfirmingEmailAsync is greater when 1440 -> register not allowed");
-                return Ok(_resources.ResourceForErrors["ConfirmedEmailNotAllowed"]);
+                frontendUrl = "https://" + frontendUrl;
             }
+            frontendUrl += "/signin";
+
+            if (!ModelState.IsValid)
+            {
+                return Redirect(frontendUrl + "?error=400");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return Redirect(frontendUrl + "?error=404");
+            }
+
+            TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
+            if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
+            {
+                // 410 GONE - User should be deleted, because 12hrs elapsed from registration and email is still is not confirmed
+                await _userManager.DeleteAsync(user);
+                return Redirect(frontendUrl + "?error=410");
+            }
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+            if (!result.Succeeded)
+            {
+                return Redirect(frontendUrl + "?error=400");
+            }
+
+            return Redirect(frontendUrl);
         }
 
         /// <summary>
-        /// Method for registering in system
+        /// Creates a new user
         /// </summary>
-        /// <param name="registerDto">Register model(dto)</param>
-        /// <returns>Answer from backend for register method</returns>
+        /// <param name="registerDto">Registration DTO</param>
+        /// <returns>Action response</returns>
         /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with registration</response>
+        /// <response code="400">Registration DTO is invalid</response>
+        /// <response code="409">User by specified email is already exist</response>
         [HttpPost("signup")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> SignUp(RegisterDto registerDto)
+        {
+            if (registerDto.GenderId != 1 && registerDto.GenderId != 2 && registerDto.GenderId != 7)
+            {
+                ModelState.AddModelError(nameof(RegisterDto.GenderId), "Unknown GenderId");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            User? user = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (user != null)
+            {
+                // Check if user's email is confirmed
+                if (await _userManager.IsEmailConfirmedAsync(user))
+                {
+                    return Conflict(new ConflictErrorObject("User exists and email is confirmed", true));
+                }
+                else
+                {
+                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false));
+                }
+            }
+
+            user = _mapper.Map<User>(registerDto);
+            user.RegistredOn = DateTime.Now;
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { error = result.Errors });
+            }
+
+            try
+            {
+                await SendConfirmationEmail(user);
+            }
+            catch (Exception)
+            {
+                await _userManager.DeleteAsync(user);
+                throw;
+            }
+
+            await _userDatesService.AddDateEntryAsync(user.Id);
+
+            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
+
+            if (registerDto.CityId != null)
+            {
+                await _cityParticipantsService.AddFollowerAsync((int)registerDto.CityId, user.Id);
+            }
+            else
+            {
+                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, registerDto.RegionId);
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Resends email confirmation letter for the user by his email address
+        /// </summary>
+        /// <param name="userEmail">Email of the user</param>
+        /// <returns>Action response</returns>
+        /// <response code="204">Successful operation</response>
+        /// <response code="404">User by specified email was not found</response>
+        /// <response code="409">User's email is already confirmed</response>
+        [HttpPost("resendConfirmationEmail")]
+        public async Task<IActionResult> ResendConfirmationEmail([Required, EmailAddress] string userEmail)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(_resources.ResourceForErrors["Register-InCorrectData"]);
+                return BadRequest(ModelState);
             }
-            var registeredUser = await _authService.FindByEmailAsync(registerDto.Email);
-            if (registeredUser != null && registeredUser.EmailConfirmed)
-            {
-                return BadRequest(_resources.ResourceForErrors["Register-RegisteredUserExists"]);
-            }
-            if (registeredUser != null)
-            {
-                return BadRequest(_resources.ResourceForErrors["Register-RegisteredUser"]);
-            }
-            else
-            {
-                var result = await _authService.CreateUserAsync(registerDto);
-                if (!result.Succeeded)
-                {
-                    return BadRequest(_resources.ResourceForErrors["Register-InCorrectPassword"]);
-                }
-                else
-                {
-                    if (!(await _authEmailServices.SendEmailRegistrAsync(registerDto.Email)))
-                    {
-                        return BadRequest(_resources.ResourceForErrors["Register-SMTPServerError"]);
-                    }
-                    
-                    var userDto = await _authService.FindByEmailAsync(registerDto.Email);
-                    await _userDatesService.AddDateEntryAsync(userDto.Id);
-                    return Ok(_resources.ResourceForErrors["Confirm-Registration"]);
-                }
-            }
-        }
 
-        /// <summary>
-        /// Method for resending email after SMTPServer error
-        /// </summary>
-        /// <param name="userId">Id of user</param>
-        /// <returns>Answer from backend for resending email method</returns>
-        /// <response code="200">Successful operation</response>
-        /// <response code="404">Problems with resending email</response>
-        [HttpPost("resendEmailForRegistering/{userId}")]
-        //[AllowAnonymous]
-        public async Task<IActionResult> ResendEmailForRegistering(string userId)
-        {
-            var userDto = await _authService.FindByIdAsync(userId);
-            if (userDto == null)
+            User? user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-            await _authEmailServices.SendEmailRegistrAsync(userDto.Email);
-            return Ok(_resources.ResourceForErrors["EmailForRegistering-Resended"]);
+
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                return BadRequest(new { error = "This email is already confirmed" });
+            }
+
+            await SendConfirmationEmail(user);
+
+            return NoContent();
         }
 
         [HttpPost("feedback")]
@@ -177,7 +218,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            await _emailSendingService.SendEmailAsync(
+            var message = _emailSendingService.Compose(
                 "eplastdmnstrtr@gmail.com",
                 "Питання користувачів",
                 $@"
@@ -185,11 +226,35 @@ namespace EPlast.WebApi.Controllers
                 Пошта: {feedbackDto.Email}<br/>
                 Номер телефону: {feedbackDto.PhoneNumber}<br/>
                 Коментар: {feedbackDto.FeedbackBody}<br/>
-                ",
-                "EPlast"
+                "
             );
 
+            await _emailSendingService.SendEmailAsync(message);
+
             return NoContent();
+        }
+
+        [NonAction]
+        public async Task SendConfirmationEmail(User user)
+        {
+            var reciever = new MailboxAddress($"{user.FirstName} {user.LastName}", user.Email);
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            string url = Url.Action(
+                "ConfirmEmail",
+                "Auth",
+                new { userId = user.Id, token },
+                "https"
+            );
+
+            var message = _emailSendingService.Compose(
+                reciever,
+                "Підтвердження пошти",
+                $"Перейдіть за посиланням, щоб підтвердити пошту: <br/><a href={url}>посилання</a>"
+            );
+
+            await _emailSendingService.SendEmailAsync(message);
         }
     }
 }

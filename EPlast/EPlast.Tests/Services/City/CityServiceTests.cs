@@ -300,7 +300,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             _repoWrapper
-                .Setup(x => x.City.GetCitiesObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>()))
+                .Setup(x => x.City.GetCitiesObjects(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<UkraineOblasts>()))
                 .ReturnsAsync(CreateTuple);
             _cityBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).Throws(new ArgumentException("Can not get image"));
 

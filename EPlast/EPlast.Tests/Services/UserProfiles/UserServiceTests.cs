@@ -5,8 +5,10 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserProfiles;
@@ -14,6 +16,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -32,6 +35,8 @@ namespace EPlast.Tests.Services.UserProfiles
         private UserDTO _userDTO;
         private ConfirmedUserDTO _confirmedUserDTO;
         private Mock<IUserManagerService> _mockUserManageService;
+        private Mock<INotificationService> _mockNotificationService;
+        private Mock<UserManager<User>> _mockUserManager;
         Mock<UserDTO> _currentUser;
         Mock<UserDTO> _focusUser;
 
@@ -52,13 +57,18 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserBlobStorage = new Mock<IUserBlobStorageRepository>();
             _mockEnv = new Mock<IWebHostEnvironment>();
             _mockUserManageService = new Mock<IUserManagerService>();
+            _mockNotificationService = new Mock<INotificationService>();
+            _mockUserManager = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             _userService = new UserService(
                 _mockRepoWrapper.Object,
                 _mockMapper.Object,
                 _mockUserPersonalDataService.Object,
                 _mockUserBlobStorage.Object,
                 _mockEnv.Object,
-                _mockUserManageService.Object
+                _mockUserManageService.Object,
+                _mockNotificationService.Object,
+                _mockUserManager.Object
+
             );
             _confirmedUserDTO = new ConfirmedUserDTO();
             _userDTO = new UserDTO()
@@ -840,6 +850,60 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task CheckRegisteredWithoutCityUsers_ShouldSendNotification()
+        {
+            //Arrange
+            RegionAdministration regionHead = new RegionAdministration()
+            {
+                UserId = "1",
+                AdminType = new AdminType()
+                {
+                    AdminTypeName = Roles.OkrugaHead
+                },
+                EndDate = null
+            };
+            RegionAdministration regionHeadDeputy = new RegionAdministration()
+            {
+                UserId = "2",
+                AdminType = new AdminType()
+                {
+                    AdminTypeName = Roles.OkrugaHeadDeputy
+                },
+                EndDate = null
+            };
+            CityMembers members = new CityMembers();
+            var user = new User
+            {
+                Id = "3",
+                FirstName ="Test",
+                LastName="Test",
+                RegistredOn = DateTime.Now.AddDays(-8),
+                CityMembers = new List<CityMembers>() { members }
+            };
+
+            _mockRepoWrapper
+                 .Setup(x => x.User.GetAllAsync(It.IsAny<Expression<Func<User, bool>>>(),
+                 It.IsAny<Func<IQueryable<User>,IIncludableQueryable<User, object>>>()))
+                .ReturnsAsync(new List<User>() { user });
+
+            _mockRepoWrapper
+                .Setup(r => r.RegionAdministration.GetAllAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+                .ReturnsAsync(new List<RegionAdministration> { regionHead, regionHeadDeputy });
+
+            _mockRepoWrapper
+                .Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
+                        IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new DataAccess.Entities.City() { Name = "Test"});
+            //Act
+            await _userService.CheckRegisteredWithoutCityUsersAsync();
+
+            //Assert
+            _mockNotificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<List<UserNotificationDTO>>()), Times.Once);
         }
     }
 }

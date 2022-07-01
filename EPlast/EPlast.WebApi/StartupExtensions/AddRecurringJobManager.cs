@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces;
+﻿using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
@@ -9,12 +6,16 @@ using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.StartupExtensions
 {
@@ -28,6 +29,18 @@ namespace EPlast.WebApi.StartupExtensions
                                             () => serviceProvider.GetService<IPlastDegreeService>()
                                                                  .GetDergeesAsync(),
                                             "59 23 * * *",
+                                            TimeZoneInfo.Local);
+
+            recurringJobManager.AddOrUpdate("Cheak register users and sent notifications to admins",
+                                            () => serviceProvider.GetService<IUserService>()
+                                                                 .CheckRegisteredUsersAsync(),
+                                            "1 * * * *", // every day at 01:00
+                                            TimeZoneInfo.Local);
+
+            recurringJobManager.AddOrUpdate("Cheak register users and sent notifications to admins",
+                                         () => serviceProvider.GetService<IUserService>()
+                                                              .CheckRegisteredWithoutCityUsersAsync(),
+                                             "1 * * * *", // every day at 01:00
                                             TimeZoneInfo.Local);
 
             recurringJobManager.AddOrUpdate("Check and change event status",
@@ -93,17 +106,23 @@ namespace EPlast.WebApi.StartupExtensions
                 Roles.PlastHead,
                 Roles.EventAdministrator,
                 Roles.KurinHead,
+                Roles.KurinHeadDeputy,
                 Roles.KurinSecretary,
                 Roles.OkrugaHead,
+                Roles.OkrugaHeadDeputy,
                 Roles.OkrugaSecretary,
+                Roles.OkrugaReferentUPS,
+                Roles.OkrugaReferentUSP,
+                Roles.OkrugaReferentOfActiveMembership,
                 Roles.CityHead,
+                Roles.CityHeadDeputy,
                 Roles.CitySecretary,
+                Roles.CityReferentUPS,
+                Roles.CityReferentUSP,
+                Roles.CityReferentOfActiveMembership,
                 Roles.FormerPlastMember,
                 Roles.RegisteredUser,
                 Roles.Interested,
-                Roles.CityHeadDeputy,
-                Roles.OkrugaHeadDeputy,
-                Roles.KurinHeadDeputy,
                 Roles.GoverningBodyAdmin,
                 Roles.GoverningBodyHead,
                 Roles.GoverningBodySecretary,

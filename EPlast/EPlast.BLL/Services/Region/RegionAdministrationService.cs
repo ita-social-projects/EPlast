@@ -40,6 +40,8 @@ namespace EPlast.BLL.Services.Region
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
+            
+
             var newRegionAdmin = new RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
@@ -63,6 +65,15 @@ namespace EPlast.BLL.Services.Region
                     break;
                 case Roles.OkrugaHeadDeputy:
                     role = Roles.OkrugaHeadDeputy;
+                    break;
+                case Roles.OkrugaReferentUPS:
+                    role = Roles.OkrugaReferentUPS;
+                    break;
+                case Roles.OkrugaReferentUSP:
+                    role = Roles.OkrugaReferentUSP;
+                    break;
+                case Roles.OkrugaReferentOfActiveMembership:
+                    role = Roles.OkrugaReferentOfActiveMembership;
                     break;
                 default:
                     role = Roles.OkrugaSecretary;
@@ -139,6 +150,7 @@ namespace EPlast.BLL.Services.Region
             if (admin != null)
             {
                 admin.Status = status;
+                admin.EndDate = DateTime.Now;
                 _repoWrapper.RegionAdministration.Update(admin);
                 await _repoWrapper.SaveAsync();
             }
@@ -158,13 +170,20 @@ namespace EPlast.BLL.Services.Region
                 case Roles.OkrugaHeadDeputy:
                     role = Roles.OkrugaHeadDeputy;
                     break;
+                case Roles.OkrugaReferentUPS:
+                    role = Roles.OkrugaReferentUPS;
+                    break;
+                case Roles.OkrugaReferentUSP:
+                    role = Roles.OkrugaReferentUSP;
+                    break;
+                case Roles.OkrugaReferentOfActiveMembership:
+                    role = Roles.OkrugaReferentOfActiveMembership;
+                    break;
                 default:
                     role = Roles.OkrugaSecretary;
                     break;
             }
             await _userManager.RemoveFromRoleAsync(user, role);
-            _repoWrapper.RegionAdministration.Delete(Admin);
-            await _repoWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)

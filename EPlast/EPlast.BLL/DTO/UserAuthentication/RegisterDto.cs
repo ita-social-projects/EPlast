@@ -1,32 +1,58 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Account
 {
     public class RegisterDto
     {
-        [Required(ErrorMessage = "Поле електронна пошта є обов'язковим")]
-        [EmailAddress(ErrorMessage = "Введене поле не є правильним для електронної пошти")]
+        [Required]
+        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ'\- ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
+        [MaxLength(20)]
+        public string FirstName { get; set; }
+
+        [Required]
+        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ'\- ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
+        [MaxLength(20)]
+        public string LastName { get; set; }
+
+        [RegularExpression(@"[а-яА-ЯІіЄєЇїҐґ'\- ]+", ErrorMessage = "Only cyrillic symbols and space are allowed")]
+        [MaxLength(20)]
+        public string FatherName { get; set; }
+
+        [Range(1, 7, ErrorMessage = "Gender field is invalid")]
+        public int GenderId { get; set; }
+
+        [Required(ErrorMessage = "Date of birth is required")]
+        public DateTime Birthday { get; set; }
+
+        [Required(ErrorMessage = "Потрібно вказати адресу проживання")]
+        public string Address { get; set; }
+
+        [Required, Range(1, int.MaxValue)]
+        public UkraineOblasts Oblast { get; set; }
+
+        public int? CityId { get; set; }
+
+        public int? RegionId { get; set; }
+
+        public string FacebookLink { get; set; }
+
+        public string TwitterLink { get; set; }
+
+        public string InstagramLink { get; set; }
+
+        [Required]
+        [Phone]
+        public string PhoneNumber { get; set; }
+
+        [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Поле пароль є обов'язковим")]
-        [RegularExpression(@"^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$",
-            ErrorMessage = "Пароль повинен містити літери, цифри та знаки")]
-        [DataType(DataType.Password)]
+        [Required]
         public string Password { get; set; }
 
-        [Required(ErrorMessage = "Поле повторення пароля є обов'язковим")]
-        [DataType(DataType.Password)]
-        [Compare("Password", ErrorMessage = "Паролі не співпадають")]
-        [Display(Name = "Confirm Password")]
-        public string ConfirmPassword { get; set; }
-
-        [Required(ErrorMessage = "Поле ім'я є обов'язковим")]
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ']{1,20}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ']{1,20})*$",
-            ErrorMessage = "Ім'я має містити тільки літери")]
-        public string Name { get; set; }
-
-        [Required(ErrorMessage = "Поле прізвище є обов'язковим")]
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ']{1,20}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ']{1,20})*$", ErrorMessage = "Прізвище має містити тільки літери")]
-        public string SurName { get; set; }
+        public string Referal { get; set; }
     }
 }
