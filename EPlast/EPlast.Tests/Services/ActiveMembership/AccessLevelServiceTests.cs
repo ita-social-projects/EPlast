@@ -169,8 +169,8 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(Roles.ListOfRoles.Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription(), listResult[1]);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription(), listResult[2]);
+            Assert.AreEqual(AccessLevelTypeDTO.Supporter.GetDescription(), listResult[1]);
+            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[2]);
         }
 
         private string UserId => Guid.NewGuid().ToString();
