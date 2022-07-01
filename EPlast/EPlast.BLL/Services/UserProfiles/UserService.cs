@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -14,7 +11,13 @@ using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -26,13 +29,17 @@ namespace EPlast.BLL.Services.UserProfiles
         private readonly IUserPersonalDataService _userPersonalDataService;
         private readonly IWebHostEnvironment _env;
         private readonly IUserBlobStorageRepository _userBlobStorage;
+        private readonly INotificationService _notificationService;
+        private readonly UserManager<User> _userManager;
 
         public UserService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IUserPersonalDataService userPersonalDataService,
             IUserBlobStorageRepository userBlobStorage,
             IWebHostEnvironment env,
-            IUserManagerService userManagerService
+            IUserManagerService userManagerService,
+            INotificationService notificationService,
+            UserManager<User> userManager
         )
         {
             _repoWrapper = repoWrapper;
@@ -41,6 +48,8 @@ namespace EPlast.BLL.Services.UserProfiles
             _userBlobStorage = userBlobStorage;
             _userManagerService = userManagerService;
             _env = env;
+            _notificationService = notificationService;
+            _userManager = userManager;
         }
 
         /// <inheritdoc />
@@ -412,6 +421,92 @@ namespace EPlast.BLL.Services.UserProfiles
                 CellType.Club => IsUserSameClub(currentUser, focusUser) && await IsApprovedCLubMember(focusUser.Id),
                 _ => false
             };
+        }
+
+        public async Task CheckRegisteredUsersAsync()
+        {
+            var users = await _repoWrapper.User.GetAllAsync(
+               predicate: x =>
+               x.CityMembers.FirstOrDefault(y => y.UserId == x.Id) == null,
+               include: x => x.Include(y => y.CityMembers)
+           );
+            var filteredUsers = users.Where(x => (DateTime.Now - x.RegistredOn).Days >= 7).ToList();
+
+            if (filteredUsers.Any())
+            {
+                List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+                var governingBodyAdmins = await _userManager.GetUsersInRoleAsync(Roles.GoverningBodyAdmin);
+                foreach (var userToCheck in filteredUsers)
+                {
+                    foreach (var u in governingBodyAdmins)
+                    {
+                        userNotificationsDTO.Add(new UserNotificationDTO
+                        {
+                            Message = $"Користувачу {userToCheck.FirstName} {userToCheck.LastName} не обрали станицю уже 7 днів! ",
+                            NotificationTypeId = 1,
+                            OwnerUserId = u.Id,
+                            SenderLink = $"/user/table?search={userToCheck.FirstName} {userToCheck.LastName}",
+                            SenderName = "Переглянути"
+                        });
+                    }
+                }
+                await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
+            }
+        }
+
+        public async Task CheckRegisteredWithoutCityUsersAsync()
+        {
+            var users = await _repoWrapper.User.GetAllAsync(
+                predicate: x => 
+                x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved == false,
+                include: x => x.Include(y => y.CityMembers)
+            );
+            var filteredUsers = users.Where(x => (DateTime.Now - x.RegistredOn).Days >= 7).ToList();
+
+            if (filteredUsers.Any())
+            {
+                List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+                foreach (var userToCheck in filteredUsers)
+                {
+                    var cityId = userToCheck.CityMembers.FirstOrDefault().CityId;
+                    var userCity = await _repoWrapper.City.GetFirstOrDefaultAsync(x => x.ID == cityId);
+                    var userRegion = await _repoWrapper.City.GetFirstOrDefaultAsync(x => x.Name == userCity.Name);
+                    var regionAdministration = await _repoWrapper.RegionAdministration
+               .GetAllAsync(i => i.RegionId == userRegion.RegionId,
+                   i => i
+                       .Include(c => c.AdminType)
+                       .Include(a => a.User));
+
+                    var regionHead = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHead
+                                                                          && (DateTime.Now < a.EndDate || a.EndDate == null));
+                    var regionHeadDeputy = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy
+                                                                         && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+                    if (regionHead != null)
+                    {
+                        userNotificationsDTO.Add(new UserNotificationDTO
+                        {
+                            Message = $"Користувача {userToCheck.FirstName} {userToCheck.LastName} не додають в станицю {userCity.Name} уже 7 днів! ",
+                            NotificationTypeId = 1,
+                            OwnerUserId = regionHead.UserId,
+                            SenderLink = $"/user/table?search={userToCheck.FirstName} {userToCheck.LastName}",
+                            SenderName = "Переглянути"
+                        });
+                    }
+                    if (regionHeadDeputy != null)
+                    {
+                        userNotificationsDTO.Add(new UserNotificationDTO
+                        {
+                            Message = $"Користувача {userToCheck.FirstName} {userToCheck.LastName} не додають в станицю {userCity.Name} уже 7 днів! ",
+                            NotificationTypeId = 1,
+                            OwnerUserId = regionHeadDeputy.UserId,
+                            SenderLink = $"/user/table?search={userToCheck.FirstName} {userToCheck.LastName}",
+                            SenderName = "Переглянути"
+                        });
+                    }
+                }
+                await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
+            }
         }
     }
 }

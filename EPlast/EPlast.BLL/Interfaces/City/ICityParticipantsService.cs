@@ -79,9 +79,9 @@ namespace EPlast.BLL.Interfaces.City
         /// <summary>
         /// Add user to the table of users with not selected city
         /// </summary>
-        /// <param name="userId">User's ID</param>
-        /// <param name="oblast">Oblast</param>
-        Task AddUserWithoutSelectedCity(User user);
+        /// <param name="user">The new User without selected city</param>
+        /// <param name="regionId">The regionID of user</param>
+        Task AddNotificationUserWithoutSelectedCity(User user, int? regionId);
 
         /// <summary>
         /// Returns either given user is approved or not
@@ -122,5 +122,12 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="userId">The id of the user</param>
         Task RemoveAdminRolesByUserIdAsync(string userId);
+
+        /// <summary>
+        /// Send notification to city administration abou new user
+        /// </summary>
+        /// <param name="cityId">The id of the city</param>
+        /// <param name="user">The new user</param>
+        Task SendNotificationCityAdminAboutNewFollowerAsync(int cityId, User user);
     }
 }

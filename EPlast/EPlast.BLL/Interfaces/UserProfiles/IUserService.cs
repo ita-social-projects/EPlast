@@ -104,5 +104,13 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser);
         bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser);
+        /// <summary>
+        /// Function checks users that wait 7 days for approve in city
+        /// </summary>
+        Task CheckRegisteredUsersAsync();
+        /// <summary>
+        /// Function checks users that wait 7 days without city
+        /// </summary>
+        Task CheckRegisteredWithoutCityUsersAsync();
     }
 }
