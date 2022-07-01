@@ -40,6 +40,8 @@ namespace EPlast.BLL.Services.Region
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
+            
+
             var newRegionAdmin = new RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
@@ -63,6 +65,15 @@ namespace EPlast.BLL.Services.Region
                     break;
                 case Roles.OkrugaHeadDeputy:
                     role = Roles.OkrugaHeadDeputy;
+                    break;
+                case Roles.OkrugaReferentUPS:
+                    role = Roles.OkrugaReferentUPS;
+                    break;
+                case Roles.OkrugaReferentUSP:
+                    role = Roles.OkrugaReferentUSP;
+                    break;
+                case Roles.OkrugaReferentOfActiveMembership:
+                    role = Roles.OkrugaReferentOfActiveMembership;
                     break;
                 default:
                     role = Roles.OkrugaSecretary;
@@ -158,6 +169,15 @@ namespace EPlast.BLL.Services.Region
                     break;
                 case Roles.OkrugaHeadDeputy:
                     role = Roles.OkrugaHeadDeputy;
+                    break;
+                case Roles.OkrugaReferentUPS:
+                    role = Roles.OkrugaReferentUPS;
+                    break;
+                case Roles.OkrugaReferentUSP:
+                    role = Roles.OkrugaReferentUSP;
+                    break;
+                case Roles.OkrugaReferentOfActiveMembership:
+                    role = Roles.OkrugaReferentOfActiveMembership;
                     break;
                 default:
                     role = Roles.OkrugaSecretary;

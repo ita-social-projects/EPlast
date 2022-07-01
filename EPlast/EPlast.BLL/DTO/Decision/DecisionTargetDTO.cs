@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace EPlast.BLL.DTO
 {
     public class DecisionTargetDTO

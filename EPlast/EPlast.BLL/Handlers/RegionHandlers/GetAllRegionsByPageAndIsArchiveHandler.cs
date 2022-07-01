@@ -72,7 +72,7 @@ namespace EPlast.BLL.Handlers.RegionHandlers
 
         private Func<IQueryable<Region>, IQueryable<Region>> GetOrder()
         {
-            Func<IQueryable<Region>, IQueryable<Region>> expr = x => x.OrderBy(e => e.ID);
+            Func<IQueryable<Region>, IQueryable<Region>> expr = x => x.OrderBy(e => e.RegionName);
             return expr;
         }
 
