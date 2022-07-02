@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.Interfaces.Blank;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -31,6 +32,13 @@ namespace EPlast.WebApi.Controllers
         {
             var result = await _usercourseService.GetCourseByIdAsync(userid);
             return Ok(result);
+        }
+        [HttpPut("{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public  async Task<IActionResult> ChangeStatusCourseByUseerId(string userid)
+        {
+            await _usercourseService.ChangeCourseStatus(userid);
+            return Ok();
         }
     }
 }

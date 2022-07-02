@@ -37,5 +37,15 @@ namespace EPlast.BLL.Services.Blank
 
             return result;        
         }
+
+
+
+        public  async Task ChangeCourseStatus(string userid)
+        {
+            var result = await _repositoryWrapper.UserCourse.GetFirstOrDefaultAsync(predicate: uc => uc.UserId == userid,null);
+            result.StatusPassedCourse = true;
+            _repositoryWrapper.UserCourse.Update(result);
+            await _repositoryWrapper.SaveAsync();
+        }
     }
 }
