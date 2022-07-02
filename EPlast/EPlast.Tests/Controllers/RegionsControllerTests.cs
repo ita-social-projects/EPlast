@@ -433,15 +433,20 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task CreateFollower_ReturnsOkObjectResult()
+        public async Task CreateFollower_ReturnsFollowerId()
         {
             // Arrange
             RegionFollowerDTO testFollower = new RegionFollowerDTO();
-            _regionService.Setup(x => x.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>()));
+            int id = 1;
+            _regionService
+                .Setup(x => x.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>()))
+                .ReturnsAsync(id);
             // Act
-            var result = await _regionController.CreateFollower(testFollower);
+            var result = await _regionController.CreateFollower(testFollower) as ObjectResult;
             // Assert
-            Assert.IsInstanceOf<OkResult>(result);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(id, result.Value);
+            Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
         }
 
         [Test]

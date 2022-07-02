@@ -64,7 +64,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// Creates a new follower
         /// </summary>
         /// <param name="model">An information about a new follower</param>
-        Task CreateFollowerAsync(RegionFollowerDTO model);
+        Task<int> CreateFollowerAsync(RegionFollowerDTO model);
 
         /// <summary>
         /// Removes a specific follower from the region

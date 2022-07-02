@@ -152,6 +152,36 @@ namespace EPlast.DataAccess.ExtensionMethods
                 {
                     ID = 23,
                     AdminTypeName = "Діловод Напряму Керівного Органу"
+                },
+                new AdminType
+                {
+                    ID = 24,
+                    AdminTypeName = "Референт/-ка УПС Округи"
+                },
+                new AdminType
+                {
+                    ID = 25,
+                    AdminTypeName = "Референт/-ка УСП Округи"
+                },
+                new AdminType
+                {
+                    ID = 26,
+                    AdminTypeName = "Референт дійсного членства Округи"
+                },
+                new AdminType
+                {
+                    ID = 27,
+                    AdminTypeName = "Референт/-ка УПС Станиці"
+                },
+                new AdminType
+                {
+                    ID = 28,
+                    AdminTypeName = "Референт/-ка УСП Станиці"
+                },
+                new AdminType
+                {
+                    ID = 29,
+                    AdminTypeName = "Референт дійсного членства Станиці"
                 });
 
             modelBuilder.Entity<Nationality>().HasData(

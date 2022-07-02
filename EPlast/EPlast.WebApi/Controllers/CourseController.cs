@@ -26,6 +26,7 @@ namespace EPlast.WebApi.Controllers
             var result = await _courseService.GetAllAsync();
             return Ok(result);
         }
+
         [HttpGet("{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAllCourseByUseerId(string userid)

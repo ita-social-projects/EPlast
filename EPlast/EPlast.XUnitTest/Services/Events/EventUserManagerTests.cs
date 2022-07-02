@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
@@ -10,11 +15,6 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Moq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.EventUser
@@ -181,7 +181,7 @@ namespace EPlast.XUnitTest.Services.EventUser
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { EventDateStart = new DateTime(2022, 06, 30), EventDateEnd = new DateTime(2023, 06, 30) },
+                Event = new EventCreationDTO { EventDateStart = DateTime.Now.AddDays(2), EventDateEnd = DateTime.Now.AddDays(5) },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { },
                 Bunchuzhnyi = new EventAdministrationDTO { },
@@ -206,7 +206,7 @@ namespace EPlast.XUnitTest.Services.EventUser
         {
             var eventCreate = new EventCreateDTO
             {
-                Event = new EventCreationDTO { EventDateStart = new DateTime(2022, 06, 30), EventDateEnd = new DateTime(2023, 06, 30) },
+                Event = new EventCreationDTO { EventDateStart = DateTime.Now.AddDays(2), EventDateEnd = DateTime.Now.AddDays(5) },
                 Сommandant = new EventAdministrationDTO { },
                 Alternate = new EventAdministrationDTO { UserId = null },
                 Bunchuzhnyi = new EventAdministrationDTO { },
