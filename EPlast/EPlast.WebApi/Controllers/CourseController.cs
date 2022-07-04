@@ -30,8 +30,12 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetAllCourseByUseerId(string userid)
-        {
+        {   
             var result = await _usercourseService.GetCourseByIdAsync(userid);
+            if(result == null)
+            {
+                return NotFound();
+            }
             return Ok(result);
         }
         [HttpPut("{userId}")]
