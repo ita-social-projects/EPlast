@@ -372,10 +372,15 @@ namespace EPlast.BLL.Services.Region
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<RegionForAdministrationDTO>> GetRegions()
+        public async Task<IEnumerable<RegionForAdministrationDTO>> GetRegions(UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>((await _repoWrapper.Region
-                .GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive));
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>(
+                await _repoWrapper.Region.GetAllAsync(r =>
+                    r.IsActive
+                    && r.Status != RegionsStatusType.RegionBoard
+                    && (oblast == UkraineOblasts.NotSpecified || r.Oblast == oblast)
+                )
+            );
         }
 
         /// <inheritdoc />

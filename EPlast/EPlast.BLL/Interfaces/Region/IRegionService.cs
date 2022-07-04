@@ -1,12 +1,13 @@
-﻿using EPlast.BLL.DTO.Admin;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Interfaces.Region
 {
@@ -39,7 +40,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// Gets all Regions
         /// </summary>
         /// <returns>All Regions</returns>
-        Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
+        Task<IEnumerable<RegionForAdministrationDTO>> GetRegions(UkraineOblasts oblast = UkraineOblasts.NotSpecified);
 
         /// <summary>
         /// >Gets Region Users 
