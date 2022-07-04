@@ -66,6 +66,11 @@ namespace EPlast.BLL
         /// <param name="fileName">File name</param>
         /// <returns>File as base64</returns>
         Task<string> DownloadMethodicDocumentFileFromBlobAsync(string fileName);
+        /// <summary>
+        /// Returns MethodicDocument
+        /// </summary>
+        /// <returns>Return last MethodicDocument</returns>
+        Task<MethodicDocumentDTO> GetLastAsync();
         IEnumerable<MethodicDocumentTableObject> GetDocumentsForTable(string searchedData, int page, int pageSize, string status);
     }
 }

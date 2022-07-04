@@ -119,6 +119,14 @@ namespace EPlast.BLL.Services
             return document.MethodicDocument.ID;
         }
 
+        public async Task<MethodicDocumentDTO> GetLastAsync()
+        {
+            var documents = await _repoWrapper.MethodicDocument.GetAllAsync(include: dec =>
+                dec.Include(d => d.Organization));
+                       
+            return _mapper.Map<MethodicDocumentDTO>(documents.Last());
+        }
+
         private async Task<IEnumerable<MethodicDocumentWraperDTO>> GetMethodicDocumentAsync()
         {
             IEnumerable<MethodicDocument> methodicDocument = await _repoWrapper.MethodicDocument.GetAllAsync(include: dec =>
