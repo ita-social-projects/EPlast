@@ -1,7 +1,7 @@
-﻿using EPlast.BLL.DTO.Events;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -16,7 +16,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of added pictures.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="files">List of uploaded pictures</param>
-        Task<IEnumerable<EventGalleryDTO>> AddPicturesAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<EventGalleryDto>> AddPicturesAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.
@@ -30,6 +30,6 @@ namespace EPlast.BLL.Interfaces.Events
         /// </summary>
         /// <returns>List of pictures in Base64 format.</returns>
         /// <param name="eventId">The Id of event</param>
-        Task<IEnumerable<EventGalleryDTO>> GetPicturesInBase64(int eventId);
+        Task<IEnumerable<EventGalleryDto>> GetPicturesInBase64(int eventId);
     }
 }

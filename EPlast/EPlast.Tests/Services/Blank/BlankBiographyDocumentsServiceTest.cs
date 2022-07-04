@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Blank;
@@ -7,11 +12,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Blank
 {
@@ -39,7 +39,7 @@ namespace EPlast.Tests.Services.Blank
             _blankBlobRepository
                 .Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _mapper
-                .Setup(m => m.Map<BlankBiographyDocumentsDTO, BlankBiographyDocuments>(It.IsAny<BlankBiographyDocumentsDTO>()))
+                .Setup(m => m.Map<BlankBiographyDocumentsDto, BlankBiographyDocuments>(It.IsAny<BlankBiographyDocumentsDto>()))
                 .Returns(BlankBiographyDocuments);
             _repoWrapper
                 .Setup(r => r.BiographyDocumentsRepository.Attach(It.IsAny<BlankBiographyDocuments>()));
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Services.Blank
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<BlankBiographyDocumentsDTO>(result);
+            Assert.IsInstanceOf<BlankBiographyDocumentsDto>(result);
         }
 
         [Test]
@@ -99,14 +99,14 @@ namespace EPlast.Tests.Services.Blank
                 .Setup(r => r.BiographyDocumentsRepository.FindByCondition(It.IsAny<Expression<Func<BlankBiographyDocuments, bool>>>()))
                 .Returns(GetTestBiography());
             _mapper
-                .Setup(m => m.Map<BlankBiographyDocuments, BlankBiographyDocumentsDTO>(It.IsAny<BlankBiographyDocuments>()))
+                .Setup(m => m.Map<BlankBiographyDocuments, BlankBiographyDocumentsDto>(It.IsAny<BlankBiographyDocuments>()))
                 .Returns(BlankBiographyDocumentsDTO);
             //Act
             var result = await _blankBiographyService.GetDocumentByUserId(new string("1"));
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<BlankBiographyDocumentsDTO>(result);
+            Assert.IsInstanceOf<BlankBiographyDocumentsDto>(result);
         }
 
         private string BlobNameF => Guid.NewGuid().ToString();
@@ -118,7 +118,7 @@ namespace EPlast.Tests.Services.Blank
             UserId = "fgh123",
         };
 
-        private BlankBiographyDocumentsDTO BlankBiographyDocumentsDTO => new BlankBiographyDocumentsDTO
+        private BlankBiographyDocumentsDto BlankBiographyDocumentsDTO => new BlankBiographyDocumentsDto
         {
             ID = 1,
             BlobName = "newBlob,LastBlob",

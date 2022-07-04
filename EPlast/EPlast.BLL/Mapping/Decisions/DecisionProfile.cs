@@ -8,7 +8,7 @@ namespace EPlast.DataAccess.Mapping
     {
         public DecisionProfile()
         {
-            CreateMap<Decesion, DecisionDTO>()
+            CreateMap<Decesion, DecisionDto>()
                 .ForMember(d => d.DecisionStatusType, o => o.MapFrom(s => s.DecesionStatusType))
                 .ForMember(d => d.DecisionTarget, o => o.MapFrom(s => s.DecesionTarget))
                 .ForMember(d => d.GoverningBody, o => o.MapFrom(s => s.Organization))

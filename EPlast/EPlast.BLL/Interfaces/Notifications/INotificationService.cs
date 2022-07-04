@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.Notification;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Notification;
 
 namespace EPlast.BLL.Interfaces.Notifications
 {
@@ -13,19 +13,19 @@ namespace EPlast.BLL.Interfaces.Notifications
         /// Returns all notification types
         /// </summary>
         /// <returns>All notification types</returns>
-        public Task<IEnumerable<NotificationTypeDTO>> GetAllNotificationTypesAsync();
+        public Task<IEnumerable<NotificationTypeDto>> GetAllNotificationTypesAsync();
         /// <summary>
         /// Returns all notifications of current user
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>all notifications of current user</returns>
-        public Task<IEnumerable<UserNotificationDTO>> GetAllUserNotificationsAsync(string userId);
+        public Task<IEnumerable<UserNotificationDto>> GetAllUserNotificationsAsync(string userId);
         /// <summary>
         /// Returns list of added notifications
         /// </summary>
         /// <param name="userNotificationsDTO">List of userNotificationDTO</param>
         /// <returns>Returns list of UserNotificationDTO</returns>
-        public Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO);
+        public Task<IEnumerable<UserNotificationDto>> AddListUserNotificationAsync(IEnumerable<UserNotificationDto> userNotificationsDTO);
         /// <summary>
         /// Returns bool, if check for list of notification set successfull, return true, else false
         /// </summary>

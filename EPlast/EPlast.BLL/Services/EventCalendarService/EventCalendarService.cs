@@ -1,8 +1,8 @@
-﻿using EPlast.BLL.DTO.EventCalendar;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.EventCalendar;
 using EPlast.BLL.Interfaces.EventCalendar;
 using EPlast.BLL.Interfaces.EventUser;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services
 {
@@ -16,21 +16,21 @@ namespace EPlast.BLL.Services
             _eventsManager = eventsManager;
         }
 
-        public async Task<List<EventCalendarInfoDTO>> GetAllActions()
+        public async Task<List<EventCalendarInfoDto>> GetAllActions()
         {
             var events = await _eventsManager.GetActionsAsync();
 
             return events;
         }
 
-        public async Task<List<EventCalendarInfoDTO>> GetAllEducations()
+        public async Task<List<EventCalendarInfoDto>> GetAllEducations()
         {
             var events = await _eventsManager.GetEducationsAsync();
 
             return events;
         }
 
-        public async Task<List<EventCalendarInfoDTO>> GetAllCamps()
+        public async Task<List<EventCalendarInfoDto>> GetAllCamps()
         {
             var events = await _eventsManager.GetCampsAsync();
 

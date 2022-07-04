@@ -1,17 +1,17 @@
-﻿using EPlast.BLL;
-using EPlast.BLL.DTO.Distinction;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using EPlast.BLL.Queries.Distinction;
+using EPlast.BLL;
 using EPlast.BLL.Commands.Distinction;
+using EPlast.BLL.DTO.Distinction;
+using EPlast.BLL.Queries.Distinction;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -47,7 +47,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
-            UserDistinctionDTO userDistinction = await _userDistinctionService.GetUserDistinctionAsync(id);
+            UserDistinctionDto userDistinction = await _userDistinctionService.GetUserDistinctionAsync(id);
             if (userDistinction == null)
                 return NotFound();
             return Ok(userDistinction);
@@ -61,7 +61,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> GetUserDistinction()
         {
-            IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
+            IEnumerable<UserDistinctionDto> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
             return Ok(userDistinctions);
         }
         /// <summary>
@@ -177,7 +177,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserDistinction/Create/{userId}")]
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
-        public async Task<IActionResult> AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        public async Task<IActionResult> AddUserDistinction(UserDistinctionDto userDistinctionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -202,7 +202,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Model is not valid</response>
         [HttpPost("Create")]
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
-        public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
+        public async Task<IActionResult> AddDistinction(DistinctionDto distinctionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -222,7 +222,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserDistinction/Edit/{userDistinctionId}")]
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
-        public async Task<IActionResult> EditUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        public async Task<IActionResult> EditUserDistinction(UserDistinctionDto userDistinctionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -248,7 +248,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Model is not valid</response>
         [HttpPut("Edit/{distinctionId}")]
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
-        public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
+        public async Task<IActionResult> EditDistinction(DistinctionDto distinctionDTO)
         {
             if (ModelState.IsValid)
             {

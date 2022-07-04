@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.UserProfile
     {
         public UserRenewalProfile()
         {
-            CreateMap<UserRenewal, UserRenewalDTO>().ReverseMap();
+            CreateMap<UserRenewal, UserRenewalDto>().ReverseMap();
         }
     }
 }

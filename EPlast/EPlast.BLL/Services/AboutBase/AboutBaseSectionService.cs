@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AboutBase;
 using EPlast.BLL.Interfaces.AboutBase;
 using EPlast.DataAccess.Entities;
@@ -6,9 +9,6 @@ using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.AboutBase
 {
@@ -27,15 +27,15 @@ namespace EPlast.BLL.Services.AboutBase
             _userManager = userManager;
         }
 
-        public async Task AddSection(SectionDTO sectionDTO, User user)
+        public async Task AddSection(SectionDto sectionDTO, User user)
         {
             await CheckIfAdminAsync(user);
-            var section = _mapper.Map<SectionDTO, Section>(sectionDTO);
+            var section = _mapper.Map<SectionDto, Section>(sectionDTO);
             await _repoWrapper.AboutBaseSection.CreateAsync(section);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeSection(SectionDTO sectionDTO, User user)
+        public async Task ChangeSection(SectionDto sectionDTO, User user)
         {
             await CheckIfAdminAsync(user);
             var section = await _repoWrapper.AboutBaseSection.GetFirstAsync(x => x.Id == sectionDTO.Id);
@@ -47,21 +47,21 @@ namespace EPlast.BLL.Services.AboutBase
         public async Task DeleteSection(int id, User user)
         {
             await CheckIfAdminAsync(user);
-            var section = (await _repoWrapper.AboutBaseSection.GetFirstAsync(section => section.Id == id));
+            var section = await _repoWrapper.AboutBaseSection.GetFirstAsync(section => section.Id == id);
             if (section == null)
                 throw new ArgumentNullException($"Section with {id} not found");
             _repoWrapper.AboutBaseSection.Delete(section);
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<SectionDTO>> GetAllSectionAsync()
+        public async Task<IEnumerable<SectionDto>> GetAllSectionAsync()
         {
-            return _mapper.Map<IEnumerable<Section>, IEnumerable<SectionDTO>>(await _repoWrapper.AboutBaseSection.GetAllAsync());
+            return _mapper.Map<IEnumerable<Section>, IEnumerable<SectionDto>>(await _repoWrapper.AboutBaseSection.GetAllAsync());
         }
 
-        public async Task<SectionDTO> GetSection(int id)
+        public async Task<SectionDto> GetSection(int id)
         {
-            var section = _mapper.Map<SectionDTO>(await _repoWrapper.AboutBaseSection.GetFirstAsync(s => s.Id == id));
+            var section = _mapper.Map<SectionDto>(await _repoWrapper.AboutBaseSection.GetFirstAsync(s => s.Id == id));
             return section;
         }
 

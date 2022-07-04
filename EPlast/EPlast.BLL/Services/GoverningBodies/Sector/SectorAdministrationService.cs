@@ -1,4 +1,8 @@
-﻿using EPlast.BLL.DTO.GoverningBody.Sector;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
@@ -6,10 +10,6 @@ using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
 {
@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _adminTypeService = adminTypeService;
         }
 
-        public async Task<SectorAdministrationDTO> AddSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto)
+        public async Task<SectorAdministrationDto> AddSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(sectorAdministrationDto.AdminType.AdminTypeName);
 
@@ -54,7 +54,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             }
 
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodySectorHead ?
-                Roles.GoverningBodySectorHead : 
+                Roles.GoverningBodySectorHead :
                 Roles.GoverningBodySectorSecretary;
             await _userManager.AddToRoleAsync(user, adminRole);
 
@@ -67,7 +67,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return sectorAdministrationDto;
         }
 
-        public async Task<SectorAdministrationDTO> EditSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto)
+        public async Task<SectorAdministrationDto> EditSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto)
         {
             var admin = await _repositoryWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.Id == sectorAdministrationDto.Id);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(sectorAdministrationDto.AdminType.AdminTypeName);

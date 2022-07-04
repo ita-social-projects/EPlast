@@ -1,5 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
@@ -14,13 +19,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.BLL;
-using EPlast.BLL.DTO.City;
-using CityDTO = EPlast.BLL.DTO.AnnualReport.CityDTO;
 
 namespace EPlast.Tests.Controllers
 {
@@ -29,7 +27,7 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IAnnualReportService> _annualReportService;
         private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
         private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
-        private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
+        private readonly Mock<ILoggerService> _loggerService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<UserManager<User>> _userManager;
 
@@ -37,7 +35,7 @@ namespace EPlast.Tests.Controllers
         public AnnualReportControllerTest()
         {
             _annualReportService = new Mock<IAnnualReportService>();
-            _loggerService = new Mock<ILoggerService<AnnualReportController>>();
+            _loggerService = new Mock<ILoggerService>();
             _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -375,8 +373,11 @@ namespace EPlast.Tests.Controllers
         public async Task GetMembers_Valid()
         {
             //Arrange
-            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(new CityDTO()
-                {CityMembers = new List<CityMembersDTO>(), Name = ""});
+            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(new BLL.DTO.AnnualReport.CityDto()
+            {
+                CityMembers = new List<CityMembersDto>(),
+                Name = ""
+            });
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -393,7 +394,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetMembers_ReturnsNotFaund()
         {
             //Arrange
-            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(null as CityDTO);
+            _annualReportService.Setup(x => x.GetCityMembersAsync(It.IsAny<int>())).ReturnsAsync(null as BLL.DTO.AnnualReport.CityDto);
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -411,7 +412,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _annualReportService.Setup(x => x.GetEditFormByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(new AnnualReportDTO());
+                .ReturnsAsync(new AnnualReportDto());
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -606,7 +607,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Create_Invalid_InvalidOperationException_Test()
         {
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()))
                 .Throws(new InvalidOperationException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -618,7 +619,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Create(rdto);
             var expected = StatusCodes.Status400BadRequest;
             var actual = (result as ObjectResult).StatusCode;
@@ -635,7 +636,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Create_Invalid_NullReferenceFoundException_Test()
         {
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()))
                 .Throws(new NullReferenceException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -647,7 +648,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Create(rdto);
             var expected = StatusCodes.Status404NotFound;
             var actual = (result as ObjectResult).StatusCode;
@@ -664,7 +665,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Create_Invalid_UnAuthorisedException_Test()
         {
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()))
                 .Throws(new UnauthorizedAccessException());
 
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
@@ -678,7 +679,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Create(rdto);
             var expected = StatusCodes.Status403Forbidden;
             var actual = (result as ObjectResult).StatusCode;
@@ -695,7 +696,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Create_Valid_Test()
         {
-            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()));
+            _annualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()));
 
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
@@ -708,7 +709,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Create(rdto);
             var expected = StatusCodes.Status201Created;
             var actual = (result as ObjectResult).StatusCode;
@@ -728,7 +729,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
             annualController.ModelState.AddModelError("EroreaNnualReport", "Required");
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Create(rdto);
             var expected = StatusCodes.Status400BadRequest;
             var actual = (result as ObjectResult).StatusCode;
@@ -760,7 +761,7 @@ namespace EPlast.Tests.Controllers
         public async Task CreateClubAnnualReport_Invalid_InvalidOperationException_Test()
         {
             // Arrange
-            _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
+            _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()))
                 .Throws(new InvalidOperationException());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
@@ -781,7 +782,7 @@ namespace EPlast.Tests.Controllers
         public async Task CreateClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
             // Arrange
-            _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
+            _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()))
                 .Throws(new NullReferenceException());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
@@ -802,7 +803,7 @@ namespace EPlast.Tests.Controllers
         public async Task CreateClubAnnualReport_Valid_Test()
         {
             // Arrange
-            _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()));
+            _clubAnnualReportService.Setup(a => a.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()));
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
@@ -827,7 +828,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             annualController.ModelState.AddModelError("NameError", "Required");
             var result = await annualController.Create(rdto);
 
@@ -956,7 +957,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Edit_Invalid_InvalidOperationException_Test()
         {
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()))
                 .Throws(new InvalidOperationException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -968,7 +969,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Edit(rdto);
             var expected = StatusCodes.Status400BadRequest;
             var actual = (result as ObjectResult).StatusCode;
@@ -987,7 +988,7 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Invalid_ModelState_Test()
         {
             AnnualReportController annualController = CreateAnnualReportController;
-            AnnualReportDTO annualReport = new AnnualReportDTO();
+            AnnualReportDto annualReport = new AnnualReportDto();
             annualController.ModelState.AddModelError("NameError", "Required");
             // Act
             var result = await annualController.Edit(annualReport);
@@ -1000,7 +1001,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Edit_Invalid_NullReferenceException_Test()
         {
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()))
                 .Throws(new NullReferenceException());
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
@@ -1012,7 +1013,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Edit(rdto);
             var expected = StatusCodes.Status404NotFound;
             var actual = (result as ObjectResult).StatusCode;
@@ -1029,7 +1030,7 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Edit_Invalid_UnAuthorisedException_Test()
         {
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()))
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()))
                 .Throws(new UnauthorizedAccessException());
 
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
@@ -1043,7 +1044,7 @@ namespace EPlast.Tests.Controllers
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
-            AnnualReportDTO rdto = new AnnualReportDTO();
+            AnnualReportDto rdto = new AnnualReportDto();
             var result = await annualController.Edit(rdto);
             var expected = StatusCodes.Status403Forbidden;
             var actual = (result as ObjectResult).StatusCode;
@@ -1060,10 +1061,10 @@ namespace EPlast.Tests.Controllers
         [Test]
         public async Task Edit_Valid_Test()
         {
-            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDTO>()));
+            _annualReportService.Setup(a => a.EditAsync(It.IsAny<User>(), It.IsAny<AnnualReportDto>()));
 
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(new AnnualReportDTO());
+                .ReturnsAsync(new AnnualReportDto());
 
             _localizer
                 .Setup(s => s["Edited"])
@@ -1073,7 +1074,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             AnnualReportController annualController = CreateAnnualReportController;
-            AnnualReportDTO annualReport = new AnnualReportDTO();
+            AnnualReportDto annualReport = new AnnualReportDto();
             // Act
             var result = await annualController.Edit(annualReport);
 
@@ -1092,7 +1093,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             AnnualReportController _annualReportController = CreateAnnualReportController;
-            ClubAnnualReportDTO _clubAnnualReportViewModel = new ClubAnnualReportDTO();
+            ClubAnnualReportDto _clubAnnualReportViewModel = new ClubAnnualReportDto();
             _annualReportController.ModelState.AddModelError("NameError", "Required");
 
             // Act
@@ -1107,11 +1108,11 @@ namespace EPlast.Tests.Controllers
         public async Task EditClubAnnualReport_Invalid_NullReferenceFoundException_Test()
         {
             // Arrange
-            _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
+            _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()))
                 .Throws(new NullReferenceException());
 
             AnnualReportController annualController = CreateAnnualReportController;
-            ClubAnnualReportDTO annualReport = new ClubAnnualReportDTO();
+            ClubAnnualReportDto annualReport = new ClubAnnualReportDto();
 
             // Act
             var expected = StatusCodes.Status404NotFound;
@@ -1128,12 +1129,12 @@ namespace EPlast.Tests.Controllers
         public async Task EditClubAnnualReport_Invalid_UnauthorisedAccessException_Test()
         {
             // Arrange
-            _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()))
+            _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()))
                 .Throws(new UnauthorizedAccessException());
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             AnnualReportController annualController = CreateAnnualReportController;
-            ClubAnnualReportDTO annualReport = new ClubAnnualReportDTO();
+            ClubAnnualReportDto annualReport = new ClubAnnualReportDto();
 
             // Act
             var expected = StatusCodes.Status403Forbidden;
@@ -1150,12 +1151,12 @@ namespace EPlast.Tests.Controllers
         public async Task EditClubAnnualReport_Valid_Test()
         {
             // Arrange
-            _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()));
+            _clubAnnualReportService.Setup(a => a.EditClubReportAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()));
             _clubAnnualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
-               .ReturnsAsync(new ClubAnnualReportDTO());
+               .ReturnsAsync(new ClubAnnualReportDto());
 
             AnnualReportController annualController = CreateAnnualReportController;
-            ClubAnnualReportDTO annualReport = new ClubAnnualReportDTO();
+            ClubAnnualReportDto annualReport = new ClubAnnualReportDto();
 
             // Act
             var expected = StatusCodes.Status200OK;
@@ -1327,7 +1328,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _annualReportService.Setup(a => a.GetAllAsync(It.IsAny<User>()))
-               .ReturnsAsync(new List<AnnualReportDTO>());
+               .ReturnsAsync(new List<AnnualReportDto>());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -1350,7 +1351,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _clubAnnualReportService.Setup(s => s.GetAllAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<ClubAnnualReportDTO>());
+                .ReturnsAsync(new List<ClubAnnualReportDto>());
             AnnualReportController annualReportController = CreateAnnualReportController;
 
             // Act
@@ -1413,7 +1414,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _clubAnnualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(new ClubAnnualReportDTO());
+                .ReturnsAsync(new ClubAnnualReportDto());
 
             AnnualReportController _annualReportController = CreateAnnualReportController;
 
@@ -1452,7 +1453,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetWithparam_Valid_Test()
         {
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
-               .ReturnsAsync(new AnnualReportDTO());
+               .ReturnsAsync(new AnnualReportDto());
 
             AnnualReportController annualController = CreateAnnualReportController;
 

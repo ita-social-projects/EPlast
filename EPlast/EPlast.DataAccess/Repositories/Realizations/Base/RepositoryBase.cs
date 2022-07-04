@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -12,7 +12,7 @@ namespace EPlast.DataAccess.Repositories
     {
         protected EPlastDBContext EPlastDBContext { get; set; }
 
-        public RepositoryBase(EPlastDBContext ePlastDBContext)
+        protected RepositoryBase(EPlastDBContext ePlastDBContext)
         {
             this.EPlastDBContext = ePlastDBContext;
         }
@@ -114,14 +114,15 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetQuery(predicate, include).SingleOrDefaultAsync();
         }
 
-        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
-                                                       Expression<Func<T, T>> selector = null,
-                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
-                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
-                                                       int? pageNumber = null,
-                                                       int? pageSize = null)
+        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(
+            Expression<Func<T, bool>> predicate = null,
+            Expression<Func<T, T>> selector = null,
+            Func<IQueryable<T>, IQueryable<T>> sorting = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+            int? pageNumber = null,
+            int? pageSize = null)
         {
-            return await this.GetRangeQuery(filter, selector, sorting, include, pageNumber, pageSize);
+            return await this.GetRangeQuery(predicate, selector, sorting, include, pageNumber, pageSize);
         }
 
         private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, Expression<Func<T, T>> selector = null)
@@ -142,13 +143,13 @@ namespace EPlast.DataAccess.Repositories
             return query;
         }
 
-        private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
-                                                       Expression<Func<T, T>> selector = null,
-                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
-                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
-                                                       int? pageNumber = null,
-                                                       int? pageSize = null,
-                                                       bool sortDesc = false)
+        private async Task<Tuple<IEnumerable<T>, int>> GetRangeQuery(
+            Expression<Func<T, bool>> filter = null,
+            Expression<Func<T, T>> selector = null,
+            Func<IQueryable<T>, IQueryable<T>> sorting = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+            int? pageNumber = null,
+            int? pageSize = null)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
 

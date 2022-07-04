@@ -3,10 +3,10 @@ using Microsoft.Extensions.Logging;
 
 namespace EPlast.BLL.Services.Logging
 {
-    public class LoggerService<T> : ILoggerService<T>
+    public class LoggerService : ILoggerService
     {
-        protected readonly ILogger<T> _logger;
-        public LoggerService(ILogger<T> logger)
+        protected readonly ILogger _logger;
+        public LoggerService(ILogger logger)
         {
             _logger = logger;
         }

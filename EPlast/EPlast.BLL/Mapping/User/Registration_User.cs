@@ -3,9 +3,9 @@ using EPlast.BLL.DTO.Account;
 
 namespace EPlast.BLL.Mapping.User
 {
-    public class RegisterDto_User : Profile
+    public class RegisterDtoUser : Profile
     {
-        public RegisterDto_User()
+        public RegisterDtoUser()
         {
             CreateMap<RegisterDto, DataAccess.Entities.User>()
                 .ForMember(

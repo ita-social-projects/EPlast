@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.City
 {
-    public class GetCityProfileQuery : IRequest<CityProfileDTO>
+    public class GetCityProfileQuery : IRequest<CityProfileDto>
     {
         public int CityId{ get; set; }
         public User User { get; set; }

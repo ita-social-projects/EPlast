@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Storage.Blob;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.AzureStorage
 {
-    public interface IBlankExtractFromUPUBlobStorageRepository
+    public interface IBlankExtractFromUpuBlobStorageRepository
     {
         Task<CloudBlockBlob> GetBlobAsync(string blobName);
         Task DeleteBlobAsync(string blobName);

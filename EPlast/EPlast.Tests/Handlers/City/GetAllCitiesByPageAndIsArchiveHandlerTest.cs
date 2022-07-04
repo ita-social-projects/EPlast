@@ -51,14 +51,14 @@ namespace EPlast.Tests.Handlers.City
                 .Setup(b => b.GetBlobBase64Async(It.IsAny<string>()));
             _mockMapper
                 .Setup(m =>
-                    m.Map<IEnumerable<CityObject>, IEnumerable<CityObjectDTO>>(It.IsAny<IEnumerable<CityObject>>()));
+                    m.Map<IEnumerable<CityObject>, IEnumerable<CityObjectDto>>(It.IsAny<IEnumerable<CityObject>>()));
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDto>, int>>(result);
         }
 
         [Test]
@@ -74,14 +74,14 @@ namespace EPlast.Tests.Handlers.City
                 .ThrowsAsync(new Exception());
             _mockMapper
                 .Setup(m =>
-                    m.Map<IEnumerable<CityObject>, IEnumerable<CityObjectDTO>>(It.IsAny<IEnumerable<CityObject>>()));
+                    m.Map<IEnumerable<CityObject>, IEnumerable<CityObjectDto>>(It.IsAny<IEnumerable<CityObject>>()));
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDto>, int>>(result);
         }
 
         private static Tuple<IEnumerable<CityObject>, int> GetCityObjects()

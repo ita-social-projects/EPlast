@@ -1,15 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters;
 using EPlast.BLL.Settings;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
 
@@ -31,21 +31,21 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ClubDTO>> GetClubsAsync(DatabaseEntities.User user)
+        public async Task<IEnumerable<ClubDto>> GetClubsAsync(DatabaseEntities.User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var key = _clubAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
-            if(key != null)
+            if (key != null)
             {
                 var cities = await _clubAccessGetters[key].GetClubs(user.Id);
-                return _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(cities);
+                return _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDto>>(cities);
             }
-            return Enumerable.Empty<ClubDTO>();
+            return Enumerable.Empty<ClubDto>();
         }
 
-        public async Task<IEnumerable<ClubForAdministrationDTO>> GetAllClubsIdAndName(DatabaseEntities.User user)
+        public async Task<IEnumerable<ClubForAdministrationDto>> GetAllClubsIdAndName(DatabaseEntities.User user)
         {
-            IEnumerable<ClubForAdministrationDTO> options = Enumerable.Empty<ClubForAdministrationDTO>();
+            IEnumerable<ClubForAdministrationDto> options = Enumerable.Empty<ClubForAdministrationDto>();
             var roles = await _userManager.GetRolesAsync(user);
             var clubsId =
                 (await _repositoryWrapper.ClubAnnualReports.GetAllAsync(predicate: x => x.Date.Year == DateTime.Now.Year))
@@ -53,7 +53,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             var key = _clubAccessGetters.Keys.FirstOrDefault(x => roles.Contains(x));
             if(key != null)
             {
-                options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDto>>(
                     await _clubAccessGetters[key].GetClubs(user.Id));
             }
             foreach (var item in options)

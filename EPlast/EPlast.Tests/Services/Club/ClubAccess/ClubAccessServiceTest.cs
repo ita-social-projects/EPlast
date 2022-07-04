@@ -8,14 +8,14 @@ using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Services.Club.ClubAccess;
 using EPlast.BLL.Settings;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using DatabaseEntities = EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using Microsoft.EntityFrameworkCore.Query;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Services.Club.ClubAccess
 {
@@ -67,7 +67,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
 
             // Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDto>>(
                     It.IsAny<IEnumerable<DatabaseEntities.Club>>()));
         }
 
@@ -90,7 +90,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
 
             // Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDto>>(
                     It.IsAny<IEnumerable<DatabaseEntities.Club>>()));
         }
 
@@ -112,7 +112,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
 
             // Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDto>>(
                     It.IsAny<IEnumerable<DatabaseEntities.Club>>()));
         }
 
@@ -142,14 +142,14 @@ namespace EPlast.Tests.Services.Club.ClubAccess
             _mockRepositoryWrapper.Setup(x => x.Club.GetAllAsync(
                 It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
                 It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>
-                >>())).ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club(){Name = "TestClub"} });
+                >>())).ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() { Name = "TestClub" } });
             _mockRepositoryWrapper
                 .Setup(x => x.ClubAnnualReports.GetAllAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAnnualReport>, IIncludableQueryable<ClubAnnualReport, object>>>()))
-                .ReturnsAsync(new List<ClubAnnualReport>() {new ClubAnnualReport() {ClubId = 1}});
+                .ReturnsAsync(new List<ClubAnnualReport>() { new ClubAnnualReport() { ClubId = 1 } });
 
             _mockMapper.Setup(x =>
-                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDto>>(
                     It.IsAny<IEnumerable<DatabaseEntities.Club>>())).Returns(_expected);
 
             // Act
@@ -181,7 +181,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                 .ReturnsAsync(new List<ClubAnnualReport>() { new ClubAnnualReport() { ClubId = 1 } });
 
             _mockMapper.Setup(x =>
-                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDto>>(
                     It.IsAny<IEnumerable<DatabaseEntities.Club>>())).Returns(_expected);
 
 
@@ -206,7 +206,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                 .ReturnsAsync((ClubAdministration)null);
             _mockRepositoryWrapper.Setup(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(),
                     It.IsAny<Func<IQueryable<DatabaseEntities.Club>, IIncludableQueryable<DatabaseEntities.Club, object>>>()))
-                .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club()});
+                .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() });
 
             _mockRepositoryWrapper.Setup(x => x.ClubAnnualReports.GetAllAsync(
                 It.IsAny<Expression<Func<DatabaseEntities.ClubAnnualReport, bool>>>(), It
@@ -215,7 +215,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                     >>())).ReturnsAsync(new List<DatabaseEntities.ClubAnnualReport>()
                 {new DatabaseEntities.ClubAnnualReport() {ClubId = 1}});
             _mockMapper.Setup(x =>
-                    x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDTO>>(
+                    x.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDto>>(
                         It.IsAny<IEnumerable<DatabaseEntities.Club>>()))
                 .Returns(_expected);
 
@@ -233,7 +233,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
         public async Task GetAllClubsIdAndName_NoRoles()
         {
             //Arrange
-            var expectedEmpty = Enumerable.Empty<ClubForAdministrationDTO>();
+            var expectedEmpty = Enumerable.Empty<ClubForAdministrationDto>();
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string>());
             _mockRepositoryWrapper.Setup(x => x.ClubAnnualReports.GetAllAsync(
@@ -261,8 +261,8 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                 .ReturnsAsync(new DatabaseEntities.ClubAdministration());
             _mockRepositoryWrapper.Setup(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(), null))
                 .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() { ID = 1 } });
-            _mockMapper.Setup(m => m.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<DatabaseEntities.Club>>()))
-                .Returns(new List<ClubDTO> { new ClubDTO() { ID = 1 } });
+            _mockMapper.Setup(m => m.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDto>>(It.IsAny<IEnumerable<DatabaseEntities.Club>>()))
+                .Returns(new List<ClubDto> { new ClubDto() { ID = 1 } });
 
             // Act
             var result = await _clubAccessService.HasAccessAsync(new User(), 1);
@@ -282,8 +282,8 @@ namespace EPlast.Tests.Services.Club.ClubAccess
                 .ReturnsAsync(new DatabaseEntities.ClubAdministration());
             _mockRepositoryWrapper.Setup(r => r.Club.GetAllAsync(It.IsAny<Expression<Func<DatabaseEntities.Club, bool>>>(), null))
                 .ReturnsAsync(new List<DatabaseEntities.Club> { new DatabaseEntities.Club() { ID = 1 } });
-            _mockMapper.Setup(m => m.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<DatabaseEntities.Club>>()))
-                .Returns(new List<ClubDTO> { new ClubDTO() { ID = 1 } });
+            _mockMapper.Setup(m => m.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubDto>>(It.IsAny<IEnumerable<DatabaseEntities.Club>>()))
+                .Returns(new List<ClubDto> { new ClubDto() { ID = 1 } });
             //Act
             var result = await _clubAccessService.HasAccessAsync(new User(), 2);
 
@@ -339,7 +339,7 @@ namespace EPlast.Tests.Services.Club.ClubAccess
 
         private AdminType _adminType => new AdminType() { };
 
-        private List<ClubForAdministrationDTO> _expected = new List<ClubForAdministrationDTO>
-            {new ClubForAdministrationDTO {ID = 1, Name = "TestClubName", HasReport = true, IsActive = true}};
+        private List<ClubForAdministrationDto> _expected = new List<ClubForAdministrationDto>
+            {new ClubForAdministrationDto {ID = 1, Name = "TestClubName", HasReport = true, IsActive = true}};
     }
 }

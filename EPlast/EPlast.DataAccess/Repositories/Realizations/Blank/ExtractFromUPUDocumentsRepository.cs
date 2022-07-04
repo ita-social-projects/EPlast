@@ -3,12 +3,8 @@ using EPlast.DataAccess.Repositories.Interfaces.Blank;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Blank
 {
-    public class ExtractFromUPUDocumentsRepository : RepositoryBase<ExtractFromUPUDocuments>, IExtractFromUPUDocumentsRepository
+    public class ExtractFromUpuDocumentsRepository : RepositoryBase<ExtractFromUpuDocuments>, IExtractFromUpuDocumentsRepository
     {
-        public ExtractFromUPUDocumentsRepository(EPlastDBContext dbContext)
-            : base(dbContext)
-        {
-
-        }
+        public ExtractFromUpuDocumentsRepository(EPlastDBContext dbContext) : base(dbContext) { }
     }
 }

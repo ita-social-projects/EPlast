@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net.WebSockets;
-using System.Text;
+﻿using System.Net.WebSockets;
 
 namespace EPlast.BLL.DTO.Notification
 {
-    public class ConnectionDTO
+    public class ConnectionDto
     {
         public string ConnectionId { get; set; }
         public WebSocket WebSocket { get; set; }

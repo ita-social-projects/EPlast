@@ -5,33 +5,33 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Services;
-using NUnit.Framework;
 using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services
 {
     public class DocumentsSorterTests
     {
-        private List<SectorDocumentsDTO> _inputDocuments;
-        private List<SectorDocumentsDTO> _sortedDocuments;
+        private List<SectorDocumentsDto> _inputDocuments;
+        private List<SectorDocumentsDto> _sortedDocuments;
 
         [SetUp]
         public void SetUp()
         {
-            _inputDocuments = new List<SectorDocumentsDTO>()
+            _inputDocuments = new List<SectorDocumentsDto>()
             {
-                new SectorDocumentsDTO() {SubmitDate = DateTime.MaxValue},
-                new SectorDocumentsDTO() {SubmitDate = null},
-                new SectorDocumentsDTO() {SubmitDate = DateTime.MinValue},
-                new SectorDocumentsDTO() {SubmitDate = DateTime.Now}
+                new SectorDocumentsDto() {SubmitDate = DateTime.MaxValue},
+                new SectorDocumentsDto() {SubmitDate = null},
+                new SectorDocumentsDto() {SubmitDate = DateTime.MinValue},
+                new SectorDocumentsDto() {SubmitDate = DateTime.Now}
             };
 
-            _sortedDocuments = new List<SectorDocumentsDTO>()
+            _sortedDocuments = new List<SectorDocumentsDto>()
             {
-                new SectorDocumentsDTO() {SubmitDate = DateTime.MinValue},
-                new SectorDocumentsDTO() {SubmitDate = DateTime.Now},
-                new SectorDocumentsDTO() {SubmitDate = DateTime.MaxValue},
-                new SectorDocumentsDTO() {SubmitDate = null}
+                new SectorDocumentsDto() {SubmitDate = DateTime.MinValue},
+                new SectorDocumentsDto() {SubmitDate = DateTime.Now},
+                new SectorDocumentsDto() {SubmitDate = DateTime.MaxValue},
+                new SectorDocumentsDto() {SubmitDate = null}
             };
         }
 
@@ -39,14 +39,14 @@ namespace EPlast.Tests.Services
         public void SortDocumentsBySubmitDate_ReturnsSortedList()
         {
             //Act
-            var result = DocumentsSorter<SectorDocumentsDTO>.SortDocumentsBySubmitDate(_inputDocuments);
+            var result = DocumentsSorter<SectorDocumentsDto>.SortDocumentsBySubmitDate(_inputDocuments);
 
             //Assert
             Assert.IsNotNull(result);
             Assert.IsTrue(AreDocumentsListsEqual(_sortedDocuments.ToList(), result.ToList()));
         }
 
-        private bool AreDocumentsListsEqual(List<SectorDocumentsDTO> list1, List<SectorDocumentsDTO> list2)
+        private bool AreDocumentsListsEqual(List<SectorDocumentsDto> list1, List<SectorDocumentsDto> list2)
         {
             for (int i = 0; i < list1.Count; ++i)
             {

@@ -1,15 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Region;
 
 namespace EPlast.BLL.Services
 {
@@ -30,7 +30,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<AnnualReportDTO> GetByIdAsync(User user, int id)
+        public async Task<AnnualReportDto> GetByIdAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == id,
@@ -38,12 +38,12 @@ namespace EPlast.BLL.Services
                         .Include(a => a.NewCityAdmin)
                         .Include(a => a.MembersStatistic)
                         .Include(a => a.City));
-            return await _cityAccessService.HasAccessAsync(user, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+            return await _cityAccessService.HasAccessAsync(user, annualReport.CityId) ? _mapper.Map<AnnualReport, AnnualReportDto>(annualReport)
                 : throw new UnauthorizedAccessException();
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<AnnualReportDTO>> GetAllAsync(User user)
+        public async Task<IEnumerable<AnnualReportDto>> GetAllAsync(User user)
         {
             var annualReports = await _repositoryWrapper.AnnualReports.GetAllAsync(
                     include: source => source
@@ -52,9 +52,9 @@ namespace EPlast.BLL.Services
                             .ThenInclude(c => c.Region));
             var citiesDto = await _cityAccessService.GetCitiesAsync(user);
             var filteredAnnualReports = annualReports.Where(ar => citiesDto.Any(c => c.ID == ar.CityId));
-            return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDTO>>(filteredAnnualReports);
+            return _mapper.Map<IEnumerable<AnnualReport>, IEnumerable<AnnualReportDto>>(filteredAnnualReports);
         }
-        
+
         ///<inheritdoc/>
         public async Task<IEnumerable<AnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
@@ -63,7 +63,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityDTO> GetCityMembersAsync(int cityId)
+        public async Task<CityDto> GetCityMembersAsync(int cityId)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
                 predicate: c => c.ID == cityId,
@@ -79,11 +79,11 @@ namespace EPlast.BLL.Services
                 .Where(m => m.IsApproved)
                 .ToList();
 
-            return _mapper.Map<DataAccess.Entities.City, CityDTO>(city);
+            return _mapper.Map<DataAccess.Entities.City, CityDto>(city);
         }
 
         ///<inheritdoc/>
-        public async Task CreateAsync(User user, AnnualReportDTO annualReportDTO)
+        public async Task CreateAsync(User user, AnnualReportDto annualReportDTO)
         {
             var city = await _repositoryWrapper.City.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == annualReportDTO.CityId);
@@ -95,7 +95,7 @@ namespace EPlast.BLL.Services
             {
                 throw new InvalidOperationException();
             }
-            var annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
+            var annualReport = _mapper.Map<AnnualReportDto, AnnualReport>(annualReportDTO);
             annualReport.CreatorId = user.Id;
             annualReport.Date = DateTime.Now;
             annualReport.Status = AnnualReportStatus.Unconfirmed;
@@ -104,12 +104,12 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task EditAsync(User user, AnnualReportDTO annualReportDTO)
+        public async Task EditAsync(User user, AnnualReportDto annualReportDTO)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ID == annualReportDTO.ID && a.CityId == annualReportDTO.CityId && a.CreatorId == annualReportDTO.CreatorId
                         && a.Date.Date == annualReportDTO.Date.Date && a.Status == AnnualReportStatus.Unconfirmed);
-            if (annualReportDTO.Status != AnnualReportStatusDTO.Unconfirmed)
+            if (annualReportDTO.Status != AnnualReportStatusDto.Unconfirmed)
             {
                 throw new InvalidOperationException();
             }
@@ -117,7 +117,7 @@ namespace EPlast.BLL.Services
             {
                 throw new UnauthorizedAccessException();
             }
-            annualReport = _mapper.Map<AnnualReportDTO, AnnualReport>(annualReportDTO);
+            annualReport = _mapper.Map<AnnualReportDto, AnnualReport>(annualReportDTO);
             _repositoryWrapper.AnnualReports.Update(annualReport);
             await _repositoryWrapper.SaveAsync();
         }
@@ -188,16 +188,16 @@ namespace EPlast.BLL.Services
                 predicate: a => a.CityId == cityId && (a.Date.Year == DateTime.Now.Year)) != null;
         }
 
-        public async Task<AnnualReportDTO> GetEditFormByIdAsync(User user, int id)
+        public async Task<AnnualReportDto> GetEditFormByIdAsync(User user, int id)
         {
             var annualReport = await _repositoryWrapper.AnnualReports.GetFirstOrDefaultAsync(
-                predicate: a => a.ID == id && a.Status==AnnualReportStatus.Unconfirmed,
+                predicate: a => a.ID == id && a.Status == AnnualReportStatus.Unconfirmed,
                 include: source => source
                     .Include(a => a.NewCityAdmin)
                     .Include(a => a.MembersStatistic)
                     .Include(a => a.City.CityMembers)
-                    .ThenInclude(m=>m.User));
-            return (await _cityAccessService.HasAccessAsync(user, annualReport.CityId)) ? _mapper.Map<AnnualReport, AnnualReportDTO>(annualReport)
+                    .ThenInclude(m => m.User));
+            return (await _cityAccessService.HasAccessAsync(user, annualReport.CityId)) ? _mapper.Map<AnnualReport, AnnualReportDto>(annualReport)
                 : throw new UnauthorizedAccessException();
         }
     }

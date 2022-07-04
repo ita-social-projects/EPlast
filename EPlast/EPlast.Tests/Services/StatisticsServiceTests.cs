@@ -1,19 +1,19 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Statistics;
-using EPlast.BLL.Services.Statistics;
-using EPlast.BLL.Settings;
-using EPlast.DataAccess.Repositories;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using DTOs = EPlast.BLL.DTO.Statistics;
-using Microsoft.EntityFrameworkCore.Query;
-using EPlast.DataAccess.Entities;
+using AutoMapper;
 using EPlast.BLL.DTO.Region;
+using EPlast.BLL.DTO.Statistics;
+using EPlast.BLL.Services.Statistics;
+using EPlast.BLL.Settings;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using NUnit.Framework;
+using DTOs = EPlast.BLL.DTO.Statistics;
 
 namespace EPlast.Tests.Services
 {
@@ -65,8 +65,8 @@ namespace EPlast.Tests.Services
             mockRepoWrapper.Setup(r => r.RegionAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
                     .ReturnsAsync(new RegionAnnualReport());
-            mockMapper.Setup(m => m.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
-                .Returns( new RegionAnnualReportDTO ());
+            mockMapper.Setup(m => m.Map<RegionAnnualReport, RegionAnnualReportDto>(It.IsAny<RegionAnnualReport>()))
+                .Returns(new RegionAnnualReportDto());
             mockMapper.Setup(m => m.Map<DataAccess.Entities.Region, DTOs.Region>(It.IsAny<DataAccess.Entities.Region>()))
                 .Returns(regions.First());
 

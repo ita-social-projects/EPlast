@@ -3,7 +3,7 @@ using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionFollowerDTO
+    public class RegionFollowerDto
     {
         public int ID { get; set; }
         public string UserId { get; set; }

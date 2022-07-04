@@ -1,19 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Services.TermsOfUse;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using NUnit.Framework;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using EPlast.Resources;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using System.Linq.Expressions;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.Terms
 {
@@ -43,8 +43,8 @@ namespace EPlast.Tests.Services.Terms
                 .Setup(x => x.TermsOfUse.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Terms, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Terms>, IIncludableQueryable<DataAccess.Entities.Terms, object>>>()))
                 .ReturnsAsync(new DataAccess.Entities.Terms());
-            mockMapper.Setup(m => m.Map<TermsDTO>(It.IsAny<DataAccess.Entities.Terms>()))
-                .Returns(new TermsDTO());
+            mockMapper.Setup(m => m.Map<TermsDto>(It.IsAny<DataAccess.Entities.Terms>()))
+                .Returns(new TermsDto());
             //Act
             var result = await TermsService.GetFirstRecordAsync();
 
@@ -60,7 +60,7 @@ namespace EPlast.Tests.Services.Terms
                 .Setup(x => x.TermsOfUse.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Terms, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Terms>, IIncludableQueryable<DataAccess.Entities.Terms, object>>>()))
                 .ReturnsAsync(nullTerms);
-            mockMapper.Setup(m => m.Map<TermsDTO>(It.IsAny<DataAccess.Entities.AboutBase.Subsection>()))
+            mockMapper.Setup(m => m.Map<TermsDto>(It.IsAny<DataAccess.Entities.AboutBase.Subsection>()))
                 .Returns(nullTermsDTO);
 
             //Act
@@ -78,14 +78,14 @@ namespace EPlast.Tests.Services.Terms
                 .Setup(x => x.TermsOfUse.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Terms, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Terms>, IIncludableQueryable<DataAccess.Entities.Terms, object>>>()))
                 .ReturnsAsync(new DataAccess.Entities.Terms());
-            mockMapper.Setup(m => m.Map<TermsDTO>(It.IsAny<DataAccess.Entities.Terms>()))
-                .Returns(new TermsDTO());
+            mockMapper.Setup(m => m.Map<TermsDto>(It.IsAny<DataAccess.Entities.Terms>()))
+                .Returns(new TermsDto());
 
             //Act
             var result = await TermsService.GetFirstRecordAsync();
 
             //Assert
-            Assert.IsInstanceOf<TermsDTO>(result);
+            Assert.IsInstanceOf<TermsDto>(result);
         }
 
         [Test]
@@ -164,7 +164,7 @@ namespace EPlast.Tests.Services.Terms
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await TermsService.AddTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()); });
+                async () => { await TermsService.AddTermsAsync(It.IsAny<TermsDto>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -176,14 +176,14 @@ namespace EPlast.Tests.Services.Terms
                 .Setup(x => x.TermsOfUse.CreateAsync(It.IsAny<DataAccess.Entities.Terms>()));
 
             //Assert
-            Assert.DoesNotThrowAsync(async () => { await TermsService.AddTermsAsync(new TermsDTO(), new User()); });
+            Assert.DoesNotThrowAsync(async () => { await TermsService.AddTermsAsync(new TermsDto(), new User()); });
         }
 
         DataAccess.Entities.Terms nullTerms = null;
 
-        TermsDTO nullTermsDTO = null;
+        TermsDto nullTermsDTO = null;
 
-        TermsDTO termsDTO = new TermsDTO
+        TermsDto termsDTO = new TermsDto
         {
             TermsId = 1,
             TermsTitle = "Title",

@@ -12,11 +12,11 @@ namespace EPlast.BLL.Services
 {
     public class EmailSendingService : IEmailSendingService
     {
-        private readonly ILoggerService<EmailSendingService> _loggerService;
+        private readonly ILoggerService _loggerService;
 
         public EmailSendingService(
             IOptions<EmailServiceSettings> settings,
-            ILoggerService<EmailSendingService> loggerService
+            ILoggerService loggerService
         )
         {
             Settings = settings;

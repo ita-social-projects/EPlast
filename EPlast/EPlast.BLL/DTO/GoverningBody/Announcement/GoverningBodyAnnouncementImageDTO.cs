@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BLL.DTO.GoverningBody.Announcement
+﻿namespace EPlast.BLL.DTO.GoverningBody.Announcement
 {
-    public class GoverningBodyAnnouncementImageDTO
+    public class GoverningBodyAnnouncementImageDto
     {
         public int Id { get; set; }
         public string ImagePath { get; set; }

@@ -59,32 +59,32 @@ namespace EPlast.BLL.Services.Region
             }
         }
 
-        public async Task AddRegionAsync(RegionDTO region)
+        public async Task AddRegionAsync(RegionDto region)
         {
-            await _repoWrapper.Region.CreateAsync(_mapper.Map<RegionDTO, DataAccessRegion.Region>(region));
+            await _repoWrapper.Region.CreateAsync(_mapper.Map<RegionDto, DataAccessRegion.Region>(region));
 
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<RegionDTO>> GetAllRegionsAsync()
+        public async Task<IEnumerable<RegionDto>> GetAllRegionsAsync()
         {
             var regions = await _repoWrapper.Region.GetAllAsync(
                 include: source => source
                     .Include(r => r.RegionAdministration)
                         .ThenInclude(t => t.AdminType));
             var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard);
-            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDto>>(filteredRegions);
         }
-        public async Task<IEnumerable<RegionDTO>> GetAllActiveRegionsAsync()
+        public async Task<IEnumerable<RegionDto>> GetAllActiveRegionsAsync()
         {
             var regions = await _repoWrapper.Region.GetAllAsync(
                include: source => source
                    .Include(r => r.RegionAdministration)
                        .ThenInclude(t => t.AdminType));
             var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive);
-            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDto>>(filteredRegions);
         }
-        public async Task<Tuple<IEnumerable<RegionObjectsDTO>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive)
+        public async Task<Tuple<IEnumerable<RegionObjectsDto>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive)
         {
             var tuple = await _repoWrapper.Region.GetRegionsObjects(page, pageSize, regionName, isArchive);
             var regions = tuple.Item1;
@@ -105,17 +105,17 @@ namespace EPlast.BLL.Services.Region
                 }
             }
             var rows = tuple.Item2;
-            return new Tuple<IEnumerable<RegionObjectsDTO>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(regions), rows);
+            return new Tuple<IEnumerable<RegionObjectsDto>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDto>>(regions), rows);
         }
 
-        public async Task<IEnumerable<RegionDTO>> GetAllNotActiveRegionsAsync()
+        public async Task<IEnumerable<RegionDto>> GetAllNotActiveRegionsAsync()
         {
             var regions = await _repoWrapper.Region.GetAllAsync(
               include: source => source
                   .Include(r => r.RegionAdministration)
                       .ThenInclude(t => t.AdminType));
             var filteredRegions = regions.Where(r => r.Status != RegionsStatusType.RegionBoard && !r.IsActive);
-            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDTO>>(filteredRegions);
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionDto>>(filteredRegions);
         }
 
         public async Task<string> GetLogoBase64(string logoName)
@@ -125,7 +125,7 @@ namespace EPlast.BLL.Services.Region
             return logoBase64;
         }
 
-        public async Task<RegionDTO> GetRegionByIdAsync(int regionId)
+        public async Task<RegionDto> GetRegionByIdAsync(int regionId)
         {
             var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(
                 predicate: r => r.ID == regionId,
@@ -133,10 +133,10 @@ namespace EPlast.BLL.Services.Region
                     .Include(r => r.RegionAdministration)
                         .ThenInclude(t => t.AdminType));
 
-            return _mapper.Map<DataAccessRegion.Region, RegionDTO>(region);
+            return _mapper.Map<DataAccessRegion.Region, RegionDto>(region);
         }
 
-        public async Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, User user)
+        public async Task<RegionProfileDto> GetRegionProfileByIdAsync(int regionId, User user)
         {
             var region = await GetRegionByIdAsync(regionId);
             try
@@ -151,7 +151,7 @@ namespace EPlast.BLL.Services.Region
             {
                 Console.WriteLine($"Can not get image from blob storage because {ex}");
             }
-            var regionProfile = _mapper.Map<RegionDTO, RegionProfileDTO>(region);
+            var regionProfile = _mapper.Map<RegionDto, RegionProfileDto>(region);
             var userRoles = await _userManager.GetRolesAsync(user);
             var documents = await _repoWrapper
                 .RegionDocument
@@ -182,27 +182,27 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId)
+        public async Task<IEnumerable<CityDto>> GetMembersAsync(int regionId)
         {
             var cities = await _repoWrapper.City.GetAllAsync(d => d.RegionId == regionId);
-            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDto>>(cities);
         }
 
-        public async Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId)
+        public async Task<IEnumerable<RegionFollowerDto>> GetFollowersAsync(int regionId)
         {
             var followers = await _repoWrapper.RegionFollowers.GetAllAsync(d => d.RegionId == regionId);
-            return _mapper.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(followers);
+            return _mapper.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDto>>(followers);
         }
 
-        public async Task<RegionFollowerDTO> GetFollowerAsync(int followerId)
+        public async Task<RegionFollowerDto> GetFollowerAsync(int followerId)
         {
             var follower = await _repoWrapper.RegionFollowers.GetFirstOrDefaultAsync(d => d.ID == followerId);
-            return _mapper.Map<RegionFollowers, RegionFollowerDTO>(follower);
+            return _mapper.Map<RegionFollowers, RegionFollowerDto>(follower);
         }
 
-        public async Task<int> CreateFollowerAsync(RegionFollowerDTO model)
+        public async Task<int> CreateFollowerAsync(RegionFollowerDto model)
         {
-            var follower = _mapper.Map<RegionFollowerDTO, RegionFollowers>(model);
+            var follower = _mapper.Map<RegionFollowerDto, RegionFollowers>(model);
             await _repoWrapper.RegionFollowers.CreateAsync(follower);
             await _repoWrapper.SaveAsync();
             return follower.ID;
@@ -217,19 +217,19 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user)
+        public async Task<RegionProfileDto> GetRegionByNameAsync(string Name, User user)
         {
             var region = await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name);
             region.Documents = (await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == region.ID))?.ToList();
-            var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDTO>(region);
+            var regionProfile = _mapper.Map<DataAccessRegion.Region, RegionProfileDto>(region);
             var userRoles = await _userManager.GetRolesAsync(user);
             regionProfile.CanEdit = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.OkrugaHead) || userRoles.Contains(Roles.OkrugaHeadDeputy);
             return regionProfile;
         }
 
-        public async Task<RegionDTO> GetRegionByNameAsync(string Name)
+        public async Task<RegionDto> GetRegionByNameAsync(string Name)
         {
-            return _mapper.Map<DataAccessRegion.Region, RegionDTO>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
+            return _mapper.Map<DataAccessRegion.Region, RegionDto>(await _repoWrapper.Region.GetFirstAsync(d => d.RegionName == Name));
         }
 
         private async Task<string> UploadPhotoAsyncFromBase64(int regionId, string imageBase64)
@@ -260,7 +260,7 @@ namespace EPlast.BLL.Services.Region
             }
         }
 
-        public async Task EditRegionAsync(int regId, RegionDTO region)
+        public async Task EditRegionAsync(int regId, RegionDto region)
         {
             var ChangedRegion = await _repoWrapper.Region.GetFirstAsync(d => d.ID == regId);
             ChangedRegion.Logo = await UploadPhotoAsyncFromBase64(regId, region.Logo);
@@ -279,7 +279,7 @@ namespace EPlast.BLL.Services.Region
             await _repoWrapper.SaveAsync();
         }
 
-        private void ValidateFileName(RegionDocumentDTO documentDTO, out string[] splittedName)
+        private void ValidateFileName(RegionDocumentDto documentDTO, out string[] splittedName)
         {
             var allowedExtensions = new List<string>() { "pdf", "doc", "docx" };
 
@@ -289,20 +289,20 @@ namespace EPlast.BLL.Services.Region
                 throw new ArgumentException(@"The file must have 'pdf', 'doc' or 'docx' extension");
             }
 
-            var fileName = documentDTO.FileName.Substring(0, dotIndex).Trim();
+            var fileName = documentDTO.FileName[..dotIndex].Trim();
             if (fileName == string.Empty)
             {
                 throw new ArgumentException("The file name cannot be empty");
             }
 
-            var extension = documentDTO.FileName.Substring(dotIndex + 1);
+            var extension = documentDTO.FileName[(dotIndex + 1)..];
             if (!allowedExtensions.Contains(extension))
             {
                 throw new ArgumentException(@"The extension must be 'pdf', 'doc' or 'docx' format");
             }
             splittedName = new[] { fileName, extension };
         }
-        public async Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO)
+        public async Task<RegionDocumentDto> AddDocumentAsync(RegionDocumentDto documentDTO)
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
             ValidateFileName(documentDTO, out string[] splittedName);
@@ -310,7 +310,7 @@ namespace EPlast.BLL.Services.Region
             await _regionFilesBlobStorageRepository.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;
 
-            var document = _mapper.Map<RegionDocumentDTO, RegionDocuments>(documentDTO);
+            var document = _mapper.Map<RegionDocumentDto, RegionDocuments>(documentDTO);
             _repoWrapper.RegionDocument.Attach(document);
             await _repoWrapper.RegionDocument.CreateAsync(document);
             await _repoWrapper.SaveAsync();
@@ -318,11 +318,11 @@ namespace EPlast.BLL.Services.Region
             return documentDTO;
         }
 
-        public async Task<IEnumerable<RegionDocumentDTO>> GetRegionDocsAsync(int regionId)
+        public async Task<IEnumerable<RegionDocumentDto>> GetRegionDocsAsync(int regionId)
         {
             var documents = await _repoWrapper.RegionDocument.GetAllAsync(d => d.RegionId == regionId);
-            var documentDtos = _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(documents);
-            return DocumentsSorter<RegionDocumentDTO>.SortDocumentsBySubmitDate(documentDtos);
+            var documentDtos = _mapper.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDto>>(documents);
+            return DocumentsSorter<RegionDocumentDto>.SortDocumentsBySubmitDate(documentDtos);
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
@@ -372,28 +372,28 @@ namespace EPlast.BLL.Services.Region
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<RegionForAdministrationDTO>> GetRegions()
+        public async Task<IEnumerable<RegionForAdministrationDto>> GetRegions()
         {
-            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDTO>>((await _repoWrapper.Region
+            return _mapper.Map<IEnumerable<DataAccessRegion.Region>, IEnumerable<RegionForAdministrationDto>>((await _repoWrapper.Region
                 .GetAllAsync()).Where(r => r.Status != RegionsStatusType.RegionBoard && r.IsActive));
         }
 
         /// <inheritdoc />
-        public IEnumerable<RegionNamesDTO> GetActiveRegionsNames()
+        public IEnumerable<RegionNamesDto> GetActiveRegionsNames()
         {
             var regions = _repoWrapper.Region
                 .GetActiveRegionsNames();
-            return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDTO>>(regions);
+            return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDto>>(regions);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId)
+        public async Task<IEnumerable<RegionUserDto>> GetRegionUsersAsync(int regionId)
         {
             var city = await _repoWrapper.CityMembers.GetAllAsync(d => d.City.RegionId == regionId && d.IsApproved,
                 include: source => source
                     .Include(t => t.User));
             var users = city.Select(x => x.User);
-            return _mapper.Map<IEnumerable<DataAccessRegion.User>, IEnumerable<RegionUserDTO>>(users);
+            return _mapper.Map<IEnumerable<DataAccessRegion.User>, IEnumerable<RegionUserDto>>(users);
         }
         public async Task UnArchiveRegionAsync(int regionId)
         {

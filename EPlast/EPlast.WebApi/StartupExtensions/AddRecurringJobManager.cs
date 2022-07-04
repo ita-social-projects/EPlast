@@ -1,4 +1,7 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
@@ -13,9 +16,6 @@ using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.StartupExtensions
 {
@@ -27,7 +27,7 @@ namespace EPlast.WebApi.StartupExtensions
         {
             recurringJobManager.AddOrUpdate("Run every day",
                                             () => serviceProvider.GetService<IPlastDegreeService>()
-                                                                 .GetDergeesAsync(),
+                                                                 .GetDegreesAsync(),
                                             "59 23 * * *",
                                             TimeZoneInfo.Local);
 

@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.Blank;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Blank;
 
 namespace EPlast.BLL.Interfaces.Blank
 {
@@ -11,7 +11,7 @@ namespace EPlast.BLL.Interfaces.Blank
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created biography document</returns>
-        Task<IEnumerable<AchievementDocumentsDTO>> AddDocumentAsync(IEnumerable<AchievementDocumentsDTO> achievementDocumentsDTO);
+        Task<IEnumerable<AchievementDocumentsDto>> AddDocumentAsync(IEnumerable<AchievementDocumentsDto> achievementDocumentsDTO);
 
         /// <summary>
         /// Get a file in base64 format
@@ -26,8 +26,8 @@ namespace EPlast.BLL.Interfaces.Blank
         /// <param name="documentId">The id of a specific document</param>
         Task DeleteFileAsync(int documentId);
 
-        Task<IEnumerable<AchievementDocumentsDTO>> GetDocumentsByUserIdAsync(string userid);
+        Task<IEnumerable<AchievementDocumentsDto>> GetDocumentsByUserIdAsync(string userid);
 
-        Task<IEnumerable<AchievementDocumentsDTO>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userid);
+        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userid);
     }
 }

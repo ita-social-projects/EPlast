@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User.UserProfileFields
     {
         public ReligionProfile()
         {
-            CreateMap<ReligionDTO, ReligionViewModel>().ReverseMap();
+            CreateMap<ReligionDto, ReligionViewModel>().ReverseMap();
         }
     }
 }

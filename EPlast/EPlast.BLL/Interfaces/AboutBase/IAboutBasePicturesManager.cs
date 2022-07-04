@@ -1,7 +1,7 @@
-﻿using EPlast.BLL.DTO.AboutBase;
-using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.AboutBase;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BLL.Interfaces.AboutBase
 {
@@ -16,7 +16,7 @@ namespace EPlast.BLL.Interfaces.AboutBase
         /// <returns>List of added pictures.</returns>
         /// <param name="id">The Id of subsection</param>
         /// <param name="files">List of uploaded pictures</param>
-        Task<IEnumerable<SubsectionPicturesDTO>> AddPicturesAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<SubsectionPicturesDto>> AddPicturesAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.
@@ -30,6 +30,6 @@ namespace EPlast.BLL.Interfaces.AboutBase
         /// </summary>
         /// <returns>List of pictures in Base64 format.</returns>
         /// <param name="subsectionId">The Id of subsection</param>
-        Task<IEnumerable<SubsectionPicturesDTO>> GetPicturesInBase64(int subsectionId);
+        Task<IEnumerable<SubsectionPicturesDto>> GetPicturesInBase64(int subsectionId);
     }
 }

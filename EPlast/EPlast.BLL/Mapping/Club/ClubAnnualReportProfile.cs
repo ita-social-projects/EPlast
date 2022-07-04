@@ -9,7 +9,7 @@ namespace EPlast.BLL.Mapping.Club
     {
         public ClubAnnualReportProfile()
         {
-            CreateMap<DatabaseEntities.ClubAnnualReport, ClubAnnualReportDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.ClubAnnualReport, ClubAnnualReportDto>().ReverseMap();
         }
     }
 }

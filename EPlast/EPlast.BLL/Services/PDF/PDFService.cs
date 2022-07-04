@@ -1,22 +1,22 @@
-﻿using EPlast.BLL.Interfaces.AzureStorage;
+﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services.PDF.Documents;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.PDF
 {
     public class PdfService : IPdfService
     {
         private readonly IRepositoryWrapper _repoWrapper;
-        private readonly ILoggerService<PdfService> _logger;
+        private readonly ILoggerService _logger;
         private readonly IDecisionBlobStorageRepository _decisionBlobStorage;
 
-        public PdfService(IRepositoryWrapper repoWrapper, ILoggerService<PdfService> logger, IDecisionBlobStorageRepository decisionBlobStorage)
+        public PdfService(IRepositoryWrapper repoWrapper, ILoggerService logger, IDecisionBlobStorageRepository decisionBlobStorage)
         {
             _repoWrapper = repoWrapper;
             _logger = logger;

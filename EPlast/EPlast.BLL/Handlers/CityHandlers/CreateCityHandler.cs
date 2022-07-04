@@ -22,7 +22,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
 
         public async Task<City> Handle(CreateCityCommand request, CancellationToken cancellationToken)
         {
-            var city = _mapper.Map<CityDTO, City>(request.City);
+            var city = _mapper.Map<CityDto, City>(request.City);
             var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
 
             city.RegionId = region.ID;

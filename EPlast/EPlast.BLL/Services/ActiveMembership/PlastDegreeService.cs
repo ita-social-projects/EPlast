@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.ActiveMembership
 {
@@ -26,11 +26,11 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<PlastDegreeDTO>> GetDergeesAsync()
+        public async Task<IEnumerable<PlastDegreeDto>> GetDegreesAsync()
         {
             var degrees = await _repoWrapper.PlastDegrees.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<PlastDegreeDTO>>(degrees);
+            return _mapper.Map<IEnumerable<PlastDegreeDto>>(degrees);
         }
 
         /// <inheritdoc />
@@ -51,14 +51,14 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<UserPlastDegreeDTO> GetUserPlastDegreeAsync(string userId)
+        public async Task<UserPlastDegreeDto> GetUserPlastDegreeAsync(string userId)
         {
             var userPlastDegree = await _repoWrapper.UserPlastDegree.GetFirstOrDefaultAsync(upd => upd.UserId == userId, include: pd => pd.Include(d => d.PlastDegree));
 
-            return _mapper.Map<UserPlastDegreeDTO>(userPlastDegree);
+            return _mapper.Map<UserPlastDegreeDto>(userPlastDegree);
         }
         /// <inheritdoc />
-        public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO)
+        public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDto userPlastDegreePostDTO)
         {
             bool isAdded = false;
             var userDto = await _userManagerService.FindByIdAsync(userPlastDegreePostDTO.UserId);

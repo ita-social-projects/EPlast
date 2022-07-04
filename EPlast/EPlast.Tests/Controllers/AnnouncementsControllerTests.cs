@@ -1,13 +1,13 @@
-﻿using EPlast.BLL.DTO.GoverningBody.Announcement;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.Announcements;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -32,7 +32,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _announcemetsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new GoverningBodyAnnouncementUserWithImagesDTO());
+                .ReturnsAsync(new GoverningBodyAnnouncementUserWithImagesDto());
 
             //Act
             var result = await _announcemetsController.GetById(It.IsAny<int>());
@@ -43,7 +43,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDto>(resultValue);
         }
 
         [Test]
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _announcemetsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(null as GoverningBodyAnnouncementUserWithImagesDTO);
+                .ReturnsAsync(null as GoverningBodyAnnouncementUserWithImagesDto);
 
             //Act
             var result = await _announcemetsController.GetById(It.IsAny<int>());

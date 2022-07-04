@@ -74,7 +74,7 @@ namespace EPlast.XUnitTest.Services
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
             mockMapper
-               .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
+               .Setup(s => s.Map<UserDto, User>(It.IsAny<UserDto>()))
                .Returns(GetTestUserWithEmailsSendedTime());
 
             AuthService AuthService = new AuthService(
@@ -429,9 +429,9 @@ namespace EPlast.XUnitTest.Services
             };
         }
 
-        private UserDTO GetTestUserDtoWithAllFields()
+        private UserDto GetTestUserDtoWithAllFields()
         {
-            return new UserDTO()
+            return new UserDto()
             {
                 UserName = "andriishainoha@gmail.com",
                 FirstName = "Andrii",
@@ -536,11 +536,11 @@ namespace EPlast.XUnitTest.Services
             };
         }
 
-        private UserDTO GetTestUserDtoWithEmailsSendedTime()
+        private UserDto GetTestUserDtoWithEmailsSendedTime()
         {
             var timeEmailSended = DateTime.Now.AddMinutes(-GetTestDifferenceInTime());
 
-            return new UserDTO()
+            return new UserDto()
             {
                 EmailSendedOnForgotPassword = timeEmailSended,
                 EmailSendedOnRegister = timeEmailSended

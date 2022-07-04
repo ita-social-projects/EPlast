@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public class UserMembershipDatesDTO
+    public class UserMembershipDatesDto
     {
         public string UserId { get; set; }
         public int Id { get; set; }

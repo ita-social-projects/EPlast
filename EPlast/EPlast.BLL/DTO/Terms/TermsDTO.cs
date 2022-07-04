@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.Terms
 {
-    public class TermsDTO
+    public class TermsDto
     {
         public int TermsId { get; set; }
         public string TermsTitle { get; set; }

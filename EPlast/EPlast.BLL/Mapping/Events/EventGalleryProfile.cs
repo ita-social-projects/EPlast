@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Events
     {
         public EventGalleryProfile()
         {
-            CreateMap<EventGallary, EventGalleryDTO>()
+            CreateMap<EventGallary, EventGalleryDto>()
                 .ForMember(d => d.GalleryId, s => s.MapFrom(f => f.GallaryID))
                 .ForMember(d => d.FileName, s => s.MapFrom(f => f.Gallary.GalaryFileName));
         }

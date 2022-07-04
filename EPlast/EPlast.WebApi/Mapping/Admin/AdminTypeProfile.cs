@@ -9,8 +9,8 @@ namespace EPlast.WebApi.Mapping.Admin
     {
         public AdminTypeProfile()
         {
-            CreateMap<AdminType, AdminTypeDTO>().ReverseMap();
-            CreateMap<AdminTypeDTO, AdminTypeViewModel>().ReverseMap();
+            CreateMap<AdminType, AdminTypeDto>().ReverseMap();
+            CreateMap<AdminTypeDto, AdminTypeViewModel>().ReverseMap();
         }
     }
 }

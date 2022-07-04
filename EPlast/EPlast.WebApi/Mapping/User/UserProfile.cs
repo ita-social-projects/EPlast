@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.WebApi.Models.UserModels;
-using System.Linq;
 namespace EPlast.WebApi.Mapping.User
 {
     public class UserProfile : Profile
     {
         public UserProfile()
         {
-            CreateMap<UserDTO, UserViewModel>()
+            CreateMap<UserDto, UserViewModel>()
                 .ForMember(x => x.UserProfileID, q => q.MapFrom(w => w.UserProfile.ID))
                 .ForMember(x => x.ID, q => q.MapFrom(w => w.UserProfile.UserID))
                 .ForPath(x => x.Nationality.Name, q => q.MapFrom(w => w.UserProfile.Nationality.Name))
@@ -43,7 +43,7 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(u => u.ClubMemberIsApproved, q => q.MapFrom(c => c.ClubMembers.FirstOrDefault().IsApproved))
                 .ForMember(u => u.CityMemberIsApproved, q => q.MapFrom(c => c.CityMembers.FirstOrDefault().IsApproved));
 
-            CreateMap<UserViewModel, UserDTO>()
+            CreateMap<UserViewModel, UserDto>()
                     .ForPath(x => x.UserProfile.ID, q => q.MapFrom(w => w.UserProfileID))
                     .ForPath(x => x.UserProfile.UserID, q => q.MapFrom(w => w.ID))
                     .ForPath(x => x.UserProfile.Nationality.Name, q => q.MapFrom(w => w.Nationality.Name))

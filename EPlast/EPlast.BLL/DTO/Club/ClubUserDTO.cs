@@ -1,7 +1,8 @@
 ﻿using EPlast.DataAccess.Entities;
+
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubUserDTO
+    public class ClubUserDto
     {
         public string ID { get; set; }
         public string FirstName { get; set; }

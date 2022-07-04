@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Jwt;
@@ -10,8 +12,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NLog.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -21,7 +21,7 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IAuthService _authService;
         private readonly IJwtService _jwtService;
-        private readonly ILoggerService<LoginController> _loggerService;
+        private readonly ILoggerService _loggerService;
         private readonly IResources _resources;
         private readonly IUserDatesService _userDatesService;
         private readonly IUserManagerService _userManagerService;
@@ -30,7 +30,7 @@ namespace EPlast.WebApi.Controllers
             IAuthService authService,
             IResources resources,
             IJwtService jwtService,
-            ILoggerService<LoginController> loggerService,
+            ILoggerService loggerService,
             IUserDatesService userDatesService,
             IUserManagerService userManagerService
             )

@@ -1,25 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using EPlast.BLL;
+using EPlast.BLL.Commands.Distinction;
+using EPlast.BLL.DTO.Distinction;
+using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.UserEntities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using EPlast.BLL.DTO.Distinction;
-using MediatR;
-using EPlast.BLL.Queries.Distinction;
-using System.Threading;
-using EPlast.BLL.Commands.Distinction;
 
 namespace EPlast.Tests.Controllers
 {
@@ -53,7 +53,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userDistinctionService
                 .Setup(x => x.GetUserDistinctionAsync(It.IsAny<int>()))
-                .ReturnsAsync(new UserDistinctionDTO());
+                .ReturnsAsync(new UserDistinctionDto());
             //Act
             var result = await _distinctionController.GetUserDistinction(It.IsAny<int>());
             var resultValue = (result as ObjectResult).Value;
@@ -62,7 +62,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<UserDistinctionDTO>(resultValue);
+            Assert.IsInstanceOf<UserDistinctionDto>(resultValue);
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userDistinctionService
                 .Setup(x => x.GetUserDistinctionAsync(It.IsAny<int>()))
-                .ReturnsAsync((UserDistinctionDTO)null);
+                .ReturnsAsync((UserDistinctionDto)null);
             //Act
             var result = await _distinctionController.GetUserDistinction(It.IsAny<int>());
             var resultObject = (result as ObjectResult)?.Value;
@@ -89,7 +89,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userDistinctionService
                 .Setup(x => x.GetAllUsersDistinctionAsync())
-                .ReturnsAsync((new List<UserDistinctionDTO>()).AsEnumerable());
+                .ReturnsAsync((new List<UserDistinctionDto>()).AsEnumerable());
             //Act
             var result = await _distinctionController.GetUserDistinction();
             var resultValue = (result as OkObjectResult).Value;
@@ -98,7 +98,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<List<UserDistinctionDTO>>(resultValue);
+            Assert.IsInstanceOf<List<UserDistinctionDto>>(resultValue);
         }
         
         [Test]
@@ -107,7 +107,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<GetDistinctionQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new DistinctionDTO());
+                .ReturnsAsync(new DistinctionDto());
             //Act
             var result = await _distinctionController.GetDistinction(It.IsAny<int>());
             var resultValue = (result as OkObjectResult).Value;
@@ -116,16 +116,16 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<DistinctionDTO>(resultValue);
+            Assert.IsInstanceOf<DistinctionDto>(resultValue);
         }
-        
+
         [Test]
         public async Task GetDistinction_DistinctionById_ReturnsNotFoundResult()
         {
             //Arrange
             _mockMediator
                  .Setup(x => x.Send(It.IsAny<GetDistinctionQuery>(), It.IsAny<CancellationToken>()))
-                 .ReturnsAsync((DistinctionDTO)null);
+                 .ReturnsAsync((DistinctionDto)null);
             //Act
             var result = await _distinctionController.GetDistinction(It.IsAny<int>());
             var resultObject = (result as ObjectResult)?.Value;
@@ -142,7 +142,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<GetAllDistinctionQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<DistinctionDTO>().AsEnumerable());
+                .ReturnsAsync(new List<DistinctionDto>().AsEnumerable());
             //Act
             var result = await _distinctionController.GetDistinction();
             var resultValue = (result as OkObjectResult).Value;
@@ -151,7 +151,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<List<DistinctionDTO>>(resultValue);
+            Assert.IsInstanceOf<List<DistinctionDto>>(resultValue);
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userDistinctionService
                 .Setup(x => x.GetUserDistinctionsOfUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(new List<UserDistinctionDTO>().AsEnumerable());
+                .ReturnsAsync(new List<UserDistinctionDto>().AsEnumerable());
             //Act
             var result = await _distinctionController.GetDistinctionOfGivenUser(It.IsAny<string>());
             var resultValue = (result as OkObjectResult).Value;
@@ -189,7 +189,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<List<UserDistinctionDTO>>(resultValue);
+            Assert.IsInstanceOf<List<UserDistinctionDto>>(resultValue);
         }
 
         [Test]
@@ -198,7 +198,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userDistinctionService
                 .Setup(x => x.GetUserDistinctionsOfUserAsync(It.IsAny<string>()))
-                .ReturnsAsync((List<UserDistinctionDTO>)null);
+                .ReturnsAsync((List<UserDistinctionDto>)null);
             //Act
             var result = await _distinctionController.GetDistinctionOfGivenUser(It.IsAny<string>());
             var resultValue = (result as OkObjectResult)?.Value;
@@ -317,9 +317,9 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
+                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()));
             //Act
-            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDTO>());
+            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDto>());
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
@@ -340,10 +340,10 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()))
+                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()))
                 .Throws(new NullReferenceException());
             //Act
-            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDTO>());
+            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDto>());
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
@@ -365,9 +365,9 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("firstName", "First Name field is required");
             _userDistinctionService
-                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
+                .Setup(x => x.AddUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()));
             //Act
-            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDTO>());
+            var result = await _distinctionController.AddUserDistinction(It.IsAny<UserDistinctionDto>());
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
@@ -390,7 +390,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<AddDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
-            var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDTO>());
+            var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDto>());
             //Assert
             _mockMediator.Verify();
             Assert.IsNotNull(result);
@@ -414,7 +414,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<AddDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
-            var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDTO>());
+            var result = await _distinctionController.AddDistinction(It.IsAny<DistinctionDto>());
             //Assert
             _mockMediator.Verify();
             Assert.IsNotNull(result);
@@ -435,9 +435,9 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor(), new ModelStateDictionary()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
+                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()));
             //Act
-            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
+            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDto>());
 
             //Assert
             _userDistinctionService.Verify();
@@ -460,9 +460,9 @@ namespace EPlast.Tests.Controllers
             _distinctionController.ControllerContext = context;
             _distinctionController.ModelState.AddModelError("firstName", "First Name field is required");
             _userDistinctionService
-                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()));
+                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()));
             //Act
-            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
+            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDto>());
             //Assert
             _userDistinctionService.Verify();
             Assert.IsNotNull(result);
@@ -483,10 +483,10 @@ namespace EPlast.Tests.Controllers
                     new ControllerActionDescriptor(), new ModelStateDictionary()));
             _distinctionController.ControllerContext = context;
             _userDistinctionService
-                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()))
+                .Setup(x => x.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()))
                 .Throws(new NullReferenceException());
             //Act
-            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDTO>());
+            var result = await _distinctionController.EditUserDistinction(It.IsAny<UserDistinctionDto>());
 
             //Assert
             _userDistinctionService.Verify();
@@ -510,7 +510,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<ChangeDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
-            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
+            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDto>());
             //Assert
             _mockMediator.Verify();
             Assert.IsNotNull(result);
@@ -534,7 +534,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<ChangeDistinctionCommand>(), It.IsAny<CancellationToken>()));
             //Act
-            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
+            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDto>());
             //Assert
             _mockMediator.Verify();
             Assert.IsNotNull(result);
@@ -558,7 +558,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.Send(It.IsAny<ChangeDistinctionCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
             //Act
-            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDTO>());
+            var result = await _distinctionController.EditDistinction(It.IsAny<DistinctionDto>());
             //Assert
             _mockMediator.Verify();
             Assert.IsNotNull(result);

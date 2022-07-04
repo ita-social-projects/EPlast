@@ -20,14 +20,14 @@ namespace EPlast.Tests.Services.PDF
     {
         private PdfService _pdfService;
         private static Mock<IRepositoryWrapper> _repository;
-        private static Mock<ILoggerService<PdfService>> _logger;
+        private static Mock<ILoggerService> _logger;
         private static Mock<IDecisionBlobStorageRepository> _decisionBlobStorage;
 
         [SetUp]
         public void SetUp()
         {
             _repository = new Mock<IRepositoryWrapper>();
-            _logger = new Mock<ILoggerService<PdfService>>();
+            _logger = new Mock<ILoggerService>();
             _decisionBlobStorage = new Mock<IDecisionBlobStorageRepository>();
             _repository.Setup(rep => rep.User.FindByCondition(It.IsAny<Expression<Func<User, bool>>>()))
                 .Returns(GetTestUsersQueryable());
@@ -335,7 +335,7 @@ namespace EPlast.Tests.Services.PDF
             };
         }
 
-        private static List<ConfirmedUser> listConfirmedUsers = new List<ConfirmedUser>()
+        private static readonly List<ConfirmedUser> listConfirmedUsers = new List<ConfirmedUser>()
         {
             new ConfirmedUser()
             {
@@ -456,127 +456,6 @@ namespace EPlast.Tests.Services.PDF
                 Description = "FDS", Name = "FS", FileName = "dsf", DecesionTarget = new DecesionTarget(),
                 Organization = new Organization()
             }
-        }.AsQueryable();
-
-        private MembersStatistic _fakeMembersStatistic()
-        {
-            return new MembersStatistic()
-            {
-                Id = 1,
-                AnnualReportId = 1,
-                NumberOfNovatstva = 1,
-                NumberOfPtashata = 1,
-                NumberOfSeigneurMembers = 1,
-                NumberOfSeigneurSupporters = 1,
-                NumberOfSeniorPlastynMembers = 1,
-                NumberOfSeniorPlastynSupporters = 1,
-                NumberOfUnatstvaMembers = 1,
-                NumberOfUnatstvaNoname = 1,
-                NumberOfUnatstvaProspectors = 1,
-                NumberOfUnatstvaSkobVirlyts = 1,
-                NumberOfUnatstvaSupporters = 1,
-            };
-        }
-
-        private IQueryable<AnnualReport> AnnualReports => new List<AnnualReport>()
-        {
-            new AnnualReport()
-            {
-                ID = 1,
-                CityId = 1,
-                City = new DataAccess.Entities.City()
-                {
-                    Name = "CityName"
-                },
-                Date = DateTime.Now,
-                NewCityAdmin = new User() {FirstName = "FName", LastName = "LName"},
-                NumberOfAdministrators = 1,
-                NumberOfBeneficiaries = 1,
-                NumberOfClubs = 1,
-                NumberOfHonoraryMembers = 1,
-                NumberOfIndependentGroups = 1,
-                NumberOfIndependentRiy = 1,
-                NumberOfPlastpryiatMembers = 1,
-                NumberOfSeatsPtashat = 1,
-                NumberOfTeacherAdministrators = 1,
-                NumberOfTeachers = 1,
-                MembersStatistic = _fakeMembersStatistic(),
-                ListProperty = null,
-                ImprovementNeeds = null,
-            },
-            new AnnualReport()
-            {
-                ID = 2,
-                CityId = 2,
-                City = new DataAccess.Entities.City()
-                {
-                    Name = "SecondCityName"
-                },
-                Date = DateTime.Now,
-                NumberOfAdministrators = 2,
-                NumberOfBeneficiaries = 2,
-                NumberOfClubs = 2,
-                NumberOfHonoraryMembers = 2,
-                NumberOfIndependentGroups = 2,
-                NumberOfIndependentRiy = 2,
-                NumberOfPlastpryiatMembers = 2,
-                NumberOfSeatsPtashat = 2,
-                NumberOfTeacherAdministrators = 2,
-                NumberOfTeachers = 2,
-                MembersStatistic = _fakeMembersStatistic(),
-                ListProperty = "LProperty",
-                ImprovementNeeds = null,
-            },
-            new AnnualReport()
-            {
-                ID = 3,
-                CityId = 3,
-                City = new DataAccess.Entities.City()
-                {
-                    Name = "CityName"
-                },
-                Date = DateTime.Now,
-                NewCityAdmin = new User()
-                    {FirstName = "FName", LastName = "LName", Email = "email@email.com", PhoneNumber = "0123456"},
-                NumberOfAdministrators = 3,
-                NumberOfBeneficiaries = 3,
-                NumberOfClubs = 3,
-                NumberOfHonoraryMembers = 3,
-                NumberOfIndependentGroups = 3,
-                NumberOfIndependentRiy = 3,
-                NumberOfPlastpryiatMembers = 3,
-                NumberOfSeatsPtashat = 3,
-                NumberOfTeacherAdministrators = 3,
-                NumberOfTeachers = 3,
-                MembersStatistic = _fakeMembersStatistic(),
-                ListProperty = null,
-                ImprovementNeeds = "INeeds",
-            },
-            new AnnualReport()
-            {
-                ID = 4,
-                CityId = 4,
-                City = new DataAccess.Entities.City()
-                {
-                    Name = "CityName"
-                },
-                Date = DateTime.Now,
-                NewCityAdmin = new User()
-                    {FirstName = "FName", LastName = "LName", Email = "email@email.com", PhoneNumber = "0124456"},
-                NumberOfAdministrators = 4,
-                NumberOfBeneficiaries = 4,
-                NumberOfClubs = 4,
-                NumberOfHonoraryMembers = 4,
-                NumberOfIndependentGroups = 4,
-                NumberOfIndependentRiy = 4,
-                NumberOfPlastpryiatMembers = 4,
-                NumberOfSeatsPtashat = 4,
-                NumberOfTeacherAdministrators = 4,
-                NumberOfTeachers = 4,
-                MembersStatistic = _fakeMembersStatistic(),
-                ListProperty = "LProperty",
-                ImprovementNeeds = "INeeds",
-            },
         }.AsQueryable();
 
         private IQueryable<MethodicDocument> MethodicDocuments => new List<MethodicDocument>()

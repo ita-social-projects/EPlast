@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
@@ -8,11 +13,6 @@ using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -23,12 +23,12 @@ namespace EPlast.WebApi.Controllers
         private readonly IGoverningBodiesService _governingBodiesService;
         private readonly IGoverningBodyAdministrationService _governingBodyAdministrationService;
         private readonly IGoverningBodyDocumentsService _governingBodyDocumentsService;
-        private readonly ILoggerService<GoverningBodiesController> _logger;
+        private readonly ILoggerService _logger;
         private readonly IMapper _mapper;
         private readonly IGoverningBodyAnnouncementService _governingBodyAnnouncementService;
 
         public GoverningBodiesController(IGoverningBodiesService service,
-            ILoggerService<GoverningBodiesController> logger,
+            ILoggerService logger,
             IGoverningBodyAdministrationService governingBodyAdministrationService,
             IGoverningBodyAnnouncementService governingBodyAnnouncementService,
             IMapper mapper,
@@ -58,7 +58,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("CreateGoverningBody")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
+        public async Task<IActionResult> Create(GoverningBodyDto governingBodyDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -80,7 +80,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditGoverningBody/{governingBodyId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> Edit(GoverningBodyDTO governingBody)
+        public async Task<IActionResult> Edit(GoverningBodyDto governingBody)
         {
             if (!ModelState.IsValid)
             {
@@ -115,7 +115,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDto, GoverningBodyViewModel>(governingBodyProfileDto);
 
             return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count(), announcementsCount = governingBodyProfileDto.GoverningBody.GoverningBodyAnnouncements?.Count() });
         }
@@ -147,7 +147,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDto, GoverningBodyViewModel>(governingBodyProfileDto);
 
             return Ok(new { Admins = governingBodyViewModel.Administration, governingBodyViewModel.Head, governingBodyViewModel.GoverningBodyName });
         }
@@ -187,7 +187,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddMainAdmin")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddMainAdmin(GoverningBodyAdministrationDTO newAdmin)
+        public async Task<IActionResult> AddMainAdmin(GoverningBodyAdministrationDto newAdmin)
         {
             try
             {
@@ -209,7 +209,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{governingBodyId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDTO newAdmin)
+        public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDto newAdmin)
         {
             try
             {
@@ -232,7 +232,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDTO adminDto)
+        public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDto adminDto)
         {
             try
             {
@@ -291,7 +291,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var governingBodyProfile = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+            var governingBodyProfile = _mapper.Map<GoverningBodyProfileDto, GoverningBodyViewModel>(governingBodyProfileDto);
 
             return Ok(new { governingBodyProfile.Documents });
         }
@@ -303,7 +303,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly created document</returns>
         [HttpPost("AddDocument/{governingBodyId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddDocument(GoverningBodyDocumentsDTO document)
+        public async Task<IActionResult> AddDocument(GoverningBodyDocumentsDto document)
         {
             await _governingBodyDocumentsService.AddGoverningBodyDocumentAsync(document);
             _logger.LogInformation($"Document with id {{{document.Id}}} was added.");
@@ -376,7 +376,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDto announcement)
         {
             if (ModelState.IsValid)
             {
@@ -390,7 +390,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDto announcement)
         {
             if (ModelState.IsValid)
             {
@@ -414,7 +414,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAnnouncement/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            GoverningBodyAnnouncementUserWithImagesDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
+            GoverningBodyAnnouncementUserWithImagesDto governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
 
             if (governingBodyAnnouncementUserDTO == null)
             {
@@ -471,7 +471,7 @@ namespace EPlast.WebApi.Controllers
                 return Ok(new
                 {
                     admins = _mapper
-                        .Map<IEnumerable<GoverningBodyAdministrationDTO>, IEnumerable<GoverningBodyTableViewModel>>(item1),
+                        .Map<IEnumerable<GoverningBodyAdministrationDto>, IEnumerable<GoverningBodyTableViewModel>>(item1),
                     rowCount = item2
                 });
             }

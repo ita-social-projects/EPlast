@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.Interfaces.Notifications;
-using System.Net.WebSockets;
+﻿using System.Net.WebSockets;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Notifications;
 
 namespace EPlast.WebApi.WebSocketHandlers
 {
@@ -9,7 +9,7 @@ namespace EPlast.WebApi.WebSocketHandlers
     {
         protected INotificationConnectionManager WebSocketConnectionManager { get; set; }
 
-        public BaseWebSocketHandler(INotificationConnectionManager webSocketConnectionManager)
+        protected BaseWebSocketHandler(INotificationConnectionManager webSocketConnectionManager)
         {
             WebSocketConnectionManager = webSocketConnectionManager;
         }

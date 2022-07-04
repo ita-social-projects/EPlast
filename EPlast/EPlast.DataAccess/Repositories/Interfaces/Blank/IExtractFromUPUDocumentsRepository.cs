@@ -2,8 +2,5 @@
 
 namespace EPlast.DataAccess.Repositories.Interfaces.Blank
 {
-   public interface IExtractFromUPUDocumentsRepository : IRepositoryBase<ExtractFromUPUDocuments>
-    {
-
-    }
+    public interface IExtractFromUpuDocumentsRepository : IRepositoryBase<ExtractFromUpuDocuments> { }
 }

@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.GoverningBody
     {
         public GoverningBodyUserProfile()
         {
-            CreateMap<DataAccess.Entities.User, GoverningBodyUserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, GoverningBodyUserDto>().ReverseMap();
         }
     }
 }

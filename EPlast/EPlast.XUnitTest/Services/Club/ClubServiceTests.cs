@@ -40,11 +40,11 @@ namespace EPlast.XUnitTest.Services.ClubTests
         private ClubService CreateClubService()
         {
             _mapper.Setup(m => m.Map<IEnumerable<DataAccess.Entities.Club>,
-                    IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.Club>>()))
+                    IEnumerable<ClubDto>>(It.IsAny<IEnumerable<DataAccess.Entities.Club>>()))
                 .Returns(CreateFakeClubDto(10));
-            _mapper.Setup(m => m.Map<DataAccess.Entities.Club, ClubDTO>(It.IsAny<DataAccess.Entities.Club>()))
+            _mapper.Setup(m => m.Map<DataAccess.Entities.Club, ClubDto>(It.IsAny<DataAccess.Entities.Club>()))
                 .Returns(CreateFakeClubDto(10).FirstOrDefault());
-            _mapper.Setup(m => m.Map<ClubDTO, DataAccess.Entities.Club>(It.IsAny<ClubDTO>()))
+            _mapper.Setup(m => m.Map<ClubDto, DataAccess.Entities.Club>(It.IsAny<ClubDto>()))
                 .Returns(() => new DataAccess.Entities.Club());
             _repoWrapper.Setup(m => m.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null))
                 .ReturnsAsync(new CityMembers() { });
@@ -85,7 +85,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.GetByIdAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubDTO>(result);
+            Assert.IsType<ClubDto>(result);
         }
 
         [Fact]
@@ -96,7 +96,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.GetClubProfileAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubProfileDTO>(result);
+            Assert.IsType<ClubProfileDto>(result);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.GetClubMembersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubProfileDTO>(result);
+            Assert.IsType<ClubProfileDto>(result);
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.GetClubFollowersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubProfileDTO>(result);
+            Assert.IsType<ClubProfileDto>(result);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.GetClubAdminsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubProfileDTO>(result);
+            Assert.IsType<ClubProfileDto>(result);
         }
 
         [Fact]
@@ -140,7 +140,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.GetClubDocumentsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubProfileDTO>(result);
+            Assert.IsType<ClubProfileDto>(result);
         }
 
         [Fact]
@@ -151,16 +151,16 @@ namespace EPlast.XUnitTest.Services.ClubTests
             var result = await ClubService.EditAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<ClubProfileDTO>(result);
+            Assert.IsType<ClubProfileDto>(result);
         }
 
         [Fact]
         public async Task CreateTest()
         {
             ClubService ClubService = CreateClubService();
-            ClubProfileDTO ClubProfileDto = new ClubProfileDTO
+            ClubProfileDto ClubProfileDto = new ClubProfileDto
             {
-                Club = new ClubDTO
+                Club = new ClubDto
                 {
                     ID = 0
                 }
@@ -209,70 +209,70 @@ namespace EPlast.XUnitTest.Services.ClubTests
             return Club;
         }
 
-        public IQueryable<ClubDTO> CreateFakeClubDto(int count)
+        public IQueryable<ClubDto> CreateFakeClubDto(int count)
         {
-            List<ClubDTO> cities = new List<ClubDTO>();
+            List<ClubDto> cities = new List<ClubDto>();
 
             for (int i = 0; i < count; i++)
             {
-                cities.Add(new ClubDTO
+                cities.Add(new ClubDto
                 {
-                    ClubAdministration = new List<ClubAdministrationDTO>
+                    ClubAdministration = new List<ClubAdministrationDto>
                     {
-                        new ClubAdministrationDTO
+                        new ClubAdministrationDto
                         {
                            UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                           User=new ClubUserDTO(),
-                           AdminType = new AdminTypeDTO
+                           User=new ClubUserDto(),
+                           AdminType = new AdminTypeDto
                            {
                                AdminTypeName = Roles.CityHead
                            }
 
                         },
-                        new ClubAdministrationDTO
+                        new ClubAdministrationDto
                         {
                             UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                            User=new ClubUserDTO(),
-                            AdminType = new AdminTypeDTO
+                            User=new ClubUserDto(),
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = "----------"
                             }
                         },
-                        new ClubAdministrationDTO
+                        new ClubAdministrationDto
                         {
                             UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                            User=new ClubUserDTO(),
-                            AdminType = new AdminTypeDTO
+                            User=new ClubUserDto(),
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = Roles.CityHead
                             }
                         },
-                        new ClubAdministrationDTO
+                        new ClubAdministrationDto
                         {
                             UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                            User=new ClubUserDTO(),
-                            AdminType = new AdminTypeDTO
+                            User=new ClubUserDto(),
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = "----------"
                             }
                         }
                     },
-                    ClubMembers = new List<ClubMembersDTO>
+                    ClubMembers = new List<ClubMembersDto>
                     {
-                        new ClubMembersDTO
+                        new ClubMembersDto
                         {
                             UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
-                            User=new ClubUserDTO()
+                            User=new ClubUserDto()
                         }
                     },
-                    ClubDocuments = new List<ClubDocumentsDTO>
+                    ClubDocuments = new List<ClubDocumentsDto>
                     {
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO()
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto()
                     }
                 });
             }

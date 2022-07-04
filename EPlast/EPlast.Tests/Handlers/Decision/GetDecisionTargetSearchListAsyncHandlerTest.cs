@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
 using EPlast.BLL.Queries.Decision;
@@ -7,12 +13,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Decision
 {
@@ -34,10 +34,10 @@ namespace EPlast.Tests.Handlers.Decision
         public async Task GetDecisionTargetListSearchAsyncTest()
         {
             //Arrange
-            List<DecisionTargetDTO> decisionTargets = GetTestDecisionTargetsDtoList();
+            List<DecisionTargetDto> decisionTargets = GetTestDecisionTargetsDtoList();
             _repository.Setup(rep => rep.DecesionTarget.GetAllAsync(It.IsAny<Expression<Func<DecesionTarget, bool>>>(),
                 It.IsAny<Func<IQueryable<DecesionTarget>, IIncludableQueryable<DecesionTarget, object>>>())).ReturnsAsync(new List<DecesionTarget>());
-            _mockMapper.Setup(m => m.Map<IEnumerable<DecisionTargetDTO>>(It.IsAny<IEnumerable<DecesionTarget>>())).Returns(GetTestDecisionTargetsDtoList());
+            _mockMapper.Setup(m => m.Map<IEnumerable<DecisionTargetDto>>(It.IsAny<IEnumerable<DecesionTarget>>())).Returns(GetTestDecisionTargetsDtoList());
             //Act
             var query = new GetDecisionTargetSearchListAsyncQuery(It.IsAny<string>());
             var actualReturn = await _handler.Handle(query, It.IsAny<CancellationToken>());
@@ -45,13 +45,13 @@ namespace EPlast.Tests.Handlers.Decision
             //Assert
             Assert.AreEqual(decisionTargets.Aggregate("", (x, y) => y.TargetName), actualReturn.Aggregate("", (x, y) => y.TargetName));
         }
-        private static List<DecisionTargetDTO> GetTestDecisionTargetsDtoList()
+        private static List<DecisionTargetDto> GetTestDecisionTargetsDtoList()
         {
-            return new List<DecisionTargetDTO>
+            return new List<DecisionTargetDto>
             {
-                new DecisionTargetDTO {ID = 1, TargetName = "First DecesionTarget"},
-                new DecisionTargetDTO {ID = 2, TargetName = "Second DecesionTarget"},
-                new DecisionTargetDTO {ID = 3, TargetName = "Third DecesionTarget"}
+                new DecisionTargetDto {ID = 1, TargetName = "First DecesionTarget"},
+                new DecisionTargetDto {ID = 2, TargetName = "Second DecesionTarget"},
+                new DecisionTargetDto {ID = 3, TargetName = "Third DecesionTarget"}
             };
         }
     }

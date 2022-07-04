@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.ConfirmedUser
     {
         public ConfirmedUserProfile()
         {
-            CreateMap<DataAccess.Entities.ConfirmedUser, ConfirmedUserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.ConfirmedUser, ConfirmedUserDto>().ReverseMap();
         }
     }
 }

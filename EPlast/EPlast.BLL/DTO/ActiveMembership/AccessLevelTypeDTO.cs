@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public enum AccessLevelTypeDTO
+    public enum AccessLevelTypeDto
     {
         [Description("Адміністратор")]
         Admin,

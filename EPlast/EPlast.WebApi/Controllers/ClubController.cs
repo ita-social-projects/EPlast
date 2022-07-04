@@ -1,20 +1,20 @@
+using System;
+using System.Threading.Tasks;
 using AutoMapper;
+using EPlast.BLL.Commands.Club;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.WebApi.Models.Club;
+using EPlast.BLL.Queries.Club;
+using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using EPlast.WebApi.Models.Club;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using AnnualReportDTOs = EPlast.BLL.DTO.AnnualReport;
-using MediatR;
-using EPlast.BLL.Queries.Club;
-using EPlast.BLL.Commands.Club;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -23,7 +23,7 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]
     public class ClubController : ControllerBase
     {
-        private readonly ILoggerService<ClubController> _logger;
+        private readonly ILoggerService _logger;
         private readonly IMapper _mapper;
         private readonly IClubService _clubService;
         private readonly IClubParticipantsService _clubParticipantsService;
@@ -32,7 +32,7 @@ namespace EPlast.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMediator _mediator;
 
-        public ClubController(ILoggerService<ClubController> logger,
+        public ClubController(ILoggerService logger,
             IMapper mapper,
             IClubService clubService,
             IClubParticipantsService clubParticipantsService,
@@ -143,7 +143,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            var clubProfile = _mapper.Map<ClubProfileDto, ClubViewModel>(clubProfileDto);
 
             return Ok(clubProfile);
         }
@@ -187,7 +187,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            var clubProfile = _mapper.Map<ClubProfileDto, ClubViewModel>(clubProfileDto);
 
             return Ok(new { clubProfile.Members, clubProfile.Name });
         }
@@ -209,7 +209,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            var clubProfile = _mapper.Map<ClubProfileDto, ClubViewModel>(clubProfileDto);
 
             return Ok(new { clubProfile.Followers, clubProfile.Name });
         }
@@ -231,7 +231,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            var clubProfile = _mapper.Map<ClubProfileDto, ClubViewModel>(clubProfileDto);
 
             return Ok(new { clubProfile.Administration, clubProfile.Head, clubProfile.HeadDeputy, clubProfile.Name });
         }
@@ -253,7 +253,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var clubProfile = _mapper.Map<ClubProfileDTO, ClubViewModel>(clubProfileDto);
+            var clubProfile = _mapper.Map<ClubProfileDto, ClubViewModel>(clubProfileDto);
 
             return Ok(new { clubProfile.Documents });
         }
@@ -307,7 +307,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    var clubDto = _mapper.Map<ClubViewModel, ClubDTO>(club);
+                    var clubDto = _mapper.Map<ClubViewModel, ClubDto>(club);
                     clubDto.ID = await _clubService.CreateAsync(clubDto);
                     _logger.LogInformation($"Club {{{clubDto.Name}}} was created.");
                     return Ok(clubDto.ID);
@@ -349,7 +349,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var clubDto = _mapper.Map<ClubViewModel, ClubDTO>(club);
+            var clubDto = _mapper.Map<ClubViewModel, ClubDto>(club);
 
             await _clubService.EditAsync(clubDto);
             _logger.LogInformation($"Club {{{clubDto.Name}}} was edited.");
@@ -452,7 +452,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> AddAdmin(ClubAdministrationViewModel newAdmin)
         {
-            var admin = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(newAdmin);
+            var admin = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDto>(newAdmin);
             await _clubParticipantsService.AddAdministratorAsync(admin);
 
             _logger.LogInformation($"User {{{admin.UserId}}} became Admin for Club {{{admin.ClubId}}}" +
@@ -513,7 +513,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
 
-            var adminDto = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDTO>(admin);
+            var adminDto = _mapper.Map<ClubAdministrationViewModel, ClubAdministrationDto>(admin);
 
             await _clubParticipantsService.EditAdministratorAsync(adminDto);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
@@ -530,7 +530,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
         public async Task<IActionResult> AddDocument(ClubDocumentsViewModel document)
         {
-            var documentDto = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDTO>(document);
+            var documentDto = _mapper.Map<ClubDocumentsViewModel, ClubDocumentsDto>(document);
 
             await _clubDocumentsService.AddDocumentAsync(documentDto);
             _logger.LogInformation($"Document with id {{{documentDto.ID}}} was added.");

@@ -1,10 +1,10 @@
-﻿using EPlast.BLL.DTO.Club;
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.Club;
 using MediatR;
-using System.Collections.Generic;
 
 namespace EPlast.BLL.Queries.Club
 {
-    public class GetClubHistoryMembersQuery : IRequest<IEnumerable<ClubMemberHistoryDTO>>
+    public class GetClubHistoryMembersQuery : IRequest<IEnumerable<ClubMemberHistoryDto>>
     {
         public int ClubId { get; set; }
 

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BLL.DTO.GoverningBody.Sector
+﻿namespace EPlast.BLL.DTO.GoverningBody.Sector
 {
-    public class SectorUserDTO
+    public class SectorUserDto
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

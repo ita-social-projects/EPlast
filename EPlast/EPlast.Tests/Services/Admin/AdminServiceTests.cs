@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
@@ -15,11 +20,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
 {
@@ -420,10 +420,10 @@ namespace EPlast.Tests.Services
             DataAccess.Entities.City city = new DataAccess.Entities.City() { ID = 1, Region = region };
             List<DataAccess.Entities.City> cities = new List<DataAccess.Entities.City> { city };
 
-            List<RegionAdministrationDTO> regionAdministrationDTOs = new List<RegionAdministrationDTO>();
-            RegionDTO regionDTO = new RegionDTO() { Administration = regionAdministrationDTOs };
-            CityDTO cityDTO = new CityDTO() { ID = 1, Region = regionDTO };
-            List<CityDTO> cityDTOs = new List<CityDTO>() { cityDTO };
+            List<RegionAdministrationDto> regionAdministrationDTOs = new List<RegionAdministrationDto>();
+            RegionDto regionDTO = new RegionDto() { Administration = regionAdministrationDTOs };
+            CityDto cityDTO = new CityDto() { ID = 1, Region = regionDTO };
+            List<CityDto> cityDTOs = new List<CityDto>() { cityDTO };
 
             _repoWrapper
                 .Setup(x => x.City.GetAllAsync
@@ -434,17 +434,17 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(cities);
             _mapper
-                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(It.IsAny<List<DataAccess.Entities.City>>()))
+                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDto>>(It.IsAny<List<DataAccess.Entities.City>>()))
                 .Returns(cityDTOs);
             _mapper
-                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
-                .Returns(new List<RegionAdministrationDTO>());
+                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+                .Returns(new List<RegionAdministrationDto>());
 
             // Act
             var result = await service.GetCityRegionAdminsOfUserAsync("string");
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         [Test]
@@ -458,10 +458,10 @@ namespace EPlast.Tests.Services
             DataAccess.Entities.City city = new DataAccess.Entities.City() { ID = 1, Region = region };
             List<DataAccess.Entities.City> cities = new List<DataAccess.Entities.City> { city };
 
-            List<RegionAdministrationDTO> regionAdministrationDTOs = new List<RegionAdministrationDTO>();
-            RegionDTO regionDTO = new RegionDTO() { Administration = regionAdministrationDTOs };
-            CityDTO cityDTO = new CityDTO() { ID = 1, Region = regionDTO };
-            List<CityDTO> cityDTOs = new List<CityDTO>() { cityDTO };
+            List<RegionAdministrationDto> regionAdministrationDTOs = new List<RegionAdministrationDto>();
+            RegionDto regionDTO = new RegionDto() { Administration = regionAdministrationDTOs };
+            CityDto cityDTO = new CityDto() { ID = 1, Region = regionDTO };
+            List<CityDto> cityDTOs = new List<CityDto>() { cityDTO };
 
             _repoWrapper
                 .Setup(x => x.City.GetAllAsync
@@ -472,17 +472,17 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(cities);
             _mapper
-                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(It.IsAny<List<DataAccess.Entities.City>>()))
+                .Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDto>>(It.IsAny<List<DataAccess.Entities.City>>()))
                 .Returns(cityDTOs);
             _mapper
-                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
-                .Returns(new List<RegionAdministrationDTO>());
+                .Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+                .Returns(new List<RegionAdministrationDto>());
 
             // Act
             var result = await service.GetCityRegionAdminsOfUserAsync("string");
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         [Test]
@@ -619,15 +619,15 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
-                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
+                .Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = Roles.Admin });
 
             // Act
             var result = await service.GetUsersTableAsync(new TableFilterParameters(){Page = 1, PageSize = 2, Cities = null, Regions = null, Clubs = null, Degrees = null, Tab = null, FilterRoles = null}, It.IsAny<string>());
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDto>, int>>(result);
         }
 
         [TestCase]
@@ -660,8 +660,8 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
-                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
+                .Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = Roles.Admin });
 
             // Act
             var result = await service.GetUsersTableAsync(new TableFilterParameters()
@@ -672,7 +672,7 @@ namespace EPlast.Tests.Services
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDto>, int>>(result);
         }
 
         [TestCase]
@@ -727,8 +727,8 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(role);
             _mapper
-                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = Roles.Admin });
+                .Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = Roles.Admin });
 
             // Act
             var result = await service.GetUsersTableAsync(new TableFilterParameters()
@@ -745,7 +745,7 @@ namespace EPlast.Tests.Services
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<UserTableDto>, int>>(result);
         }
 
         [Test]
@@ -775,14 +775,14 @@ namespace EPlast.Tests.Services
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
             _mapper
-                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = "Admin" });
+                .Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = "Admin" });
 
             // Act
             var result = await service.GetUsersAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDto>>(result);
         }
 
         [TestCase("searchString")]
@@ -796,15 +796,15 @@ namespace EPlast.Tests.Services
                         IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(users);
             _mapper
-                .Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO());
+                .Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto());
 
             // Act
             var result = await service.GetShortUserInfoAsync(searchString);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDto>>(result);
             Assert.AreEqual(users.Count(), result.Count());
         }
 
@@ -835,8 +835,8 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<User>() { user });
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(userRole);
-            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = "1" });
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = "1" });
 
             //Acts
             var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAllRoles)).ToList();
@@ -858,8 +858,8 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<User>() { user });
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(userRole);
-            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = "1" });
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = "1" });
 
             //Acts
             var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByAnyRoles)).ToList();
@@ -881,8 +881,8 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<User>() { user });
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(userRole);
-            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = "1" });
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = "1" });
 
             //Acts
             var res = (await service.GetUsersByRolesAsync(string.Join(",", roles), true, service.FilterByExactRoles)).ToList();
@@ -903,8 +903,8 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<User>() { user });
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(userRole);
-            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = "1" });
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = "1" });
 
             //Acts
             var res = (await service.GetUsersForGoverningBodiesAsync());
@@ -925,8 +925,8 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(new List<User>() { user });
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(userRole);
-            _mapper.Setup(x => x.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO() { ID = "1" });
+            _mapper.Setup(x => x.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto() { ID = "1" });
 
             //Acts
             var res = (await service.GetUsersForGoverningBodiesAsync());

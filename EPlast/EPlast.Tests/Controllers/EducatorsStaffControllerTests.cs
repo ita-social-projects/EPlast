@@ -1,22 +1,22 @@
-﻿using EPlast.BLL.DTO.EducatorsStaff;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.EducatorsStaff;
-using System;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
     internal class EducatorsStaffControllerTests
     {
-        private Mock<ILoggerService<EducatorsStaffController>> _loggerService;
+        private Mock<ILoggerService> _loggerService;
         private Mock<IEducatorsStaffService> _educatorsStaffService;
         private Mock<IEducatorsStaffTypesService> _educatorsStaffTypesService;
 
@@ -25,7 +25,7 @@ namespace EPlast.Tests.Controllers
         [SetUp]
         public void SetUp()
         {
-            _loggerService = new Mock<ILoggerService<EducatorsStaffController>>();
+            _loggerService = new Mock<ILoggerService>();
             _educatorsStaffService = new Mock<IEducatorsStaffService>();
             _educatorsStaffTypesService = new Mock<IEducatorsStaffTypesService>();
 
@@ -40,7 +40,7 @@ namespace EPlast.Tests.Controllers
         public async Task Create_Kadra_CallCreateKadra()
         {
             // Arange
-            var dto = new EducatorsStaffDTO
+            var dto = new EducatorsStaffDto
             {
                 ID = 1
             };
@@ -58,12 +58,12 @@ namespace EPlast.Tests.Controllers
         public async Task Create_Kadra_ReturnsOkStatus()
         {
             // Arange
-            var inputModel = new EducatorsStaffDTO
+            var inputModel = new EducatorsStaffDto
             {
                 ID = 1
             };
 
-            var outputModel = new EducatorsStaffDTO
+            var outputModel = new EducatorsStaffDto
             {
                 ID = 2
             };
@@ -83,12 +83,12 @@ namespace EPlast.Tests.Controllers
         public async Task Create_Kadra_ReturnsRightEducatorsStaffDTO()
         {
             // Arange
-            var inputModel = new EducatorsStaffDTO
+            var inputModel = new EducatorsStaffDto
             {
                 ID = 1
             };
 
-            var outputModel = new EducatorsStaffDTO
+            var outputModel = new EducatorsStaffDto
             {
                 ID = 2
             };
@@ -98,7 +98,7 @@ namespace EPlast.Tests.Controllers
             // Act
 
             var result = await _educatorsStaffController.CreateKadra(inputModel);
-            var actualResult = (result as ObjectResult).Value as EducatorsStaffDTO;
+            var actualResult = (result as ObjectResult).Value as EducatorsStaffDto;
 
             // Assert
             _educatorsStaffService.Verify();
@@ -143,7 +143,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status200OK;
 
             // Act
-            var result = await _educatorsStaffController.Update(It.IsAny<EducatorsStaffDTO>());
+            var result = await _educatorsStaffController.Update(It.IsAny<EducatorsStaffDto>());
             var actual = result as StatusCodeResult;
 
             // Assert
@@ -156,7 +156,7 @@ namespace EPlast.Tests.Controllers
         public async Task Update_Kadra_CallUpdateKadra()
         {
             // Arange
-            var dto = new EducatorsStaffDTO
+            var dto = new EducatorsStaffDto
             {
                 ID = 1
             };
@@ -164,9 +164,9 @@ namespace EPlast.Tests.Controllers
 
             // Act
             await _educatorsStaffController.Update(dto);
-            
+
             // Assert
-            _educatorsStaffService.Verify(x => x.UpdateKadra(It.IsAny<EducatorsStaffDTO>()));
+            _educatorsStaffService.Verify(x => x.UpdateKadra(It.IsAny<EducatorsStaffDto>()));
         }
 
         [Test]
@@ -226,7 +226,7 @@ namespace EPlast.Tests.Controllers
             // Act
             _educatorsStaffService.
              Setup(x => x.GetKVsOfGivenUser(nullString)).
-             ReturnsAsync((List<EducatorsStaffDTO>)null);
+             ReturnsAsync((List<EducatorsStaffDto>)null);
 
             var expected = StatusCodes.Status404NotFound;
             var result = await _educatorsStaffController.GetUsersKVs(nullString);
@@ -409,7 +409,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _educatorsStaffService.Setup(x => x.GetKadraById(It.IsAny<int>()))
-                .ReturnsAsync(new EducatorsStaffDTO());
+                .ReturnsAsync(new EducatorsStaffDto());
 
             // Act
             var result = await _educatorsStaffController.GetEduStaffById(kadraId);
@@ -424,7 +424,7 @@ namespace EPlast.Tests.Controllers
         public void GetEducatorsStaffForTable_ReturnsOkObjectResult()
         {
             //Arrange
-            EducatorsStaffTableSettingsDTO tableSettings = new EducatorsStaffTableSettingsDTO() { KadraTypeId = 0, Page = 1, PageSize = 1, SearchedData ="", SortByOrder = new string[] { "id", "ascend" } };
+            EducatorsStaffTableSettingsDto tableSettings = new EducatorsStaffTableSettingsDto() { KadraTypeId = 0, Page = 1, PageSize = 1, SearchedData = "", SortByOrder = new string[] { "id", "ascend" } };
             _educatorsStaffService
                 .Setup(x => x.GetEducatorsStaffTableAsync(It.IsAny<int>(),It.IsAny<string[]>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<int>() )).ReturnsAsync(CreateTuple);
             
@@ -441,14 +441,14 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<List<EducatorsStaffTableObject>>(resultValue);
         }
 
-        private List<EducatorsStaffDTO> CreateFakeEducatorsStaffDTO()
-            => new List<EducatorsStaffDTO>()
+        private List<EducatorsStaffDto> CreateFakeEducatorsStaffDTO()
+            => new List<EducatorsStaffDto>()
             {
-                new EducatorsStaffDTO()
+                new EducatorsStaffDto()
                 {
                     ID = 1
                 },
-                 new EducatorsStaffDTO()
+                 new EducatorsStaffDto()
                 {
                     ID = 2
                 },

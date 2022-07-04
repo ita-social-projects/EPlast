@@ -26,15 +26,15 @@ namespace EPlast.WebApi.Controllers
     public class AnnualReportController : ControllerBase
     {
         private readonly IAnnualReportService _annualReportService;
-        private readonly ILoggerService<AnnualReportController> _loggerService;
+        private readonly ILoggerService _loggerService;
         private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
         private readonly UserManager<User> _userManager;
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
         public AnnualReportController(
-            IAnnualReportService annualReportService, 
-            ILoggerService<AnnualReportController> loggerService,
+            IAnnualReportService annualReportService,
+            ILoggerService loggerService,
             IStringLocalizer<AnnualReportControllerMessage> localizer, 
             UserManager<User> userManager,
             IClubAnnualReportService clubAnnualReportService, 
@@ -187,7 +187,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Annual report model is not valid</response>
         [HttpPost]
         [Authorize(Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
-        public async Task<IActionResult> Create(AnnualReportDTO annualReport)
+        public async Task<IActionResult> Create(AnnualReportDto annualReport)
         {
             if (ModelState.IsValid)
             {
@@ -231,7 +231,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
         [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
-        public async Task<IActionResult> Edit(AnnualReportDTO annualReport)
+        public async Task<IActionResult> Edit(AnnualReportDto annualReport)
         {
             if (ModelState.IsValid)
             {
@@ -383,7 +383,7 @@ namespace EPlast.WebApi.Controllers
         public IActionResult GetStatuses()
         {
             var statuses = new List<string>();
-            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportStatusDTO)).Cast<AnnualReportStatusDTO>())
+            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportStatusDto)).Cast<AnnualReportStatusDto>())
             {
                 statuses.Add(enumValue.GetDescription());
             }
@@ -492,7 +492,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDTO>(annualReport);
+                    var clubAnnualReport = _mapper.Map<ClubAnnualReportViewModel, ClubAnnualReportDto>(annualReport);
                     await _clubAnnualReportService.CreateAsync(await _userManager.GetUserAsync(User), clubAnnualReport);
                 }
                 catch (InvalidOperationException)
@@ -606,7 +606,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut("~/api/Club/editClubAnnualReport")]
         [Authorize(Roles = Roles.AdminAndKurinHeadAndKurinHeadDeputy)]
-        public async Task<IActionResult> EditClubAnnualReport(ClubAnnualReportDTO clubAnnualReport)
+        public async Task<IActionResult> EditClubAnnualReport(ClubAnnualReportDto clubAnnualReport)
         {
             if (ModelState.IsValid)
             {

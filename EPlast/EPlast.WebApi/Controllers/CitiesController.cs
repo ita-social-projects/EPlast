@@ -26,7 +26,7 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class CitiesController : ControllerBase
     {
-        private readonly ILoggerService<CitiesController> _logger;
+        private readonly ILoggerService _logger;
         private readonly ICacheService _cache;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
@@ -38,7 +38,7 @@ namespace EPlast.WebApi.Controllers
         private const string ActiveCitiesCacheKey = "ActiveCities";
         private const string ArchivedCitiesCacheKey = "ArchivedCities";
 
-        public CitiesController(ILoggerService<CitiesController> logger,
+        public CitiesController(ILoggerService logger,
             IMapper mapper,
             ICityDocumentsService cityDocumentsService,
             ICityAccessService cityAccessService, UserManager<User> userManager,
@@ -98,11 +98,11 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             string cacheKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
-            Tuple<IEnumerable<CityObjectDTO>, int> cache;
+            Tuple<IEnumerable<CityObjectDto>, int> cache;
 
             try
             {
-                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cacheKey);
+                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDto>, int>>(cacheKey);
             }
             catch
             {
@@ -131,10 +131,10 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
-            Tuple<IEnumerable<CityObjectDTO>, int> cache;
+            Tuple<IEnumerable<CityObjectDto>, int> cache;
             try
             {
-                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cacheKey);
+                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDto>, int>>(cacheKey);
             }
             catch
             {
@@ -173,7 +173,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            var cityProfile = _mapper.Map<CityProfileDto, CityViewModel>(cityProfileDto);
 
             return Ok(cityProfile);
         }
@@ -212,7 +212,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            var cityProfile = _mapper.Map<CityProfileDto, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Members, cityProfile.CanEdit, cityProfile.Name });
@@ -236,7 +236,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            var cityProfile = _mapper.Map<CityProfileDto, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Followers, cityProfile.CanEdit, cityProfile.Name });
@@ -297,7 +297,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var cityProfile = _mapper.Map<CityProfileDTO, CityViewModel>(cityProfileDto);
+            var cityProfile = _mapper.Map<CityProfileDto, CityViewModel>(cityProfileDto);
             cityProfile.CanEdit = await _cityAccessService.HasAccessAsync(await _userManager.GetUserAsync(User), cityId);
 
             return Ok(new { cityProfile.Documents, cityProfile.CanEdit });
@@ -321,7 +321,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<CityDTO, CityViewModel>(cityDto));
+            return Ok(_mapper.Map<CityDto, CityViewModel>(cityDto));
         }
 
         /// <summary>
@@ -357,7 +357,7 @@ namespace EPlast.WebApi.Controllers
 
             city.IsActive = true;
 
-            var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
+            var cityDTO = _mapper.Map<CityViewModel, CityDto>(city);
 
             var createCityCommand = new CreateCityWthIdCommand(cityDTO);
             cityDTO.ID = await _mediator.Send(createCityCommand);
@@ -384,7 +384,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            var cityDTO = _mapper.Map<CityViewModel, CityDTO>(city);
+            var cityDTO = _mapper.Map<CityViewModel, CityDto>(city);
 
             var editCityCommand = new EditCityCommand(cityDTO);
             await _mediator.Send(editCityCommand);
@@ -545,7 +545,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditCity)]
         public async Task<IActionResult> AddAdmin(CityAdministrationViewModel newAdmin)
         {
-            var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(newAdmin);
+            var admin = _mapper.Map<CityAdministrationViewModel, CityAdministrationDto>(newAdmin);
             await _cityParticipantsService.AddAdministratorAsync(admin);
 
             _logger.LogInformation($"User {{{admin.UserId}}} became Admin for city {{{admin.CityId}}}" +
@@ -582,7 +582,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest();
             }
 
-            var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDTO>(admin);
+            var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDto>(admin);
 
             await _cityParticipantsService.EditAdministratorAsync(adminDTO);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
@@ -599,7 +599,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.CanEditCity)]
         public async Task<IActionResult> AddDocument(CityDocumentsViewModel document)
         {
-            var documentDTO = _mapper.Map<CityDocumentsViewModel, CityDocumentsDTO>(document);
+            var documentDTO = _mapper.Map<CityDocumentsViewModel, CityDocumentsDto>(document);
 
             await _cityDocumentsService.AddDocumentAsync(documentDTO);
             _logger.LogInformation($"Document with id {{{documentDTO.ID}}} was added.");
@@ -652,7 +652,7 @@ namespace EPlast.WebApi.Controllers
         public IActionResult GetLegalStatuses()
         {
             var legalStatuses = new List<string>();
-            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportDTOs.CityLegalStatusTypeDTO)).Cast<AnnualReportDTOs.CityLegalStatusTypeDTO>())
+            foreach (var enumValue in Enum.GetValues(typeof(AnnualReportDTOs.CityLegalStatusTypeDto)).Cast<AnnualReportDTOs.CityLegalStatusTypeDto>())
             {
                 legalStatuses.Add(enumValue.GetDescription());
             }

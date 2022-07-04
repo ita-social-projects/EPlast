@@ -1,17 +1,17 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.ExceptionServices;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using EPlast.Resources;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -35,18 +35,18 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int clubId)
+        public async Task<IEnumerable<ClubAdministrationDto>> GetAdministrationByIdAsync(int clubId)
         {
             var ClubAdministration = await _repositoryWrapper.ClubAdministration.GetAllAsync(
                 predicate: x => x.ClubId == clubId,
                 include: x => x.Include(q => q.User).
                      Include(q => q.AdminType));
 
-            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(ClubAdministration);
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDto>>(ClubAdministration);
         }
 
         /// <inheritdoc />
-        public async Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO)
+        public async Task<ClubAdministrationDto> AddAdministratorAsync(ClubAdministrationDto adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
@@ -113,11 +113,11 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubAdministrationDTO> EditAdministratorAsync(ClubAdministrationDTO adminDTO)
+        public async Task<ClubAdministrationDto> EditAdministratorAsync(ClubAdministrationDto adminDTO)
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            
+
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
@@ -128,7 +128,7 @@ namespace EPlast.BLL.Services.Club
                 await _repositoryWrapper.SaveAsync();
                 return adminDTO;
             }
-         
+
             await RemoveAdministratorAsync(adminDTO.ID);
             adminDTO = await AddAdministratorAsync(adminDTO);
             return adminDTO;
@@ -177,7 +177,7 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string userId)
+        public async Task<IEnumerable<ClubAdministrationDto>> GetAdministrationsOfUserAsync(string userId)
         {
             var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
                  include:
@@ -189,10 +189,10 @@ namespace EPlast.BLL.Services.Club
                 admin.Club.ClubAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDto>>(admins);
         }
 
-        public async Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string userId)
+        public async Task<IEnumerable<ClubAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string userId)
         {
             var admins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                  include:
@@ -204,16 +204,16 @@ namespace EPlast.BLL.Services.Club
                 admin.Club.ClubAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(admins).Reverse();
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationDto>>(admins).Reverse();
         }
 
-        public async Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string userId)
+        public async Task<IEnumerable<ClubAdministrationStatusDto>> GetAdministrationStatuses(string userId)
         {
             var clubAdmins = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                              include:
                              source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.Club)
                              );
-            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDTO>>(clubAdmins);
+            return _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubAdministrationStatusDto>>(clubAdmins);
         }
 
         public async Task CheckClubHasAdminAsync(int clubId, string adminTypeName, ClubAdministration newAdmin)
@@ -237,18 +237,18 @@ namespace EPlast.BLL.Services.Club
             }
         }
 
-        public async Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int clubId)
+        public async Task<IEnumerable<ClubMembersDto>> GetMembersByClubIdAsync(int clubId)
         {
             var сlubMembers = await _repositoryWrapper.ClubMembers.GetAllAsync(
                     predicate: c => c.ClubId == clubId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
 
-            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDTO>>(сlubMembers);
+            return _mapper.Map<IEnumerable<ClubMembers>, IEnumerable<ClubMembersDto>>(сlubMembers);
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId)
+        public async Task<ClubMembersDto> AddFollowerAsync(int clubId, string userId)
         {
             var oldClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
@@ -275,11 +275,11 @@ namespace EPlast.BLL.Services.Club
             await _repositoryWrapper.ClubMembers.CreateAsync(ClubMember);
             await _repositoryWrapper.SaveAsync();
 
-            return _mapper.Map<ClubMembers, ClubMembersDTO>(ClubMember);
+            return _mapper.Map<ClubMembers, ClubMembersDto>(ClubMember);
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> AddFollowerAsync(int clubId, User user)
+        public async Task<ClubMembersDto> AddFollowerAsync(int clubId, User user)
         {
             var userId = await _userManager.GetUserIdAsync(user);
 
@@ -287,7 +287,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId)
+        public async Task<ClubMembersDto> ToggleApproveStatusAsync(int memberId)
         {
             var ClubMember = await _repositoryWrapper.ClubMembers
                 .GetFirstOrDefaultAsync(u => u.ID == memberId, m => m.Include(u => u.User));
@@ -297,7 +297,7 @@ namespace EPlast.BLL.Services.Club
             _repositoryWrapper.ClubMembers.Update(ClubMember);
             await _repositoryWrapper.SaveAsync();
 
-            return _mapper.Map<ClubMembers, ClubMembersDTO>(ClubMember);
+            return _mapper.Map<ClubMembers, ClubMembersDto>(ClubMember);
         }
 
         public async Task<string> ClubOfApprovedMember(string memberId)

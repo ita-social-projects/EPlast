@@ -50,7 +50,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<GoverningBodyDocumentTypeDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyDocumentTypeDto>>(result);
         }
 
         [Test]
@@ -68,10 +68,10 @@ namespace EPlast.Tests.Services.GoverningBody
             _governingBodyFilesBlobStorage
                 .Setup(c => c.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _mapper
-                .Setup(m => m.Map<GoverningBodyDocumentsDTO, GoverningBodyDocuments>(It.IsAny<GoverningBodyDocumentsDTO>()))
+                .Setup(m => m.Map<GoverningBodyDocumentsDto, GoverningBodyDocuments>(It.IsAny<GoverningBodyDocumentsDto>()))
                 .Returns(new GoverningBodyDocuments());
             _mapper
-                .Setup(m => m.Map<IEnumerable<GoverningBodyDocumentType>, IEnumerable<GoverningBodyDocumentTypeDTO>>(It.IsAny<IEnumerable<GoverningBodyDocumentType>>()))
+                .Setup(m => m.Map<IEnumerable<GoverningBodyDocumentType>, IEnumerable<GoverningBodyDocumentTypeDto>>(It.IsAny<IEnumerable<GoverningBodyDocumentType>>()))
                 .Returns(GetGoverningBodyDocumentTypeDtoS);
 
             // Act
@@ -79,7 +79,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<GoverningBodyDocumentsDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyDocumentsDto>(result);
         }
 
         [Test]
@@ -124,12 +124,12 @@ namespace EPlast.Tests.Services.GoverningBody
         private static int FakeId => 1;
         private static string FakeFile => "file";
 
-        private static GoverningBodyDocumentsDTO GetGoverningBodyDocumentsDto => new GoverningBodyDocumentsDTO
+        private static GoverningBodyDocumentsDto GetGoverningBodyDocumentsDto => new GoverningBodyDocumentsDto
         {
             Id = 1,
             BlobName = "newBlob,LastBlob",
             FileName = "FileName",
-            GoverningBodyDocumentType = new GoverningBodyDocumentTypeDTO
+            GoverningBodyDocumentType = new GoverningBodyDocumentTypeDto
             {
                 Id = 1,
                 Name = "DocumentTypeName"
@@ -139,9 +139,9 @@ namespace EPlast.Tests.Services.GoverningBody
             SubmitDate = DateTime.Now
         };
 
-        private static IEnumerable<GoverningBodyDocumentTypeDTO> GetGoverningBodyDocumentTypeDtoS => new List<GoverningBodyDocumentTypeDTO>
+        private static IEnumerable<GoverningBodyDocumentTypeDto> GetGoverningBodyDocumentTypeDtoS => new List<GoverningBodyDocumentTypeDto>
         {
-            new GoverningBodyDocumentTypeDTO
+            new GoverningBodyDocumentTypeDto
                 {
                     Id = 1,
                     Name = "DocumentTypeName"

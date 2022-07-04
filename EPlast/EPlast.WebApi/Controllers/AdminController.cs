@@ -25,14 +25,14 @@ namespace EPlast.WebApi.Controllers
 
         private readonly ICityParticipantsService _cityAdministrationService;
 
-        private readonly ILoggerService<AdminController> _loggerService;
+        private readonly ILoggerService _loggerService;
 
         private readonly IUserManagerService _userManagerService;
 
         private readonly IMediator _mediator;
 
         public AdminController(
-            ILoggerService<AdminController> logger,
+            ILoggerService logger,
             IUserManagerService userManagerService,
             IAdminService adminService,
             ICityParticipantsService cityAdministrationService,

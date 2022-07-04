@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
@@ -8,8 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -22,13 +22,13 @@ namespace EPlast.WebApi.Controllers
         private readonly IPlastDegreeService _plastDegreeService;
         private readonly IAccessLevelService _accessLevelService;
         private readonly IUserDatesService _userDatesService;
-        private readonly ILoggerService<ActiveMembershipController> _loggerService;
+        private readonly ILoggerService _loggerService;
         private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
 
         public ActiveMembershipController(IPlastDegreeService plastDegreeService,
             IAccessLevelService accessLevelService, IUserDatesService userDatesService,
-            ILoggerService<ActiveMembershipController> loggerService,
+            ILoggerService loggerService,
             UserManager<User> userManager, IUserService userService)
         {
             _plastDegreeService = plastDegreeService;
@@ -78,7 +78,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("degree")]
         public async Task<IActionResult> GetAllDergees()
         {
-            return Ok(await _plastDegreeService.GetDergeesAsync());
+            return Ok(await _plastDegreeService.GetDegreesAsync());
         }
 
         [HttpGet("accessLevel/{userId}")]
@@ -95,7 +95,7 @@ namespace EPlast.WebApi.Controllers
 
         [Authorize(Roles = Roles.CanEditCity)]
         [HttpPost("degree")]
-        public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDTO userPlastDegreePostDTO)
+        public async Task<IActionResult> AddPlastDegreeForUser(UserPlastDegreePostDto userPlastDegreePostDTO)
         {
             if (!await HasAccessAsync(userPlastDegreePostDTO.UserId))
             {
@@ -144,7 +144,7 @@ namespace EPlast.WebApi.Controllers
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         [HttpPost("dates")]
-        public async Task<IActionResult> ChangeUserEntryandOathDatesAsync(EntryAndOathDatesDTO entryAndOathDatesDTO)
+        public async Task<IActionResult> ChangeUserEntryandOathDatesAsync(EntryAndOathDatesDto entryAndOathDatesDTO)
         {
             var focusUser = await _userManager.FindByIdAsync(entryAndOathDatesDTO.UserId);
             var roles = await _userManager.GetRolesAsync(focusUser);

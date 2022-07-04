@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.WebApi.Models.MethodicDocument;
-using Microsoft.AspNetCore.Authorization;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL;
+using EPlast.BLL.DTO;
+using EPlast.Resources;
+using EPlast.WebApi.Models.MethodicDocument;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            MethodicDocumentDTO documentDto = await _methodicDocService.GetMethodicDocumentAsync(id);
+            MethodicDocumentDto documentDto = await _methodicDocService.GetMethodicDocumentAsync(id);
             if (documentDto == null)
             {
                 return NotFound();
@@ -116,7 +116,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">An instance of MethodicDocument was created</response>
         /// <response code="400">The id and MethodicDocument id are not same</response>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, MethodicDocumentDTO documentDTO)
+        public async Task<IActionResult> Update(int id, MethodicDocumentDto documentDTO)
         {
             if (id != documentDTO.ID)
             {
@@ -152,7 +152,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
-        public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
+        public async Task<IActionResult> Save(MethodicDocumentWraperDto documentWrapper)
         {
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)
             {

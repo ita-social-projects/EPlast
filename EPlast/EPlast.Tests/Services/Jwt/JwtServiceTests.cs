@@ -61,7 +61,7 @@ namespace EPlast.Tests.Services.Jwt
         public async Task GetEventAdmininistrationByUserIdAsync_ReturnsCorrect()
         {
             // Arrange
-            var userDto = new UserDTO
+            var userDto = new UserDto
             {
                 Email = "test@test.com",
                 Id = Guid.NewGuid().ToString()

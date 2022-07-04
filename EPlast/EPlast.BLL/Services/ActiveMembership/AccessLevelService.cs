@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.ActiveMembership
 {
@@ -23,116 +23,118 @@ namespace EPlast.BLL.Services.ActiveMembership
 
         public void CheckRoles(string role, List<string> accessLevels)
         {
-            var RolesDictionary = new Dictionary<string, Action>();
-            RolesDictionary[Roles.Admin] = () => { accessLevels.Add(AccessLevelTypeDTO.Admin.GetDescription()); };
-            RolesDictionary[Roles.GoverningBodyAdmin] = () =>
+            var RolesDictionary = new Dictionary<string, Action>
             {
-                accessLevels.Add(AccessLevelTypeDTO.GoverningBodyAdmin.GetDescription());
-            };
-            RolesDictionary[Roles.GoverningBodyHead] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription());
-            };
-            RolesDictionary[Roles.GoverningBodySecretary] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySecretary.GetDescription());
-            };
-            RolesDictionary[Roles.GoverningBodySectorHead] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription());
-            };
-            RolesDictionary[Roles.GoverningBodySectorSecretary] = () =>
-            {
-                accessLevels.Add(
-                    AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorSecretary.GetDescription());
-            };
-            RolesDictionary[Roles.KurinHead] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForKurinHead.GetDescription());
-            };
-            RolesDictionary[Roles.KurinHeadDeputy] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForKurinHeadDeputy.GetDescription());
-            };
-            RolesDictionary[Roles.KurinSecretary] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForKurinSecretary.GetDescription());
-            };
-            RolesDictionary[Roles.CityHead] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForCityHead.GetDescription());
-            };
-            RolesDictionary[Roles.CityHeadDeputy] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForCityHeadDeputy.GetDescription());
-            };
-            RolesDictionary[Roles.CitySecretary] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForCitySecretary.GetDescription());
-            };
-            RolesDictionary[Roles.OkrugaHead] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForOkrugaHead.GetDescription());
-            };
-            RolesDictionary[Roles.OkrugaHeadDeputy] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForOkrugaHeadDeputy.GetDescription());
-            };
-            RolesDictionary[Roles.OkrugaSecretary] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.LeadershipMemberForOkrugaSecretary.GetDescription());
-            };
-            RolesDictionary[Roles.RegisteredUser] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.RegisteredUser.GetDescription());
-            };
-            RolesDictionary[Roles.Supporter] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
-            };
-            RolesDictionary[Roles.FormerPlastMember] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.FormerPlastMember.GetDescription());
-            };
-            RolesDictionary[Roles.PlastMember] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.PlastMember.GetDescription());
-            };
-            RolesDictionary[Roles.OkrugaReferentUPS] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.OkrugaReferentUPS.GetDescription());
-            };
-            RolesDictionary[Roles.OkrugaReferentUSP] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.OkrugaReferentUSP.GetDescription());
-            };
-            RolesDictionary[Roles.OkrugaReferentOfActiveMembership] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.OkrugaReferentOfActiveMembership.GetDescription());
-            };
-            RolesDictionary[Roles.CityReferentUPS] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.CityReferentUPS.GetDescription());
-            };
-            RolesDictionary[Roles.CityReferentUSP] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.CityReferentUSP.GetDescription());
-            };
-            RolesDictionary[Roles.CityReferentOfActiveMembership] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.CityReferentOfActiveMembership.GetDescription());
-            };
-            RolesDictionary[Roles.EventAdministrator] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.EventAdministrator.GetDescription());
-            };
-            RolesDictionary[Roles.PlastHead] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.PlastHead.GetDescription());
-            };
-            RolesDictionary[Roles.Interested] = () =>
-            {
-                accessLevels.Add(AccessLevelTypeDTO.Interested.GetDescription());
+                [Roles.Admin] = () => { accessLevels.Add(AccessLevelTypeDto.Admin.GetDescription()); },
+                [Roles.GoverningBodyAdmin] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.GoverningBodyAdmin.GetDescription());
+                },
+                [Roles.GoverningBodyHead] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForGoverningBodyHead.GetDescription());
+                },
+                [Roles.GoverningBodySecretary] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForGoverningBodySecretary.GetDescription());
+                },
+                [Roles.GoverningBodySectorHead] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForGoverningBodySectorHead.GetDescription());
+                },
+                [Roles.GoverningBodySectorSecretary] = () =>
+                {
+                    accessLevels.Add(
+                        AccessLevelTypeDto.LeadershipMemberForGoverningBodySectorSecretary.GetDescription());
+                },
+                [Roles.KurinHead] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForKurinHead.GetDescription());
+                },
+                [Roles.KurinHeadDeputy] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForKurinHeadDeputy.GetDescription());
+                },
+                [Roles.KurinSecretary] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForKurinSecretary.GetDescription());
+                },
+                [Roles.CityHead] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForCityHead.GetDescription());
+                },
+                [Roles.CityHeadDeputy] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForCityHeadDeputy.GetDescription());
+                },
+                [Roles.CitySecretary] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForCitySecretary.GetDescription());
+                },
+                [Roles.OkrugaHead] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForOkrugaHead.GetDescription());
+                },
+                [Roles.OkrugaHeadDeputy] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForOkrugaHeadDeputy.GetDescription());
+                },
+                [Roles.OkrugaSecretary] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.LeadershipMemberForOkrugaSecretary.GetDescription());
+                },
+                [Roles.RegisteredUser] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.RegisteredUser.GetDescription());
+                },
+                [Roles.Supporter] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.Supporter.GetDescription());
+                },
+                [Roles.FormerPlastMember] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.FormerPlastMember.GetDescription());
+                },
+                [Roles.PlastMember] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.PlastMember.GetDescription());
+                },
+                [Roles.OkrugaReferentUPS] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.OkrugaReferentUPS.GetDescription());
+                },
+                [Roles.OkrugaReferentUSP] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.OkrugaReferentUSP.GetDescription());
+                },
+                [Roles.OkrugaReferentOfActiveMembership] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.OkrugaReferentOfActiveMembership.GetDescription());
+                },
+                [Roles.CityReferentUPS] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.CityReferentUPS.GetDescription());
+                },
+                [Roles.CityReferentUSP] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.CityReferentUSP.GetDescription());
+                },
+                [Roles.CityReferentOfActiveMembership] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.CityReferentOfActiveMembership.GetDescription());
+                },
+                [Roles.EventAdministrator] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.EventAdministrator.GetDescription());
+                },
+                [Roles.PlastHead] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.PlastHead.GetDescription());
+                },
+                [Roles.Interested] = () =>
+                {
+                    accessLevels.Add(AccessLevelTypeDto.Interested.GetDescription());
+                }
             };
             RolesDictionary[role].Invoke();
         }
@@ -144,12 +146,12 @@ namespace EPlast.BLL.Services.ActiveMembership
             var user = await _userManagerService.FindByIdAsync(userId);
             var userRoles = (await _userManagerService.GetRolesAsync(user)).ToList();
             var userPlastDegree = await _plastDegreeService.GetUserPlastDegreeAsync(userId);
-            if(userPlastDegree != null)
+            if (userPlastDegree != null)
             {
                 var isInSupporterDegree = userPlastDegree.PlastDegree.Name == DegreeLevels.SupporterLevelDegree;
                 if (isInSupporterDegree)
                 {
-                    accessLevels.Add(AccessLevelTypeDTO.Supporter.GetDescription());
+                    accessLevels.Add(AccessLevelTypeDto.Supporter.GetDescription());
                 }
             }
            

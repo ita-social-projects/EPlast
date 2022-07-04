@@ -1,11 +1,11 @@
-﻿using EPlast.DataAccess.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubAnnualReportDTO
+    public class ClubAnnualReportDto
     {
         public int ID { get; set; }
         public AnnualReportStatus Status { get; set; }
@@ -43,9 +43,9 @@ namespace EPlast.BLL.DTO.Club
         public int ClubId { get; set; }
         public string ClubName { get; set; }
         public DateTime Date { get; set; }
-        public ClubReportAdministrationDTO Head { get; set; }
-        public List<ClubReportAdministrationDTO> Admins { get; set; }
-        public List<ClubMemberHistoryDTO> Members { get; set; }
-        public List<ClubMemberHistoryDTO> Followers { get; set; }
+        public ClubReportAdministrationDto Head { get; set; }
+        public List<ClubReportAdministrationDto> Admins { get; set; }
+        public List<ClubMemberHistoryDto> Members { get; set; }
+        public List<ClubMemberHistoryDto> Followers { get; set; }
     }
 }

@@ -1,11 +1,11 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -32,7 +32,7 @@ namespace EPlast.XUnitTest.Services.Events
 
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsAssignableFrom<IEnumerable<EventSectionDTO>>(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventSectionDto>>(methodResult);
             Assert.Equal(GetEventSections().Count(), methodResult.ToList().Count);
         }
 

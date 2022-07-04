@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.Account
 {
@@ -16,9 +14,5 @@ namespace EPlast.BLL.DTO.Account
 
         [Display(Name = "Remember Me?")]
         public bool RememberMe { get; set; }
-
-        /*public string ReturnUrl { get; set; }
-
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }*/
     }
 }

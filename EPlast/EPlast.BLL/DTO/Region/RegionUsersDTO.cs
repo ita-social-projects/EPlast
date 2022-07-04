@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.BLL.DTO.Region
+﻿namespace EPlast.BLL.DTO.Region
 {
-    public class RegionUserDTO
+    public class RegionUserDto
     {
         public string ID { get; set; }
         public string FirstName { get; set; }

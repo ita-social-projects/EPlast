@@ -1,16 +1,16 @@
-﻿using EPlast.BLL.Interfaces.Logging;
+﻿using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Services;
 using EPlast.BLL.Settings;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
 {
     internal class EmailSendingServiceTests
     {
-        private Mock<ILoggerService<EmailSendingService>> _mockLoggerService;
+        private Mock<ILoggerService> _mockLoggerService;
         private Mock<IOptions<EmailServiceSettings>> _mockOptions;
         private EmailSendingService emailSendingService;
 
@@ -53,7 +53,7 @@ namespace EPlast.Tests.Services
         public void SetUp()
         {
             _mockOptions = new Mock<IOptions<EmailServiceSettings>>();
-            _mockLoggerService = new Mock<ILoggerService<EmailSendingService>>();
+            _mockLoggerService = new Mock<ILoggerService>();
             emailSendingService = new EmailSendingService(
                 _mockOptions.Object,
                 _mockLoggerService.Object);

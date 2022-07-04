@@ -32,19 +32,19 @@ namespace EPlast.Tests.Services.UserProfiles
         private Mock<IUserPersonalDataService> _mockUserPersonalDataService;
         private Mock<IUserBlobStorageRepository> _mockUserBlobStorage;
         private Mock<IWebHostEnvironment> _mockEnv;
-        private UserDTO _userDTO;
-        private ConfirmedUserDTO _confirmedUserDTO;
+        private UserDto _userDTO;
+        private ConfirmedUserDto _confirmedUserDTO;
         private Mock<IUserManagerService> _mockUserManageService;
         private Mock<INotificationService> _mockNotificationService;
         private Mock<UserManager<User>> _mockUserManager;
-        Mock<UserDTO> _currentUser;
-        Mock<UserDTO> _focusUser;
+        Mock<UserDto> _currentUser;
+        Mock<UserDto> _focusUser;
 
         [SetUp]
         public void SetUp()
         {
-            _currentUser = new Mock<UserDTO>();
-            _focusUser = new Mock<UserDTO>();
+            _currentUser = new Mock<UserDto>();
+            _focusUser = new Mock<UserDto>();
             _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
             _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
             _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { City = new DataAccess.Entities.City() { RegionId = 1 } }, };
@@ -70,10 +70,10 @@ namespace EPlast.Tests.Services.UserProfiles
                 _mockUserManager.Object
 
             );
-            _confirmedUserDTO = new ConfirmedUserDTO();
-            _userDTO = new UserDTO()
+            _confirmedUserDTO = new ConfirmedUserDto();
+            _userDTO = new UserDto()
             {
-                ConfirmedUsers = new List<ConfirmedUserDTO>()
+                ConfirmedUsers = new List<ConfirmedUserDto>()
                 {
                     _confirmedUserDTO
                 }
@@ -84,21 +84,21 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetCityAdminConfirmedUser_Valid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isCityAdmin = true;
+            _confirmedUserDTO.IsCityAdmin = true;
 
             // Act
             var result = _userService.GetCityAdminConfirmedUser(_userDTO);
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ConfirmedUserDTO>(result);
+            Assert.IsInstanceOf<ConfirmedUserDto>(result);
         }
 
         [Test]
         public void GetCityAdminConfirmedUser_InValid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isCityAdmin = false;
+            _confirmedUserDTO.IsCityAdmin = false;
 
             // Act
             var result = _userService.GetCityAdminConfirmedUser(_userDTO);
@@ -111,21 +111,21 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetClubAdminConfirmedUser_Valid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isClubAdmin = true;
+            _confirmedUserDTO.IsClubAdmin = true;
 
             //Act
             var result = _userService.GetClubAdminConfirmedUser(_userDTO);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ConfirmedUserDTO>(result);
+            Assert.IsInstanceOf<ConfirmedUserDto>(result);
         }
 
         [Test]
         public void GetClubAdminConfirmedUser_InValid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isCityAdmin = false;
+            _confirmedUserDTO.IsCityAdmin = false;
 
             //Act
             var result = _userService.GetClubAdminConfirmedUser(_userDTO);
@@ -277,8 +277,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public void IsUserSameCity_ReturnsTrue()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
             _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
@@ -295,8 +295,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public void IsUserSameCity_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
             _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 2 }, };
@@ -313,8 +313,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public void IsUserSameClub_ReturnsTrue()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
             _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
@@ -331,8 +331,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public void IsUserSameClub_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
             _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 2 }, };
@@ -349,8 +349,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public void IsUserSameRegion_ReturnsTrue()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
             _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
@@ -367,8 +367,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public void IsUserSameRegion_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
             _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
@@ -699,8 +699,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_CellCity_ReturnsTrue()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
             _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
@@ -723,8 +723,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_CellCity_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 1 }, };
             _focusUser.Object.CityMembers = new List<CityMembers>() { new CityMembers() { CityId = 2 }, };
@@ -747,8 +747,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_CellRegion_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
             _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 2 }, };
@@ -767,8 +767,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_CellRegion_ReturnsTrue()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
             _focusUser.Object.RegionAdministrations = new List<RegionAdministration>() { new RegionAdministration() { RegionId = 1 }, };
@@ -794,8 +794,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_CellClub_ReturnsTrue()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
             _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
@@ -818,8 +818,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_CellClub_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             _currentUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 1 }, };
             _focusUser.Object.ClubMembers = new List<ClubMembers>() { new ClubMembers() { ClubId = 2 }, };
@@ -842,8 +842,8 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task IsUserSameCellAsync_WrongCellType_ReturnsFalse()
         {
             //Arrange
-            Mock<UserDTO> _currentUser = new Mock<UserDTO>();
-            Mock<UserDTO> _focusUser = new Mock<UserDTO>();
+            Mock<UserDto> _currentUser = new Mock<UserDto>();
+            Mock<UserDto> _focusUser = new Mock<UserDto>();
 
             //Act
             var result = await _userService.IsUserInSameCellAsync(_currentUser.Object, _focusUser.Object, (CellType)3);
@@ -903,7 +903,7 @@ namespace EPlast.Tests.Services.UserProfiles
             await _userService.CheckRegisteredWithoutCityUsersAsync();
 
             //Assert
-            _mockNotificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<List<UserNotificationDTO>>()), Times.Once);
+            _mockNotificationService.Verify(x => x.AddListUserNotificationAsync(It.IsAny<List<UserNotificationDto>>()), Times.Once);
         }
     }
 }

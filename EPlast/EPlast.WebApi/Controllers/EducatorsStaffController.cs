@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.DTO.EducatorsStaff;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -15,11 +15,11 @@ namespace EPlast.WebApi.Controllers
     [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
     public class EducatorsStaffController : ControllerBase
     {
-        private readonly ILoggerService<EducatorsStaffController> _logger;
+        private readonly ILoggerService _logger;
         private readonly IEducatorsStaffService _kvService;
         private readonly IEducatorsStaffTypesService _kvTypeService;
 
-        public EducatorsStaffController(ILoggerService<EducatorsStaffController> logger, IEducatorsStaffService kvService, IEducatorsStaffTypesService kvTypeService)
+        public EducatorsStaffController(ILoggerService logger, IEducatorsStaffService kvService, IEducatorsStaffTypesService kvTypeService)
         {
             _logger = logger;
             _kvService = kvService;
@@ -34,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         [HttpPost("CreateKadra")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> CreateKadra(EducatorsStaffDTO kvDTO)
+        public async Task<IActionResult> CreateKadra(EducatorsStaffDto kvDTO)
         {
             var newKadra = await _kvService.CreateKadra(kvDTO);
 
@@ -64,7 +64,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         [HttpPut("EditKadra")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Update(EducatorsStaffDTO kadrasDTO)
+        public async Task<IActionResult> Update(EducatorsStaffDto kadrasDTO)
         {
             await _kvService.UpdateKadra(kadrasDTO);
             return StatusCode(StatusCodes.Status200OK);
@@ -212,7 +212,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of EducatorsStaffTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("EducatorsStaffForTable")]
-        public async Task<IActionResult> GetEducatorsStaffForTable([FromQuery] EducatorsStaffTableSettingsDTO tableSettings)
+        public async Task<IActionResult> GetEducatorsStaffForTable([FromQuery] EducatorsStaffTableSettingsDto tableSettings)
         {
             var educatorsStaff = await _kvService.GetEducatorsStaffTableAsync(tableSettings.KadraTypeId, tableSettings.SortByOrder, tableSettings.SearchedData, tableSettings.Page, tableSettings.PageSize);
             var info = educatorsStaff.Item1.ToList();
