@@ -26,8 +26,6 @@ namespace EPlast.Tests.Services.Auth
     {
         private AuthService _authService;
         private Mock<IHttpContextAccessor> _contextAccessor;
-        private Mock<IEmailSendingService> _emailSendingService;
-        private Mock<IEmailContentService> _mockEmailContentService;
         private Mock<IMapper> _mapper;
         private Mock<IUserClaimsPrincipalFactory<User>> _principalFactory;
         private Mock<IRepositoryWrapper> _repoWrapper;
@@ -266,8 +264,6 @@ namespace EPlast.Tests.Services.Auth
             _principalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
             _signInManager = new Mock<SignInManager<User>>(_userManager.Object,
                            _contextAccessor.Object, _principalFactory.Object, null, null, null, null);
-            _emailSendingService = new Mock<IEmailSendingService>();
-            _mockEmailContentService = new Mock<IEmailContentService>();
             _mapper = new Mock<IMapper>();
             _mapper
                 .Setup(s => s.Map<User, UserDTO>(It.IsAny<User>()))
@@ -280,8 +276,6 @@ namespace EPlast.Tests.Services.Auth
             _authService = new AuthService(
                 _userManager.Object,
                 _signInManager.Object,
-                _emailSendingService.Object,
-                _mockEmailContentService.Object,
                 _mapper.Object,
                 _repoWrapper.Object
             );

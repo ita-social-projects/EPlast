@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
@@ -9,10 +13,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
 {
@@ -190,7 +190,7 @@ namespace EPlast.BLL.Services.EventUser
                     EventAdministrationTypeID = alternateTypeId,
                     EventID = eventToEdit.ID,
                 });
-            };
+            }
             
             eventToEdit.EventAdministrations = newAdmins;
             repoWrapper.Event.Update(eventToEdit);

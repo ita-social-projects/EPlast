@@ -23,8 +23,6 @@ namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly SignInManager<User> _signInManager;
@@ -32,15 +30,11 @@ namespace EPlast.BLL.Services
 
         public AuthService(UserManager<User> userManager,
                            SignInManager<User> signInManager,
-                           IEmailSendingService emailSendingService,
-                           IEmailContentService emailContentService,
                            IMapper mapper,
                            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSendingService = emailSendingService;
-            _emailContentService = emailContentService;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }

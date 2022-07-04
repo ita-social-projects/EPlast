@@ -98,13 +98,16 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             string cacheKey = $"{ActiveCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
-            Tuple<IEnumerable<CityObjectDTO>, int> cache = null;
+            Tuple<IEnumerable<CityObjectDTO>, int> cache;
 
             try
             {
                 cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cacheKey);
             }
-            catch { }
+            catch
+            {
+                cache = null;
+            }
 
             if (cache is null)
             {
@@ -128,12 +131,15 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
-            Tuple<IEnumerable<CityObjectDTO>, int> cache = null;
+            Tuple<IEnumerable<CityObjectDTO>, int> cache;
             try
             {
                 cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<CityObjectDTO>, int>>(cacheKey);
             }
-            catch { }
+            catch
+            {
+                cache = null;
+            }
 
             if (cache is null)
             {

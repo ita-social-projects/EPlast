@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
@@ -13,11 +18,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -457,8 +457,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public async Task CheckRegisteredWithoutCityUsersAsync()
         {
             var users = await _repoWrapper.User.GetAllAsync(
-                predicate: x => 
-                x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved == false,
+                predicate: x => !x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved,
                 include: x => x.Include(y => y.CityMembers)
             );
             var filteredUsers = users.Where(x => (DateTime.Now - x.RegistredOn).Days >= 7).ToList();

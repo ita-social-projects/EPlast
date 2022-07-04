@@ -173,12 +173,12 @@ namespace EPlast.BLL.Services.City
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 
-        public async Task AddNotificationUserWithoutSelectedCity(User user, int? regionID)
+        public async Task AddNotificationUserWithoutSelectedCity(User user, int? regionId)
         {
             List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
 
             var regionAdministration = await _repositoryWrapper.RegionAdministration
-                .GetAllAsync(i => i.RegionId == regionID,
+                .GetAllAsync(i => i.RegionId == regionId,
                     i => i
                         .Include(c => c.AdminType)
                         .Include(a => a.User));
