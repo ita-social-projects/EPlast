@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.Decision
 {
-    public class GetDecisionListAsyncQuery : IRequest<IEnumerable<DecisionWrapperDTO>>
+    public class GetDecisionListAsyncQuery : IRequest<IEnumerable<DecisionWrapperDto>>
     {
     }
 }

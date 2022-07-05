@@ -8,8 +8,8 @@ namespace EPlast.BLL.Mapping.City
     {
         public CityProfile()
         {
-            CreateMap<CityViewModel, CityDTO>().ReverseMap();
-            CreateMap<CityProfileDTO, CityViewModel>()
+            CreateMap<CityViewModel, CityDto>().ReverseMap();
+            CreateMap<CityProfileDto, CityViewModel>()
                 .ForMember(r => r.Head, s => s.MapFrom(t => t.Head))
                 .ForMember(r => r.Administration, s => s.MapFrom(t => t.Admins))
                 .ForMember(r => r.Members, s => s.MapFrom(t => t.Members))

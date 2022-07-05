@@ -8,8 +8,8 @@ namespace EPlast.BLL.Mapping.Region
     {
         public RegionFollowerProfile()
         {
-            CreateMap<RegionFollowers, RegionFollowerDTO>().ReverseMap();
-            CreateMap<RegionFollowerDTO, RegionFollowers>().ReverseMap();
+            CreateMap<RegionFollowers, RegionFollowerDto>().ReverseMap();
+            CreateMap<RegionFollowerDto, RegionFollowers>().ReverseMap();
         }
     }
 }

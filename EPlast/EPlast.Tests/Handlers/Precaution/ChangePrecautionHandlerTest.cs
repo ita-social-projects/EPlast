@@ -1,18 +1,18 @@
-﻿using EPlast.BLL;
-using EPlast.BLL.Queries.Precaution;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL;
+using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.Handlers.PrecautionHandlers;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
-using EPlast.BLL.Commands.Precaution;
 
 namespace EPlast.Tests.Handlers.Precaution
 {
@@ -24,7 +24,7 @@ namespace EPlast.Tests.Handlers.Precaution
         private ChangePrecautionCommand _query;
 
         private User _user;
-        private PrecautionDTO _precautionDTO;
+        private PrecautionDto _precautionDTO;
 
         [SetUp]
         public void SetUp()
@@ -32,7 +32,7 @@ namespace EPlast.Tests.Handlers.Precaution
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMediator = new Mock<IMediator>();
             _handler = new ChangePrecautionHandler(_mockRepoWrapper.Object, _mockMediator.Object);
-            _precautionDTO = new PrecautionDTO();
+            _precautionDTO = new PrecautionDto();
             _user = new User();
             _query = new ChangePrecautionCommand(_precautionDTO, _user);
         }

@@ -9,7 +9,7 @@ namespace EPlast.BLL.Mapping.AboutBase
     {
         public AboutBaseSubsectionProfile()
         {
-            CreateMap<Subsection, SubsectionDTO>().ReverseMap();
+            CreateMap<Subsection, SubsectionDto>().ReverseMap();
         }
     }
 }

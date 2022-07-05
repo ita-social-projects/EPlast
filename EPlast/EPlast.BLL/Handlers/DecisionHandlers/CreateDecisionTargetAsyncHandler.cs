@@ -1,31 +1,31 @@
-﻿using System.Threading.Tasks;
-using System.Threading;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.Commands.Decision;
+using EPlast.BLL.DTO;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using EPlast.BLL.Commands.Decision;
-using AutoMapper;
-using EPlast.BLL.DTO;
 
 namespace EPlast.BLL.Handlers.DecisionHandlers
 {
-    public class CreateDecisionTargetAsyncHandler : IRequestHandler<CreateDecisionTargetAsyncCommand, DecisionTargetDTO>
+    public class CreateDecisionTargetAsyncHandler : IRequestHandler<CreateDecisionTargetAsyncCommand, DecisionTargetDto>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
-        
+
         public CreateDecisionTargetAsyncHandler(IRepositoryWrapper repositoryWrapper, IMapper mapper)
         {
             _repoWrapper = repositoryWrapper;
             _mapper = mapper;
         }
 
-        public async Task<DecisionTargetDTO> Handle(CreateDecisionTargetAsyncCommand request, CancellationToken cancellationToken)
+        public async Task<DecisionTargetDto> Handle(CreateDecisionTargetAsyncCommand request, CancellationToken cancellationToken)
         {
-            DecisionTargetDTO decisionTargetDto = _mapper.Map<DecisionTargetDTO>(await _repoWrapper.DecesionTarget.GetFirstOrDefaultAsync(x => x.TargetName == request.DecisionTargetName));
+            DecisionTargetDto decisionTargetDto = _mapper.Map<DecisionTargetDto>(await _repoWrapper.DecesionTarget.GetFirstOrDefaultAsync(x => x.TargetName == request.DecisionTargetName));
 
             if (decisionTargetDto == null)
             {
-                decisionTargetDto = new DecisionTargetDTO();
+                decisionTargetDto = new DecisionTargetDto();
                 decisionTargetDto.TargetName = request.DecisionTargetName;
             }
 

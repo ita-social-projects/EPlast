@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Services.Admin;
 using EPlast.DataAccess.Entities;
@@ -6,10 +10,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Admin
 {
@@ -38,15 +38,15 @@ namespace EPlast.Tests.Services.Admin
                     It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
                 .ReturnsAsync(adminType);
             _mockMapper
-                .Setup(x => x.Map<AdminType, AdminTypeDTO>(adminType))
-                .Returns(new AdminTypeDTO() { ID = adminType.ID });
+                .Setup(x => x.Map<AdminType, AdminTypeDto>(adminType))
+                .Returns(new AdminTypeDto() { ID = adminType.ID });
 
             //Act
             var result = await _adminTypeService.GetAdminTypeByIdAsync(adminTypeId);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<AdminTypeDTO>(result);
+            Assert.IsInstanceOf<AdminTypeDto>(result);
             Assert.AreEqual(adminTypeId, result.ID);
         }
     }

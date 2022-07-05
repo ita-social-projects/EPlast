@@ -1,10 +1,10 @@
-﻿using EPlast.BLL.Interfaces.Notifications;
-using EPlast.WebApi.WebSocketHandlers;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.Notifications;
+using EPlast.WebApi.WebSocketHandlers;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.WebApi.CustomMiddlewares
 {
@@ -37,12 +37,10 @@ namespace EPlast.WebApi.CustomMiddlewares
                 if (result.MessageType == WebSocketMessageType.Text)
                 {
                     await _webSocketHandler.ReceiveAsync(socket, result, buffer);
-                    return;
                 }
                 else if (result.MessageType == WebSocketMessageType.Close)
                 {
                     await _webSocketHandler.OnDisconnectedAsync(userId, id);
-                    return;
                 }
             });
         }

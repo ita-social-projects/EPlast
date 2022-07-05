@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.DistinctionHandlers
 {
-    public class GetDistinctionHandler: IRequestHandler<GetDistinctionQuery, DistinctionDTO>
+    public class GetDistinctionHandler : IRequestHandler<GetDistinctionQuery, DistinctionDto>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -17,9 +17,9 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
         }
-        public async Task<DistinctionDTO> Handle(GetDistinctionQuery request, CancellationToken cancellationToken)
+        public async Task<DistinctionDto> Handle(GetDistinctionQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<DistinctionDTO>(await _repositoryWrapper.Distinction.GetFirstAsync(d => d.Id == request.Id));             
+            return _mapper.Map<DistinctionDto>(await _repositoryWrapper.Distinction.GetFirstAsync(d => d.Id == request.Id));
         }
     }
 }

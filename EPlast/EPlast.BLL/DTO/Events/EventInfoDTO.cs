@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.Events
 {
-    public class EventInfoDTO
+    public class EventInfoDto
     {
         public int EventId { get; set; }
         public string EventName { get; set; }
@@ -19,7 +19,7 @@ namespace EPlast.BLL.DTO.Events
         public string FormOfHolding { get; set; }
         public string ForWhom { get; set; }
         public double Rating { get; set; }
-        public List<EventAdminDTO> EventAdmins { get; set; }
-        public IEnumerable<EventParticipantDTO> EventParticipants { get; set; }
+        public List<EventAdminDto> EventAdmins { get; set; }
+        public IEnumerable<EventParticipantDto> EventParticipants { get; set; }
     }
 }

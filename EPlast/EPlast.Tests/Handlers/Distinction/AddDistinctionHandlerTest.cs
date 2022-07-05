@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Commands.Distinction;
 using EPlast.BLL.Handlers.DistinctionHandlers;
@@ -9,8 +11,6 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Distinction
 {
@@ -24,7 +24,7 @@ namespace EPlast.Tests.Handlers.Distinction
         private Mock<UserManager<User>> _userManager;
 
         private User _user;
-        private DistinctionDTO _distinctionDTO;
+        private DistinctionDto _distinctionDTO;
 
         [SetUp]
         public void SetUp()
@@ -33,7 +33,7 @@ namespace EPlast.Tests.Handlers.Distinction
             _mockMediator = new Mock<IMediator>();
             _mapper = new Mock<IMapper>();
             _handler = new AddDistinctionHandler(_mockRepoWrapper.Object, _mapper.Object, _mockMediator.Object);
-            _distinctionDTO = new DistinctionDTO();
+            _distinctionDTO = new DistinctionDto();
             _user = new User();
             _query = new AddDistinctionCommand(_distinctionDTO, _user);
             var store = new Mock<IUserStore<User>>();

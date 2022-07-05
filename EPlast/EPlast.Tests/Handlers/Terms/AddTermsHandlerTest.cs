@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.TermsOfUse;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.Handlers.TermsOfUse;
@@ -7,8 +9,6 @@ using EPlast.DataAccess.Repositories;
 using MediatR;
 using Moq;
 using NUnit.Framework;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Terms
 {
@@ -21,7 +21,7 @@ namespace EPlast.Tests.Handlers.Terms
         private AddTermsCommand _query;
 
         private User _user;
-        private TermsDTO _termsDto;
+        private TermsDto _termsDto;
 
         [SetUp]
         public void SetUp()
@@ -31,7 +31,7 @@ namespace EPlast.Tests.Handlers.Terms
             _mockMediator = new Mock<IMediator>();
             _handler = new AddTermsHandler(_mockRepoWrapper.Object, _mockMapper.Object, _mockMediator.Object);
             _user = new User();
-            _termsDto = new TermsDTO();
+            _termsDto = new TermsDto();
             _query = new AddTermsCommand(_termsDto, _user);
         }
 

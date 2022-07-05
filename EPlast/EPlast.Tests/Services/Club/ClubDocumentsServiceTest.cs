@@ -47,7 +47,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<List<ClubDocumentTypeDTO>>(result);
+            Assert.IsAssignableFrom<List<ClubDocumentTypeDto>>(result);
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<ClubDocumentsDTO>(result);
+            Assert.IsAssignableFrom<ClubDocumentsDto>(result);
         }
 
         [Test]
@@ -111,10 +111,10 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<ClubDocumentType>, IIncludableQueryable<ClubDocumentType, object>>>()))
                 .ReturnsAsync(new List<ClubDocumentType> { new ClubDocumentType() { ID = 1 } });
             _mapper
-                .Setup(m => m.Map<ClubDocumentsDTO, ClubDocuments>(It.IsAny<ClubDocumentsDTO>()))
+                .Setup(m => m.Map<ClubDocumentsDto, ClubDocuments>(It.IsAny<ClubDocumentsDto>()))
                 .Returns(new ClubDocuments());
             _mapper
-                .Setup(m => m.Map<IEnumerable<ClubDocumentType>, IEnumerable<ClubDocumentTypeDTO>>(It.IsAny<IEnumerable<ClubDocumentType>>()))
+                .Setup(m => m.Map<IEnumerable<ClubDocumentType>, IEnumerable<ClubDocumentTypeDto>>(It.IsAny<IEnumerable<ClubDocumentType>>()))
                 .Returns(GetClubDocumentTypeDTOs());
             _clubFilesBlobStorage
                 .Setup(c => c.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
@@ -131,12 +131,12 @@ namespace EPlast.Tests.Services.Club
             );
         }
 
-        private ClubDocumentsDTO ClubDocumentsDTO => new ClubDocumentsDTO
+        private ClubDocumentsDto ClubDocumentsDTO => new ClubDocumentsDto
         {
             ID = 1,
             BlobName = "newBlob,LastBlob",
             FileName = "FileName",
-            ClubDocumentType = new ClubDocumentTypeDTO()
+            ClubDocumentType = new ClubDocumentTypeDto()
             {
                 ID = 1,
                 Name = "DocumentTypeName"
@@ -146,11 +146,11 @@ namespace EPlast.Tests.Services.Club
             SubmitDate = DateTime.Now
         };
 
-        private IEnumerable<ClubDocumentTypeDTO> GetClubDocumentTypeDTOs()
+        private IEnumerable<ClubDocumentTypeDto> GetClubDocumentTypeDTOs()
         {
-            return new List<ClubDocumentTypeDTO>
+            return new List<ClubDocumentTypeDto>
             {
-                new ClubDocumentTypeDTO
+                new ClubDocumentTypeDto
                 {
                     ID = 1,
                     Name = "DocumentTypeName"

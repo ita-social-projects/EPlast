@@ -1,8 +1,8 @@
 ﻿namespace EPlast.BLL.DTO.Events
 {
-    public class EventDTO
+    public class EventDto
     {
-        public EventInfoDTO Event { get; set; }
+        public EventInfoDto Event { get; set; }
         public double ParticipantAssessment { get; set; }
         public bool IsUserEventAdmin { get; set; }
         public bool IsUserParticipant { get; set; }

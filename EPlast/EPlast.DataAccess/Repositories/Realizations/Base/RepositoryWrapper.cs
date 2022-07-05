@@ -1,31 +1,31 @@
-﻿using EPlast.DataAccess.Repositories.Contracts;
+﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.DataAccess.Repositories.Interfaces;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
-using EPlast.DataAccess.Repositories.Interfaces;
+using EPlast.DataAccess.Repositories.Interfaces.User;
+using EPlast.DataAccess.Repositories.Realizations;
 using EPlast.DataAccess.Repositories.Realizations.Blank;
 using EPlast.DataAccess.Repositories.Realizations.Club;
 using EPlast.DataAccess.Repositories.Realizations.EducatorsStaff;
 using EPlast.DataAccess.Repositories.Realizations.Events;
-using EPlast.DataAccess.Repositories.Realizations.Region;
-using EPlast.DataAccess.Repositories.Realizations;
-using NLog.Extensions.Logging;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody;
-using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
-using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
-using EPlast.DataAccess.Repositories.Interfaces.User;
-using EPlast.DataAccess.Repositories.Realizations.User;
 using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Announcement;
+using EPlast.DataAccess.Repositories.Realizations.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Realizations.Region;
+using EPlast.DataAccess.Repositories.Realizations.User;
+using NLog.Extensions.Logging;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Base
 {
     public class RepositoryWrapper : IRepositoryWrapper
     {
-        private EPlastDBContext _dbContext;
+        private readonly EPlastDBContext _dbContext;
         private IUserRepository _user;
         private IUserProfileRepository _userprofile;
         private INationalityRepository _nationality;
@@ -109,7 +109,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
-        private IExtractFromUPUDocumentsRepository _extractFromUPUDocumentsRepository;
+        private IExtractFromUpuDocumentsRepository _extractFromUPUDocumentsRepository;
         private IRegionAnnualReportsRepository _regionAnnualReports;
         private IGoverningBodyAnnouncementRepository _governingBodyAnnouncement;
         private IGoverningBodyAnnouncementImageRepository _governingBodyAnnouncementImage;
@@ -1180,13 +1180,13 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository
+        public IExtractFromUpuDocumentsRepository ExtractFromUPUDocumentsRepository
         {
             get
             {
                 if (_extractFromUPUDocumentsRepository == null)
                 {
-                    _extractFromUPUDocumentsRepository = new ExtractFromUPUDocumentsRepository(_dbContext);
+                    _extractFromUPUDocumentsRepository = new ExtractFromUpuDocumentsRepository(_dbContext);
                 }
                 return _extractFromUPUDocumentsRepository;
             }

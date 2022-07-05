@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using DatabaseEntities = EPlast.DataAccess.Entities;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.GoverningBody.Announcement
 {
@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Announcement
     {
         public UserProfile()
         {
-            CreateMap<DatabaseEntities.User, UserDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.User, UserDto>().ReverseMap();
         }
     }
 }

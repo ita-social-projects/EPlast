@@ -1,11 +1,11 @@
-﻿using EPlast.BLL.DTO.City;
-using System;
+﻿using System;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.Resources;
 
 namespace EPlast.BLL
 {
-    public class UserPrecautionDTO
+    public class UserPrecautionDto
     {
         public int Id { get; set; }
         public int PrecautionId { get; set; }

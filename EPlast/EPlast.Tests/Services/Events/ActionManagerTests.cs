@@ -1,22 +1,22 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
-using Moq;
-using NUnit.Framework.Internal;
-using Microsoft.AspNetCore.Identity;
-using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Query;
-using System.Linq;
-using EPlast.BLL.DTO.Events;
-using EPlast.BLL.Services.Events;
 using Microsoft.AspNetCore.Http;
-using EPlast.BLL.Interfaces.Notifications;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace EPlast.Tests.Services.Events
 {
@@ -141,13 +141,13 @@ namespace EPlast.Tests.Services.Events
         {
             //Arrange
             _mockEventWrapper.Setup(x => x.EventSectionManager.GetEventSectionsDTOAsync())
-                .ReturnsAsync(new List<EventSectionDTO>());
+                .ReturnsAsync(new List<EventSectionDto>());
             //Act
             var methodResult = await _actionManager.GetEventSectionsAsync();
 
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsAssignableFrom<List<EventSectionDTO>>(methodResult);
+            Assert.IsAssignableFrom<List<EventSectionDto>>(methodResult);
         }
 
         private int testEventId = 1;

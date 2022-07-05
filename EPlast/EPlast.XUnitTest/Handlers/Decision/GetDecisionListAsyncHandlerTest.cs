@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
 using EPlast.BLL.Queries.Decision;
@@ -6,12 +12,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Handlers.Decision
@@ -38,7 +38,7 @@ namespace EPlast.XUnitTest.Handlers.Decision
 
             var decision = (await _handler.Handle(It.IsAny<GetDecisionListAsyncQuery>(), It.IsAny<CancellationToken>())).ToList();
 
-            Assert.IsType<List<DecisionWrapperDTO>>(decision);
+            Assert.IsType<List<DecisionWrapperDto>>(decision);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace EPlast.XUnitTest.Handlers.Decision
             _repository.Setup(rep => rep.Decesion.GetAllAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable());
-            _mockMapper.Setup(m => m.Map<IEnumerable<DecisionDTO>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList());
+            _mockMapper.Setup(m => m.Map<IEnumerable<DecisionDto>>(It.IsAny<IEnumerable<Decesion>>())).Returns(GetTestDecisionsDtoList());
 
             var decision = (await _handler.Handle(It.IsAny<GetDecisionListAsyncQuery>(), It.IsAny<CancellationToken>())).ToList();
 
@@ -64,14 +64,14 @@ namespace EPlast.XUnitTest.Handlers.Decision
                 new Decesion  {ID = 4,Description = "old"}
             }.AsQueryable();
         }
-        private static List<DecisionDTO> GetTestDecisionsDtoList()
+        private static List<DecisionDto> GetTestDecisionsDtoList()
         {
-            return new List<DecisionDTO>
+            return new List<DecisionDto>
             {
-                new DecisionDTO {ID = 1,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 2,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 3,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()},
-                new DecisionDTO {ID = 4,Description = "old", GoverningBody = new GoverningBodyDTO(), DecisionTarget = new DecisionTargetDTO()}
+                new DecisionDto {ID = 1,Description = "old", GoverningBody = new GoverningBodyDto(), DecisionTarget = new DecisionTargetDto()},
+                new DecisionDto {ID = 2,Description = "old", GoverningBody = new GoverningBodyDto(), DecisionTarget = new DecisionTargetDto()},
+                new DecisionDto {ID = 3,Description = "old", GoverningBody = new GoverningBodyDto(), DecisionTarget = new DecisionTargetDto()},
+                new DecisionDto {ID = 4,Description = "old", GoverningBody = new GoverningBodyDto(), DecisionTarget = new DecisionTargetDto()}
             };
         }
     }

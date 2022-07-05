@@ -4,7 +4,7 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.City
 {
-    public class GetCitiesByRegionQuery : IRequest<IEnumerable<CityDTO>>
+    public class GetCitiesByRegionQuery : IRequest<IEnumerable<CityDto>>
     {
         public int RegionId { get; set; }
 

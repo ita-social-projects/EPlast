@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Admin;
@@ -6,11 +11,6 @@ using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 using DatabaseEntities = EPlast.DataAccess.Entities;
 
@@ -43,7 +43,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             await _ClubParticipantsService.GetAdministrationByIdAsync(It.IsAny<int>());
 
             // Assert
-            _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.ClubAdministration>, IEnumerable<ClubAdministrationDTO>>(It.IsAny<IEnumerable<DatabaseEntities.ClubAdministration>>()));
+            _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.ClubAdministration>, IEnumerable<ClubAdministrationDto>>(It.IsAny<IEnumerable<DatabaseEntities.ClubAdministration>>()));
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace EPlast.XUnitTest.Services.ClubTests
             await _ClubParticipantsService.GetMembersByClubIdAsync(It.IsAny<int>());
 
             // Assert
-            _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.ClubMembers>, IEnumerable<ClubMembersDTO>>(It.IsAny<IEnumerable<DatabaseEntities.ClubMembers>>()));
+            _mapper.Verify(m => m.Map<IEnumerable<DatabaseEntities.ClubMembers>, IEnumerable<ClubMembersDto>>(It.IsAny<IEnumerable<DatabaseEntities.ClubMembers>>()));
         }
     }
 }

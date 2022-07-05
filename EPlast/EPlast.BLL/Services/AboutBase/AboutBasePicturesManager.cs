@@ -28,10 +28,10 @@ namespace EPlast.BLL.Services.AboutBase
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<SubsectionPicturesDTO>> AddPicturesAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<SubsectionPicturesDto>> AddPicturesAsync(int id, IList<IFormFile> files)
         {
 
-            var uploadedPictures = new List<SubsectionPicturesDTO>();
+            var uploadedPictures = new List<SubsectionPicturesDto>();
             var createdGalleries = new List<Pictures>();
             foreach (IFormFile file in files)
             {
@@ -49,7 +49,7 @@ namespace EPlast.BLL.Services.AboutBase
             await _repoWrapper.SaveAsync();
             foreach (var gallery in createdGalleries)
             {
-                uploadedPictures.Add(new SubsectionPicturesDTO
+                uploadedPictures.Add(new SubsectionPicturesDto
                 {
                     PictureId = gallery.ID,
                     FileName = await _aboutBaseBlobStorage.GetBlobBase64Async(gallery.PictureFileName)
@@ -79,7 +79,7 @@ namespace EPlast.BLL.Services.AboutBase
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<SubsectionPicturesDTO>> GetPicturesInBase64(int subsectionId)
+        public async Task<IEnumerable<SubsectionPicturesDto>> GetPicturesInBase64(int subsectionId)
         {
             var galleries = (await _repoWrapper.SubsectionPictures
                 .GetAllAsync(
@@ -88,10 +88,10 @@ namespace EPlast.BLL.Services.AboutBase
                 ))
                 .Select(eg => eg.Pictures);
 
-            List<SubsectionPicturesDTO> pictures = new List<SubsectionPicturesDTO>();
+            List<SubsectionPicturesDto> pictures = new List<SubsectionPicturesDto>();
             foreach (var gallery in galleries)
             {
-                pictures.Add(new SubsectionPicturesDTO
+                pictures.Add(new SubsectionPicturesDto
                 {
                     PictureId = gallery.ID,
                     FileName = await _aboutBaseBlobStorage.GetBlobBase64Async(gallery.PictureFileName)

@@ -1,17 +1,17 @@
-﻿using EPlast.BLL.DTO.EducatorsStaff;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.EducatorsStaff;
 
 namespace EPlast.BLL.Interfaces.EducatorsStaff
 {
     public interface IEducatorsStaffTypesService
     {
-        Task<EducatorsStaffTypesDTO> GetKVsTypeByIdAsync(int KV_id);
+        Task<EducatorsStaffTypesDto> GetKVsTypeByIdAsync(int KV_id);
 
-        Task<IEnumerable<EducatorsStaffTypesDTO>> GetAllKVTypesAsync();
+        Task<IEnumerable<EducatorsStaffTypesDto>> GetAllKVTypesAsync();
 
-        Task<EducatorsStaffTypesDTO> CreateKVType(EducatorsStaffTypesDTO kvTypeDTO);
+        Task<EducatorsStaffTypesDto> CreateKVType(EducatorsStaffTypesDto kvTypeDTO);
 
-        Task<IEnumerable<EducatorsStaffDTO>> GetKadrasWithSuchType(EducatorsStaffTypesDTO kvTypeDTO);
+        Task<IEnumerable<EducatorsStaffDto>> GetKadrasWithSuchType(EducatorsStaffTypesDto kvTypeDTO);
     }
 }

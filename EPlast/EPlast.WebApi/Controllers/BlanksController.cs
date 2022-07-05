@@ -1,16 +1,16 @@
-﻿using EPlast.BLL;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using System.Linq;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -20,15 +20,15 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IBlankBiographyDocumentService _blankBiographyDocumentService;
         private readonly IBlankAchievementDocumentService _blankAchievementDocumentService;
-        private readonly IBlankExtractFromUPUDocumentService _blankExtractFromUPUDocumentService;
-        private readonly IPdfService _pdfService; 
+        private readonly IBlankExtractFromUpuDocumentService _blankExtractFromUPUDocumentService;
+        private readonly IPdfService _pdfService;
         private readonly ILoggerService<BlanksController> _loggerService;
         private readonly UserManager<User> _userManager;
 
 
         public BlanksController(IBlankBiographyDocumentService blankBiographyDocumentService,
            IBlankAchievementDocumentService blankAchievementDocumentService,
-           IBlankExtractFromUPUDocumentService blankExtractFromUPUDocumentService,
+           IBlankExtractFromUpuDocumentService blankExtractFromUPUDocumentService,
            ILoggerService<BlanksController> loggerService,
            IPdfService pdfService, UserManager<User> userManager)
         {
@@ -61,7 +61,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly created Blank biography document</returns>
         [HttpPost("AddDocument/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddBiographyDocument(BlankBiographyDocumentsDTO biographyDocument)
+        public async Task<IActionResult> AddBiographyDocument(BlankBiographyDocumentsDto biographyDocument)
         {
             await _blankBiographyDocumentService.AddDocumentAsync(biographyDocument);
 
@@ -75,7 +75,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly created Blank achievement document</returns>
         [HttpPost("AddAchievementDocumet/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddAchievementDocument(IEnumerable<AchievementDocumentsDTO> achievementDocuments)
+        public async Task<IActionResult> AddAchievementDocument(IEnumerable<AchievementDocumentsDto> achievementDocuments)
         {
             await _blankAchievementDocumentService.AddDocumentAsync(achievementDocuments);
 
@@ -89,7 +89,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly created Blank biography document</returns>
         [HttpPost("AddExtractFromUPUDocument/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddExtractFromUPUDocument(ExtractFromUPUDocumentsDTO extractFromUPUDocumentsDTO)
+        public async Task<IActionResult> AddExtractFromUPUDocument(ExtractFromUpuDocumentsDto extractFromUPUDocumentsDTO)
         {
             await _blankExtractFromUPUDocumentService.AddDocumentAsync(extractFromUPUDocumentsDTO);
 

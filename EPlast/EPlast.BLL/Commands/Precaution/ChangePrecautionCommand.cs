@@ -5,9 +5,9 @@ namespace EPlast.BLL.Commands.Precaution
 {
     public class ChangePrecautionCommand: IRequest
     {
-        public PrecautionDTO PrecautionDTO { get; set; }
+        public PrecautionDto PrecautionDTO { get; set; }
         public User User { get; set; }
-        public ChangePrecautionCommand(PrecautionDTO precautionDTO, User user)
+        public ChangePrecautionCommand(PrecautionDto precautionDTO, User user)
         {
             PrecautionDTO = precautionDTO;
             User = user;

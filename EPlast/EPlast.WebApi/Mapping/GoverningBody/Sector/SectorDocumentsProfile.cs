@@ -8,9 +8,9 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
     {
         public SectorDocumentsProfile()
         {
-            CreateMap<SectorDocumentsViewModel, SectorDocumentsDTO>().ReverseMap();
-            CreateMap<SectorViewModel, SectorDocumentsDTO>().ReverseMap();
-            CreateMap<SectorDocumentTypeViewModel, SectorDocumentTypeDTO>().ReverseMap();
+            CreateMap<SectorDocumentsViewModel, SectorDocumentsDto>().ReverseMap();
+            CreateMap<SectorViewModel, SectorDocumentsDto>().ReverseMap();
+            CreateMap<SectorDocumentTypeViewModel, SectorDocumentTypeDto>().ReverseMap();
         }
     }
 }

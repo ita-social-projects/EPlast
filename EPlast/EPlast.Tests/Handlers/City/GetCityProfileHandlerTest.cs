@@ -73,7 +73,7 @@ namespace EPlast.Tests.Handlers.City
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         private static List<string> GetRoles()
@@ -86,11 +86,11 @@ namespace EPlast.Tests.Handlers.City
             };
         }
 
-        private static CityProfileDTO GetCityProfile()
+        private static CityProfileDto GetCityProfile()
         {
-            return new CityProfileDTO
+            return new CityProfileDto
             {
-                City = new CityDTO
+                City = new CityDto
                 {
                     CanCreate = true,
                     CanEdit = true,

@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.AnnualReport
 {
-    public enum AnnualReportStatusDTO
+    public enum AnnualReportStatusDto
     {
         [Description("Непідтверджений")]
         Unconfirmed,

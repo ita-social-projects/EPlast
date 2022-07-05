@@ -1,39 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
-using EPlast.BLL.DTO.GoverningBody;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies
 {
     public interface IGoverningBodyAdministrationService
     {
-        Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize);
+        Task<Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>> GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize);
 
-        Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync();
+        Task<IEnumerable<GoverningBodyAdministrationDto>> GetGoverningBodyAdministratorsAsync();
 
-        Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodyAdminFormAsync();
+        Task<IEnumerable<ShortUserInformationDto>> GetUsersForGoverningBodyAdminFormAsync();
 
         /// <summary>
         /// Adds Main Administrator
         /// </summary>
         /// <param name="governingBodyAdministrationDto">Governing Body Administration object</param>
         /// <returns>Governing Body Administration object</returns>
-        Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto);
+        Task<GoverningBodyAdministrationDto> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDto governingBodyAdministrationDto);
 
         /// <summary>
         /// Adds Administrator to specified Governing Body
         /// </summary>
         /// <param name="governingBodyAdministrationDto">Governing Body Administration object</param>
         /// <returns>Governing Body Administration object</returns>
-        Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto);
+        Task<GoverningBodyAdministrationDto> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDto governingBodyAdministrationDto);
 
         /// <summary>
         /// Edits Administrator of specified Governing Body
         /// </summary>
         /// <param name="governingBodyAdministrationDto">Governing Body Administration object</param>
         /// <returns>Governing Body Administration object</returns>
-        Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto);
+        Task<GoverningBodyAdministrationDto> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDto governingBodyAdministrationDto);
 
         /// <summary>
         /// Removes Administrator of specified Governing Body

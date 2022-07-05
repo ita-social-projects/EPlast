@@ -5,10 +5,10 @@ namespace EPlast.BLL.Commands.Distinction
 {
     public class ChangeDistinctionCommand: IRequest
     {
-        public DistinctionDTO DistinctionDTO { get; set; }
+        public DistinctionDto DistinctionDTO { get; set; }
         public User User { get; set; }
 
-        public ChangeDistinctionCommand(DistinctionDTO distinctionDTO, User user)
+        public ChangeDistinctionCommand(DistinctionDto distinctionDTO, User user)
         {
             DistinctionDTO = distinctionDTO;
             User = user;

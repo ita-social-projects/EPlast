@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Sector
     {
         public SectorAdministrationProfile()
         {
-            CreateMap<SectorAdministration, SectorAdministrationDTO>().ReverseMap();
+            CreateMap<SectorAdministration, SectorAdministrationDto>().ReverseMap();
         }
     }
 }

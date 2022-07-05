@@ -8,13 +8,13 @@ namespace EPlast.BLL.Interfaces.AboutBase
 {
     public interface IAboutBaseSectionService
     {
-        Task<IEnumerable<SectionDTO>> GetAllSectionAsync();
+        Task<IEnumerable<SectionDto>> GetAllSectionAsync();
 
-        Task<SectionDTO> GetSection(int id);
+        Task<SectionDto> GetSection(int id);
 
-        Task AddSection(SectionDTO sectionDTO, User user);
+        Task AddSection(SectionDto sectionDTO, User user);
 
-        Task ChangeSection(SectionDTO sectionDTO, User user);
+        Task ChangeSection(SectionDto sectionDTO, User user);
 
         Task DeleteSection(int id, User user);
 

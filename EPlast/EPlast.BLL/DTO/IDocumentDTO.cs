@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO
 {
-    public interface IDocumentDTO
+    public interface IDocumentDto
     {
         DateTime? SubmitDate { get; set; }
     }
