@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220701112456_fixCyrillicName")]
+    partial class fixCyrillicName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,36 +225,6 @@ namespace EPlast.DataAccess.Migrations
                         {
                             ID = 23,
                             AdminTypeName = "Діловод Напряму Керівного Органу"
-                        },
-                        new
-                        {
-                            ID = 24,
-                            AdminTypeName = "Референт/-ка УПС Округи"
-                        },
-                        new
-                        {
-                            ID = 25,
-                            AdminTypeName = "Референт/-ка УСП Округи"
-                        },
-                        new
-                        {
-                            ID = 26,
-                            AdminTypeName = "Референт дійсного членства Округи"
-                        },
-                        new
-                        {
-                            ID = 27,
-                            AdminTypeName = "Референт/-ка УПС Станиці"
-                        },
-                        new
-                        {
-                            ID = 28,
-                            AdminTypeName = "Референт/-ка УСП Станиці"
-                        },
-                        new
-                        {
-                            ID = 29,
-                            AdminTypeName = "Референт дійсного членства Станиці"
                         });
                 });
 
