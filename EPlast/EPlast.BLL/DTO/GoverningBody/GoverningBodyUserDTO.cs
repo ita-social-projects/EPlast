@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.GoverningBody
 {
-    public class GoverningBodyUserDTO
+    public class GoverningBodyUserDto
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

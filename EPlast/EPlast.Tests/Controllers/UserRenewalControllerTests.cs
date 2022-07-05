@@ -123,10 +123,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _userRenewalController.ModelState.AddModelError("Bad request", "Cannot create renewal");
             _mockUserRenewalService
-                .Setup(r => r.AddUserRenewalAsync(It.IsAny<UserRenewalDTO>()));
+                .Setup(r => r.AddUserRenewalAsync(It.IsAny<UserRenewalDto>()));
 
             //Act
-            var result = await _userRenewalController.AddUserRenewalAsync(It.IsAny<UserRenewalDTO>());
+            var result = await _userRenewalController.AddUserRenewalAsync(It.IsAny<UserRenewalDto>());
 
             //Assert
             _mockUserRenewalService.Verify();
@@ -139,14 +139,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _mockUserRenewalService
-                .Setup(r => r.AddUserRenewalAsync(It.IsAny<UserRenewalDTO>()))
+                .Setup(r => r.AddUserRenewalAsync(It.IsAny<UserRenewalDto>()))
                 .Throws(new Exception());
             _mockUserRenewalService
-                .Setup(r => r.IsValidUserRenewalAsync(It.IsAny<UserRenewalDTO>()))
+                .Setup(r => r.IsValidUserRenewalAsync(It.IsAny<UserRenewalDto>()))
                 .ReturnsAsync(true);
 
             //Act
-            var result = await _userRenewalController.AddUserRenewalAsync(new UserRenewalDTO());
+            var result = await _userRenewalController.AddUserRenewalAsync(new UserRenewalDto());
 
             //Assert
             Assert.IsInstanceOf<NotFoundResult>(result);
@@ -157,13 +157,13 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _mockUserRenewalService
-                .Setup(r => r.AddUserRenewalAsync(It.IsAny<UserRenewalDTO>()));
+                .Setup(r => r.AddUserRenewalAsync(It.IsAny<UserRenewalDto>()));
             _mockUserRenewalService
-                .Setup(r => r.IsValidUserRenewalAsync(It.IsAny<UserRenewalDTO>()))
+                .Setup(r => r.IsValidUserRenewalAsync(It.IsAny<UserRenewalDto>()))
                 .ReturnsAsync(true);
 
             //Act
-            var result = await _userRenewalController.AddUserRenewalAsync(It.IsAny<UserRenewalDTO>());
+            var result = await _userRenewalController.AddUserRenewalAsync(It.IsAny<UserRenewalDto>());
 
             //Assert
             _mockUserRenewalService.Verify();
@@ -185,8 +185,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(r => r.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             _mockUserRenewalService
-                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDTO>()))
-                .ReturnsAsync(new CityMembersDTO());
+                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDto>()))
+                .ReturnsAsync(new CityMembersDto());
             _mockUserRenewalService
                 .Setup(r => r.SendRenewalConfirmationEmailAsync(It.IsAny<string>(), It.IsAny<int>()));
 
@@ -199,7 +199,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<CityMembersDTO>(resultValue);
+            Assert.IsInstanceOf<CityMembersDto>(resultValue);
         }
 
         [Test]
@@ -217,8 +217,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(r => r.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             _mockUserRenewalService
-                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDTO>()))
-                .ReturnsAsync(new CityMembersDTO());
+                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDto>()))
+                .ReturnsAsync(new CityMembersDto());
             _mockUserRenewalService
                 .Setup(r => r.SendRenewalConfirmationEmailAsync(It.IsAny<string>(), It.IsAny<int>()));
 
@@ -245,8 +245,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(r => r.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             _mockUserRenewalService
-                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDTO>()))
-                .ReturnsAsync(new CityMembersDTO());
+                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDto>()))
+                .ReturnsAsync(new CityMembersDto());
             _mockUserRenewalService
                 .Setup(r => r.SendRenewalConfirmationEmailAsync(It.IsAny<string>(), It.IsAny<int>()));
 
@@ -273,7 +273,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(r => r.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
             _mockUserRenewalService
-                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDTO>()))
+                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDto>()))
                 .ThrowsAsync(new ArgumentException());
             _mockUserRenewalService
                 .Setup(r => r.SendRenewalConfirmationEmailAsync(It.IsAny<string>(), It.IsAny<int>()));
@@ -301,8 +301,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(r => r.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(false);
             _mockUserRenewalService
-                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDTO>()))
-                .ReturnsAsync(new CityMembersDTO());
+                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDto>()))
+                .ReturnsAsync(new CityMembersDto());
             _mockUserRenewalService
                 .Setup(r => r.SendRenewalConfirmationEmailAsync(It.IsAny<string>(), It.IsAny<int>()));
 
@@ -315,7 +315,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<UnauthorizedResult>(result);
         }
 
-        private readonly UserRenewalDTO userRenewalDTO = new UserRenewalDTO
+        private readonly UserRenewalDto userRenewalDTO = new UserRenewalDto
         {
             Id = 1,
             CityId = 13,

@@ -10,7 +10,7 @@ namespace EPlast.BLL.Mapping.Precautions
     {
         public PrecautionUserProfile()
         {
-            CreateMap<DataAccess.Entities.User, PrecautionUserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, PrecautionUserDto>().ReverseMap();
         }
     }
 }

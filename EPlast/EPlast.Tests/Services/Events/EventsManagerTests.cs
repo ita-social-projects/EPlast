@@ -1,15 +1,15 @@
-﻿using EPlast.BLL.DTO.EventCalendar;
-using EPlast.BLL.Services.EventUser;
-using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.EventCalendar;
+using EPlast.BLL.Services.EventUser;
+using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using NUnit.Framework;
 
 
 namespace EPlast.Tests.Services
@@ -38,7 +38,7 @@ namespace EPlast.Tests.Services
             // Act
             var result = await manager.GetActionsAsync();
             // Assert
-            Assert.IsInstanceOf<List<EventCalendarInfoDTO>>(result);
+            Assert.IsInstanceOf<List<EventCalendarInfoDto>>(result);
             Assert.AreEqual(1, result.Count);
         }
 
@@ -46,14 +46,14 @@ namespace EPlast.Tests.Services
         public async Task GetEducationsAsync_ReturnsList()
         {
             // Arrange
-             _repoWrapper
-                .Setup(x => x.Event.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.Event.Event, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.Event.Event>, IIncludableQueryable<DataAccess.Entities.Event.Event, object>>>()))
-                .ReturnsAsync(EventsList);
+            _repoWrapper
+               .Setup(x => x.Event.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.Event.Event, bool>>>(),
+               It.IsAny<Func<IQueryable<DataAccess.Entities.Event.Event>, IIncludableQueryable<DataAccess.Entities.Event.Event, object>>>()))
+               .ReturnsAsync(EventsList);
             // Act
             var result = await manager.GetEducationsAsync();
             // Assert
-            Assert.IsInstanceOf<List<EventCalendarInfoDTO>>(result);
+            Assert.IsInstanceOf<List<EventCalendarInfoDto>>(result);
             Assert.AreEqual(1, result.Count);
         }
 
@@ -68,7 +68,7 @@ namespace EPlast.Tests.Services
             // Act
             var result = await manager.GetCampsAsync();
             // Assert
-            Assert.IsInstanceOf<List<EventCalendarInfoDTO>>(result);
+            Assert.IsInstanceOf<List<EventCalendarInfoDto>>(result);
             Assert.AreEqual(1, result.Count);
         }
 

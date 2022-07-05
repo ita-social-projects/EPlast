@@ -19,8 +19,6 @@ namespace EPlast.DataAccess.Repositories
         {
             searchData = searchData?.ToLower();
 
-            var total = await EPlastDBContext.Set<City>().CountAsync();
-
             IQueryable<City> found = EPlastDBContext.Set<City>()
                 .Where(s => string.IsNullOrWhiteSpace(searchData) || s.Name.ToLower().Contains(searchData))
                 .Where(s => oblast == UkraineOblasts.NotSpecified || s.Oblast == oblast);

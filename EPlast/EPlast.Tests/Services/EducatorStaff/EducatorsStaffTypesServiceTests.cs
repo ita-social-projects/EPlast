@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using EPlast.BLL;
 using EPlast.BLL.DTO.EducatorsStaff;
@@ -6,12 +12,6 @@ using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.EducatorStaff
 {
@@ -39,24 +39,24 @@ namespace EPlast.Tests.Services.EducatorStaff
         {
             // Arange
             _mapper.
-                Setup(x => x.Map<EducatorsStaffTypesDTO, EducatorsStaffTypes>
-                (It.IsAny<EducatorsStaffTypesDTO>())).
+                Setup(x => x.Map<EducatorsStaffTypesDto, EducatorsStaffTypes>
+                (It.IsAny<EducatorsStaffTypesDto>())).
                 Returns(new EducatorsStaffTypes());
             _repositoryWrapper.
                 Setup(x => x.KVTypes.CreateAsync(It.IsAny<EducatorsStaffTypes>()));
             _repositoryWrapper.Setup(x => x.SaveAsync());
             _mapper.
-                Setup(x => x.Map<EducatorsStaffTypes, EducatorsStaffTypesDTO>
+                Setup(x => x.Map<EducatorsStaffTypes, EducatorsStaffTypesDto>
                 (It.IsAny<EducatorsStaffTypes>())).
-                Returns(new EducatorsStaffTypesDTO());
+                Returns(new EducatorsStaffTypesDto());
 
             // Act
             var result = await _educatorsStaffTypesService.
-                CreateKVType(It.IsAny<EducatorsStaffTypesDTO>());
+                CreateKVType(It.IsAny<EducatorsStaffTypesDto>());
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsAssignableFrom<EducatorsStaffTypesDTO>(result);
+            Assert.IsAssignableFrom<EducatorsStaffTypesDto>(result);
 
         }
 
@@ -67,14 +67,14 @@ namespace EPlast.Tests.Services.EducatorStaff
                 Setup(r => r.KVTypes.GetAllAsync(null, null)).
                 ReturnsAsync(new List<EducatorsStaffTypes>().AsQueryable());
             _mapper.
-                Setup(x => x.Map<IEnumerable<EducatorsStaffTypes>, IEnumerable<EducatorsStaffTypesDTO>>
+                Setup(x => x.Map<IEnumerable<EducatorsStaffTypes>, IEnumerable<EducatorsStaffTypesDto>>
                 (It.IsAny<IEnumerable<EducatorsStaffTypes>>())).
                 Returns(GetTestEducatorsStaffTypesDTO());
             // Act
             var result = await _educatorsStaffTypesService.GetAllKVTypesAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<List<EducatorsStaffTypesDTO>>(result);
+            Assert.IsAssignableFrom<List<EducatorsStaffTypesDto>>(result);
         }
 
         [Test]
@@ -84,14 +84,14 @@ namespace EPlast.Tests.Services.EducatorStaff
                 Setup(r => r.KVs.GetAllAsync(null, null)).
                 ReturnsAsync(new List<EducatorsStaff>().AsQueryable());
             _mapper.
-                Setup(x => x.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDTO>>
+                Setup(x => x.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDto>>
                 (It.IsAny<IEnumerable<EducatorsStaff>>())).
                 Returns(GetTestEducatorsStaffDTO());
             // Act
-            var result = await _educatorsStaffTypesService.GetKadrasWithSuchType(It.IsAny<EducatorsStaffTypesDTO>());
+            var result = await _educatorsStaffTypesService.GetKadrasWithSuchType(It.IsAny<EducatorsStaffTypesDto>());
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<List<EducatorsStaffDTO>>(result);
+            Assert.IsAssignableFrom<List<EducatorsStaffDto>>(result);
         }
 
         [Test]
@@ -102,39 +102,39 @@ namespace EPlast.Tests.Services.EducatorStaff
                 (It.IsAny<Expression<Func<EducatorsStaff, bool>>>(), null)).
                 ReturnsAsync(new EducatorsStaff());
             _mapper.
-                Setup(x => x.Map<EducatorsStaff, EducatorsStaffDTO>(It.IsAny<EducatorsStaff>())).
-                Returns(new EducatorsStaffDTO());
+                Setup(x => x.Map<EducatorsStaff, EducatorsStaffDto>(It.IsAny<EducatorsStaff>())).
+                Returns(new EducatorsStaffDto());
             _repositoryWrapper.
                 Setup(r => r.KVTypes.GetFirstOrDefaultAsync
                 (It.IsAny<Expression<Func<EducatorsStaffTypes, bool>>>(), null)).
                 ReturnsAsync(new EducatorsStaffTypes());
             _mapper.
-                Setup(x => x.Map<EducatorsStaffTypes, EducatorsStaffTypesDTO>(It.IsAny<EducatorsStaffTypes>())).
-                Returns(new EducatorsStaffTypesDTO());
+                Setup(x => x.Map<EducatorsStaffTypes, EducatorsStaffTypesDto>(It.IsAny<EducatorsStaffTypes>())).
+                Returns(new EducatorsStaffTypesDto());
             // Act
             var result = await _educatorsStaffTypesService.GetKVsTypeByIdAsync(It.IsAny<int>());
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<EducatorsStaffTypesDTO>(result);
+            Assert.IsAssignableFrom<EducatorsStaffTypesDto>(result);
         }
 
-        private IEnumerable<EducatorsStaffTypesDTO> GetTestEducatorsStaffTypesDTO()
+        private IEnumerable<EducatorsStaffTypesDto> GetTestEducatorsStaffTypesDTO()
         {
-            return new List<EducatorsStaffTypesDTO>
+            return new List<EducatorsStaffTypesDto>
             {
-                new EducatorsStaffTypesDTO{ID = 1, Name = "scdcsc"},
-                new EducatorsStaffTypesDTO{ID = 2, Name = "scascac"},
-                new EducatorsStaffTypesDTO{ID = 3, Name = "fvdsvds"}
+                new EducatorsStaffTypesDto{ID = 1, Name = "scdcsc"},
+                new EducatorsStaffTypesDto{ID = 2, Name = "scascac"},
+                new EducatorsStaffTypesDto{ID = 3, Name = "fvdsvds"}
             }.AsEnumerable();
         }
 
-        private IEnumerable<EducatorsStaffDTO> GetTestEducatorsStaffDTO()
+        private IEnumerable<EducatorsStaffDto> GetTestEducatorsStaffDTO()
         {
-            return new List<EducatorsStaffDTO>
+            return new List<EducatorsStaffDto>
             {
-                new EducatorsStaffDTO{ID = 1},
-                new EducatorsStaffDTO{ID = 2},
-                new EducatorsStaffDTO{ID = 3}
+                new EducatorsStaffDto{ID = 1},
+                new EducatorsStaffDto{ID = 2},
+                new EducatorsStaffDto{ID = 3}
             }.AsEnumerable();
         }
     }

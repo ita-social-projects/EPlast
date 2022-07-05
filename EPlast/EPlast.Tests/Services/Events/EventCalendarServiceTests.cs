@@ -1,13 +1,13 @@
-﻿using EPlast.BLL.DTO.EventCalendar;
-using EPlast.BLL.Interfaces.EventUser;
-using EPlast.BLL.Services;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.EventCalendar;
+using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Services;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.Event
 {
@@ -28,11 +28,11 @@ namespace EPlast.Tests.Services.Event
         {
             // Arrange
             _eventsManager
-                .Setup(x => x.GetActionsAsync()).ReturnsAsync(new List<EventCalendarInfoDTO>() { new EventCalendarInfoDTO() { ID=2} });
+                .Setup(x => x.GetActionsAsync()).ReturnsAsync(new List<EventCalendarInfoDto>() { new EventCalendarInfoDto() { ID = 2 } });
             // Act
             var result = await service.GetAllActions();
             // Assert
-            Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDto>>(result);
             Assert.AreEqual(1, result.Count);
         }
 
@@ -40,7 +40,7 @@ namespace EPlast.Tests.Services.Event
         public async Task GetAllActions_ReturnsNull()
         {
             // Arrange
-            List<EventCalendarInfoDTO> list = null;
+            List<EventCalendarInfoDto> list = null;
             _eventsManager
                 .Setup(x => x.GetActionsAsync())
                 .ReturnsAsync(list);
@@ -56,11 +56,11 @@ namespace EPlast.Tests.Services.Event
             // Arrange
             _eventsManager
                 .Setup(x => x.GetEducationsAsync())
-                .ReturnsAsync(new List<EventCalendarInfoDTO>() { new EventCalendarInfoDTO() { ID = 2 } });
+                .ReturnsAsync(new List<EventCalendarInfoDto>() { new EventCalendarInfoDto() { ID = 2 } });
             // Act
             var result = await service.GetAllEducations();
             // Assert
-            Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDto>>(result);
             Assert.AreEqual(1, result.Count);
         }
 
@@ -68,7 +68,7 @@ namespace EPlast.Tests.Services.Event
         public async Task GetAllEducations_ReturnsNull()
         {
             // Arrange
-            List<EventCalendarInfoDTO> list = null;
+            List<EventCalendarInfoDto> list = null;
             _eventsManager
                 .Setup(x => x.GetEducationsAsync())
                 .ReturnsAsync(list);
@@ -83,11 +83,11 @@ namespace EPlast.Tests.Services.Event
         {
             // Arrange
             _eventsManager
-                .Setup(x => x.GetCampsAsync()).ReturnsAsync(new List<EventCalendarInfoDTO>() { new EventCalendarInfoDTO() { ID = 2 } });
+                .Setup(x => x.GetCampsAsync()).ReturnsAsync(new List<EventCalendarInfoDto>() { new EventCalendarInfoDto() { ID = 2 } });
             // Act
             var result = await service.GetAllCamps();
             // Assert
-            Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<EventCalendarInfoDto>>(result);
             Assert.AreEqual(1, result.Count);
         }
 
@@ -95,7 +95,7 @@ namespace EPlast.Tests.Services.Event
         public async Task GetAllCamps_ReturnsNull()
         {
             // Arrange
-            List<EventCalendarInfoDTO> list = null;
+            List<EventCalendarInfoDto> list = null;
             _eventsManager
                 .Setup(x => x.GetCampsAsync()).ReturnsAsync(list);
             // Act

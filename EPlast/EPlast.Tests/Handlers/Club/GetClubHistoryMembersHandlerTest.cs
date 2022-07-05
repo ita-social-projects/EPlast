@@ -1,4 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Handlers.ClubHandlers;
 using EPlast.BLL.Queries.Club;
@@ -7,13 +14,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Club
 {
@@ -40,16 +40,16 @@ namespace EPlast.Tests.Handlers.Club
                       It.IsAny<Func<IQueryable<ClubMemberHistory>, IIncludableQueryable<ClubMemberHistory, IQueryable<User>>>>()))
                 .ReturnsAsync(new List<ClubMemberHistory>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>
                       (It.IsAny<IEnumerable<ClubMemberHistory>>()))
-                .Returns(new List<ClubMemberHistoryDTO>());
+                .Returns(new List<ClubMemberHistoryDto>());
 
             // Act
             var responce = await _handler.Handle(It.IsAny<GetClubHistoryMembersQuery>(), It.IsAny<CancellationToken>());
 
             // Arrange
             Assert.NotNull(responce);
-            Assert.IsInstanceOf<List<ClubMemberHistoryDTO>>(responce);
+            Assert.IsInstanceOf<List<ClubMemberHistoryDto>>(responce);
         }
     }
 }

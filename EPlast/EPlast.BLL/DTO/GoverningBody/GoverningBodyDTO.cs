@@ -5,7 +5,7 @@ using EPlast.BLL.DTO.GoverningBody.Sector;
 
 namespace EPlast.BLL.DTO
 {
-    public class GoverningBodyDTO
+    public class GoverningBodyDto
     {
         public int Id { get; set; }
         public string Description { get; set; }
@@ -14,10 +14,10 @@ namespace EPlast.BLL.DTO
         public string Logo { get; set; }
         public string PhoneNumber { get; set; }
         public int AdministrationCount { get; set; }
-        public IEnumerable<SectorDTO> GoverningBodySectors { get; set; }
-        public IEnumerable<GoverningBodyDocumentsDTO> GoverningBodyDocuments { get; set; }
-        public IEnumerable<GoverningBodyAnnouncementDTO> GoverningBodyAnnouncements { get; set; }
-        public IEnumerable<GoverningBodyAdministrationDTO> GoverningBodyAdministration { get; set; }
+        public IEnumerable<SectorDto> GoverningBodySectors { get; set; }
+        public IEnumerable<GoverningBodyDocumentsDto> GoverningBodyDocuments { get; set; }
+        public IEnumerable<GoverningBodyAnnouncementDto> GoverningBodyAnnouncements { get; set; }
+        public IEnumerable<GoverningBodyAdministrationDto> GoverningBodyAdministration { get; set; }
         public bool IsActive { get; set; }
     }
 }

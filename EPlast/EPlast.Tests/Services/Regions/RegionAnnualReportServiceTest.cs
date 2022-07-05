@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Services.Region;
@@ -7,11 +12,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
 {
@@ -42,8 +42,8 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
                 .ReturnsAsync(new RegionAnnualReport() { ID = 2 });
-            _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
-                .Returns(new RegionAnnualReportDTO() { ID = 2 });
+            _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDto>(It.IsAny<RegionAnnualReport>()))
+                .Returns(new RegionAnnualReportDto() { ID = 2 });
 
             // Act & Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(async () =>
@@ -60,12 +60,12 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
                 .ReturnsAsync(new RegionAnnualReport() {ID=2 });
-            _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
-                .Returns(new RegionAnnualReportDTO() { ID = 2 });
+            _mockMapper.Setup(x => x.Map<RegionAnnualReport, RegionAnnualReportDto>(It.IsAny<RegionAnnualReport>()))
+                .Returns(new RegionAnnualReportDto() { ID = 2 });
             // Act
             var result = await _service.GetReportByIdAsync(new User(), Id, year);
             // Assert
-            Assert.IsInstanceOf<RegionAnnualReportDTO>(result);
+            Assert.IsInstanceOf<RegionAnnualReportDto>(result);
             Assert.IsNotNull(result);
         }
 
@@ -93,7 +93,7 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
             _mockRegionAccessService.Setup(x => x.GetAllRegionsIdAndName(It.IsAny<User>()))
-                .ReturnsAsync(new List<RegionForAdministrationDTO>(){new RegionForAdministrationDTO(){ID = 1, RegionName = "RegionName"}});
+                .ReturnsAsync(new List<RegionForAdministrationDto>() { new RegionForAdministrationDto() { ID = 1, RegionName = "RegionName" } });
 
             // Act
             var result = await _service.GetAllRegionsIdAndName(new User());
@@ -181,11 +181,11 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetAllRegionsReportsAsync_NoParams()
         {
             //Arrange
-            var expected = new List<RegionAnnualReportDTO> {new RegionAnnualReportDTO() {RegionId = 1}};
+            var expected = new List<RegionAnnualReportDto> { new RegionAnnualReportDto() { RegionId = 1 } };
             _mockRepositoryWrapper
                 .Setup(r => r.RegionAnnualReports.FindAll()).Returns(new List<RegionAnnualReport>{ new RegionAnnualReport()}.AsQueryable());
             _mockMapper.Setup(x =>
-                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(
+                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDto>>(
                     It.IsAny<List<RegionAnnualReport>>())).Returns(expected);
 
             //Act
@@ -201,13 +201,13 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetAllAsync_ReturnsExpected()
         {
             //Arrange
-            var expected = new List<RegionAnnualReportDTO> {_fakeRegionAnnualReport()};
+            var expected = new List<RegionAnnualReportDto> { _fakeRegionAnnualReport() };
             _mockRepositoryWrapper
                 .Setup(x => x.RegionAnnualReports.GetAllAsync(It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
                 .ReturnsAsync(new List<RegionAnnualReport>());
             _mockMapper.Setup(x =>
-                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(
+                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDto>>(
                     It.IsAny<IEnumerable<RegionAnnualReport>>())).Returns(expected);
 
             //Act
@@ -215,7 +215,7 @@ namespace EPlast.Tests.Services.Regions
 
             //Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDTO>>(
+                x.Map<IEnumerable<RegionAnnualReport>, IEnumerable<RegionAnnualReportDto>>(
                     It.IsAny<IEnumerable<RegionAnnualReport>>()), Times.Once);
             Assert.AreEqual(expected, result);
         }
@@ -236,7 +236,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Act & Assert
             Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _service.CreateAsync(new User(), new RegionAnnualReportDTO()));
+                _service.CreateAsync(new User(), new RegionAnnualReportDto()));
         }
 
         [Test]
@@ -255,7 +255,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Act & Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
-                _service.CreateAsync(new User(), new RegionAnnualReportDTO()));
+                _service.CreateAsync(new User(), new RegionAnnualReportDto()));
         }
 
         [Test]
@@ -271,17 +271,17 @@ namespace EPlast.Tests.Services.Regions
                     x.RegionAnnualReports.GetFirstOrDefaultAsync(
                         It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(), null))
                 .ReturnsAsync((RegionAnnualReport)null);
-            _mockMapper.Setup(x => x.Map<RegionAnnualReportDTO, RegionAnnualReport>(It.IsAny<RegionAnnualReportDTO>()))
+            _mockMapper.Setup(x => x.Map<RegionAnnualReportDto, RegionAnnualReport>(It.IsAny<RegionAnnualReportDto>()))
                 .Returns(new RegionAnnualReport());
 
             //Act
-            await _service.CreateAsync(new User(), new RegionAnnualReportDTO());
+            await _service.CreateAsync(new User(), new RegionAnnualReportDto());
 
             //Assert
             _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.CreateAsync(It.IsAny<RegionAnnualReport>()),
                 Times.Once);
             _mockRepositoryWrapper.Verify(x => x.SaveAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<RegionAnnualReportDTO, RegionAnnualReport>(It.IsAny<RegionAnnualReportDTO>()), Times.Once);
+            _mockMapper.Verify(x => x.Map<RegionAnnualReportDto, RegionAnnualReport>(It.IsAny<RegionAnnualReportDto>()), Times.Once);
         }
 
         [Test]
@@ -298,7 +298,7 @@ namespace EPlast.Tests.Services.Regions
             var result = await _service.GetAllAsync(new User());
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionAnnualReportDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -404,7 +404,7 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.Create(It.IsAny<RegionAnnualReport>()),
                 Times.Once);
             _mockRepositoryWrapper.Verify(x=>x.SaveAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()), Times.Once);
+            _mockMapper.Verify(x => x.Map<RegionAnnualReportDto>(It.IsAny<RegionAnnualReport>()), Times.Once);
         }
 
         [Test]
@@ -424,7 +424,7 @@ namespace EPlast.Tests.Services.Regions
         public async Task CreateByNameAsync_Succeeded_ReturnsExpected()
         {
             //Arrange
-            RegionAnnualReportDTO expected = _fakeRegionAnnualReport();
+            RegionAnnualReportDto expected = _fakeRegionAnnualReport();
             _mockRepositoryWrapper.Setup(x =>
                     x.Region.GetFirstOrDefaultAsync(
                         It.IsAny<Expression<Func<Region, bool>>>(), null))
@@ -437,7 +437,7 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
                     It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject(), });
-            _mockMapper.Setup(x => x.Map<RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()))
+            _mockMapper.Setup(x => x.Map<RegionAnnualReportDto>(It.IsAny<RegionAnnualReport>()))
                 .Returns(expected);
 
             //Act
@@ -447,7 +447,7 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.Create(It.IsAny<RegionAnnualReport>()),
                 Times.Once);
             _mockRepositoryWrapper.Verify(x => x.SaveAsync(), Times.Once);
-            _mockMapper.Verify(x => x.Map<RegionAnnualReportDTO>(It.IsAny<RegionAnnualReport>()), Times.Once);
+            _mockMapper.Verify(x => x.Map<RegionAnnualReportDto>(It.IsAny<RegionAnnualReport>()), Times.Once);
             Assert.AreEqual(expected, result);
         }
 
@@ -572,9 +572,9 @@ namespace EPlast.Tests.Services.Regions
             };
         }
 
-        private RegionAnnualReportDTO _fakeRegionAnnualReport()
+        private RegionAnnualReportDto _fakeRegionAnnualReport()
         {
-            return new RegionAnnualReportDTO()
+            return new RegionAnnualReportDto()
             {
                 ID = 1,
                 RegionName = "TestRegionName",

@@ -66,7 +66,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Terms not found</response>
         /// <response code="400">Terms model is not valid</response>
         [HttpPut("Data/{id}")]
-        public async Task<IActionResult> EditTerms(TermsDTO termsDTO)
+        public async Task<IActionResult> EditTerms(TermsDto termsDTO)
         {
             if (ModelState.IsValid)
             {
@@ -93,7 +93,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Terms not found</response>
         /// <response code="400">Terms model is not valid</response>
         [HttpPost("Data/{id}")]
-        public async Task<IActionResult> AddTerms(TermsDTO termsDTO)
+        public async Task<IActionResult> AddTerms(TermsDto termsDTO)
         {
             if (ModelState.IsValid)
             {

@@ -8,9 +8,9 @@ namespace EPlast.WebApi.Mapping.GoverningBody
     {
         public GoverningBodyDocumentsProfile()
         {
-            CreateMap<GoverningBodyDocumentsViewModel, GoverningBodyDocumentsDTO>().ReverseMap();
-            CreateMap<GoverningBodyViewModel, GoverningBodyDocumentsDTO>().ReverseMap();
-            CreateMap<GoverningBodyDocumentTypeViewModel, GoverningBodyDocumentTypeDTO>().ReverseMap();
+            CreateMap<GoverningBodyDocumentsViewModel, GoverningBodyDocumentsDto>().ReverseMap();
+            CreateMap<GoverningBodyViewModel, GoverningBodyDocumentsDto>().ReverseMap();
+            CreateMap<GoverningBodyDocumentTypeViewModel, GoverningBodyDocumentTypeDto>().ReverseMap();
         }
     }
 }

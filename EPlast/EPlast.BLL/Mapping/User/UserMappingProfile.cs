@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.User
     {
         public UserMappingProfile()
         {
-            CreateMap<DataAccess.Entities.User, UserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, UserDto>().ReverseMap();
         }
     }
 }

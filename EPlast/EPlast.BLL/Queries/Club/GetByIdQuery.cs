@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.Club
 {
-    public class GetByIdQuery : IRequest<ClubDTO>
+    public class GetByIdQuery : IRequest<ClubDto>
     {
         public int ClubId { get; set; }
 

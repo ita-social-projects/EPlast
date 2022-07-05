@@ -8,9 +8,9 @@ namespace EPlast.BLL.Mapping.Region
     {
         public RegionProfile()
         {
-            CreateMap<RegionViewModel, RegionDTO>().ReverseMap();
-            CreateMap<RegionDTO, string>().ConvertUsing(r => r.RegionName);
-            CreateMap<string, RegionDTO>().ConvertUsing(r => new RegionDTO() { RegionName = r});
+            CreateMap<RegionViewModel, RegionDto>().ReverseMap();
+            CreateMap<RegionDto, string>().ConvertUsing(r => r.RegionName);
+            CreateMap<string, RegionDto>().ConvertUsing(r => new RegionDto() { RegionName = r });
         }
     }
 }

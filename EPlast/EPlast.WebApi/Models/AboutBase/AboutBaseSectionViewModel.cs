@@ -15,6 +15,6 @@ namespace EPlast.WebApi.Models.AboutBase
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
 
-        public IEnumerable<SubsectionDTO> SubsectionDTOs { get; set; }
+        public IEnumerable<SubsectionDto> SubsectionDTOs { get; set; }
     }
 }

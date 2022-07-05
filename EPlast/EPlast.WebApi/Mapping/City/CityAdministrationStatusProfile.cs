@@ -1,7 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.WebApi.Models.City;
-using System.Collections.Generic;
 
 namespace EPlast.WebApi.Mapping.City
 {
@@ -9,8 +9,8 @@ namespace EPlast.WebApi.Mapping.City
     {
         public CityAdministrationStatusProfile()
         {
-            CreateMap<CityAdministrationStatusViewModel, CityAdministrationStatusDTO>().ReverseMap();
-            CreateMap<IEnumerable<CityAdministrationStatusViewModel>,IEnumerable<CityAdministrationStatusDTO>>().ReverseMap();
+            CreateMap<CityAdministrationStatusViewModel, CityAdministrationStatusDto>().ReverseMap();
+            CreateMap<IEnumerable<CityAdministrationStatusViewModel>, IEnumerable<CityAdministrationStatusDto>>().ReverseMap();
 
         }
     }

@@ -7,13 +7,13 @@ namespace EPlast.BLL.Interfaces.AboutBase
 {
     public interface IAboutBaseSubsectionService
     {
-        Task<IEnumerable<SubsectionDTO>> GetAllSubsectionAsync();
+        Task<IEnumerable<SubsectionDto>> GetAllSubsectionAsync();
 
-        Task<SubsectionDTO> GetSubsection(int id);
+        Task<SubsectionDto> GetSubsection(int id);
 
-        Task AddSubsection(SubsectionDTO subsectionDTO, User user);
+        Task AddSubsection(SubsectionDto subsectionDTO, User user);
 
-        Task ChangeSubsection(SubsectionDTO subsectionDTO, User user);
+        Task ChangeSubsection(SubsectionDto subsectionDTO, User user);
 
         Task DeleteSubsection(int id, User user);
     }

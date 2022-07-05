@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
@@ -27,7 +27,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);
 
-            var precaution = _mapper.Map<PrecautionDTO, Precaution>(request.PrecautionDTO);
+            var precaution = _mapper.Map<PrecautionDto, Precaution>(request.PrecautionDTO);
             await _repositoryWrapper.Precaution.CreateAsync(precaution);
             await _repositoryWrapper.SaveAsync();
 

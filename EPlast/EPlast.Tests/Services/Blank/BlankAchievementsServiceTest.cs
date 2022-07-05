@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Blank;
@@ -7,11 +12,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Blank
 {
@@ -39,7 +39,7 @@ namespace EPlast.Tests.Services.Blank
             _blankBlobRepository
                 .Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _mapper
-                .Setup(m => m.Map<AchievementDocumentsDTO, AchievementDocuments>(It.IsAny<AchievementDocumentsDTO>()))
+                .Setup(m => m.Map<AchievementDocumentsDto, AchievementDocuments>(It.IsAny<AchievementDocumentsDto>()))
                 .Returns(AchievementDocuments);
             _repoWrapper
                 .Setup(r => r.AchievementDocumentsRepository.Attach(It.IsAny<AchievementDocuments>()));
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Services.Blank
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<List<AchievementDocumentsDTO>>(result);
+            Assert.IsInstanceOf<List<AchievementDocumentsDto>>(result);
         }
 
         [Test]
@@ -120,18 +120,18 @@ namespace EPlast.Tests.Services.Blank
             };
         }
 
-        private List<AchievementDocumentsDTO> AchievementDocumentsListDTO()
+        private List<AchievementDocumentsDto> AchievementDocumentsListDTO()
         {
-            return new List<AchievementDocumentsDTO>
+            return new List<AchievementDocumentsDto>
             {
-                new AchievementDocumentsDTO
+                new AchievementDocumentsDto
                 {
                     ID = 1,
                     BlobName = "newBlob,LastBlob",
                     FileName = "FileName",
                     UserId = "fgh123",
                 },
-                 new AchievementDocumentsDTO
+                 new AchievementDocumentsDto
                  {
                      ID = 2,
                      BlobName = "newBlob1,LastBlob1",
@@ -147,18 +147,18 @@ namespace EPlast.Tests.Services.Blank
             //Arrange
             _repoWrapper
                 .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
-                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>())) 
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>()))
                 .ReturnsAsync(GetTestAchievements());
             _mapper
-                .Setup(m => m.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDTO>>(It.IsAny<IEnumerable<AchievementDocuments>>()))
-                .Returns(new List<AchievementDocumentsDTO>().AsEnumerable());
+                .Setup(m => m.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDto>>(It.IsAny<IEnumerable<AchievementDocuments>>()))
+                .Returns(new List<AchievementDocumentsDto>().AsEnumerable());
 
             //Act
             var result = await _achievementDocumentService.GetDocumentsByUserIdAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDto>>(result);
         }
 
         [TestCase(1, 1, "someId")]
@@ -175,7 +175,7 @@ namespace EPlast.Tests.Services.Blank
 
             //Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDto>>(result);
         }
     }
 }

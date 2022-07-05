@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.ActiveMembership
     {
         public UserMembershipDatesProfile()
         {
-            CreateMap<UserMembershipDatesDTO, UserMembershipDates>().ReverseMap();
+            CreateMap<UserMembershipDatesDto, UserMembershipDates>().ReverseMap();
         }
     }
 }

@@ -1,18 +1,18 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.Events;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.EventUser
 {
-    public class EventCreateDTO
+    public class EventCreateDto
     {
-        public EventCreationDTO Event { get; set; }
-        public EventAdministrationDTO Сommandant { get; set; }
-        public EventAdministrationDTO Alternate { get; set; }
-        public EventAdministrationDTO Bunchuzhnyi { get; set; }
-        public EventAdministrationDTO Pysar { get; set; }
-        public IEnumerable<EventCategoryDTO> EventCategories { get; set; }
-        public IEnumerable<EventTypeDTO> EventTypes { get; set; }
-        public IEnumerable<UserInfoDTO> Users { get; set; }
+        public EventCreationDto Event { get; set; }
+        public EventAdministrationDto Сommandant { get; set; }
+        public EventAdministrationDto Alternate { get; set; }
+        public EventAdministrationDto Bunchuzhnyi { get; set; }
+        public EventAdministrationDto Pysar { get; set; }
+        public IEnumerable<EventCategoryDto> EventCategories { get; set; }
+        public IEnumerable<EventTypeDto> EventTypes { get; set; }
+        public IEnumerable<UserInfoDto> Users { get; set; }
     }
 }

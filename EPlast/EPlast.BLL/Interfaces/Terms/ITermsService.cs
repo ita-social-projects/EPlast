@@ -1,8 +1,8 @@
-﻿using EPlast.BLL.DTO.Terms;
-using EPlast.DataAccess.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Terms;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Terms
 {
@@ -13,7 +13,7 @@ namespace EPlast.BLL.Interfaces.Terms
         /// </summary>
         /// <returns>First record</returns>
         [Obsolete("Use refactored method via mediator query/handler GetFirstRecord")]
-        Task<TermsDTO> GetFirstRecordAsync();
+        Task<TermsDto> GetFirstRecordAsync();
 
         /// <summary>
         /// Get all user Id
@@ -29,7 +29,7 @@ namespace EPlast.BLL.Interfaces.Terms
         /// <param name="termsDTO">Terms model(dto)</param>
         /// <param name="user">Authorized user</param>
         [Obsolete("Use refactored method via mediator query/handler ChangeTerms")]
-        Task ChangeTermsAsync(TermsDTO termsDTO, User user);
+        Task ChangeTermsAsync(TermsDto termsDTO, User user);
 
         /// <summary>
         /// Add terms of use by Id
@@ -37,6 +37,6 @@ namespace EPlast.BLL.Interfaces.Terms
         /// <param name="termsDTO">Terms model(dto)</param>
         /// <param name="user">Authorized user</param>
         [Obsolete("Use refactored method via mediator query/handler AddTerms")]
-        Task AddTermsAsync(TermsDTO termsDTO, User user);
+        Task AddTermsAsync(TermsDto termsDTO, User user);
     }
 }

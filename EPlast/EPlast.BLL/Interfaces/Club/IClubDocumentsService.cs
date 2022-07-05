@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.Club;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Club;
 
 namespace EPlast.BLL.Interfaces.Club
 {
@@ -12,7 +12,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
-        Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentsDTO);
+        Task<ClubDocumentsDto> AddDocumentAsync(ClubDocumentsDto documentsDTO);
 
         /// <summary>
         /// Get a file in base64 format
@@ -25,7 +25,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// Get all Club document types
         /// </summary>
         /// <returns>All Club document types</returns>
-        Task<IEnumerable<ClubDocumentTypeDTO>> GetAllClubDocumentTypesAsync();
+        Task<IEnumerable<ClubDocumentTypeDto>> GetAllClubDocumentTypesAsync();
 
         /// <summary>
         /// Delete a specific document by id

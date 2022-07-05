@@ -1,14 +1,14 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.DTO.EventUser
 {
-    public class EventUserDTO
+    public class EventUserDto
     {
-        public UserDTO User { get; set; }
-        public ICollection<EventGeneralInfoDTO> PlanedEvents { get; set; }
-        public ICollection<EventGeneralInfoDTO> CreatedEvents { get; set; }
-        public ICollection<EventGeneralInfoDTO> VisitedEvents { get; set; }
+        public UserDto User { get; set; }
+        public ICollection<EventGeneralInfoDto> PlanedEvents { get; set; }
+        public ICollection<EventGeneralInfoDto> CreatedEvents { get; set; }
+        public ICollection<EventGeneralInfoDto> VisitedEvents { get; set; }
         public ICollection<string> UserRoles { get; set; }
     }
 }

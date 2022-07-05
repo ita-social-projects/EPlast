@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserProfiles
@@ -29,12 +29,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Degree.GetAllAsync(null, null)).ReturnsAsync(new List<Degree>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Degree, DegreeDTO>(It.IsAny<Degree>())).Returns(new DegreeDTO());
+            _mapper.Setup(x => x.Map<Degree, DegreeDto>(It.IsAny<Degree>())).Returns(new DegreeDto());
             // Act
             var result = await service.GetAllDegreesAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<DegreeDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<DegreeDto>>(result);
         }
 
         [Fact]
@@ -43,12 +43,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Education.GetAllAsync(null, null)).ReturnsAsync(new List<Education>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
+            _mapper.Setup(x => x.Map<Education, EducationDto>(It.IsAny<Education>())).Returns(new EducationDto());
             // Act
             var result = await service.GetAllEducationsGroupByPlaceAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<EducationDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<EducationDto>>(result);
         }
         [Fact]
         public async Task GetAllEducationsGroupBySpecialityTest()
@@ -56,12 +56,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Education.GetAllAsync(null, null)).ReturnsAsync(new List<Education>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
+            _mapper.Setup(x => x.Map<Education, EducationDto>(It.IsAny<Education>())).Returns(new EducationDto());
             // Act
             var result = await service.GetAllEducationsGroupBySpecialityAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<EducationDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<EducationDto>>(result);
         }
         [Fact]
         public async Task GetEducationsByIdTest()
@@ -69,12 +69,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Education.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Education, bool>>>(), null)).ReturnsAsync(new Education());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Education, EducationDTO>(It.IsAny<Education>())).Returns(new EducationDTO());
+            _mapper.Setup(x => x.Map<Education, EducationDto>(It.IsAny<Education>())).Returns(new EducationDto());
             // Act
             var result = await service.GetEducationsByIdAsync(1);
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<EducationDTO>(result);
+            Assert.IsType<EducationDto>(result);
         }
 
         [Fact]
@@ -83,12 +83,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Gender.GetAllAsync(null, null)).ReturnsAsync(new List<Gender>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Gender, GenderDTO>(It.IsAny<Gender>())).Returns(new GenderDTO());
+            _mapper.Setup(x => x.Map<Gender, GenderDto>(It.IsAny<Gender>())).Returns(new GenderDto());
             // Act
             var result = await service.GetAllGendersAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<GenderDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<GenderDto>>(result);
         }
 
         [Fact]
@@ -97,12 +97,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Nationality.GetAllAsync(null, null)).ReturnsAsync(new List<Nationality>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Nationality, NationalityDTO>(It.IsAny<Nationality>())).Returns(new NationalityDTO());
+            _mapper.Setup(x => x.Map<Nationality, NationalityDto>(It.IsAny<Nationality>())).Returns(new NationalityDto());
             // Act
             var result = await service.GetAllNationalityAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<NationalityDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<NationalityDto>>(result);
         }
 
         [Fact]
@@ -111,12 +111,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Religion.GetAllAsync(null, null)).ReturnsAsync(new List<Religion>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Religion, ReligionDTO>(It.IsAny<Religion>())).Returns(new ReligionDTO());
+            _mapper.Setup(x => x.Map<Religion, ReligionDto>(It.IsAny<Religion>())).Returns(new ReligionDto());
             // Act
             var result = await service.GetAllReligionsAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<ReligionDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<ReligionDto>>(result);
         }
 
         [Fact]
@@ -125,12 +125,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Work.GetAllAsync(null, null)).ReturnsAsync(new List<Work>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Work, WorkDTO>(It.IsAny<Work>())).Returns(new WorkDTO());
+            _mapper.Setup(x => x.Map<Work, WorkDto>(It.IsAny<Work>())).Returns(new WorkDto());
             // Act
             var result = await service.GetAllWorkGroupByPlaceAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<WorkDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<WorkDto>>(result);
         }
         [Fact]
         public async Task GetAllWorkGroupByPositionTest()
@@ -138,12 +138,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Work.GetAllAsync(null, null)).ReturnsAsync(new List<Work>().AsQueryable());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Work, WorkDTO>(It.IsAny<Work>())).Returns(new WorkDTO());
+            _mapper.Setup(x => x.Map<Work, WorkDto>(It.IsAny<Work>())).Returns(new WorkDto());
             // Act
             var result = await service.GetAllWorkGroupByPositionAsync();
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<WorkDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<WorkDto>>(result);
         }
         [Fact]
         public async Task GetWorkByIdTest()
@@ -151,12 +151,12 @@ namespace EPlast.XUnitTest.Services.UserProfiles
             _repoWrapper.Setup(r => r.Work.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Work, bool>>>(), null)).ReturnsAsync(new Work());
 
             var service = new UserPersonalDataService(_repoWrapper.Object, _mapper.Object);
-            _mapper.Setup(x => x.Map<Work, WorkDTO>(It.IsAny<Work>())).Returns(new WorkDTO());
+            _mapper.Setup(x => x.Map<Work, WorkDto>(It.IsAny<Work>())).Returns(new WorkDto());
             // Act
             var result = await service.GetWorkByIdAsync(1);
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<WorkDTO>(result);
+            Assert.IsType<WorkDto>(result);
         }
     }
 }

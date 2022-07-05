@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.City
     {
         public CityUserProfile()
         {
-            CreateMap<DatabaseEntities.User, CityUserDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.User, CityUserDto>().ReverseMap();
         }
     }
 }

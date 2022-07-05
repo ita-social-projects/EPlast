@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.Announcements;
 using EPlast.BLL.Services.GoverningBodies.Sector;
@@ -8,12 +14,6 @@ using EPlast.DataAccess.Entities.GoverningBody.Announcement;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Announcements
 {
@@ -29,9 +29,9 @@ namespace EPlast.BLL.Services.Announcements
             _blobStorageService = blobStorageService;
         }
 
-        public async Task<GoverningBodyAnnouncementUserWithImagesDTO> GetAnnouncementByIdAsync(int id)
+        public async Task<GoverningBodyAnnouncementUserWithImagesDto> GetAnnouncementByIdAsync(int id)
         {
-            var announcement = _mapper.Map<GoverningBodyAnnouncementUserWithImagesDTO>(
+            var announcement = _mapper.Map<GoverningBodyAnnouncementUserWithImagesDto>(
                 await _repoWrapper.GoverningBodyAnnouncement.GetFirstAsync(
                     d => d.Id == id,
                     src => src.Include(g => g.Images)));
@@ -42,11 +42,11 @@ namespace EPlast.BLL.Services.Announcements
             }
 
             var user = await _repoWrapper.User.GetFirstOrDefaultAsync(d => d.Id == announcement.UserId);
-            announcement.User = _mapper.Map<UserDTO>(user);
+            announcement.User = _mapper.Map<UserDto>(user);
             return announcement;
         }
 
-        public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize)
+        public async Task<Tuple<IEnumerable<GoverningBodyAnnouncementUserDto>, int>> GetAnnouncementsByPageAsync(int pageNumber, int pageSize)
         {
             var order = GetOrder();
             var selector = GetSelector();
@@ -57,7 +57,7 @@ namespace EPlast.BLL.Services.Announcements
                 null, pageNumber, pageSize
               );
 
-            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(tuple.Item1);
+            var announcements = _mapper.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDto>>(tuple.Item1);
 
             foreach (var ann in announcements)
             {
@@ -67,7 +67,7 @@ namespace EPlast.BLL.Services.Announcements
             }
             var rows = tuple.Item2;
 
-            return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>
+            return new Tuple<IEnumerable<GoverningBodyAnnouncementUserDto>, int>
                 (announcements, rows);
         }
 

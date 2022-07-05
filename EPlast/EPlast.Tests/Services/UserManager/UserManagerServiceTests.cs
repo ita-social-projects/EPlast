@@ -20,14 +20,14 @@ namespace EPlast.Tests.Services.UserManager
         private Mock<UserManager<User>> _mockUserManager;
         private Mock<IMapper> _mockMapper;
         private List<string> _roles;
-        private UserDTO _userDTO;
+        private UserDto _userDTO;
         private Mock<ILoggerService<UserManagerService>> _mockLoggerService;
 
         [SetUp]
         public void SetUp()
         {
             _roles = new List<string>();
-            _userDTO = new UserDTO();
+            _userDTO = new UserDto();
             _mockMapper = new Mock<IMapper>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -88,7 +88,7 @@ namespace EPlast.Tests.Services.UserManager
             //Arrange
             string userId = "id";
             _mockMapper
-                .Setup(x => x.Map<User, UserDTO>(It.IsAny<User>()))
+                .Setup(x => x.Map<User, UserDto>(It.IsAny<User>()))
                 .Returns(_userDTO);
 
             //Act

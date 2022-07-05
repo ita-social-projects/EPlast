@@ -1,14 +1,14 @@
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Notifications;
 using System;
 using System.Collections.Concurrent;
-using EPlast.BLL.Services.Notifications;
-using Moq;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Notification;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Services.Notifications;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.Notifications
 {
@@ -18,7 +18,7 @@ namespace EPlast.Tests.Services.Notifications
     {
         private Mock<IUserMapService> _userMap;
 
-        private ConcurrentDictionary<string, HashSet<ConnectionDTO>> userMapDictionary;
+        private ConcurrentDictionary<string, HashSet<ConnectionDto>> userMapDictionary;
         private UserMapService userMapService;
         #region  Setup
         [SetUp]
@@ -27,7 +27,7 @@ namespace EPlast.Tests.Services.Notifications
         {
             _userMap = new Mock<IUserMapService>();
             userMapService = new UserMapService();
-            userMapDictionary = new ConcurrentDictionary<string, HashSet<ConnectionDTO>>();
+            userMapDictionary = new ConcurrentDictionary<string, HashSet<ConnectionDto>>();
         }
         #endregion
         #region CreateAnObject
@@ -55,7 +55,7 @@ namespace EPlast.Tests.Services.Notifications
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ConcurrentDictionary<string,HashSet<ConnectionDTO>>>(result);
+            Assert.IsInstanceOf<ConcurrentDictionary<string, HashSet<ConnectionDto>>>(result);
         }
         #endregion
     }

@@ -96,7 +96,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await distinctionService.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()); });
+                async () => { await distinctionService.ChangeUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -126,7 +126,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await distinctionService.AddUserDistinctionAsync(It.IsAny<UserDistinctionDTO>(), It.IsAny<User>()); });
+                async () => { await distinctionService.AddUserDistinctionAsync(It.IsAny<UserDistinctionDto>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -152,8 +152,8 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(new UserDistinction());
             mockMapper
-                .Setup(m => m.Map<UserDistinctionDTO>(It.IsAny<UserDistinction>()))
-                .Returns(new UserDistinctionDTO());
+                .Setup(m => m.Map<UserDistinctionDto>(It.IsAny<UserDistinction>()))
+                .Returns(new UserDistinctionDto());
 
             //Act
             var result = await distinctionService.IsNumberExistAsync(It.IsAny<int>());
@@ -171,7 +171,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(nullDistinction);
             mockMapper
-                .Setup(m => m.Map<UserDistinctionDTO>(It.IsAny<UserDistinction>()))
+                .Setup(m => m.Map<UserDistinctionDto>(It.IsAny<UserDistinction>()))
                 .Returns(nullDistinctionDTO);
 
             //Act
@@ -190,8 +190,8 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(new UserDistinction());
             mockMapper
-                .Setup(m => m.Map<UserDistinctionDTO>(It.IsAny<UserDistinction>()))
-                .Returns(new UserDistinctionDTO());
+                .Setup(m => m.Map<UserDistinctionDto>(It.IsAny<UserDistinction>()))
+                .Returns(new UserDistinctionDto());
 
             //Act
             var result = await distinctionService.IsNumberExistAsync(It.IsAny<int>());
@@ -209,14 +209,14 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(GetTestUserDistinction());
             mockMapper
-               .Setup(m => m.Map<IEnumerable<UserDistinctionDTO>>(It.IsAny<IEnumerable<UserDistinction>>()))
+               .Setup(m => m.Map<IEnumerable<UserDistinctionDto>>(It.IsAny<IEnumerable<UserDistinction>>()))
                .Returns(GetTestUserDistinctionDTO());
 
             //Act
             var result = await distinctionService.GetAllUsersDistinctionAsync();
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<UserDistinctionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UserDistinctionDto>>(result);
         }
 
         [Test]
@@ -228,7 +228,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                    It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                .ReturnsAsync(GetTestUserDistinction());
             mockMapper
-               .Setup(m => m.Map<IEnumerable<UserDistinctionDTO>>(It.IsAny<IEnumerable<UserDistinction>>()))
+               .Setup(m => m.Map<IEnumerable<UserDistinctionDto>>(It.IsAny<IEnumerable<UserDistinction>>()))
                .Returns(GetTestUserDistinctionDTO());
 
             //Act
@@ -247,7 +247,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(nulluserDistinctions);
             mockMapper
-                .Setup(m => m.Map<IEnumerable<UserDistinctionDTO>>(It.IsAny<IEnumerable<UserDistinction>>()))
+                .Setup(m => m.Map<IEnumerable<UserDistinctionDto>>(It.IsAny<IEnumerable<UserDistinction>>()))
                 .Returns(nulluserDistinctionsDTO);
 
             //Act
@@ -266,14 +266,14 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                    It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                .ReturnsAsync(GetTestUserDistinction());
             mockMapper
-               .Setup(m => m.Map<IEnumerable<UserDistinctionDTO>>(It.IsAny<IEnumerable<UserDistinction>>()))
+               .Setup(m => m.Map<IEnumerable<UserDistinctionDto>>(It.IsAny<IEnumerable<UserDistinction>>()))
                .Returns(GetTestUserDistinctionDTO());
 
             //Act
             var result = await distinctionService.GetUserDistinctionsOfUserAsync(It.IsAny <string>());
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<UserDistinctionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UserDistinctionDto>>(result);
         }
 
         [Test]
@@ -285,7 +285,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                    It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                .ReturnsAsync(GetTestUserDistinction());
             mockMapper
-               .Setup(m => m.Map<IEnumerable<UserDistinctionDTO>>(It.IsAny<IEnumerable<UserDistinction>>()))
+               .Setup(m => m.Map<IEnumerable<UserDistinctionDto>>(It.IsAny<IEnumerable<UserDistinction>>()))
                .Returns(GetTestUserDistinctionDTO());
 
             //Act
@@ -304,7 +304,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(nulluserDistinctions);
             mockMapper
-                .Setup(m => m.Map<IEnumerable<UserDistinctionDTO>>(It.IsAny<IEnumerable<UserDistinction>>()))
+                .Setup(m => m.Map<IEnumerable<UserDistinctionDto>>(It.IsAny<IEnumerable<UserDistinction>>()))
                 .Returns(nulluserDistinctionsDTO);
 
             //Act
@@ -323,7 +323,7 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(nullDistinction);
             mockMapper
-                .Setup(m => m.Map<UserDistinctionDTO>(It.IsAny<UserDistinction>()))
+                .Setup(m => m.Map<UserDistinctionDto>(It.IsAny<UserDistinction>()))
                 .Returns(nullDistinctionDTO);
 
             //Act
@@ -342,8 +342,8 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(userDistinction);
             mockMapper
-                .Setup(m => m.Map<UserDistinction, UserDistinctionDTO>(It.IsAny<UserDistinction>()))
-                .Returns((UserDistinction src) => new UserDistinctionDTO() { Id = src.Id });
+                .Setup(m => m.Map<UserDistinction, UserDistinctionDto>(It.IsAny<UserDistinction>()))
+                .Returns((UserDistinction src) => new UserDistinctionDto() { Id = src.Id });
 
             //Act
             var result = await distinctionService.GetUserDistinctionAsync(1);
@@ -360,20 +360,20 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
                     It.IsAny<Func<IQueryable<UserDistinction>, IIncludableQueryable<UserDistinction, object>>>()))
                 .ReturnsAsync(userDistinction);
             mockMapper
-                .Setup(m => m.Map<UserDistinction, UserDistinctionDTO>(It.IsAny<UserDistinction>()))
-                .Returns((UserDistinction src) => new UserDistinctionDTO() { Id = src.Id });
+                .Setup(m => m.Map<UserDistinction, UserDistinctionDto>(It.IsAny<UserDistinction>()))
+                .Returns((UserDistinction src) => new UserDistinctionDto() { Id = src.Id });
 
             //Act
             var result = await distinctionService.GetUserDistinctionAsync(1);
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<UserDistinctionDTO>(result);
+            Assert.IsInstanceOf<UserDistinctionDto>(result);
         }
 
         readonly UserDistinction nullDistinction = null;
-        readonly UserDistinctionDTO nullDistinctionDTO = null;
+        readonly UserDistinctionDto nullDistinctionDTO = null;
         readonly List<UserDistinction> nulluserDistinctions = null;
-        readonly List<UserDistinctionDTO> nulluserDistinctionsDTO = null;
+        readonly List<UserDistinctionDto> nulluserDistinctionsDTO = null;
 
         private string UserId => Guid.NewGuid().ToString();
 
@@ -394,13 +394,17 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             Reporter = ""            
         };
 
-        private UserDistinctionDTO userDistinctionDTO => new UserDistinctionDTO
+        private UserDistinctionDto userDistinctionDTO => new UserDistinctionDto
         {
             Id = 1,
-            Distinction = new DistinctionDTO { Id = 1, Name = "За силу" },
+            Distinction = new DistinctionDto { Id = 1, Name = "За силу" },
             UserId = UserId,
             Date = DateTime.Now,
-            User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName = "",
+            User = new BLL.DTO.City.CityUserDto
+            {
+                FirstName = "",
+                LastName = "",
+                FatherName = "",
                                                   Email = "", ID = UserId, ImagePath = "", PhoneNumber = "" },
             DistinctionId = 1,
             Number = 1,
@@ -436,30 +440,30 @@ namespace EPlast.Tests.Services.DistinctionServiceTest
             }.AsEnumerable();
         }
 
-        private IEnumerable<UserDistinctionDTO> GetTestUserDistinctionDTO()
+        private IEnumerable<UserDistinctionDto> GetTestUserDistinctionDTO()
         {
-            return new List<UserDistinctionDTO>
+            return new List<UserDistinctionDto>
             {
-               new  UserDistinctionDTO
+               new  UserDistinctionDto
                {
-                   Distinction = new DistinctionDTO{Id = 1, Name = "За силу"},
+                   Distinction = new DistinctionDto{Id = 1, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new BLL.DTO.City.CityUserDto { FirstName = "", LastName = "", FatherName =""}
                },
-               new  UserDistinctionDTO
+               new  UserDistinctionDto
                {
-                   Distinction = new DistinctionDTO{Id = 2, Name = "За силу"},
+                   Distinction = new DistinctionDto{Id = 2, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new BLL.DTO.City.CityUserDto { FirstName = "", LastName = "", FatherName =""}
                },
-               new  UserDistinctionDTO
+               new  UserDistinctionDto
                {
-                   Distinction = new DistinctionDTO{Id = 3, Name = "За силу"},
+                   Distinction = new DistinctionDto{Id = 3, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new BLL.DTO.City.CityUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new BLL.DTO.City.CityUserDto { FirstName = "", LastName = "", FatherName =""}
                }
             }.AsEnumerable();
         }

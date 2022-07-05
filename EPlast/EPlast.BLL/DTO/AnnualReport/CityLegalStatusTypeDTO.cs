@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.AnnualReport
 {
-    public enum CityLegalStatusTypeDTO
+    public enum CityLegalStatusTypeDto
     {
         [Description("Зареєстрована юридична особа")]
         RegisteredLegalEntity,

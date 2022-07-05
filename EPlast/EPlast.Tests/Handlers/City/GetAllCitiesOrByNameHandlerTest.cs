@@ -43,7 +43,7 @@ namespace EPlast.Tests.Handlers.City
                 .ReturnsAsync(GetCity());
            var cities = GetCity().Where(c => c.Name.ToLower().Contains(CityName.ToLower()));
            _mockMapper
-                .Setup(m => m.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities))
+                .Setup(m => m.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDto>>(cities))
                 .Returns(GetExpectedCity());
 
             //Act
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Handlers.City
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         private static IEnumerable<DataAccess.Entities.City> GetCity()
@@ -69,11 +69,11 @@ namespace EPlast.Tests.Handlers.City
             };
         }
 
-        private static IEnumerable<CityDTO> GetExpectedCity()
+        private static IEnumerable<CityDto> GetExpectedCity()
         {
-            return new List<CityDTO>
+            return new List<CityDto>
             {
-                new CityDTO
+                new CityDto
                 {
                     Name = "Name"
                 }

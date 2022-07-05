@@ -8,7 +8,7 @@ using MediatR;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetCityProfileBasicHandler : IRequestHandler<GetCityProfileBasicQuery, CityProfileDTO>
+    public class GetCityProfileBasicHandler : IRequestHandler<GetCityProfileBasicQuery, CityProfileDto>
     {
         private readonly IMediator _mediator;
         
@@ -17,7 +17,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mediator = mediator;
         }
 
-        public async Task<CityProfileDTO> Handle(GetCityProfileBasicQuery request, CancellationToken cancellationToken)
+        public async Task<CityProfileDto> Handle(GetCityProfileBasicQuery request, CancellationToken cancellationToken)
         {
             var query = new GetCityByIdWthFullInfoQuery(request.CityId);
             var city = await _mediator.Send(query, cancellationToken);
@@ -52,7 +52,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             var cityDoc = city.CityDocuments.Take(documentToShow).ToList();
             city.DocumentsCount = city.CityDocuments.Count();
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Head = cityHead,

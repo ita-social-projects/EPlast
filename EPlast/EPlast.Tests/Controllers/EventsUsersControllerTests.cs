@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Threading.Tasks;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Http;
-using System;
 
 namespace EPlast.Tests.Controllers
 {
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<EventUserDTO>(resultValue);
+            Assert.IsInstanceOf<EventUserDto>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -88,7 +88,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await eventsUsersController.GetEventUserByUserId(It.IsAny<string>());
 
-            var actual = ((result as ObjectResult).Value as EventUserDTO).User.Id;
+            var actual = ((result as ObjectResult).Value as EventUserDto).User.Id;
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
@@ -109,7 +109,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<EventCreateDTO>(resultValue);
+            Assert.IsInstanceOf<EventCreateDto>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -126,7 +126,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await eventsUsersController.GetEventsDataForCreate();
 
-            var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
+            var actual = ((result as ObjectResult).Value as EventCreateDto).Event.ID;
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
@@ -138,7 +138,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             eventUserManager
-                .Setup((x) => x.CreateEventAsync(It.IsAny<EventCreateDTO>()))
+                .Setup((x) => x.CreateEventAsync(It.IsAny<EventCreateDto>()))
                 .Throws(new InvalidOperationException());
 
             // Act
@@ -165,7 +165,7 @@ namespace EPlast.Tests.Controllers
             var resultValue = (result as CreatedResult).Value;
 
             // Assert
-            Assert.IsInstanceOf<EventCreateDTO>(resultValue);
+            Assert.IsInstanceOf<EventCreateDto>(resultValue);
             Assert.IsInstanceOf<CreatedResult>(result);
         }
 
@@ -183,7 +183,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<EventCreateDTO>(resultValue);
+            Assert.IsInstanceOf<EventCreateDto>(resultValue);
             Assert.IsInstanceOf<CreatedResult>(result);
         }
 
@@ -201,7 +201,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await eventsUsersController.EventCreate(FakeEvent);
-            var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
+            var actual = ((result as ObjectResult).Value as EventCreateDto).Event.ID;
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
@@ -220,7 +220,7 @@ namespace EPlast.Tests.Controllers
             var result = await eventsUsersController.EventEdit(It.IsAny<int>());
 
             // Assert
-            Assert.NotNull((result as ObjectResult).Value as EventCreateDTO);
+            Assert.NotNull((result as ObjectResult).Value as EventCreateDto);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
@@ -237,7 +237,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await eventsUsersController.EventEdit(It.IsAny<int>());
 
-            var actual = ((result as ObjectResult).Value as EventCreateDTO).Event.ID;
+            var actual = ((result as ObjectResult).Value as EventCreateDto).Event.ID;
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
@@ -276,10 +276,10 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        private EventUserDTO CreateFakeEventUser()
-            => new EventUserDTO()
+        private EventUserDto CreateFakeEventUser()
+            => new EventUserDto()
             {
-                User = new UserDTO()
+                User = new UserDto()
                 {
                     Id = "1",
                     FirstName = "SomeFirstName",
@@ -287,18 +287,18 @@ namespace EPlast.Tests.Controllers
                 }
             };
 
-        private EventCreateDTO CreateFakeEventCreate()
-            => new EventCreateDTO()
+        private EventCreateDto CreateFakeEventCreate()
+            => new EventCreateDto()
             {
-                Event = new EventCreationDTO()
+                Event = new EventCreationDto()
                 {
                     ID = 1,
                 },
             };
-        private EventCreateDTO CreateFakeEventCreateDates()
-            => new EventCreateDTO()
+        private EventCreateDto CreateFakeEventCreateDates()
+            => new EventCreateDto()
             {
-                Event = new EventCreationDTO
+                Event = new EventCreationDto
                 {
                     EventDateStart = new DateTime(2021, 04, 30), EventDateEnd = new DateTime(2020, 04, 30) 
                 },

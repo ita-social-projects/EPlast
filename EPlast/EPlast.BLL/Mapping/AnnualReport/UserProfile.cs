@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.AnnualReport
     {
         public UserProfile()
         {
-            CreateMap<DatabaseEntities.User, UserDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.User, UserDto>().ReverseMap();
         }
     }
 }

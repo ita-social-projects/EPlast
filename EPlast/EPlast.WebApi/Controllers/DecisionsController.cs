@@ -1,21 +1,21 @@
-﻿using AutoMapper;
-using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.BLL.Services.Interfaces;
-using EPlast.Resources;
-using EPlast.WebApi.Models.Decision;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MediatR;
-using EPlast.BLL.ExtensionMethods;
+using AutoMapper;
+using EPlast.BLL;
 using EPlast.BLL.Commands.Decision;
+using EPlast.BLL.DTO;
+using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Queries.Decision;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.Resources;
+using EPlast.WebApi.Models.Decision;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -127,7 +127,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">The id and decision id are not same</response>
         [HttpPut("{id:int}")]
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
-        public async Task<IActionResult> Update(int id, DecisionDTO decision)
+        public async Task<IActionResult> Update(int id, DecisionDto decision)
         {
             if (id != decision.ID)
             {
@@ -156,7 +156,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
-        public async Task<IActionResult> Save(DecisionWrapperDTO decisionWrapper)
+        public async Task<IActionResult> Save(DecisionWrapperDto decisionWrapper)
         {
 
             if (decisionWrapper.FileAsBase64 == null && decisionWrapper.Decision.FileName != null)

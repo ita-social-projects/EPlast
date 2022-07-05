@@ -1,4 +1,9 @@
-﻿using EPlast.BLL;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL;
 using EPlast.BLL.Commands.Distinction;
 using EPlast.BLL.Handlers.DistinctionHandlers;
 using EPlast.BLL.Queries.Distinction;
@@ -8,11 +13,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace EPlast.Tests.Handlers.Distinction
@@ -25,7 +25,7 @@ namespace EPlast.Tests.Handlers.Distinction
         private ChangeDistinctionCommand _query;
 
         private User _user;
-        private DistinctionDTO _distinctionDTO;
+        private DistinctionDto _distinctionDTO;
 
         [SetUp]
         public void SetUp()
@@ -33,7 +33,7 @@ namespace EPlast.Tests.Handlers.Distinction
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMediator = new Mock<IMediator>();
             _handler = new ChangeDistinctionHandler(_mockRepoWrapper.Object, _mockMediator.Object);
-            _distinctionDTO = new DistinctionDTO();
+            _distinctionDTO = new DistinctionDto();
             _user = new User();
             _query = new ChangeDistinctionCommand(_distinctionDTO, _user);
         }

@@ -1,9 +1,9 @@
-﻿using EPlast.Resources;
-using System;
+﻿using System;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public class EntryAndOathDatesDTO
+    public class EntryAndOathDatesDto
     {
         private DateTime _dateOath;
         private DateTime _dateEntry;

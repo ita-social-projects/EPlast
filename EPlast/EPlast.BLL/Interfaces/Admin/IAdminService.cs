@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.DTO;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Interfaces
 {
@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <summary>
         /// Get City and Region Admins by userId of user which contained cityMembers
         /// </summary>
-        Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUserAsync(string userId);
+        Task<IEnumerable<CityDto>> GetCityRegionAdminsOfUserAsync(string userId);
 
         /// <summary>
         /// Get all roles except Admin role
@@ -51,16 +51,16 @@ namespace EPlast.BLL.Services.Interfaces
         /// Get all users with additional information
         /// </summary>
         /// <returns>Specify model with all users</returns>
-        Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId);
+        Task<Tuple<IEnumerable<UserTableDto>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId);
 
         /// <summary>
         /// Gets short users infos, by search string
         /// </summary>
         /// <param name="searchString">Search string</param>
         /// <returns>Users that match search string</returns>
-        Task<IEnumerable<ShortUserInformationDTO>> GetShortUserInfoAsync(string searchString);
+        Task<IEnumerable<ShortUserInformationDto>> GetShortUserInfoAsync(string searchString);
 
-        Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync();
+        Task<IEnumerable<ShortUserInformationDto>> GetUsersAsync();
 
         Task<int> GetUsersCountAsync();
 
@@ -70,27 +70,27 @@ namespace EPlast.BLL.Services.Interfaces
         /// <param name="rolesString">String that represents roles groups divided by '|' and roles by ','</param>
         /// <param name="include">Boolean variable that indicates whether include or exclude user by roles</param>
         /// <returns>Users that have the roles</returns>
-        Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>> filterRoles);
+        Task<IEnumerable<ShortUserInformationDto>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>> filterRoles);
 
         /// <summary>
         /// Get users which have any role of the specified roles
         /// </summary>
-        Task<IEnumerable<ShortUserInformationDTO>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+        Task<IEnumerable<ShortUserInformationDto>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
 
         /// <summary>
         /// Get users which have PlastMember role with field IsInDeputyRole
         /// </summary>
-        Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodiesAsync();
+        Task<IEnumerable<ShortUserInformationDto>> GetUsersForGoverningBodiesAsync();
 
         /// <summary>
         /// Get users which have all the specified roles
         /// </summary>
-        Task<IEnumerable<ShortUserInformationDTO>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+        Task<IEnumerable<ShortUserInformationDto>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
 
         /// <summary>
         /// Get users which have only the specified roles
         /// </summary>
-        Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
+        Task<IEnumerable<ShortUserInformationDto>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include);
 
         Task<FilterTableParametersByRole> TableFilterParameters_byRole(IList<string> roles, string userId);
         /// <summary>

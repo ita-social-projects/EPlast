@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.Distinction;
 using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.DistinctionHandlers
 {
@@ -27,7 +27,7 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
             var query = new CheckIfAdminQuery(request.User);
             await _mediator.Send(query, cancellationToken);
 
-            var distinction = _mapper.Map<DistinctionDTO, Distinction>(request.DistinctionDTO);
+            var distinction = _mapper.Map<DistinctionDto, Distinction>(request.DistinctionDTO);
             await _repositoryWrapper.Distinction.CreateAsync(distinction);
             await _repositoryWrapper.SaveAsync();
 

@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.GoverningBody.Announcement;
-using EPlast.DataAccess.Entities.GoverningBody;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoMapper;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
+using EPlast.DataAccess.Entities.GoverningBody;
 
 namespace EPlast.BLL.Mapping.GoverningBody.Announcement
 {
@@ -11,7 +11,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Announcement
     {
         public GoverningBodyAnnouncementUserWithImages()
         {
-            CreateMap<GoverningBodyAnnouncementUserWithImagesDTO, GoverningBodyAnnouncement>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncementUserWithImagesDto, GoverningBodyAnnouncement>().ReverseMap();
         }
     }
 }

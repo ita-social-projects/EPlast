@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.UserProfile
     {
         public ReligionProfile()
         {
-            CreateMap<Religion, ReligionDTO>().ReverseMap();
+            CreateMap<Religion, ReligionDto>().ReverseMap();
         }
     }
 }

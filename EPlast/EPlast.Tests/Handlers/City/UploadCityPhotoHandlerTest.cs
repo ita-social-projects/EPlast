@@ -22,14 +22,14 @@ namespace EPlast.Tests.Handlers.City
         private UploadCityPhotoCommand _command;
         private UploadCityPhotoHandler _handler;
 
-        private CityDTO _city;
+        private CityDto _city;
         
         [SetUp]
         public void SetUp()
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockCityBlobStorage = new Mock<ICityBlobStorageRepository>();
-            _city = new CityDTO {ID = 1, Logo = "Img.png/Pic.png,New.png/Logo.png"};
+            _city = new CityDto { ID = 1, Logo = "Img.png/Pic.png,New.png/Logo.png" };
             _command = new UploadCityPhotoCommand(_city);
             _handler = new UploadCityPhotoHandler(
                 _mockRepoWrapper.Object,

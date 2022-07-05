@@ -1,7 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.WebApi.Models.UserModels;
-using System.Linq;
 
 namespace EPlast.WebApi.Mapping.User
 {
@@ -9,7 +9,7 @@ namespace EPlast.WebApi.Mapping.User
     {
         public UserShortProfile()
         {
-            CreateMap<UserDTO, UserShortViewModel>()
+            CreateMap<UserDto, UserShortViewModel>()
                 .ForMember(x => x.UserProfileID, q => q.MapFrom(w => w.UserProfile.ID))
                 .ForMember(x => x.ID, q => q.MapFrom(w => w.UserProfile.UserID))
                 .ForMember(x => x.Pseudo, q => q.MapFrom(w => w.UserProfile.Pseudo))
@@ -25,7 +25,7 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.ClubId, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.ID))
                 .ForMember(x => x.RegionId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.RegionId));
 
-            CreateMap<UserShortViewModel, UserDTO>()
+            CreateMap<UserShortViewModel, UserDto>()
                     .ForPath(x => x.UserProfile.ID, q => q.MapFrom(w => w.UserProfileID))
                     .ForPath(x => x.UserProfile.UserID, q => q.MapFrom(w => w.ID))
                     .ForPath(x => x.UserProfile.Pseudo, q => q.MapFrom(w => w.Pseudo))

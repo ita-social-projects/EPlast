@@ -1,11 +1,11 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces
 {
@@ -31,7 +31,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Returns locking result</returns>
-        Task CheckingForLocking(UserDTO userDto);
+        Task CheckingForLocking(UserDto userDto);
 
         /// <summary>
         /// Creating user in database
@@ -44,35 +44,35 @@ namespace EPlast.BLL.Interfaces
         /// Sign in using Facebook
         /// </summary>
         /// <param name="facebookUser"></param>
-        Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser);
+        Task<UserDto> FacebookLoginAsync(FacebookUserInfo facebookUser);
 
         /// <summary>
         /// Finding by email in database
         /// </summary>
         /// <param name="email"></param>
         /// <returns>Returns user from database</returns>
-        Task<UserDTO> FindByEmailAsync(string email);
+        Task<UserDto> FindByEmailAsync(string email);
 
         /// <summary>
         /// Finding by id in database
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Returns user from database</returns>
-        Task<UserDTO> FindByIdAsync(string id);
+        Task<UserDto> FindByIdAsync(string id);
 
         /// <summary>
         /// Generating confirmation token
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Result of generating token</returns>
-        Task<string> GenerateConfToken(UserDTO userDto);
+        Task<string> GenerateConfToken(UserDto userDto);
 
         /// <summary>
         /// Generating reset token
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Result of generating reset token</returns>
-        Task<string> GenerateResetTokenAsync(UserDTO userDto);
+        Task<string> GenerateResetTokenAsync(UserDto userDto);
 
         /// <summary>
         /// Get authentication properties for user
@@ -93,7 +93,7 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="providerToken"></param>
         /// <returns>Returns Google user information</returns>
-        Task<UserDTO> GetGoogleUserAsync(string providerToken);
+        Task<UserDto> GetGoogleUserAsync(string providerToken);
 
         /// <summary>
         /// Get id for user from database
@@ -120,34 +120,34 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Time after registration</returns>
-        int GetTimeAfterRegister(UserDTO userDto);
+        int GetTimeAfterRegister(UserDto userDto);
 
         /// <summary>
         /// Returns time after reseting password
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Time after reseting password</returns>
-        int GetTimeAfterReset(UserDTO userDto);
+        int GetTimeAfterReset(UserDto userDto);
 
         /// <summary>
         /// Get current user
         /// </summary>
         /// <param name="user"></param>
         /// <returns>User who was logged in</returns>
-        UserDTO GetUser(User user);
+        UserDto GetUser(User user);
 
         /// <summary>
         /// Checking if email was confirmed
         /// </summary>
         /// <param name="userDto"></param>
         /// <returns>Result of confirming email</returns>
-        Task<bool> IsEmailConfirmedAsync(UserDTO userDto);
+        Task<bool> IsEmailConfirmedAsync(UserDto userDto);
 
         /// <summary>
         /// Refresh signin credentials
         /// </summary>
         /// <param name="userDto"></param>
-        Task<bool> RefreshSignInAsync(UserDTO userDto);
+        Task<bool> RefreshSignInAsync(UserDto userDto);
 
         /// <summary>
         /// Reseting password for user

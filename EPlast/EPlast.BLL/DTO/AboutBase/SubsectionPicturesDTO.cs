@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.AboutBase
 {
-    public class SubsectionPicturesDTO
+    public class SubsectionPicturesDto
     {
         public int PictureId { get; set; }
         public string FileName { get; set; }
