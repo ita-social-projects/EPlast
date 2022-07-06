@@ -207,6 +207,59 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task PutComment_UserIdIsValidAndExists_ReturnsOk()
+        {
+            // Arrange
+            string userId = Guid.Empty.ToString();
+            string comment = "I love unit testing!";
+
+            _userManagerService
+                .Setup((svc) => svc.FindByIdAsync(userId))
+                .ReturnsAsync(new UserDTO() { Id = userId });
+
+            // Act
+            var result = await _userController.PutComment(userId, comment);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task PutComment_UserIdIsValidButDoesntExist_ReturnsNotFound()
+        {
+            // Arrange
+            string userId = Guid.Empty.ToString();
+            string comment = "I love unit testing!";
+
+            _userManagerService
+                .Setup((svc) => svc.FindByIdAsync(userId))
+                .ReturnsAsync((UserDTO)null);
+
+            // Act
+            var result = await _userController.PutComment(userId, comment);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task PutComment_UserIdIsNotValid_ReturnsBadRequest()
+        {
+            // Arrange
+            string userId = null;
+            string comment = "I love unit testing!";
+
+            // Act
+            var result = await _userController.PutComment(userId, comment);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
         public async Task GetUserProfile_FocusUserIdIsNull_ReturnsNotFoundResult()
         {
             // Arrange

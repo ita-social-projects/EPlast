@@ -38,6 +38,7 @@ namespace EPlast.DataAccess.Entities
         public DateTime EmailSendedOnForgotPassword { get; set; }
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
+        public string Comment { get; set; }
         public UserProfile UserProfile { get; set; }
         public int RegionId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
         public ICollection<ConfirmedUser> ConfirmedUsers { get; set; }

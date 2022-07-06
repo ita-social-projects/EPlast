@@ -55,7 +55,8 @@ namespace EPlast.DataAccess.Repositories
                        .Where(r => (EPlastDBContext.UserRoles
                        .Where(y => y.UserId == x.Id)
                        .Select(y => y.RoleId))
-                       .Contains(r.Id)))
+                       .Contains(r.Id))),
+                    Comment = x.Comment
                 });
             //tab sorting
             if (tab == "confirmed" || tab == "registered")

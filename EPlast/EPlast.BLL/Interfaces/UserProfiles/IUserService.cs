@@ -37,6 +37,13 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         TimeSpan CheckOrAddPlastunRole(string userId, DateTime registeredOn);
 
         /// <summary>
+        /// Updates a comment for a given user
+        /// </summary>
+        /// <param name="userDto">DTO of user that needs their comment changed</param>
+        /// <param name="text">Text of the comment</param>
+        Task UpdateUserComment(UserDTO userDto, string text);
+
+        /// <summary>
         /// Get confirmed users
         /// </summary>
         /// <param name="user">User(dto) which contains confirmed users</param>

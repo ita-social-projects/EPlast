@@ -140,6 +140,16 @@ namespace EPlast.BLL.Services.UserProfiles
             }
         }
 
+        /// <inheritdoc />
+        public async Task UpdateUserComment(UserDTO userDto, string text)
+        {
+            var user = _mapper.Map<UserDTO, User>(userDto);
+            user.Comment = text;
+            _repoWrapper.User.Update(user);
+            await _repoWrapper.SaveAsync();
+        }
+
+        /// <inheritdoc />
         public async Task UpdateAsyncForFile(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncInFolder(user.Id, file);

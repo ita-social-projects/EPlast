@@ -100,6 +100,29 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Adds or updates a comment for a specified user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <param name="comment">The text of a comment</param>
+        /// <returns>A user</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        /// <response code="400">The incoming userId is not valid</response>
+        [HttpPut("{userId}/comment")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin)]
+        public async Task<IActionResult> PutComment(string userId, [FromBody] string comment)
+        {
+            if (string.IsNullOrEmpty(userId)) return BadRequest();
+
+            var user = await _userManagerService.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            await _userService.UpdateUserComment(user, comment);
+            return Ok();
+        }
+
+        /// <summary>
         /// Get a specify user profile
         /// </summary>
         /// <param name="focusUserId">The id of the focus user</param>
