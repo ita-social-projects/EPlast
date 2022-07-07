@@ -1,6 +1,7 @@
-﻿using EPlast.BLL.DTO.City;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.City;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Region
 {
@@ -17,6 +18,8 @@ namespace EPlast.BLL.DTO.Region
         public string PhoneNumber { get; set; }
         [Required, MaxLength(50)]
         public string City { get; set; }
+        [Required, Range(1, int.MaxValue)]
+        public UkraineOblasts Oblast { get; set; }
         [Required, EmailAddress, MaxLength(50)]
         public string Email { get; set; }
         public string Logo { get; set; }

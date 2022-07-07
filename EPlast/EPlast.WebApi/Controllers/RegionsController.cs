@@ -151,6 +151,8 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             await _regionService.EditRegionAsync(regId, region);
             await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
@@ -571,9 +573,9 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of regions</returns>
         [HttpGet("Regions")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetRegions()
+        public async Task<IActionResult> GetRegions(UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            var regions = await _regionService.GetRegions();
+            var regions = await _regionService.GetRegions(oblast);
             return Ok(regions);
         }
 

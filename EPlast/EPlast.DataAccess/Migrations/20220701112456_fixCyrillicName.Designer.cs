@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220701112456_fixCyrillicName")]
+    partial class fixCyrillicName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,36 +225,6 @@ namespace EPlast.DataAccess.Migrations
                         {
                             ID = 23,
                             AdminTypeName = "Діловод Напряму Керівного Органу"
-                        },
-                        new
-                        {
-                            ID = 24,
-                            AdminTypeName = "Референт/-ка УПС Округи"
-                        },
-                        new
-                        {
-                            ID = 25,
-                            AdminTypeName = "Референт/-ка УСП Округи"
-                        },
-                        new
-                        {
-                            ID = 26,
-                            AdminTypeName = "Референт дійсного членства Округи"
-                        },
-                        new
-                        {
-                            ID = 27,
-                            AdminTypeName = "Референт/-ка УПС Станиці"
-                        },
-                        new
-                        {
-                            ID = 28,
-                            AdminTypeName = "Референт/-ка УСП Станиці"
-                        },
-                        new
-                        {
-                            ID = 29,
-                            AdminTypeName = "Референт дійсного членства Станиці"
                         });
                 });
 
@@ -2453,9 +2425,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<byte>("Oblast")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -2487,7 +2456,6 @@ namespace EPlast.DataAccess.Migrations
                             City = "Львів",
                             Description = "Пласт — українська скаутська організація. Метою Пласту є сприяти всебічному, патріотичному вихованню та самовихованню української молоді. Пласт виховує молодь як свідомих, відповідальних і повновартісних громадян місцевої, національної та світової спільноти, провідників суспільства.  Також Пласт є неполітичною та позаконфесійною організацією.  Пласт був створений у 1911 році, невдовзі після заснування скаутського руху Робертом Бейден-Пауелом в 1907 р.,  а вже 12 квітня 1912 року у Львові пластуни склали першу Пластову присягу. Серед засновників організації були д-р. Олександр Тисовський, Петро Франко (син Івана Франка) та Іван Чмола.  В основі назви “Пласт” лежить відповідник англійського Scout (розвідник), взятий за прикладом пластунів-козаків-розвідників. Гербом Пласту є трилиста квітка лілії — символ скаутського руху відомий як Fleur-de-lis — та тризуб, сплетенів одну гармонійну цілісність.  Для досягнення виховних цілей Пласт застосовує власну унікальну методу виховання.",
                             IsActive = true,
-                            Oblast = (byte)0,
                             PostIndex = 0,
                             RegionName = "Крайовий Провід Пласту",
                             Status = 1
@@ -2995,9 +2963,6 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -3543,9 +3508,6 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserTableObject", b =>
                 {
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
 
@@ -3559,9 +3521,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ClubName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("DegreeId")
@@ -3588,13 +3547,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<byte>("Oblast")
                         .HasColumnType("tinyint");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PlastDegree")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Referal")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RegionId")

@@ -1,4 +1,9 @@
-﻿using EPlast.BLL.DTO;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
@@ -16,11 +21,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -582,8 +582,8 @@ namespace EPlast.Tests.Controllers
         public async Task GetRegions_ReturnsRegions()
         {
             // Arrange
-            _regionService.Setup(x => x.GetRegions()).ReturnsAsync(GetAdminRegions());
-            
+            _regionService.Setup(x => x.GetRegions(It.IsAny<UkraineOblasts>())).ReturnsAsync(GetAdminRegions());
+
             // Act
             var result = await _regionController.GetRegions();
             var actual = (result as ObjectResult).Value;

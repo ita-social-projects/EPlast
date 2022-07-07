@@ -46,6 +46,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 Email = x.Email,
                 CityURL = x.CityURL,
                 Level = x.Level,
+                Oblast = x.Oblast,
 
                 Region =  new Region
                 {
