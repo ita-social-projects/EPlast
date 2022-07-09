@@ -65,7 +65,7 @@ namespace EPlast.DataAccess
         public DbSet<EventSection> EventSection { get; set; }
         public DbSet<EventStatus> EventStatuses { get; set; }
         public DbSet<EventType> EventTypes { get; set; }
-        public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
+        public DbSet<ExtractFromUpuDocuments> ExtractFromUPUDocuments { get; set; }
         public DbSet<Gallary> Gallarys { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
