@@ -119,7 +119,7 @@ namespace EPlast.DataAccess
         public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<Work> Works { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
