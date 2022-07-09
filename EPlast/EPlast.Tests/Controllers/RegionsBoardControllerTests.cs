@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.Interfaces.RegionBoard;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Region;
+using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionBoard;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.Region;
-using EPlast.BLL.Interfaces.Region;
 
 namespace EPlast.Tests.Controllers
 {
@@ -48,7 +48,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocuments_ReturnsDocumentsList()
         {
             //Arrange
-            List<RegionDocumentDTO> testDocuments = new List<RegionDocumentDTO>() { new RegionDocumentDTO() };
+            List<RegionDocumentDto> testDocuments = new List<RegionDocumentDto>() { new RegionDocumentDto() };
             _regionService
                 .Setup(x => x.GetRegionDocsAsync(It.IsAny<int>()))
                 .ReturnsAsync(testDocuments);
@@ -59,8 +59,8 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsInstanceOf<List<RegionDocumentDTO>>(resultValue);
-            Assert.AreEqual(testDocuments, resultValue as List<RegionDocumentDTO>);
+            Assert.IsInstanceOf<List<RegionDocumentDto>>(resultValue);
+            Assert.AreEqual(testDocuments, resultValue as List<RegionDocumentDto>);
         }
     }
 }

@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
@@ -9,11 +14,6 @@ using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAnnouncement/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            GoverningBodyAnnouncementUserWithImagesDTO governingBodyAnnouncementUserDTO = await _announcementService.GetAnnouncementByIdAsync(id);
+            GoverningBodyAnnouncementUserWithImagesDto governingBodyAnnouncementUserDTO = await _announcementService.GetAnnouncementByIdAsync(id);
 
             if (governingBodyAnnouncementUserDTO == null)
             {

@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
@@ -9,10 +13,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EventUser
 {
@@ -44,20 +44,20 @@ namespace EPlast.BLL.Services.EventUser
         private int bunchuzhnyiTypeID;
         private int pysarTypeId;
 
-        public async Task<EventCreateDTO> InitializeEventCreateDTOAsync()
+        public async Task<EventCreateDto> InitializeEventCreateDTOAsync()
         {
             var allUsers = await repoWrapper.User.GetAllAsync();
 
-            return new EventCreateDTO()
+            return new EventCreateDto()
             {
-                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(allUsers.Where(u =>
-                    (_userManager.GetRolesAsync(u).Result).Intersect(AllowedRolesToBeAdminOfEvent.roles).Any())),
-                EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDTO>>(await repoWrapper.EventType.GetAllAsync()),
+                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDto>>(allUsers.Where(u =>
+                    (_userManager.GetRolesAsync(u).Result).Intersect(AllowedRolesToBeAdminOfEvent.Roles).Any())),
+                EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDto>>(await repoWrapper.EventType.GetAllAsync()),
                 EventCategories = await eventCategoryManager.GetDTOAsync()
             };
         }
 
-        public async Task<int> CreateEventAsync(EventCreateDTO model)
+        public async Task<int> CreateEventAsync(EventCreateDto model)
         {
             await GetAdministrationTypeId();
             model.Event.EventStatusID = await eventStatusManager.GetStatusIdAsync("Не затверджено");
@@ -72,7 +72,7 @@ namespace EPlast.BLL.Services.EventUser
                 throw new InvalidOperationException("Start date can not be before today");
             }
 
-            var eventToCreate = mapper.Map<EventCreationDTO, Event>(model.Event);
+            var eventToCreate = mapper.Map<EventCreationDto, Event>(model.Event);
 
             var administrationList = new List<EventAdministration>
             {
@@ -112,43 +112,43 @@ namespace EPlast.BLL.Services.EventUser
             return eventToCreate.ID;
         }
 
-        public async Task<EventCreateDTO> InitializeEventEditDTOAsync(int eventId)
+        public async Task<EventCreateDto> InitializeEventEditDTOAsync(int eventId)
         {
             await GetAdministrationTypeId();
 
-            return new EventCreateDTO()
+            return new EventCreateDto()
             {
-                Event = mapper.Map<Event, EventCreationDTO>(await repoWrapper.Event.GetFirstAsync(predicate: i => i.ID == eventId,
+                Event = mapper.Map<Event, EventCreationDto>(await repoWrapper.Event.GetFirstAsync(predicate: i => i.ID == eventId,
                         include: source => source.Include(i => i.EventAdministrations))),
 
-                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDTO>>(await repoWrapper.User.GetAllAsync()),
+                Users = mapper.Map<IEnumerable<User>, IEnumerable<UserInfoDto>>(await repoWrapper.User.GetAllAsync()),
 
-                EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDTO>>(await repoWrapper.EventType.GetAllAsync()),
+                EventTypes = mapper.Map<IEnumerable<EventType>, IEnumerable<EventTypeDto>>(await repoWrapper.EventType.GetAllAsync()),
 
                 EventCategories = await eventCategoryManager.GetDTOAsync(),
 
-                Сommandant = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
+                Сommandant = mapper.Map<EventAdministration, EventAdministrationDto>(await repoWrapper.EventAdministration.
                              GetFirstAsync(predicate: i => i.EventAdministrationTypeID == commandantTypeId
                              && i.EventID == eventId, include: source => source.Include(q => q.User))),
 
-                Alternate = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
+                Alternate = mapper.Map<EventAdministration, EventAdministrationDto>(await repoWrapper.EventAdministration.
                             GetFirstOrDefaultAsync(predicate: i => i.EventAdministrationTypeID == alternateTypeId
                             && i.EventID == eventId, include: source => source.Include(q => q.User))),
 
-                Bunchuzhnyi = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
+                Bunchuzhnyi = mapper.Map<EventAdministration, EventAdministrationDto>(await repoWrapper.EventAdministration.
                               GetFirstAsync(predicate: i => i.EventAdministrationTypeID == bunchuzhnyiTypeID
                               && i.EventID == eventId, include: source => source.Include(q => q.User))),
 
-                Pysar = mapper.Map<EventAdministration, EventAdministrationDTO>(await repoWrapper.EventAdministration.
+                Pysar = mapper.Map<EventAdministration, EventAdministrationDto>(await repoWrapper.EventAdministration.
                         GetFirstAsync(predicate: i => i.EventAdministrationTypeID == pysarTypeId
                         && i.EventID == eventId, include: source => source.Include(q => q.User)))
             };
         }
 
-        public async Task EditEventAsync(EventCreateDTO model)
+        public async Task EditEventAsync(EventCreateDto model)
         {
             await GetAdministrationTypeId();
-            var eventToEdit = mapper.Map<EventCreationDTO, Event>(model.Event);
+            var eventToEdit = mapper.Map<EventCreationDto, Event>(model.Event);
             List<EventAdministration> newAdmins = new List<EventAdministration> {
                 new EventAdministration
                 {
@@ -190,7 +190,7 @@ namespace EPlast.BLL.Services.EventUser
                     EventAdministrationTypeID = alternateTypeId,
                     EventID = eventToEdit.ID,
                 });
-            };
+            }
             
             eventToEdit.EventAdministrations = newAdmins;
             repoWrapper.Event.Update(eventToEdit);

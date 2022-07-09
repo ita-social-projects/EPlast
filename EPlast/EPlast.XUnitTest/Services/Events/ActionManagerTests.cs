@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
@@ -11,12 +17,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -49,13 +49,13 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
 
             _eventWrapper.Setup(x => x.EventTypeManager.GetEventTypesDTOAsync())
-                .ReturnsAsync(new List<EventTypeDTO>());
+                .ReturnsAsync(new List<EventTypeDto>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventTypesAsync();
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsAssignableFrom<IEnumerable<EventTypeDTO>>(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventTypeDto>>(methodResult);
         }
 
         [Fact]
@@ -63,13 +63,13 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
             _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOAsync())
-                .ReturnsAsync(new List<EventCategoryDTO>());
+                .ReturnsAsync(new List<EventCategoryDto>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetActionCategoriesAsync();
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventCategoryDTO>>(methodResult);
+            Assert.IsType<List<EventCategoryDto>>(methodResult);
         }
 
         [Fact]
@@ -78,13 +78,13 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
             var eventTypeId = 1;
             _eventWrapper.Setup(x => x.EventCategoryManager.GetDTOByEventTypeIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new List<EventCategoryDTO>());
+                .ReturnsAsync(new List<EventCategoryDto>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetCategoriesByTypeIdAsync(eventTypeId);
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsAssignableFrom<IEnumerable<EventCategoryDTO>>(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventCategoryDto>>(methodResult);
         }
 
         [Fact]
@@ -92,13 +92,13 @@ namespace EPlast.XUnitTest.Services.Events
         {
             //Arrange
             _eventWrapper.Setup(x => x.EventSectionManager.GetEventSectionsDTOAsync())
-                .ReturnsAsync(new List<EventSectionDTO>());
+                .ReturnsAsync(new List<EventSectionDto>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventSectionsAsync();
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsAssignableFrom<IEnumerable<EventSectionDTO>>(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventSectionDto>>(methodResult);
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await actionManager.GetEventsAsync(categoryId, typeId, user);
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<GeneralEventDTO>>(methodResult);
+            Assert.IsType<List<GeneralEventDto>>(methodResult);
             Assert.Equal(GetEvents().Count(), methodResult.Count());
         }
         [Fact]
@@ -148,7 +148,7 @@ namespace EPlast.XUnitTest.Services.Events
                 .ReturnsAsync(fakeId);
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
-            _mapper.Setup(m => m.Map<Event, EventInfoDTO>(It.IsAny<Event>())).Returns(new EventInfoDTO());
+            _mapper.Setup(m => m.Map<Event, EventInfoDto>(It.IsAny<Event>())).Returns(new EventInfoDto());
             _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
                 .ReturnsAsync(GetEvents().First());
             //Act
@@ -156,7 +156,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<EventDTO>(methodResult);
+            Assert.IsType<EventDto>(methodResult);
         }
 
         [Fact]
@@ -308,13 +308,13 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
             int eventId = 3;
             _eventWrapper.Setup(x => x.EventGalleryManager.GetPicturesInBase64(It.IsAny<int>()))
-                .ReturnsAsync(new List<EventGalleryDTO>());
+                .ReturnsAsync(new List<EventGalleryDto>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetPicturesAsync(eventId);
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDTO>>(methodResult);
+            Assert.IsType<List<EventGalleryDto>>(methodResult);
         }
         [Fact]
         public async Task FillEventGalleryTestAsync()
@@ -322,13 +322,13 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
             int eventId = 3;
             _eventWrapper.Setup(x => x.EventGalleryManager.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(new List<EventGalleryDTO>());
+                .ReturnsAsync(new List<EventGalleryDto>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDTO>>(methodResult);
+            Assert.IsType<List<EventGalleryDto>>(methodResult);
         }
         [Fact]
         public async Task DeletePictureTestAsync()

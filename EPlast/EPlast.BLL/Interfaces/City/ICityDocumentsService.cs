@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.City;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.City;
 
 namespace EPlast.BLL.Interfaces.City
 {
@@ -11,7 +11,7 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created document</returns>
-        Task<CityDocumentsDTO> AddDocumentAsync(CityDocumentsDTO documentDTO);
+        Task<CityDocumentsDto> AddDocumentAsync(CityDocumentsDto documentDTO);
 
         /// <summary>
         /// Get a file in base64 format
@@ -24,7 +24,7 @@ namespace EPlast.BLL.Interfaces.City
         /// Get all city document types
         /// </summary>
         /// <returns>All city document types</returns>
-        Task<IEnumerable<CityDocumentTypeDTO>> GetAllCityDocumentTypesAsync();
+        Task<IEnumerable<CityDocumentTypeDto>> GetAllCityDocumentTypesAsync();
 
         /// <summary>
         /// Delete a specific document by id

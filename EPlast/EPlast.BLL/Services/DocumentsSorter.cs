@@ -4,7 +4,7 @@ using EPlast.BLL.DTO;
 
 namespace EPlast.BLL.Services
 {
-    public static class DocumentsSorter<T> where T : IDocumentDTO
+    public static class DocumentsSorter<T> where T : IDocumentDto
     {
         public static IEnumerable<T> SortDocumentsBySubmitDate(IEnumerable<T> documents)
         {

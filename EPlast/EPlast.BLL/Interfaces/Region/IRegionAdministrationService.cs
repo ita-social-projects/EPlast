@@ -1,31 +1,31 @@
-﻿using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.DTO.Region;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.Region;
 
 namespace EPlast.BLL.Interfaces.Region
 {
     public interface IRegionAdministrationService
     {
-        Task<RegionAdministrationDTO> AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
+        Task<RegionAdministrationDto> AddRegionAdministrator(RegionAdministrationDto regionAdministrationDTO);
 
-        Task<RegionAdministrationDTO> EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO);
+        Task<RegionAdministrationDto> EditRegionAdministrator(RegionAdministrationDto regionAdministrationDTO);
 
         Task DeleteAdminByIdAsync(int Id);
 
-        Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId);
+        Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId);
 
-        Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId);
+        Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId);
 
-        Task<RegionAdministrationDTO> GetHead(int regionId);
+        Task<RegionAdministrationDto> GetHead(int regionId);
 
-        Task<RegionAdministrationDTO> GetHeadDeputy(int regionId);
+        Task<RegionAdministrationDto> GetHeadDeputy(int regionId);
 
         Task<int> GetAdminType(string name);
 
-        Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId);
+        Task<IEnumerable<RegionAdministrationDto>> GetAdministrationAsync(int regionId);
 
-        Task<IEnumerable<AdminTypeDTO>> GetAllAdminTypes();
+        Task<IEnumerable<AdminTypeDto>> GetAllAdminTypes();
 
         Task RemoveAdminRolesByUserIdAsync(string userId);
 

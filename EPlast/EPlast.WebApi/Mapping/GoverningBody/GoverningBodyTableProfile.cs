@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.GoverningBody
     {
         public GoverningBodyTableProfile()
         {
-            CreateMap<GoverningBodyAdministrationDTO, GoverningBodyTableViewModel>()
+            CreateMap<GoverningBodyAdministrationDto, GoverningBodyTableViewModel>()
                 .ForPath(x => x.Id, y => y.MapFrom(z => z.ID))
                 .ForPath(x => x.UserId, y => y.MapFrom(z => z.UserId))
                 .ForPath(x => x.UserName, y => y.MapFrom(z => z.User.FirstName+" "+z.User.LastName))

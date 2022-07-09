@@ -1,20 +1,20 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Club;
-using EPlast.BLL.Queries.Club;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.Queries.Club;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using MediatR;
 
 namespace EPlast.BLL.Handlers.ClubHandlers
 {
-    public class GetAllClubsByPageAndIsArchiveHandler : IRequestHandler<GetAllClubsByPageAndIsArchiveQuery, Tuple<IEnumerable<ClubObjectDTO>, int>>
+    public class GetAllClubsByPageAndIsArchiveHandler : IRequestHandler<GetAllClubsByPageAndIsArchiveQuery, Tuple<IEnumerable<ClubObjectDto>, int>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -25,16 +25,16 @@ namespace EPlast.BLL.Handlers.ClubHandlers
             _mapper = mapper;
         }
 
-        public async Task<Tuple<IEnumerable<ClubObjectDTO>, int>> Handle(GetAllClubsByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
+        public async Task<Tuple<IEnumerable<ClubObjectDto>, int>> Handle(GetAllClubsByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
         {
             var filter = GetFilter(request.ClubName, request.IsArchived);
             var order = GetOrder();
             var selector = GetSelector();
-            var tuple = await _repositoryWrapper.Club.GetRangeAsync(filter, selector, order,null, request.Page, request.PageSize);
+            var tuple = await _repositoryWrapper.Club.GetRangeAsync(filter, selector, order, null, request.Page, request.PageSize);
             var clubs = tuple.Item1;
             var rows = tuple.Item2;
 
-            return new Tuple<IEnumerable<ClubObjectDTO>, int>(_mapper.Map<IEnumerable<Club>, IEnumerable<ClubObjectDTO>>(clubs), rows);
+            return new Tuple<IEnumerable<ClubObjectDto>, int>(_mapper.Map<IEnumerable<Club>, IEnumerable<ClubObjectDto>>(clubs), rows);
         }
 
         private Expression<Func<Club, bool>> GetFilter(string clubName, bool isArchive)

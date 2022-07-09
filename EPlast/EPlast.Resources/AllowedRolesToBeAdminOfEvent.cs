@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EPlast.Resources
+﻿namespace EPlast.Resources
 {
     public static class AllowedRolesToBeAdminOfEvent
     {
-        public static string[] roles = new[] { Roles.Admin, Roles.GoverningBodyHead, Roles.CityHead, Roles.RegionBoardHead, Roles.OkrugaHead, Roles.KurinHead, Roles.PlastMember };
+        public static string[] Roles => new[] { Resources.Roles.Admin, Resources.Roles.GoverningBodyHead, Resources.Roles.CityHead, Resources.Roles.RegionBoardHead, Resources.Roles.OkrugaHead, Resources.Roles.KurinHead, Resources.Roles.PlastMember };
     }
 }

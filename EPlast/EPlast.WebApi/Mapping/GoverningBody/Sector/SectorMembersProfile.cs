@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
     {
         public SectorMembersProfile()
         {
-            CreateMap<SectorUserViewModel, SectorUserDTO>().ReverseMap();
+            CreateMap<SectorUserViewModel, SectorUserDto>().ReverseMap();
         }
     }
 }

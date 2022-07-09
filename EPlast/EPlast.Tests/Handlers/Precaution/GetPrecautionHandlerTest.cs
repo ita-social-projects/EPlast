@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Handlers.PrecautionHandlers;
 using EPlast.BLL.Queries.Precaution;
@@ -6,11 +11,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Precaution
 {
@@ -37,14 +37,14 @@ namespace EPlast.Tests.Handlers.Precaution
                                 It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Precaution>, IIncludableQueryable<DataAccess.Entities.UserEntities.Precaution, object>>>()))
                             .ReturnsAsync(new DataAccess.Entities.UserEntities.Precaution());
             _mockMapper
-                .Setup(x => x.Map<PrecautionDTO>(It.IsAny<DataAccess.Entities.UserEntities.Precaution>())).Returns(new PrecautionDTO());
+                .Setup(x => x.Map<PrecautionDto>(It.IsAny<DataAccess.Entities.UserEntities.Precaution>())).Returns(new PrecautionDto());
 
             //Act
             var result = await _handler.Handle(It.IsAny<GetPrecautionQuery>(), It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<PrecautionDTO>(result);
+            Assert.IsInstanceOf<PrecautionDto>(result);
         }
     }
 }

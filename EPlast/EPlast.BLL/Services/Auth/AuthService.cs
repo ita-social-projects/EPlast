@@ -23,8 +23,6 @@ namespace EPlast.BLL.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IEmailSendingService _emailSendingService;
-        private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly SignInManager<User> _signInManager;
@@ -32,15 +30,11 @@ namespace EPlast.BLL.Services
 
         public AuthService(UserManager<User> userManager,
                            SignInManager<User> signInManager,
-                           IEmailSendingService emailSendingService,
-                           IEmailContentService emailContentService,
                            IMapper mapper,
                            IRepositoryWrapper repoWrapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSendingService = emailSendingService;
-            _emailContentService = emailContentService;
             _mapper = mapper;
             _repoWrapper = repoWrapper;
         }
@@ -64,11 +58,11 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task CheckingForLocking(UserDTO userDto)
+        public async Task CheckingForLocking(UserDto userDto)
         {
-            if (await _userManager.IsLockedOutAsync(_mapper.Map<UserDTO, User>(userDto)))
+            if (await _userManager.IsLockedOutAsync(_mapper.Map<UserDto, User>(userDto)))
             {
-                await _userManager.SetLockoutEndDateAsync(_mapper.Map<UserDTO, User>(userDto), DateTimeOffset.UtcNow);
+                await _userManager.SetLockoutEndDateAsync(_mapper.Map<UserDto, User>(userDto), DateTimeOffset.UtcNow);
             }
         }
 
@@ -100,42 +94,42 @@ namespace EPlast.BLL.Services
             return result;
         }
 
-        public async Task<UserDTO> FacebookLoginAsync(FacebookUserInfo facebookUser)
+        public async Task<UserDto> FacebookLoginAsync(FacebookUserInfo facebookUser)
         {
             var user = await _userManager.FindByEmailAsync(facebookUser.Email);
             if (user != null)
             {
                 await _signInManager.SignInAsync(user, false, null);
-                return _mapper.Map<User, UserDTO>(user);
+                return _mapper.Map<User, UserDto>(user);
             }
             return null;
         }
 
         ///<inheritdoc/>
-        public async Task<UserDTO> FindByEmailAsync(string email)
+        public async Task<UserDto> FindByEmailAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            return _mapper.Map<User, UserDTO>(user);
+            return _mapper.Map<User, UserDto>(user);
         }
 
         ///<inheritdoc/>
-        public async Task<UserDTO> FindByIdAsync(string id)
+        public async Task<UserDto> FindByIdAsync(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            return _mapper.Map<User, UserDTO>(user);
+            return _mapper.Map<User, UserDto>(user);
         }
 
         ///<inheritdoc/>
-        public async Task<string> GenerateConfToken(UserDTO userDto)
+        public async Task<string> GenerateConfToken(UserDto userDto)
         {
-            string code = await _userManager.GenerateEmailConfirmationTokenAsync(_mapper.Map<UserDTO, User>(userDto));
+            string code = await _userManager.GenerateEmailConfirmationTokenAsync(_mapper.Map<UserDto, User>(userDto));
             return code;
         }
 
         ///<inheritdoc/>
-        public async Task<string> GenerateResetTokenAsync(UserDTO userDto)
+        public async Task<string> GenerateResetTokenAsync(UserDto userDto)
         {
-            var user = _mapper.Map<UserDTO, User>(userDto);
+            var user = _mapper.Map<UserDto, User>(userDto);
             string code = await _userManager.GeneratePasswordResetTokenAsync(user);
             return code;
         }
@@ -155,7 +149,7 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public async Task<UserDTO> GetGoogleUserAsync(string providerToken)
+        public async Task<UserDto> GetGoogleUserAsync(string providerToken)
         {
             string googleApiTokenInfoUrl =
                 ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("GoogleAuthentication")["GoogleApiTokenInfoUrl"];
@@ -175,7 +169,7 @@ namespace EPlast.BLL.Services
             if (user != null)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return _mapper.Map<User, UserDTO>(user);
+                return _mapper.Map<User, UserDto>(user);
             }
             return null;
         }
@@ -203,36 +197,36 @@ namespace EPlast.BLL.Services
         }
 
         ///<inheritdoc/>
-        public int GetTimeAfterRegister(UserDTO userDto)
+        public int GetTimeAfterRegister(UserDto userDto)
         {
             return (int)(DateTime.Now - userDto.EmailSendedOnRegister).TotalMinutes;
         }
 
         ///<inheritdoc/>
-        public int GetTimeAfterReset(UserDTO userDto)
+        public int GetTimeAfterReset(UserDto userDto)
         {
             return (int)(DateTime.Now - userDto.EmailSendedOnForgotPassword).TotalMinutes;
         }
 
         ///<inheritdoc/>
-        public UserDTO GetUser(User user)
+        public UserDto GetUser(User user)
         {
-            return _mapper.Map<User, UserDTO>(user);
+            return _mapper.Map<User, UserDto>(user);
         }
 
         ///<inheritdoc/>
-        public async Task<bool> IsEmailConfirmedAsync(UserDTO userDto)
+        public async Task<bool> IsEmailConfirmedAsync(UserDto userDto)
         {
-            bool result = await _userManager.IsEmailConfirmedAsync(_mapper.Map<UserDTO, User>(userDto));
+            bool result = await _userManager.IsEmailConfirmedAsync(_mapper.Map<UserDto, User>(userDto));
             return result;
         }
 
         ///<inheritdoc/>
-        public async Task<bool> RefreshSignInAsync(UserDTO userDto)
+        public async Task<bool> RefreshSignInAsync(UserDto userDto)
         {
             try
             {
-                await _signInManager.RefreshSignInAsync(_mapper.Map<UserDTO, User>(userDto));
+                await _signInManager.RefreshSignInAsync(_mapper.Map<UserDto, User>(userDto));
             }
             catch (Exception)
             {

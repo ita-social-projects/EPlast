@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class DegreeDTO
+    public class DegreeDto
     {
         public int ID { get; set; }
 
@@ -13,6 +13,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Ступінь повинна складати від 3 до 30 символів")]
         public string Name { get; set; }
 
-        public IEnumerable<UserProfileDTO> UserProfiles { get; set; }
+        public IEnumerable<UserProfileDto> UserProfiles { get; set; }
     }
 }

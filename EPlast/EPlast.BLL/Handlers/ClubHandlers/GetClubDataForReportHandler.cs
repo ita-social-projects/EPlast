@@ -12,7 +12,7 @@ using MediatR;
 
 namespace EPlast.BLL.Handlers.ClubHandlers
 {
-    public class GetClubDataForReportHandler : IRequestHandler<GetClubDataForReportQuery, ClubReportDataDTO>
+    public class GetClubDataForReportHandler : IRequestHandler<GetClubDataForReportQuery, ClubReportDataDto>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -25,7 +25,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
             _mediator = mediator;
         }
 
-        public async Task<ClubReportDataDTO> Handle(GetClubDataForReportQuery request, CancellationToken cancellationToken)
+        public async Task<ClubReportDataDto> Handle(GetClubDataForReportQuery request, CancellationToken cancellationToken)
         {
             var club = await _repoWrapper.Club.GetFirstOrDefaultAsync(
                predicate: c => c.ID == request.ClubId);
@@ -36,14 +36,14 @@ namespace EPlast.BLL.Handlers.ClubHandlers
             }
 
             var clubAdmins = await _mediator.Send(new GetClubAdministrationsQuery(request.ClubId));
-            var clubDto = _mapper.Map<Club, ClubDTO>(club);
+            var clubDto = _mapper.Map<Club, ClubDto>(club);
             var clubHead = clubAdmins.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead);
-            var head = _mapper.Map<ClubAdministration, ClubReportAdministrationDTO>(clubHead);
-            var clubAdminsDto = _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>(clubAdmins);
+            var head = _mapper.Map<ClubAdministration, ClubReportAdministrationDto>(clubHead);
+            var clubAdminsDto = _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDto>>(clubAdmins);
             var clubHistoryFollowersDTO = await _mediator.Send(new GetClubHistoryFollowersQuery(request.ClubId));
             var clubHistoryMembersDTO = await _mediator.Send(new GetClubHistoryMembersQuery(request.ClubId));
 
-            var clubProfileDto = new ClubReportDataDTO
+            var clubProfileDto = new ClubReportDataDto
             {
                 Club = clubDto,
                 Head = head,

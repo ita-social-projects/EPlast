@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using EPlast.BLL.Commands.TermsOfUse;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.Queries.TermsOfUse;
@@ -12,11 +17,6 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<GetFirstRecordQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new TermsDTO());
+                .ReturnsAsync(new TermsDto());
             //Act
             var result = await _termsController.GetFirstTermsOfUse();
             var resultValue = (result as OkObjectResult).Value;
@@ -60,7 +60,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<TermsDTO>(resultValue);
+            Assert.IsInstanceOf<TermsDto>(resultValue);
         }
 
         [Test]
@@ -69,7 +69,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockMediator
                 .Setup(x => x.Send(It.IsAny<GetFirstRecordQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync((TermsDTO)null);
+                .ReturnsAsync((TermsDto)null);
 
             //Act
             var result = await _termsController.GetFirstTermsOfUse();
@@ -109,7 +109,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator.Setup(x => x.Send(It.IsAny<AddTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.AddTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.AddTerms(It.IsAny<TermsDto>());
 
             //Assert
             _mockMediator.Verify();
@@ -126,7 +126,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.Send(It.IsAny<AddTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.AddTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.AddTerms(It.IsAny<TermsDto>());
 
             //Assert
             _mockMediator.Verify();
@@ -143,7 +143,7 @@ namespace EPlast.Tests.Controllers
                 .Throws(new Exception());
 
             //Act 
-            var result = await _termsController.AddTerms(new TermsDTO());
+            var result = await _termsController.AddTerms(new TermsDto());
 
             //Assert
             Assert.IsInstanceOf<NotFoundResult>(result);
@@ -156,7 +156,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator.Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.EditTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.EditTerms(It.IsAny<TermsDto>());
 
             //Assert
             _mockMediator.Verify();
@@ -172,7 +172,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator.Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.EditTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.EditTerms(It.IsAny<TermsDto>());
 
             //Assert
             _mockMediator.Verify();
@@ -187,7 +187,7 @@ namespace EPlast.Tests.Controllers
             _mockMediator.Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()))
                 .ThrowsAsync(new NullReferenceException("Not found"));
             //Act
-            var result = await _termsController.EditTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.EditTerms(It.IsAny<TermsDto>());
             //Assert
             _mockMediator.Verify();
             Assert.IsNotNull(result);
@@ -203,7 +203,7 @@ namespace EPlast.Tests.Controllers
                 .Throws(new NullReferenceException());
 
             //Act
-            var result = await _termsController.EditTerms(new TermsDTO());
+            var result = await _termsController.EditTerms(new TermsDto());
 
             //Assert   
             Assert.IsInstanceOf<NotFoundResult>(result);

@@ -1,4 +1,7 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Events;
@@ -9,9 +12,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using DBUser = EPlast.DataAccess.Entities.User;
 
 namespace EPlast.Tests.Services.Event
@@ -58,13 +58,13 @@ namespace EPlast.Tests.Services.Event
                 .Setup(x => x.GetRolesAsync(It.IsAny<DBUser>()))
                 .ReturnsAsync(new List<string>() { "role 1", "role 2"});
             _mapper
-                .Setup(x => x.Map<DBUser, UserDTO>(It.IsAny<DBUser>()))
-                .Returns(new UserDTO());
+                .Setup(x => x.Map<DBUser, UserDto>(It.IsAny<DBUser>()))
+                .Returns(new UserDto());
             _mapper
                 .Setup(x =>
-                    x.Map<DataAccess.Entities.Event.Event, EventGeneralInfoDTO>(
+                    x.Map<DataAccess.Entities.Event.Event, EventGeneralInfoDto>(
                         It.IsAny<DataAccess.Entities.Event.Event>()))
-                .Returns(new EventGeneralInfoDTO() { EventDateEnd = DateTime.MaxValue });
+                .Returns(new EventGeneralInfoDto() { EventDateEnd = DateTime.MaxValue });
             _eventAdministrationManager
                 .Setup(x => x.GetEventAdmininistrationByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new List<EventAdministration>() { new EventAdministration() });
@@ -82,7 +82,7 @@ namespace EPlast.Tests.Services.Event
             var result = await _service.EventUserAsync("", new User());
 
             //Assert
-            Assert.IsInstanceOf<EventUserDTO>(result);
+            Assert.IsInstanceOf<EventUserDto>(result);
         }
 
         [Test]
@@ -99,13 +99,13 @@ namespace EPlast.Tests.Services.Event
                 .Setup(x => x.GetRolesAsync(It.IsAny<DBUser>()))
                 .ReturnsAsync(new List<string>() { "role 1", "role 2" });
             _mapper
-                .Setup(x => x.Map<DBUser, UserDTO>(It.IsAny<DBUser>()))
-                .Returns(new UserDTO());
+                .Setup(x => x.Map<DBUser, UserDto>(It.IsAny<DBUser>()))
+                .Returns(new UserDto());
             _mapper
                 .Setup(x =>
-                    x.Map<DataAccess.Entities.Event.Event, EventGeneralInfoDTO>(
+                    x.Map<DataAccess.Entities.Event.Event, EventGeneralInfoDto>(
                         It.IsAny<DataAccess.Entities.Event.Event>()))
-                .Returns(new EventGeneralInfoDTO() { EventDateEnd = DateTime.MaxValue });
+                .Returns(new EventGeneralInfoDto() { EventDateEnd = DateTime.MaxValue });
             _eventAdministrationManager
                 .Setup(x => x.GetEventAdmininistrationByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new List<EventAdministration>() { new EventAdministration() });
@@ -126,7 +126,7 @@ namespace EPlast.Tests.Services.Event
             var result = await _service.EventUserAsync("", new User());
 
             //Assert
-            Assert.IsInstanceOf<EventUserDTO>(result);
+            Assert.IsInstanceOf<EventUserDto>(result);
         }
     }
 }

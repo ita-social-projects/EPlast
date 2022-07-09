@@ -1,19 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using EPlast.BLL.DTO.City;
 using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionDTO
+    public class RegionDto
     {
         public int ID { get; set; }
         [Required, MaxLength(50)]
         public string RegionName { get; set; }
         [MaxLength(1000)]
         public string Description { get; set; }
-        public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
-        public IEnumerable<RegionDocumentDTO> Documents { get; set; }
+        public IEnumerable<RegionAdministrationDto> Administration { get; set; }
+        public IEnumerable<RegionDocumentDto> Documents { get; set; }
         [Required, Phone, MaxLength(18)]
         public string PhoneNumber { get; set; }
         [Required, MaxLength(50)]
@@ -33,6 +32,6 @@ namespace EPlast.BLL.DTO.Region
         public string OfficeNumber { get; set; }
         [Required, Range(10000, 99999)]
         public int PostIndex { get; set; }
-        public RegionsStatusTypeDTO Status { get; set; }
+        public RegionsStatusTypeDto Status { get; set; }
     }
 }

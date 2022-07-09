@@ -8,8 +8,8 @@ namespace EPlast.BLL.Mapping.GoverningBody.Sector
     {
         public SectorDocumentsProfile()
         {
-            CreateMap<SectorDocuments, SectorDocumentsDTO>().ReverseMap();
-            CreateMap<SectorDocumentType, SectorDocumentTypeDTO>().ReverseMap();
+            CreateMap<SectorDocuments, SectorDocumentsDto>().ReverseMap();
+            CreateMap<SectorDocumentType, SectorDocumentTypeDto>().ReverseMap();
         }
     }
 };

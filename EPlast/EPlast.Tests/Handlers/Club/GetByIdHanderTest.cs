@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Handlers;
 using EPlast.BLL.Queries.Club;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Handlers.Club
@@ -35,15 +35,15 @@ namespace EPlast.Tests.Handlers.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(new ClubDTO());
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(new ClubDto());
 
             // Act 
             var responce = await _handler.Handle(It.IsAny<GetByIdQuery>(), It.IsAny<CancellationToken>());
 
             // Assert
             Assert.NotNull(responce);
-            Assert.IsInstanceOf<ClubDTO>(responce);
+            Assert.IsInstanceOf<ClubDto>(responce);
         }
 
     }

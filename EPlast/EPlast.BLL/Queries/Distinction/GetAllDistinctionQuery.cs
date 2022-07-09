@@ -1,11 +1,11 @@
-﻿using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using MediatR;
 
 namespace EPlast.BLL.Queries.Distinction
 {
-    public class GetAllDistinctionQuery : IRequest<IEnumerable<DistinctionDTO>> 
+    public class GetAllDistinctionQuery : IRequest<IEnumerable<DistinctionDto>>
     {
     }
 }

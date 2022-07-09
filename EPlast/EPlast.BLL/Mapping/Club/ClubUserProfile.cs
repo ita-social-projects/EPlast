@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Club
     {
         public ClubUserProfile()
         {
-            CreateMap<DatabaseEntities.User, ClubUserDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.User, ClubUserDto>().ReverseMap();
         }
     }
 }

@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.DTO.City;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EPlast.BLL.DTO.City;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionProfileDTO
+    public class RegionProfileDto
     {
         public int ID { get; set; }
         public string RegionName { get; set; }
@@ -24,8 +24,8 @@ namespace EPlast.BLL.DTO.Region
         public bool CanEdit{ get; set; }
         public IEnumerable<RegionDocuments> Documents { get; set; }
         public int DocumentsCount { get; set; }
-        public IEnumerable<RegionAdministrationDTO> Administration { get; set; }
-        public IEnumerable<CityDTO> Cities { get; set; }
-        public RegionsStatusTypeDTO Status { get; set; }
+        public IEnumerable<RegionAdministrationDto> Administration { get; set; }
+        public IEnumerable<CityDto> Cities { get; set; }
+        public RegionsStatusTypeDto Status { get; set; }
     }
 }

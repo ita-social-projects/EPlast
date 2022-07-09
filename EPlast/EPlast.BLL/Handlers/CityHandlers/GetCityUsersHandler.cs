@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetCityUsersHandler : IRequestHandler<GetCityUsersQuery, IEnumerable<CityUserDTO>>
+    public class GetCityUsersHandler : IRequestHandler<GetCityUsersQuery, IEnumerable<CityUserDto>>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityUserDTO>> Handle(GetCityUsersQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CityUserDto>> Handle(GetCityUsersQuery request, CancellationToken cancellationToken)
         {
             var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(
                 d => d.CityId == request.CityId && d.IsApproved,
@@ -31,7 +31,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                     .Include(t => t.User));
             var users = cityMembers.Select(x => x.User);
 
-            return _mapper.Map<IEnumerable<User>, IEnumerable<CityUserDTO>>(users);
+            return _mapper.Map<IEnumerable<User>, IEnumerable<CityUserDto>>(users);
         }
     }
 }

@@ -88,7 +88,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await eventGalleryManager.GetPicturesInBase64(eventId);
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDTO>>(methodResult);
+            Assert.IsType<List<EventGalleryDto>>(methodResult);
             Assert.Equal(GetEventsGallaries().Count(), methodResult.ToList().Count);
         }
 
@@ -111,7 +111,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await eventGalleryManager.AddPicturesAsync(eventId, FakeFiles());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDTO>>(methodResult);
+            Assert.IsType<List<EventGalleryDto>>(methodResult);
         }
 
         public static IList<IFormFile> FakeFiles()

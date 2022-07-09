@@ -48,7 +48,7 @@ namespace EPlast.Tests.Services
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<MethodicDocumentWraperDTO>(result);
+            Assert.IsInstanceOf<MethodicDocumentWraperDto>(result);
         }
 
         [Test]
@@ -60,14 +60,14 @@ namespace EPlast.Tests.Services
                     It.IsAny<Func<IQueryable<MethodicDocument>, IIncludableQueryable<MethodicDocument, object>>>()))
                 .ReturnsAsync(new MethodicDocument());
             _mapper
-                .Setup(x => x.Map<MethodicDocumentDTO>(It.IsAny<MethodicDocument>()))
-                .Returns(new MethodicDocumentDTO() { ID = 2 });
+                .Setup(x => x.Map<MethodicDocumentDto>(It.IsAny<MethodicDocument>()))
+                .Returns(new MethodicDocumentDto() { ID = 2 });
 
             //Act
             var result = await _service.GetMethodicDocumentAsync(It.IsAny<int>());
 
             //Assert
-            Assert.IsInstanceOf<MethodicDocumentDTO>(result);
+            Assert.IsInstanceOf<MethodicDocumentDto>(result);
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace EPlast.Tests.Services
             var result = (await _service.GetMethodicDocumentListAsync()).ToList();
 
             //Assert
-            Assert.IsInstanceOf<List<MethodicDocumentWraperDTO>>(result);
+            Assert.IsInstanceOf<List<MethodicDocumentWraperDto>>(result);
         }
 
 
@@ -99,7 +99,7 @@ namespace EPlast.Tests.Services
                 .ReturnsAsync(GetTestDocsQueryable().FirstOrDefault());
 
             //Act
-            var DocsDto = new MethodicDocumentDTO();
+            var DocsDto = new MethodicDocumentDto();
             DocsDto.Name = docNewName;
             DocsDto.Description = docnNewDescription;
             await _service.ChangeMethodicDocumentAsync(DocsDto);
@@ -165,12 +165,12 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _mapper
-                .Setup(x => x.Map<MethodicDocument>(new MethodicDocumentDTO { ID = Id })).Returns(new MethodicDocument() { ID = Id });
+                .Setup(x => x.Map<MethodicDocument>(new MethodicDocumentDto { ID = Id })).Returns(new MethodicDocument() { ID = Id });
             _repository.Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
             _repository.Setup(rep => rep.MethodicDocument.Create(new MethodicDocument()));
 
             //Act
-            var actualReturn = await _service.SaveMethodicDocumentAsync(new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID = Id } });
+            var actualReturn = await _service.SaveMethodicDocumentAsync(new MethodicDocumentWraperDto() { MethodicDocument = new MethodicDocumentDto() { ID = Id } });
 
             //Assert
             Assert.AreEqual(Id, actualReturn);
@@ -181,7 +181,7 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _mapper
-                .Setup(x => x.Map<MethodicDocument>(It.IsAny<MethodicDocumentDTO>()))
+                .Setup(x => x.Map<MethodicDocument>(It.IsAny<MethodicDocumentDto>()))
                 .Returns(new MethodicDocument() { ID = id, FileName = "name" });
             _repository
                 .Setup(rep => rep.MethodicDocument.Attach(new MethodicDocument()));
@@ -190,7 +190,7 @@ namespace EPlast.Tests.Services
 
             //Act
             int res = await _service.SaveMethodicDocumentAsync(
-                new MethodicDocumentWraperDTO() { MethodicDocument = new MethodicDocumentDTO() { ID = id }, FileAsBase64 = "someName" });
+                new MethodicDocumentWraperDto() { MethodicDocument = new MethodicDocumentDto() { ID = id }, FileAsBase64 = "someName" });
 
             //Assert
             _blobStorage.Verify(bs => bs.UploadBlobForBase64Async(
@@ -219,13 +219,13 @@ namespace EPlast.Tests.Services
         public async Task GetDecisionOrganizationAsyncWithRightParameterTest()
         {
             //Arrange
-            GoverningBodyDTO organization = GetTestOrganizationDtoList()[0];
+            GoverningBodyDto organization = GetTestOrganizationDtoList()[0];
             _repository.Setup(rep => rep.GoverningBody.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(new Organization() { OrganizationName = organization.GoverningBodyName });
             _mapper
-                .Setup(x => x.Map<GoverningBodyDTO>(It.IsAny<string>()))
-                .Returns(new GoverningBodyDTO() { GoverningBodyName = organization.GoverningBodyName });
+                .Setup(x => x.Map<GoverningBodyDto>(It.IsAny<string>()))
+                .Returns(new GoverningBodyDto() { GoverningBodyName = organization.GoverningBodyName });
             //Act
             var actualReturn = await _service.GetMethodicDocumentOrganizationAsync(organization);
 
@@ -255,14 +255,14 @@ namespace EPlast.Tests.Services
             _repository.Setup(rep => rep.GoverningBody.GetAllAsync(It.IsAny<Expression<Func<Organization, bool>>>(),
                 It.IsAny<Func<IQueryable<Organization>, IIncludableQueryable<Organization, object>>>())).ReturnsAsync(new List<Organization>());
             _mapper
-                .Setup(x => x.Map<IEnumerable<GoverningBodyDTO>>(new List<Organization>()))
+                .Setup(x => x.Map<IEnumerable<GoverningBodyDto>>(new List<Organization>()))
                 .Returns(GetTestOrganizationDtoList());
 
             //Act
             var actualReturn = await _service.GetGoverningBodyListAsync();
 
             //Assert
-            Assert.IsInstanceOf<List<GoverningBodyDTO>>(actualReturn);
+            Assert.IsInstanceOf<List<GoverningBodyDto>>(actualReturn);
         }
 
         [Test]
@@ -284,12 +284,12 @@ namespace EPlast.Tests.Services
                 new MethodicDocument  {ID = 4,Description = "old"}
             }.AsQueryable();
         }
-         private static List<GoverningBodyDTO> GetTestOrganizationDtoList()
+        private static List<GoverningBodyDto> GetTestOrganizationDtoList()
         {
-            return new List<GoverningBodyDTO>
+            return new List<GoverningBodyDto>
             {
-                new GoverningBodyDTO {Id = 1, GoverningBodyName = "Organization1"},
-                new GoverningBodyDTO {Id = 2, GoverningBodyName = "Organization2"},
+                new GoverningBodyDto {Id = 1, GoverningBodyName = "Organization1"},
+                new GoverningBodyDto {Id = 2, GoverningBodyName = "Organization2"},
             };
         }
     }

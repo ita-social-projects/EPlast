@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
@@ -13,11 +18,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.UserProfiles
 {
@@ -53,7 +53,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task<UserDTO> GetUserAsync(string userId)
+        public async Task<UserDto> GetUserAsync(string userId)
         {
             var user = await _repoWrapper.User.GetFirstAsync(
                 i => i.Id == userId,
@@ -80,13 +80,13 @@ namespace EPlast.BLL.Services.UserProfiles
                     Include(x => x.ConfirmedUsers).
                         ThenInclude(q => (q as ConfirmedUser).Approver).
                             ThenInclude(q => q.User));
-            var model = _mapper.Map<User, UserDTO>(user);
+            var model = _mapper.Map<User, UserDto>(user);
 
             return model;
         }
 
         /// <inheritdoc />
-        public IEnumerable<ConfirmedUserDTO> GetConfirmedUsers(UserDTO user)
+        public IEnumerable<ConfirmedUserDto> GetConfirmedUsers(UserDto user)
         {
             var result = user.ConfirmedUsers.
                 Where(x => !x.isCityAdmin && !x.isClubAdmin);
@@ -94,7 +94,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public ConfirmedUserDTO GetClubAdminConfirmedUser(UserDTO user)
+        public ConfirmedUserDto GetClubAdminConfirmedUser(UserDto user)
         {
             var result = user.ConfirmedUsers.
                 FirstOrDefault(x => x.isClubAdmin);
@@ -103,7 +103,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public ConfirmedUserDTO GetCityAdminConfirmedUser(UserDTO user)
+        public ConfirmedUserDto GetCityAdminConfirmedUser(UserDto user)
         {
             var result = user.ConfirmedUsers.
                 FirstOrDefault(x => x.isCityAdmin);
@@ -112,7 +112,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public bool CanApprove(IEnumerable<ConfirmedUserDTO> confUsers, string userId, string currentUserId, bool isAdmin = false)
+        public bool CanApprove(IEnumerable<ConfirmedUserDto> confUsers, string userId, string currentUserId, bool isAdmin = false)
         {
             return confUsers.Count() < 3 && !confUsers.Any(x => x.Approver.UserID == currentUserId)
                                          && (currentUserId != userId || isAdmin);
@@ -140,7 +140,7 @@ namespace EPlast.BLL.Services.UserProfiles
             }
         }
 
-        public async Task UpdateAsyncForFile(UserDTO user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsyncForFile(UserDto user, IFormFile file, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.ImagePath = await UploadPhotoAsyncInFolder(user.Id, file);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
@@ -148,7 +148,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsyncForBase64(UserDTO user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        public async Task UpdateAsyncForBase64(UserDto user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user = SaveCorrectLinks(user);
             user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
@@ -157,10 +157,10 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        public async Task UpdatePhotoAsyncForBase64(UserDTO user, string photoBase64)
+        public async Task UpdatePhotoAsyncForBase64(UserDto user, string photoBase64)
         {
             user.ImagePath = await UploadPhotoAsyncFromBase64(user.Id, photoBase64);
-            var userForUpdate = _mapper.Map<UserDTO, User>(user);
+            var userForUpdate = _mapper.Map<UserDto, User>(user);
             _repoWrapper.User.Update(userForUpdate);
             await _repoWrapper.SaveAsync();
         }
@@ -290,7 +290,7 @@ namespace EPlast.BLL.Services.UserProfiles
         }
 
         /// <inheritdoc />
-        private async Task UpdateAsync(UserDTO user, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
+        private async Task UpdateAsync(UserDto user, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
             user.UserProfile.Nationality = CheckFieldForNull(user.UserProfile.NationalityId, user.UserProfile.Nationality.Name, user.UserProfile.Nationality);
             user.UserProfile.Religion = CheckFieldForNull(user.UserProfile.ReligionId, user.UserProfile.Religion.Name, user.UserProfile.Religion);
@@ -299,13 +299,13 @@ namespace EPlast.BLL.Services.UserProfiles
             user.UserProfile.Education = CheckFieldForNull(user.UserProfile.EducationId, user.UserProfile.Education.PlaceOfStudy, user.UserProfile.Education.Speciality, user.UserProfile.Education);
             user.UserProfile.WorkId = await CheckWorkFieldsAsync(user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, placeOfWorkId, positionId);
             user.UserProfile.Work = CheckFieldForNull(user.UserProfile.WorkId, user.UserProfile.Work.PlaceOfwork, user.UserProfile.Work.Position, user.UserProfile.Work);
-            var userForUpdate = _mapper.Map<UserDTO, User>(user);
+            var userForUpdate = _mapper.Map<UserDto, User>(user);
             _repoWrapper.User.Update(userForUpdate);
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
         }
 
-        private UserDTO SaveCorrectLinks(UserDTO user)
+        private UserDto SaveCorrectLinks(UserDto user)
         {
             user.UserProfile.FacebookLink = SaveCorrectLink(user.UserProfile.FacebookLink, "facebook");
             user.UserProfile.TwitterLink = SaveCorrectLink(user.UserProfile.TwitterLink, "twitter");
@@ -362,21 +362,21 @@ namespace EPlast.BLL.Services.UserProfiles
             return user.UserProfile.Gender == null ? UserGenders.Undefined : user.UserProfile.Gender.Name;
         }
 
-        public bool IsUserSameCity(UserDTO currentUser, UserDTO focusUser)
+        public bool IsUserSameCity(UserDto currentUser, UserDto focusUser)
         {
             return currentUser.CityMembers.FirstOrDefault()?.CityId
                        .Equals(focusUser.CityMembers.FirstOrDefault()?.CityId)
                    == true;
         }
 
-        public bool IsUserSameClub(UserDTO currentUser, UserDTO focusUser)
+        public bool IsUserSameClub(UserDto currentUser, UserDto focusUser)
         {
             return currentUser.ClubMembers.FirstOrDefault()?.ClubId
                        .Equals(focusUser.ClubMembers.FirstOrDefault()?.ClubId)
                    == true;
         }
 
-        public bool IsUserSameRegion(UserDTO currentUser, UserDTO focusUser)
+        public bool IsUserSameRegion(UserDto currentUser, UserDto focusUser)
         {
             return currentUser.RegionAdministrations.FirstOrDefault()?.RegionId
                        .Equals(focusUser.RegionAdministrations.FirstOrDefault()?.RegionId) == true
@@ -384,7 +384,7 @@ namespace EPlast.BLL.Services.UserProfiles
                        .Equals(focusUser.CityMembers.FirstOrDefault()?.City.RegionId) == true;
         }
 
-        public async Task<bool> IsUserInClubAsync(UserDTO currentUser, UserDTO focusUser)
+        public async Task<bool> IsUserInClubAsync(UserDto currentUser, UserDto focusUser)
         {
             var isUserHeadOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHead);
             var isUserHeadDeputyOfClub = await _userManagerService.IsInRoleAsync(currentUser, Roles.KurinHeadDeputy);
@@ -394,7 +394,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfClub && sameClub) || (isUserHeadOfClub && sameClub) || (isFocusUserPlastun && sameClub));
         }
 
-        public async Task<bool> IsUserInCityAsync(UserDTO currentUser, UserDTO focusUser)
+        public async Task<bool> IsUserInCityAsync(UserDto currentUser, UserDto focusUser)
         {
             var isUserHeadOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHead);
             var isUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(currentUser, Roles.CityHeadDeputy);
@@ -404,7 +404,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfCity && sameCity) || (isUserHeadOfCity && sameCity) || (isFocusUserPlastun && sameCity));
         }
 
-        public async Task<bool> IsUserInRegionAsync(UserDTO currentUser, UserDTO focusUser)
+        public async Task<bool> IsUserInRegionAsync(UserDto currentUser, UserDto focusUser)
         {
             var isUserHeadOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHead);
             var isUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(currentUser, Roles.OkrugaHeadDeputy);
@@ -412,7 +412,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return ((isUserHeadDeputyOfRegion && sameRegion) || (isUserHeadOfRegion && sameRegion));
         }
 
-        public async Task<bool> IsUserInSameCellAsync(UserDTO currentUser, UserDTO focusUser, CellType cellType)
+        public async Task<bool> IsUserInSameCellAsync(UserDto currentUser, UserDto focusUser, CellType cellType)
         {
             return cellType switch
             {
@@ -434,13 +434,13 @@ namespace EPlast.BLL.Services.UserProfiles
 
             if (filteredUsers.Any())
             {
-                List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+                List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
                 var governingBodyAdmins = await _userManager.GetUsersInRoleAsync(Roles.GoverningBodyAdmin);
                 foreach (var userToCheck in filteredUsers)
                 {
                     foreach (var u in governingBodyAdmins)
                     {
-                        userNotificationsDTO.Add(new UserNotificationDTO
+                        userNotificationsDTO.Add(new UserNotificationDto
                         {
                             Message = $"Користувачу {userToCheck.FirstName} {userToCheck.LastName} не обрали станицю уже 7 днів! ",
                             NotificationTypeId = 1,
@@ -457,15 +457,14 @@ namespace EPlast.BLL.Services.UserProfiles
         public async Task CheckRegisteredWithoutCityUsersAsync()
         {
             var users = await _repoWrapper.User.GetAllAsync(
-                predicate: x => 
-                x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved == false,
+                predicate: x => !x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved,
                 include: x => x.Include(y => y.CityMembers)
             );
             var filteredUsers = users.Where(x => (DateTime.Now - x.RegistredOn).Days >= 7).ToList();
 
             if (filteredUsers.Any())
             {
-                List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+                List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
                 foreach (var userToCheck in filteredUsers)
                 {
                     var cityId = userToCheck.CityMembers.FirstOrDefault().CityId;
@@ -484,7 +483,7 @@ namespace EPlast.BLL.Services.UserProfiles
 
                     if (regionHead != null)
                     {
-                        userNotificationsDTO.Add(new UserNotificationDTO
+                        userNotificationsDTO.Add(new UserNotificationDto
                         {
                             Message = $"Користувача {userToCheck.FirstName} {userToCheck.LastName} не додають в станицю {userCity.Name} уже 7 днів! ",
                             NotificationTypeId = 1,
@@ -495,7 +494,7 @@ namespace EPlast.BLL.Services.UserProfiles
                     }
                     if (regionHeadDeputy != null)
                     {
-                        userNotificationsDTO.Add(new UserNotificationDTO
+                        userNotificationsDTO.Add(new UserNotificationDto
                         {
                             Message = $"Користувача {userToCheck.FirstName} {userToCheck.LastName} не додають в станицю {userCity.Name} уже 7 днів! ",
                             NotificationTypeId = 1,

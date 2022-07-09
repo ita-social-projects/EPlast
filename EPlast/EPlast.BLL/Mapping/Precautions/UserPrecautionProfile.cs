@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.Precautions
     {
         public UserPrecautionProfile()
         {
-            CreateMap<UserPrecaution, UserPrecautionDTO>().ReverseMap();
+            CreateMap<UserPrecaution, UserPrecautionDto>().ReverseMap();
             CreateMap<UserPrecaution, UserPrecautionsTableObject>().ForMember(dest => dest.PrecautionName, act => act.MapFrom(src => src.Precaution.Name))
                     .ForMember(dest => dest.UserName, act => act.MapFrom(src => src.User.FirstName+" "+src.User.LastName));
         }

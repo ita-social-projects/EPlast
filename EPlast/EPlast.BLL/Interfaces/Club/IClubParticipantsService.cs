@@ -1,8 +1,8 @@
-using EPlast.BLL.DTO.Club;
-using EPlast.DataAccess.Entities;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Club;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Club
 {
@@ -13,21 +13,21 @@ namespace EPlast.BLL.Interfaces.Club
         /// </summary>
         /// <param name="clubId"></param>
         /// <returns>An information about a specific administrator</returns>
-        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationByIdAsync(int clubId);
+        Task<IEnumerable<ClubAdministrationDto>> GetAdministrationByIdAsync(int clubId);
 
         /// <summary>
         /// Add a new administrator to the Club
         /// </summary>
         /// <param name="adminDTO">An information about a new administrator</param>
         /// <returns>An information about a specific administrator</returns>
-        Task<ClubAdministrationDTO> AddAdministratorAsync(ClubAdministrationDTO adminDTO);
+        Task<ClubAdministrationDto> AddAdministratorAsync(ClubAdministrationDto adminDTO);
 
         /// <summary>
         /// Edit an information about a specific administrator
         /// </summary>
         /// <param name="adminDTO">An information about an edited administrator</param>
         /// <returns>An information about a specific administrator</returns>
-        Task<ClubAdministrationDTO> EditAdministratorAsync(ClubAdministrationDTO adminDTO);
+        Task<ClubAdministrationDto> EditAdministratorAsync(ClubAdministrationDto adminDTO);
 
         /// <summary>
         /// Remove a specific administrator from the Club
@@ -49,20 +49,20 @@ namespace EPlast.BLL.Interfaces.Club
         /// <summary>
         ///returns administrations of given user
         /// </summary>
-        Task<IEnumerable<ClubAdministrationDTO>> GetAdministrationsOfUserAsync(string userId);
+        Task<IEnumerable<ClubAdministrationDto>> GetAdministrationsOfUserAsync(string userId);
 
         /// <summary>
         ///returns administrations of given user
         /// </summary>
-        Task<IEnumerable<ClubAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string userId);
-        Task<IEnumerable<ClubAdministrationStatusDTO>> GetAdministrationStatuses(string userId);
+        Task<IEnumerable<ClubAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string userId);
+        Task<IEnumerable<ClubAdministrationStatusDto>> GetAdministrationStatuses(string userId);
 
         /// <summary>
         /// Get all members by specific Club
         /// </summary>
         /// <param name="clubId">The id of the Club</param>
         /// <returns>All members of a specific Club</returns>
-        Task<IEnumerable<ClubMembersDTO>> GetMembersByClubIdAsync(int clubId);
+        Task<IEnumerable<ClubMembersDto>> GetMembersByClubIdAsync(int clubId);
 
         /// <summary>
         /// Add follower to a specific Club
@@ -71,7 +71,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="userId">The id of the user</param>
         /// <returns>An information about a new follower</returns>
         /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, ClaimsPrincipal)"/> to add current user
-        Task<ClubMembersDTO> AddFollowerAsync(int clubId, string userId);
+        Task<ClubMembersDto> AddFollowerAsync(int clubId, string userId);
 
         /// <summary>
         /// Add follower to a specific Club
@@ -80,14 +80,14 @@ namespace EPlast.BLL.Interfaces.Club
         /// <param name="user">Current user</param>
         /// <returns>An information about a new follower</returns>
         /// See <see cref="IClubParticipantsService.AddFollowerAsync(int, string)"/> to add user by id
-        Task<ClubMembersDTO> AddFollowerAsync(int clubId, User user);
+        Task<ClubMembersDto> AddFollowerAsync(int clubId, User user);
 
         /// <summary>
         /// Toggle approve status of a specific member
         /// </summary>
         /// <param name="memberId">The id of the member</param>
         /// <returns>An information about a specific member</returns>
-        Task<ClubMembersDTO> ToggleApproveStatusAsync(int memberId);
+        Task<ClubMembersDto> ToggleApproveStatusAsync(int memberId);
 
         /// <summary>
         /// Returns either given user is approved or not

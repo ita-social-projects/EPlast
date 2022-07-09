@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
-using EPlast.BLL.Queries.City;
 using EPlast.BLL.Models;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -20,7 +21,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System.Threading;
 
 namespace EPlast.Tests.Services.UserProfiles
 {
@@ -224,7 +224,7 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CityDTO());
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CityDto());
 
             _mockEmailContentService
                 .Setup(e => e.GetUserRenewalConfirmationEmail(It.IsAny<string>()))
@@ -266,7 +266,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(u => u.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
             _mockCityParticipantsService
                 .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(new CityMembersDTO());
+                .ReturnsAsync(new CityMembersDto());
 
             //Act
             await _userRenewalService.ResolveUserMembershipDatesAsync(It.IsAny<string>());
@@ -275,7 +275,7 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityMembersDTO>(result);
+            Assert.IsInstanceOf<CityMembersDto>(result);
         }
 
         [Test]
@@ -311,7 +311,7 @@ namespace EPlast.Tests.Services.UserProfiles
             
         }
 
-        private readonly UserRenewalDTO invalidUserRenewalDTO = new UserRenewalDTO
+        private readonly UserRenewalDto invalidUserRenewalDTO = new UserRenewalDto
         {
             Id = 5,
             CityId = 13,
@@ -320,7 +320,7 @@ namespace EPlast.Tests.Services.UserProfiles
             RequestDate = DateTime.Now
         };
 
-        private readonly UserRenewalDTO userRenewalDTO = new UserRenewalDTO
+        private readonly UserRenewalDto userRenewalDTO = new UserRenewalDto
         {
             Id = 1,
             CityId = 13,

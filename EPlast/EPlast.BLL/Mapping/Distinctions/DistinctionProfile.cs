@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.Distinctions
     {
         public DistinctionProfile()
         {
-            CreateMap<Distinction, DistinctionDTO>().ReverseMap();
+            CreateMap<Distinction, DistinctionDto>().ReverseMap();
         }
     }
 }

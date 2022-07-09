@@ -1,18 +1,18 @@
-﻿using EPlast.BLL.DTO.Terms;
-using EPlast.BLL.Handlers.TermsOfUse;
-using EPlast.BLL.Queries.TermsOfUse;
-using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using EPlast.BLL.Commands.TermsOfUse;
+using EPlast.BLL.DTO.Terms;
+using EPlast.BLL.Handlers.TermsOfUse;
+using EPlast.BLL.Queries.TermsOfUse;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Handlers.Terms
 {
@@ -24,7 +24,7 @@ namespace EPlast.Tests.Handlers.Terms
         private ChangeTermsCommand _query;
 
         private User _user;
-        private TermsDTO _termsDto;
+        private TermsDto _termsDto;
 
         [SetUp]
         public void SetUp()
@@ -33,7 +33,7 @@ namespace EPlast.Tests.Handlers.Terms
             _mockMediator = new Mock<IMediator>();
             _handler = new ChangeTermsHandler(_mockRepoWrapper.Object, _mockMediator.Object);
             _user = new User();
-            _termsDto = new TermsDTO();
+            _termsDto = new TermsDto();
             _query = new ChangeTermsCommand(_termsDto, _user);
         }
 

@@ -1,24 +1,24 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Blank
 {
-    public class BlankExtractFromUpuDocumentService : IBlankExtractFromUPUDocumentService
+    public class BlankExtractFromUpuDocumentService : IBlankExtractFromUpuDocumentService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
-        private readonly IBlankExtractFromUPUBlobStorageRepository _blankFilesBlobStorage;
+        private readonly IBlankExtractFromUpuBlobStorageRepository _blankFilesBlobStorage;
 
         public BlankExtractFromUpuDocumentService(IRepositoryWrapper repositoryWrapper,
            IMapper mapper,
-           IBlankExtractFromUPUBlobStorageRepository blankFilesBlobStorage)
+           IBlankExtractFromUpuBlobStorageRepository blankFilesBlobStorage)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
@@ -26,7 +26,7 @@ namespace EPlast.BLL.Services.Blank
         }
 
 
-        public async Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO extractFromUPUDocumentsDTO)
+        public async Task<ExtractFromUpuDocumentsDto> AddDocumentAsync(ExtractFromUpuDocumentsDto extractFromUPUDocumentsDTO)
         {
             var fileBase64 = extractFromUPUDocumentsDTO.BlobName.Split(',')[1];
             var extension = "." + extractFromUPUDocumentsDTO.FileName.Split('.').LastOrDefault();
@@ -34,7 +34,7 @@ namespace EPlast.BLL.Services.Blank
             await _blankFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             extractFromUPUDocumentsDTO.BlobName = fileName;
 
-            var document = _mapper.Map<ExtractFromUPUDocumentsDTO, ExtractFromUPUDocuments>(extractFromUPUDocumentsDTO);
+            var document = _mapper.Map<ExtractFromUpuDocumentsDto, ExtractFromUpuDocuments>(extractFromUPUDocumentsDTO);
             _repositoryWrapper.ExtractFromUPUDocumentsRepository.Attach(document);
             await _repositoryWrapper.ExtractFromUPUDocumentsRepository.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();
@@ -58,9 +58,9 @@ namespace EPlast.BLL.Services.Blank
             return await _blankFilesBlobStorage.GetBlobBase64Async(fileName);
         }
 
-        public async Task<ExtractFromUPUDocumentsDTO> GetDocumentByUserId(string userid)
+        public async Task<ExtractFromUpuDocumentsDto> GetDocumentByUserId(string userid)
         {
-            return _mapper.Map<ExtractFromUPUDocuments, ExtractFromUPUDocumentsDTO>(
+            return _mapper.Map<ExtractFromUpuDocuments, ExtractFromUpuDocumentsDto>(
                await _repositoryWrapper.ExtractFromUPUDocumentsRepository.GetFirstOrDefaultAsync(i => i.UserId == userid));
         }
     }

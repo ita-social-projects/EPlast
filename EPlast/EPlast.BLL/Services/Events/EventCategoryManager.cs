@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -22,11 +22,11 @@ namespace EPlast.BLL.Services.Events
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<EventCategoryDTO>> GetDTOAsync()
+        public async Task<IEnumerable<EventCategoryDto>> GetDTOAsync()
         {
             var eventCategories = await _repoWrapper.EventCategory.GetAllAsync();
             var dto = eventCategories
-                .Select(eventCategory => new EventCategoryDTO()
+                .Select(eventCategory => new EventCategoryDto()
                 {
                     EventCategoryId = eventCategory.ID,
                     EventCategoryName = eventCategory.EventCategoryName
@@ -36,11 +36,11 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
+        public async Task<IEnumerable<EventCategoryDto>> GetDTOByEventPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
         {
             var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);
             var dto = eventType.EventCategories
-                .Select(eventTypeCategory => new EventCategoryDTO()
+                .Select(eventTypeCategory => new EventCategoryDto()
                 {
                     EventCategoryId = eventTypeCategory.EventCategoryId,
                     EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName
@@ -50,11 +50,11 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventCategoryDTO>> GetDTOByEventTypeIdAsync(int eventTypeId)
+        public async Task<IEnumerable<EventCategoryDto>> GetDTOByEventTypeIdAsync(int eventTypeId)
         {
             var eventType = await _eventTypeManager.GetTypeByIdAsync(eventTypeId);
             var dto = eventType.EventCategories
-                .Select(eventTypeCategory => new EventCategoryDTO()
+                .Select(eventTypeCategory => new EventCategoryDto()
                 {
                     EventCategoryId = eventTypeCategory.EventCategoryId,
                     EventCategoryName = eventTypeCategory.EventCategory.EventCategoryName,
@@ -65,9 +65,9 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDTO model)
+        public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDto model)
         {
-            var eventCategoryToCreate = _mapper.Map<EventCategoryDTO, EventCategory>(model.EventCategory);
+            var eventCategoryToCreate = _mapper.Map<EventCategoryDto, EventCategory>(model.EventCategory);
 
             await _repoWrapper.EventCategory.CreateAsync(eventCategoryToCreate);
             await _repoWrapper.EventCategoryType.CreateAsync(new EventCategoryType()

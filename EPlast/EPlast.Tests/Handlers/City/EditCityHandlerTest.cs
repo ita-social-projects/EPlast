@@ -18,14 +18,14 @@ namespace EPlast.Tests.Handlers.City
         private EditCityCommand _command;
         private EditCityHandler _handler;
 
-        private CityDTO _city;
+        private CityDto _city;
 
         [SetUp]
         public void SetUp()
         {
             _mockMediator = new Mock<IMediator>();
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
-            _city = new CityDTO { ID = 1, Region = new RegionDTO { ID = 1, RegionName = "Region" } };
+            _city = new CityDto { ID = 1, Region = new RegionDto { ID = 1, RegionName = "Region" } };
             _command = new EditCityCommand(_city);
             _handler = new EditCityHandler(_mockMediator.Object, _mockRepoWrapper.Object);
         }

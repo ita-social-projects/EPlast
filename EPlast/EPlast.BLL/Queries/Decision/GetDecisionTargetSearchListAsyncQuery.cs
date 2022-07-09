@@ -1,10 +1,10 @@
-﻿using EPlast.BLL.DTO;
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO;
 using MediatR;
-using System.Collections.Generic;
 
 namespace EPlast.BLL.Queries.Decision
 {
-    public class GetDecisionTargetSearchListAsyncQuery: IRequest<IEnumerable<DecisionTargetDTO>>
+    public class GetDecisionTargetSearchListAsyncQuery : IRequest<IEnumerable<DecisionTargetDto>>
     {
         public string SearchedData { get; set; }
         public GetDecisionTargetSearchListAsyncQuery(string searchedData)

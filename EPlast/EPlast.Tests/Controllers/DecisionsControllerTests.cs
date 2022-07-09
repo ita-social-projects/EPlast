@@ -64,7 +64,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _goverrningBodiesService
                 .Setup(x => x.GetGoverningBodiesListAsync())
-                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
+                .ReturnsAsync(new List<GoverningBodyDto>().AsEnumerable());
             _mockGetDecisionStatusTypesExtention.Setup(x => x.GetDecesionStatusTypes()).Returns(GetFakeSelectListItems());
 
             //Act
@@ -84,14 +84,14 @@ namespace EPlast.Tests.Controllers
         public async Task Get_DecisionById_ReturnsOkObjectResult()
         {
             //Arrange
-            _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DecisionDTO());
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetDecisionAsyncQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DecisionDto());
 
             //Act
             var result = await _decisionsController.Get(It.IsAny<int>());
-            var decisionDTO = (result as ObjectResult).Value as DecisionDTO;
+            var decisionDTO = (result as ObjectResult).Value as DecisionDto;
 
             //Assert
-            Assert.IsInstanceOf<DecisionDTO>(decisionDTO);
+            Assert.IsInstanceOf<DecisionDto>(decisionDTO);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -120,7 +120,7 @@ namespace EPlast.Tests.Controllers
             _httpContext.Setup(t => t.User).Returns(principal);
             DecisionsController decisionsController = _decisionsController;
             decisionsController.ControllerContext = _context;
-            var mockDecision = new DecisionDTO() { UserId = "qwerty"};
+            var mockDecision = new DecisionDto() { UserId = "qwerty" };
             _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(mockDecision);
             _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));
             _userManagerService.Setup(x => x.GetCurrentUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>())).Returns("qwerty");
@@ -144,7 +144,7 @@ namespace EPlast.Tests.Controllers
             _httpContext.Setup(t => t.User).Returns(principal);
             DecisionsController decisionsController = _decisionsController;
             decisionsController.ControllerContext = _context;
-            var mockDecision = new DecisionDTO() { UserId = "qwerty1" };
+            var mockDecision = new DecisionDto() { UserId = "qwerty1" };
             _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(mockDecision);
             _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));           
             _userManagerService.Setup(x => x.GetCurrentUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>())).Returns("qwerty");
@@ -161,7 +161,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var expected = 1;
-            var mockDecision = new DecisionDTO();
+            var mockDecision = new DecisionDto();
 
             //Act
             var result = await _decisionsController.Update(expected, mockDecision);
@@ -176,11 +176,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var governingBodyName = "SomeName";
-            DecisionWrapperDTO decisionWrapperDTO = new DecisionWrapperDTO()
+            DecisionWrapperDto decisionWrapperDTO = new DecisionWrapperDto()
             {
-                Decision = new DecisionDTO()
+                Decision = new DecisionDto()
                 {
-                    GoverningBody = new GoverningBodyDTO
+                    GoverningBody = new GoverningBodyDto
                     {
                         GoverningBodyName = governingBodyName
                     }
@@ -203,9 +203,9 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsBadRequestResult()
         {
             //Arrange
-            var decisionWrapper = new DecisionWrapperDTO()
+            var decisionWrapper = new DecisionWrapperDto()
             {
-                Decision = new DecisionDTO
+                Decision = new DecisionDto
                 {
                     FileName = "string"
                 },
@@ -241,7 +241,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionListAsyncQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetFakeDecisionWrapperDtos());
             _mapper
-                .Setup(m => m.Map<DecisionViewModel>(It.IsAny<DecisionDTO>()))
+                .Setup(m => m.Map<DecisionViewModel>(It.IsAny<DecisionDto>()))
                 .Returns(GetFakeDecisionViewModel());
             _mockGetDecisionStatusTypesExtention.Setup(x => x.GetDecesionStatusTypes()).Returns(GetFakeSelectListItems());
 
@@ -337,39 +337,39 @@ namespace EPlast.Tests.Controllers
                 Id = 1
             };
 
-        public List<DecisionWrapperDTO> GetFakeDecisionWrapperDtos()
-            => new List<DecisionWrapperDTO>
+        public List<DecisionWrapperDto> GetFakeDecisionWrapperDtos()
+            => new List<DecisionWrapperDto>
             {
-                new DecisionWrapperDTO
+                new DecisionWrapperDto
                 {
-                    Decision = new DecisionDTO()
+                    Decision = new DecisionDto()
                     {
                         ID = 1,
-                        DecisionStatusType = DecisionStatusTypeDTO.Confirmed
+                        DecisionStatusType = DecisionStatusTypeDto.Confirmed
                     },
                     FileAsBase64 = "file1"
                 },
-                new DecisionWrapperDTO
+                new DecisionWrapperDto
                 {
-                    Decision = new DecisionDTO()
+                    Decision = new DecisionDto()
                     {
                         ID = 2,
-                        DecisionStatusType = DecisionStatusTypeDTO.Confirmed
+                        DecisionStatusType = DecisionStatusTypeDto.Confirmed
                     },
                     FileAsBase64 = "file2"
                 }
             };
 
 
-        public List<DecisionTargetDTO> GetFakeDecisionTargetDtosDtos()
-            => new List<DecisionTargetDTO>
+        public List<DecisionTargetDto> GetFakeDecisionTargetDtosDtos()
+            => new List<DecisionTargetDto>
             {
-                new DecisionTargetDTO
+                new DecisionTargetDto
                 {
                     ID = 1,
                     TargetName = "Name1"
                 },
-                new DecisionTargetDTO
+                new DecisionTargetDto
                 {
                     ID = 2,
                     TargetName = "Name2"
