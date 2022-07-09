@@ -1,9 +1,9 @@
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Admin
 {
@@ -18,32 +18,32 @@ namespace EPlast.BLL.Services.Admin
             _mapper = mapper;
         }
 
-        public async Task<AdminTypeDTO> GetAdminTypeByNameAsync(string name)
+        public async Task<AdminTypeDto> GetAdminTypeByNameAsync(string name)
         {
             var adminType = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(i => i.AdminTypeName == name);
             return adminType != null
-                ? _mapper.Map<AdminType, AdminTypeDTO>(adminType)
+                ? _mapper.Map<AdminType, AdminTypeDto>(adminType)
                 : await this.CreateByNameAsync(name);
         }
 
-        public async Task<AdminTypeDTO> GetAdminTypeByIdAsync(int adminTypeId)
+        public async Task<AdminTypeDto> GetAdminTypeByIdAsync(int adminTypeId)
         {
             var adminType = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(i => i.ID == adminTypeId);
-            return _mapper.Map<AdminType, AdminTypeDTO>(adminType);
+            return _mapper.Map<AdminType, AdminTypeDto>(adminType);
         }
 
-        public async Task<AdminTypeDTO> CreateByNameAsync(string adminTypeName)
+        public async Task<AdminTypeDto> CreateByNameAsync(string adminTypeName)
         {
-            return await this.CreateAsync(new AdminTypeDTO() { AdminTypeName = adminTypeName });
+            return await this.CreateAsync(new AdminTypeDto() { AdminTypeName = adminTypeName });
         }
 
-        public async Task<AdminTypeDTO> CreateAsync(AdminTypeDTO adminTypeDto)
+        public async Task<AdminTypeDto> CreateAsync(AdminTypeDto adminTypeDto)
         {
-            var newAdminType = _mapper.Map<AdminTypeDTO, AdminType>(adminTypeDto);
+            var newAdminType = _mapper.Map<AdminTypeDto, AdminType>(adminTypeDto);
             await _repoWrapper.AdminType.CreateAsync(newAdminType);
             await _repoWrapper.SaveAsync();
 
-            return _mapper.Map<AdminType, AdminTypeDTO>(newAdminType);
+            return _mapper.Map<AdminType, AdminTypeDto>(newAdminType);
         }
     }
 }

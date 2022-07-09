@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.GoverningBody
     {
         public GoverningBodyAdministrationProfile()
         {
-            CreateMap<GoverningBodyAdministrationViewModel, GoverningBodyAdministrationDTO>().ReverseMap();
+            CreateMap<GoverningBodyAdministrationViewModel, GoverningBodyAdministrationDto>().ReverseMap();
         }
     }
 }

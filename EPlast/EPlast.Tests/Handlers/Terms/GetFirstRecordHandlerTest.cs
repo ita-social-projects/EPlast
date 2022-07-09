@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.Handlers.TermsOfUse;
 using EPlast.BLL.Queries.TermsOfUse;
@@ -6,11 +11,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Terms
 {
@@ -38,15 +38,15 @@ namespace EPlast.Tests.Handlers.Terms
                 Setup(x => x.TermsOfUse.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Terms, bool>>>(),
                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Terms>, IIncludableQueryable<DataAccess.Entities.Terms, object>>>()))
                             .ReturnsAsync(new DataAccess.Entities.Terms());
-            _mockMapper.Setup(m => m.Map<TermsDTO>(It.IsAny<DataAccess.Entities.Terms>()))
-                .Returns(new TermsDTO());
+            _mockMapper.Setup(m => m.Map<TermsDto>(It.IsAny<DataAccess.Entities.Terms>()))
+                .Returns(new TermsDto());
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<TermsDTO>(result);
+            Assert.IsInstanceOf<TermsDto>(result);
         }
     }
 }

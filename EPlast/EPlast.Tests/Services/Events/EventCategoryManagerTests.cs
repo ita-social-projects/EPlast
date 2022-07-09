@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Services.Events;
@@ -6,8 +8,6 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Events
 {
@@ -45,7 +45,7 @@ namespace EPlast.Tests.Services.Events
                  _eventCategoryManager.GetDTOByEventPageAsync(testEventTypeId, testPage, testPageSize, "CategoryName");
 
             //Assert
-            Assert.IsAssignableFrom<Task<IEnumerable<EventCategoryDTO>>>(result);
+            Assert.IsAssignableFrom<Task<IEnumerable<EventCategoryDto>>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -53,7 +53,7 @@ namespace EPlast.Tests.Services.Events
         public async Task CreateEventCategoryAsync_ReturnsIntIdOfCreatedCategory()
         {
             //Arrange
-            _mockMapper.Setup(m => m.Map<EventCategoryDTO, EventCategory>(It.IsAny<EventCategoryDTO>()))
+            _mockMapper.Setup(m => m.Map<EventCategoryDto, EventCategory>(It.IsAny<EventCategoryDto>()))
                        .Returns(new EventCategory());
             _mockRepositoryWrapper.Setup(r => r.EventCategory.CreateAsync(It.IsAny<EventCategory>()));
             _mockRepositoryWrapper.Setup(r => r.EventCategoryType.CreateAsync(It.IsAny<EventCategoryType>()));
@@ -67,10 +67,10 @@ namespace EPlast.Tests.Services.Events
             Assert.IsInstanceOf<int>(methodResult);
         }
 
-        private EventCategoryCreateDTO CreateFakeEventCategory()
-            => new EventCategoryCreateDTO()
+        private EventCategoryCreateDto CreateFakeEventCategory()
+            => new EventCategoryCreateDto()
             {
-                EventCategory = new EventCategoryDTO()
+                EventCategory = new EventCategoryDto()
                 {
                     EventCategoryId = 1,
                     EventCategoryName = "new category",

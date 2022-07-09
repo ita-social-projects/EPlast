@@ -1,19 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.GoverningBody.Sector;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.GoverningBodies.Sector;
-using System;
-using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.Tests.Controllers
 {
@@ -50,7 +50,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetSectors_ReturnsSectorsList(int governingBodyId)
         {
             //Arrange
-            var testSectorsList = new List<SectorDTO>();
+            var testSectorsList = new List<SectorDto>();
             _sectorService
                 .Setup(x => x.GetSectorsByGoverningBodyAsync(It.IsAny<int>()))
                 .ReturnsAsync(testSectorsList);
@@ -61,7 +61,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(testSectorsList, resultValue as List<SectorDTO>);
+            Assert.AreEqual(testSectorsList, resultValue as List<SectorDto>);
         }
 
         [Test]
@@ -82,7 +82,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorService
-                .Setup(x => x.CreateAsync(It.IsAny<SectorDTO>()))
+                .Setup(x => x.CreateAsync(It.IsAny<SectorDto>()))
                 .ThrowsAsync(new ArgumentException());
 
             //Act
@@ -97,7 +97,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorService
-                .Setup(x => x.CreateAsync(It.IsAny<SectorDTO>()))
+                .Setup(x => x.CreateAsync(It.IsAny<SectorDto>()))
                 .ReturnsAsync(1);
 
             //Act
@@ -129,7 +129,7 @@ namespace EPlast.Tests.Controllers
             var result = await _controller.Edit(CreateSectorDto());
 
             //Assert
-            _sectorService.Verify(x => x.EditAsync(It.IsAny<SectorDTO>()), Times.Once);
+            _sectorService.Verify(x => x.EditAsync(It.IsAny<SectorDto>()), Times.Once);
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.Once);
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -166,7 +166,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetProfile_SectorNotFound(int id)
         {
             //Arrange
-            SectorProfileDTO foundSector = null;
+            SectorProfileDto foundSector = null;
             _sectorService
                 .Setup(x => x.GetSectorProfileAsync(It.IsAny<int>()))
                 .ReturnsAsync(foundSector);
@@ -184,16 +184,16 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _sectorService
                 .Setup(x => x.GetSectorProfileAsync(It.IsAny<int>()))
-                .ReturnsAsync(new SectorProfileDTO()
+                .ReturnsAsync(new SectorProfileDto()
                 {
-                    Sector = new SectorDTO()
+                    Sector = new SectorDto()
                     {
-                        Documents = new List<SectorDocumentsDTO>()
+                        Documents = new List<SectorDocumentsDto>()
                     }
                 });
             var testSectorViewModel = new SectorViewModel();
             _mapper
-                .Setup(x => x.Map<SectorProfileDTO, SectorViewModel>(It.IsAny<SectorProfileDTO>()))
+                .Setup(x => x.Map<SectorProfileDto, SectorViewModel>(It.IsAny<SectorProfileDto>()))
                 .Returns(testSectorViewModel);
 
             //Act
@@ -201,7 +201,7 @@ namespace EPlast.Tests.Controllers
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
-            _mapper.Verify(m => m.Map<SectorProfileDTO, SectorViewModel>(It.IsAny<SectorProfileDTO>()));
+            _mapper.Verify(m => m.Map<SectorProfileDto, SectorViewModel>(It.IsAny<SectorProfileDto>()));
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
@@ -223,7 +223,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAdmins_SectorNotFound(int id)
         {
             //Arrange
-            SectorProfileDTO foundSector = null;
+            SectorProfileDto foundSector = null;
             _sectorService
                 .Setup(x => x.GetSectorProfileAsync(id))
                 .ReturnsAsync(foundSector);
@@ -241,9 +241,9 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _sectorService
                 .Setup(x => x.GetSectorProfileAsync(id))
-                .ReturnsAsync(new SectorProfileDTO());
+                .ReturnsAsync(new SectorProfileDto());
             _mapper
-                .Setup(x => x.Map<SectorProfileDTO, SectorViewModel>(It.IsAny<SectorProfileDTO>()))
+                .Setup(x => x.Map<SectorProfileDto, SectorViewModel>(It.IsAny<SectorProfileDto>()))
                 .Returns(new SectorViewModel());
 
             //Act
@@ -257,15 +257,15 @@ namespace EPlast.Tests.Controllers
         public async Task AddAdmin_ReturnsOk()
         {
             //Arrange
-            var testAdmin = new SectorAdministrationDTO() { AdminType = new AdminTypeDTO() };
+            var testAdmin = new SectorAdministrationDto() { AdminType = new AdminTypeDto() };
 
             //Act
             var result = await _controller.AddAdmin(testAdmin);
             var resultValue = (result as OkObjectResult)?.Value;
-            
+
             //Assert
             _sectorAdministrationService.Verify(x => x.AddSectorAdministratorAsync(
-                It.IsAny<SectorAdministrationDTO>()), Times.Once);
+                It.IsAny<SectorAdministrationDto>()), Times.Once);
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()));
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(testAdmin, resultValue);
@@ -276,11 +276,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAdministrationService
-                .Setup(x => x.AddSectorAdministratorAsync(It.IsAny<SectorAdministrationDTO>()))
+                .Setup(x => x.AddSectorAdministratorAsync(It.IsAny<SectorAdministrationDto>()))
                 .Throws(new ArgumentException());
 
             //Act
-            var result = await _controller.AddAdmin(new SectorAdministrationDTO());
+            var result = await _controller.AddAdmin(new SectorAdministrationDto());
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
@@ -290,7 +290,7 @@ namespace EPlast.Tests.Controllers
         public async Task EditAdmin_ReturnsOk()
         {
             //Arrange
-            var testAdmin = new SectorAdministrationDTO() { AdminType = new AdminTypeDTO() };
+            var testAdmin = new SectorAdministrationDto() { AdminType = new AdminTypeDto() };
 
             //Act
             var result = await _controller.EditAdmin(testAdmin);
@@ -298,7 +298,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             _sectorAdministrationService.Verify(x => x.EditSectorAdministratorAsync(
-                It.IsAny<SectorAdministrationDTO>()), Times.Once);
+                It.IsAny<SectorAdministrationDto>()), Times.Once);
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()));
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(testAdmin, resultValue);
@@ -321,7 +321,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocuments_SectorNotFound(int id)
         {
             //Arrange
-            SectorProfileDTO foundSector = null;
+            SectorProfileDto foundSector = null;
             _sectorService
                 .Setup(x => x.GetSectorDocumentsAsync(It.IsAny<int>()))
                 .ReturnsAsync(foundSector);
@@ -339,9 +339,9 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _sectorService
                 .Setup(x => x.GetSectorDocumentsAsync(It.IsAny<int>()))
-                .ReturnsAsync(new SectorProfileDTO());
+                .ReturnsAsync(new SectorProfileDto());
             _mapper
-                .Setup(x => x.Map<SectorProfileDTO, SectorViewModel>(It.IsAny<SectorProfileDTO>()))
+                .Setup(x => x.Map<SectorProfileDto, SectorViewModel>(It.IsAny<SectorProfileDto>()))
                 .Returns(new SectorViewModel());
 
             //Act
@@ -355,7 +355,7 @@ namespace EPlast.Tests.Controllers
         public async Task AddDocument_ReturnsOk()
         {
             //Arrange
-            var testDocument = new SectorDocumentsDTO();
+            var testDocument = new SectorDocumentsDto();
 
             //Act
             var result = await _controller.AddDocument(testDocument);
@@ -363,7 +363,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             _sectorDocumentsService.Verify(x => x.AddSectorDocumentAsync(
-                It.IsAny<SectorDocumentsDTO>()));
+                It.IsAny<SectorDocumentsDto>()));
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()));
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.AreEqual(testDocument, resultValue);
@@ -408,7 +408,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetDocumentTypesAsync_ReturnsOk()
         {
             //Arrange
-            var testDocuments = new List<SectorDocumentTypeDTO>();
+            var testDocuments = new List<SectorDocumentTypeDto>();
             _sectorDocumentsService
                 .Setup(x => x.GetAllSectorDocumentTypesAsync())
                 .ReturnsAsync(testDocuments);
@@ -446,7 +446,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _sectorService
                 .Setup(c => c.GetAdministrationsOfUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDto>>());
 
             // Act
             var result = await _controller.GetUserAdministrations("1");
@@ -462,7 +462,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _sectorService
                 .Setup(c => c.GetPreviousAdministrationsOfUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDTO>>());
+                .ReturnsAsync(It.IsAny<IEnumerable<SectorAdministrationDto>>());
 
             // Act
             var result = await _controller.GetUserPreviousAdministrations("1");
@@ -480,12 +480,12 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.GetAdministrationForTableAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<int>(),
                     It.IsAny<int>()))
                 .ReturnsAsync(
-                    new Tuple<IEnumerable<SectorAdministrationDTO>, int>(
-                        It.IsAny<IEnumerable<SectorAdministrationDTO>>(), It.IsAny<int>()));
+                    new Tuple<IEnumerable<SectorAdministrationDto>, int>(
+                        It.IsAny<IEnumerable<SectorAdministrationDto>>(), It.IsAny<int>()));
             _mapper
                 .Setup(m =>
-                    m.Map<IEnumerable<SectorAdministrationDTO>, IEnumerable<SectorTableViewModel>>(
-                        It.IsAny<IEnumerable<SectorAdministrationDTO>>()));
+                    m.Map<IEnumerable<SectorAdministrationDto>, IEnumerable<SectorTableViewModel>>(
+                        It.IsAny<IEnumerable<SectorAdministrationDto>>()));
 
             //Act
             var result = await _controller.GetUserAdministrationsForTable(It.IsAny<string>(),
@@ -521,10 +521,10 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>())).ReturnsAsync(1); ;
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>())).ReturnsAsync(1); ;
 
             //Act
-            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
+            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDto>());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -537,10 +537,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _controller.ModelState.AddModelError("text", "is required");
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()));
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>()));
 
             //Act
-            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
+            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDto>());
 
             //Assert
             _sectorAnnouncementsService.Verify();
@@ -553,10 +553,10 @@ namespace EPlast.Tests.Controllers
             //Arrange
             int? returnId = null;
             _sectorAnnouncementsService
-                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>())).ReturnsAsync(returnId);
+                .Setup(c => c.AddAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>())).ReturnsAsync(returnId);
 
             //Act
-            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>());
+            var result = await _controller.AddAnnouncement(It.IsAny<GoverningBodyAnnouncementWithImagesDto>());
 
             //Assert
             _sectorAnnouncementsService.Verify();
@@ -568,11 +568,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>()))
                 .ReturnsAsync(1);
 
             //Act
-            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDto());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(res);
@@ -584,11 +584,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _controller.ModelState.AddModelError("key", "error message");
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>()))
                 .ReturnsAsync(1);
 
             //Act
-            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDto());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);
@@ -600,11 +600,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
 
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>()))
                 .ReturnsAsync(null as int?);
 
             //Act
-            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDto());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);
@@ -616,11 +616,11 @@ namespace EPlast.Tests.Controllers
             //Arrange
             int? returnId = null;
             _sectorAnnouncementsService
-                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDTO>()))
+                .Setup(x => x.EditAnnouncementAsync(It.IsAny<GoverningBodyAnnouncementWithImagesDto>()))
                 .ReturnsAsync(returnId);
 
             //Act
-            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDTO());
+            var res = await _controller.EditAnnouncement(new GoverningBodyAnnouncementWithImagesDto());
 
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(res);
@@ -646,7 +646,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new GoverningBodyAnnouncementUserWithImagesDTO());
+                .ReturnsAsync(new GoverningBodyAnnouncementUserWithImagesDto());
 
             //Act
             var result = await _controller.GetById(It.IsAny<int>());
@@ -657,7 +657,7 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(resultValue);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDto>(resultValue);
         }
 
         [Test]
@@ -665,7 +665,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _sectorAnnouncementsService.Setup(g => g.GetAnnouncementByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(null as GoverningBodyAnnouncementUserWithImagesDTO);
+                .ReturnsAsync(null as GoverningBodyAnnouncementUserWithImagesDto);
 
             //Act
             var result = await _controller.GetById(It.IsAny<int>());
@@ -688,9 +688,9 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        private SectorDTO CreateSectorDto()
+        private SectorDto CreateSectorDto()
         {
-            return new SectorDTO()
+            return new SectorDto()
             {
                 Id = 1,
                 Description = "description",
@@ -698,9 +698,9 @@ namespace EPlast.Tests.Controllers
                 GoverningBodyId = 1,
                 Name = "name",
                 PhoneNumber = "number",
-                Administration = new List<SectorAdministrationDTO>() {new SectorAdministrationDTO()},
+                Administration = new List<SectorAdministrationDto>() { new SectorAdministrationDto() },
                 AdministrationCount = 1,
-                Documents = new List<SectorDocumentsDTO>() {new SectorDocumentsDTO()}
+                Documents = new List<SectorDocumentsDto>() { new SectorDocumentsDto() }
             };
         }
     }

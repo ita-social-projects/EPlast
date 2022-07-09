@@ -8,8 +8,8 @@ namespace EPlast.WebApi.Mapping.GoverningBody
     {
         public GoverningBodyAnnouncementrsProfile()
         {
-            CreateMap<GoverningBodyAnnouncementsViewModel, GoverningBodyAnnouncementDTO>().ReverseMap();
-            CreateMap<GoverningBodyViewModel, GoverningBodyAnnouncementDTO>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncementsViewModel, GoverningBodyAnnouncementDto>().ReverseMap();
+            CreateMap<GoverningBodyViewModel, GoverningBodyAnnouncementDto>().ReverseMap();
         }
     }
 }

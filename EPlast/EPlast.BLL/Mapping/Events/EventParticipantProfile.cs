@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Events
     {
         public EventParticipantProfile()
         {
-            CreateMap<Participant, EventParticipantDTO>()
+            CreateMap<Participant, EventParticipantDto>()
                 .ForMember(d => d.ParticipantId, s => s.MapFrom(f => f.ID))
                 .ForMember(d => d.FullName, s => s.MapFrom(f => $"{f.User.FirstName} {f.User.LastName}"))
                 .ForMember(d => d.Email, s => s.MapFrom(f => f.User.UserName))

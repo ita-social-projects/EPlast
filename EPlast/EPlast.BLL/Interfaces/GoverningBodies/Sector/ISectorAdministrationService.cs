@@ -5,9 +5,9 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
 {
     public interface ISectorAdministrationService
     {
-        Task<SectorAdministrationDTO> AddSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto);
+        Task<SectorAdministrationDto> AddSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto);
 
-        Task<SectorAdministrationDTO> EditSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto);
+        Task<SectorAdministrationDto> EditSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto);
 
         Task RemoveAdministratorAsync(int adminId);
 

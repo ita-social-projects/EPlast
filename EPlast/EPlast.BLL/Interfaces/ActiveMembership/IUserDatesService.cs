@@ -1,8 +1,8 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
 
 namespace EPlast.BLL.Interfaces.ActiveMembership
 {
@@ -16,14 +16,14 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>All dates of current user</returns>
-        public Task<UserMembershipDatesDTO> GetUserMembershipDatesAsync(string userId);
+        public Task<UserMembershipDatesDto> GetUserMembershipDatesAsync(string userId);
 
         /// <summary>
         /// Returns boolean, if dates is correct and they was changed in DB return true, else false
         /// </summary>
         /// <param name="entryAndOathDatesDTO"> entryAndOathDatesDTO</param>
         /// <returns>bool if changing is successful</returns>
-        public Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDTO entryAndOathDatesDTO);
+        public Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDto entryAndOathDatesDTO);
 
         /// <summary>
         /// Returns boolean, if dates is correct and they was added to DB return true, else false

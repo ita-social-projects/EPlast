@@ -41,7 +41,7 @@ namespace EPlast.Tests.Handlers.City
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -59,15 +59,15 @@ namespace EPlast.Tests.Handlers.City
             Assert.IsNull(result);
         }
 
-        private static CityDTO GetCity()
+        private static CityDto GetCity()
         {
-            return new CityDTO
+            return new CityDto
             {
-                CityAdministration = new List<CityAdministrationDTO>
+                CityAdministration = new List<CityAdministrationDto>
                 {
-                    new CityAdministrationDTO
+                    new CityAdministrationDto
                     {
-                        AdminType = new AdminTypeDTO
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = Roles.CityHead
                         },
@@ -75,16 +75,16 @@ namespace EPlast.Tests.Handlers.City
                         Status = true
                     }
                 },
-                CityMembers = new List<CityMembersDTO>
+                CityMembers = new List<CityMembersDto>
                 {
-                    new CityMembersDTO
+                    new CityMembersDto
                     {
                         IsApproved = true
                     }
                 },
-                CityDocuments = new List<CityDocumentsDTO>
+                CityDocuments = new List<CityDocumentsDto>
                 {
-                    new CityDocumentsDTO
+                    new CityDocumentsDto
                     {
                         ID = 1
                     }

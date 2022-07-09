@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.Club;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Club;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.Club
@@ -15,14 +15,14 @@ namespace EPlast.BLL.Interfaces.Club
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<ClubAnnualReportDTO> GetByIdAsync(User user, int id);
+        Task<ClubAnnualReportDto> GetByIdAsync(User user, int id);
 
         /// <summary>
         /// Method to get all club reports that the user has access to
         /// </summary>
         /// <param name="user">Authorized user</param>
         /// <returns>List of annual report model</returns>
-        Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User user);
+        Task<IEnumerable<ClubAnnualReportDto>> GetAllAsync(User user);
 
         /// <summary>
         /// Method to get all searched club reports that the user has access to
@@ -55,7 +55,7 @@ namespace EPlast.BLL.Interfaces.Club
         /// <exception cref="System.InvalidOperationException">Thrown when city has created annual report</exception>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to city</exception>
         /// <exception cref="System.NullReferenceException">Thrown when city doesn't exist</exception>
-        Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO);
+        Task CreateAsync(User user, ClubAnnualReportDto clubAnnualReportDTO);
 
         /// <summary>
         /// Method to confirm club annual report
@@ -69,8 +69,8 @@ namespace EPlast.BLL.Interfaces.Club
         Task CancelAsync(User user, int id);
         Task DeleteClubReportAsync(User user, int id);
         Task RemoveClubReportAsync(int id);
-        Task EditClubReportAsync(User user, ClubAnnualReportDTO clubAnnualReportDto);
-        Task<IEnumerable<ClubReportAdministrationDTO>> GetClubReportAdminsAsync(int ClubAnnualReportID);
-        Task<IEnumerable<ClubMemberHistoryDTO>> GetClubReportMembersAsync(int ClubAnnualReportID);
+        Task EditClubReportAsync(User user, ClubAnnualReportDto clubAnnualReportDto);
+        Task<IEnumerable<ClubReportAdministrationDto>> GetClubReportAdminsAsync(int ClubAnnualReportID);
+        Task<IEnumerable<ClubMemberHistoryDto>> GetClubReportMembersAsync(int ClubAnnualReportID);
     }
 }

@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
@@ -11,11 +16,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.GoverningBody.Sector
 {
@@ -47,7 +47,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             //Arrange
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
@@ -59,17 +59,17 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new SectorAdministration());
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
             _userManager
                 .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
-            var testSectorAdmin = new SectorAdministrationDTO()
+            var testSectorAdmin = new SectorAdministrationDto()
             {
-                AdminType = new AdminTypeDTO() { AdminTypeName = "test" }
+                AdminType = new AdminTypeDto() { AdminTypeName = "test" }
             };
-            
+
             //Act
             var result = await _service.AddSectorAdministratorAsync(testSectorAdmin);
 
@@ -91,10 +91,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new List<string> { Roles.GoverningBodySectorHead });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Assert
-            Assert.ThrowsAsync<ArgumentException>(async () => await _service.AddSectorAdministratorAsync(new SectorAdministrationDTO() { AdminType = new AdminTypeDTO()}));
+            Assert.ThrowsAsync<ArgumentException>(async () => await _service.AddSectorAdministratorAsync(new SectorAdministrationDto() { AdminType = new AdminTypeDto() }));
         }
 
         [Test]
@@ -109,7 +109,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new SectorAdministration());
             _adminTypeService
                .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>()))
-               .ReturnsAsync(new AdminTypeDTO());
+               .ReturnsAsync(new AdminTypeDto());
             _repoWrapper
                 .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
@@ -135,10 +135,10 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new SectorAdministration() { AdminTypeId = 1 });
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO() { ID = 1 });
-            var testSectorAdmin = new SectorAdministrationDTO()
+                .ReturnsAsync(new AdminTypeDto() { ID = 1 });
+            var testSectorAdmin = new SectorAdministrationDto()
             {
-                AdminType = new AdminTypeDTO() { AdminTypeName = "test" }
+                AdminType = new AdminTypeDto() { AdminTypeName = "test" }
             };
 
             //Act
@@ -163,7 +163,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .ReturnsAsync(new SectorAdministration() { AdminTypeId = 1 });
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
@@ -171,13 +171,13 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
             _adminTypeService
                 .Setup(x => x.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO() { ID = 2 });
+                .ReturnsAsync(new AdminTypeDto() { ID = 2 });
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
-            var testSectorAdmin = new SectorAdministrationDTO()
+            var testSectorAdmin = new SectorAdministrationDto()
             {
-                AdminType = new AdminTypeDTO() { AdminTypeName = "test" }
+                AdminType = new AdminTypeDto() { AdminTypeName = "test" }
             };
 
             //Act

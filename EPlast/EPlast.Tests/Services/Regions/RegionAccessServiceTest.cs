@@ -65,7 +65,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(
+                x.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(
                     It.IsAny<IEnumerable<Region>>()));
         }
 
@@ -87,7 +87,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(
+                x.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(
                     It.IsAny<IEnumerable<Region>>()));
         }
 
@@ -109,7 +109,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             _mockMapper.Verify(x =>
-                x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(
+                x.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(
                     It.IsAny<IEnumerable<Region>>()));
         }
 
@@ -145,7 +145,7 @@ namespace EPlast.Tests.Services.Regions
                     {new RegionAnnualReport() {RegionId = 1, Date = DateTime.Now}});
 
             _mockMapper.Setup(x =>
-                x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDTO>>(
+                x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDto>>(
                     It.IsAny<IEnumerable<Region>>())).Returns(_expected);
 
             // Act
@@ -177,7 +177,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<RegionAnnualReport>() { new RegionAnnualReport() { RegionId = 1 } });
 
             _mockMapper.Setup(x =>
-                x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDTO>>(
+                x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDto>>(
                     It.IsAny<IEnumerable<Region>>())).Returns(_expected);
 
 
@@ -211,7 +211,7 @@ namespace EPlast.Tests.Services.Regions
                     It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
                 .ReturnsAsync(new List<RegionAnnualReport>() {new RegionAnnualReport() {RegionId = 1}});
             _mockMapper.Setup(x =>
-                    x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDTO>>(
+                    x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDto>>(
                         It.IsAny<IEnumerable<Region>>()))
                 .Returns(_expected);
 
@@ -229,7 +229,7 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetAllRegionsIdAndName_NoRoles()
         {
             //Arrange
-            var expectedEmpty = Enumerable.Empty<RegionForAdministrationDTO>();
+            var expectedEmpty = Enumerable.Empty<RegionForAdministrationDto>();
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string>());
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetAllAsync(
@@ -257,8 +257,8 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new RegionAdministration());
             _mockRepositoryWrapper.Setup(r => r.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                 .ReturnsAsync(new List<Region> { new Region() { ID = 1 } });
-            _mockMapper.Setup(m => m.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
-                .Returns(new List<RegionDTO> { new RegionDTO() { ID = 1 } });
+            _mockMapper.Setup(m => m.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
+                .Returns(new List<RegionDto> { new RegionDto() { ID = 1 } });
 
             // Act
             var result = await _regionAccessService.HasAccessAsync(new User(), 1);
@@ -278,8 +278,8 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new RegionAdministration());
             _mockRepositoryWrapper.Setup(r => r.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                 .ReturnsAsync(new List<Region> {new Region() {ID = 1}});
-            _mockMapper.Setup(m => m.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
-                .Returns(new List<RegionDTO> { new RegionDTO() { ID = 1 } });
+            _mockMapper.Setup(m => m.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
+                .Returns(new List<RegionDto> { new RegionDto() { ID = 1 } });
             //Act
             var result = await _regionAccessService.HasAccessAsync(new User(), 2);
 
@@ -291,9 +291,9 @@ namespace EPlast.Tests.Services.Regions
 
         private AdminType _adminType => new AdminType() { };
 
-        private List<RegionForAdministrationDTO> _expected = new List<RegionForAdministrationDTO>
+        private List<RegionForAdministrationDto> _expected = new List<RegionForAdministrationDto>
         {
-            new RegionForAdministrationDTO
+            new RegionForAdministrationDto
                 {ID = 1, RegionName = "TestRegionName", YearsHasReport = new List<int> {DateTime.Now.Year}, IsActive = true}
         };
     }

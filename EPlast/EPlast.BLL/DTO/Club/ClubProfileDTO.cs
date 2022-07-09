@@ -1,16 +1,16 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubProfileDTO
+    public class ClubProfileDto
     {
-        public ClubDTO Club { get; set; }
-        public ClubAdministrationDTO Head { get; set; }
-        public ClubAdministrationDTO HeadDeputy { get; set; }
-        public List<ClubAdministrationDTO> Admins { get; set; }
-        public List<ClubMembersDTO> Members { get; set; }
-        public List<ClubMembersDTO> Followers { get; set; }
-        public List<ClubDocumentsDTO> Documents { get; set; }
+        public ClubDto Club { get; set; }
+        public ClubAdministrationDto Head { get; set; }
+        public ClubAdministrationDto HeadDeputy { get; set; }
+        public List<ClubAdministrationDto> Admins { get; set; }
+        public List<ClubMembersDto> Members { get; set; }
+        public List<ClubMembersDto> Followers { get; set; }
+        public List<ClubDocumentsDto> Documents { get; set; }
     }
 }

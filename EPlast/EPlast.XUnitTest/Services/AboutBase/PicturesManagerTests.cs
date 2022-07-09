@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AboutBase;
 using EPlast.BLL.Interfaces.AboutBase;
 using EPlast.BLL.Services.AboutBase;
@@ -9,12 +15,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.AboutBase
@@ -35,13 +35,13 @@ namespace EPlast.XUnitTest.Services.AboutBase
             //Arrange
             int subsectionId = 3;
             _aboutBaseWrapper.Setup(x => x.AboutBasePicturesManager.GetPicturesInBase64(It.IsAny<int>()))
-                .ReturnsAsync(new List<SubsectionPicturesDTO>());
+                .ReturnsAsync(new List<SubsectionPicturesDto>());
             //Act
             var picturesManager = new PicturesManager(_aboutBaseWrapper.Object);
             var methodResult = await picturesManager.GetPicturesAsync(subsectionId);
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<SubsectionPicturesDTO>>(methodResult);
+            Assert.IsType<List<SubsectionPicturesDto>>(methodResult);
         }
         [Fact]
         public async Task FillEventGalleryTestAsync()
@@ -49,13 +49,13 @@ namespace EPlast.XUnitTest.Services.AboutBase
             //Arrange
             int subsectionId = 3;
             _aboutBaseWrapper.Setup(x => x.AboutBasePicturesManager.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(new List<SubsectionPicturesDTO>());
+                .ReturnsAsync(new List<SubsectionPicturesDto>());
             //Act
             var picturesManager = new PicturesManager(_aboutBaseWrapper.Object);
             var methodResult = await picturesManager.FillSubsectionPicturesAsync(subsectionId, new List<IFormFile>());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<SubsectionPicturesDTO>>(methodResult);
+            Assert.IsType<List<SubsectionPicturesDto>>(methodResult);
         }
         [Fact]
         public async Task DeletePictureTestAsync()

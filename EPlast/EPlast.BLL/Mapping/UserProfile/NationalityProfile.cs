@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.UserProfile
     {
         public NationalityProfile()
         {
-            CreateMap<Nationality, NationalityDTO>().ReverseMap();
+            CreateMap<Nationality, NationalityDto>().ReverseMap();
         }
     }
 }

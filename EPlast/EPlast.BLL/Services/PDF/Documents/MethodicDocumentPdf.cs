@@ -113,9 +113,9 @@ namespace EPlast.BLL.Services.PDF.Documents
         {
             return type switch
             {
-                "legislation" => MethodicDocumentTypeDTO.legislation.GetDescription(),
-                "Methodics" => MethodicDocumentTypeDTO.Methodics.GetDescription(),
-                "Other" => MethodicDocumentTypeDTO.Other.GetDescription(),
+                "legislation" => MethodicDocumentTypeDto.legislation.GetDescription(),
+                "Methodics" => MethodicDocumentTypeDto.Methodics.GetDescription(),
+                "Other" => MethodicDocumentTypeDto.Other.GetDescription(),
                 _ => "Не визначено"
             };
         }

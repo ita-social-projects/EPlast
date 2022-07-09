@@ -5,9 +5,9 @@ namespace EPlast.BLL.Commands.City
 {
     public class EditCityCommand : IRequest
     {
-        public CityDTO City { get; set; }
+        public CityDto City { get; set; }
 
-        public EditCityCommand(CityDTO city)
+        public EditCityCommand(CityDto city)
         {
             City = city;
         }

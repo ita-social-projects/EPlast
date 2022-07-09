@@ -3,7 +3,7 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.TermsOfUse
 {
-    public class GetFirstRecordQuery : IRequest<TermsDTO>
+    public class GetFirstRecordQuery : IRequest<TermsDto>
     {
     }
 }

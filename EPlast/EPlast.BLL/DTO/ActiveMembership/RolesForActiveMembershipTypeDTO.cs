@@ -3,7 +3,7 @@ using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public enum RolesForActiveMembershipTypeDTO
+    public enum RolesForActiveMembershipTypeDto
     {
 
         [Description(Roles.RegisteredUser)]

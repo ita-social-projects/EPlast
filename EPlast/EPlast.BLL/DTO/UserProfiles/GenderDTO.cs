@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class GenderDTO
+    public class GenderDto
     {
         public int ID { get; set; }
 

@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO
 {
-    public enum RegionsStatusTypeDTO
+    public enum RegionsStatusTypeDto
     {
         [Description("Округа")]
         Region,

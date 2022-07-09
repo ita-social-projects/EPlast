@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.EventUser
     {
         public EventTypeProfile()
         {
-            CreateMap<EventType, EventTypeDTO>();
+            CreateMap<EventType, EventTypeDto>();
         }
     }
 }

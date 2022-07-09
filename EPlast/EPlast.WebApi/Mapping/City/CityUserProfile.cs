@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.City
     {
         public CityUserProfile()
         {
-            CreateMap<CityUserViewModel, CityUserDTO>().ReverseMap();
+            CreateMap<CityUserViewModel, CityUserDto>().ReverseMap();
         }
     }
 }

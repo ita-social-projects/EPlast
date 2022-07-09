@@ -29,7 +29,7 @@ namespace EPlast.BLL.Services.Jwt
         }
 
         ///<inheritdoc/>
-        public async Task<string> GenerateJWTTokenAsync(UserDTO userDTO)
+        public async Task<string> GenerateJWTTokenAsync(UserDto userDTO)
         {
             var claims = new List<Claim>
             {

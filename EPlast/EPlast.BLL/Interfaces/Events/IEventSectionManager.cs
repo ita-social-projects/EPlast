@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.Events;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -13,6 +13,6 @@ namespace EPlast.BLL.Interfaces.Events
         /// Get all event sections.
         /// </summary>
         /// <returns>List of all event sections.</returns>
-        Task<IEnumerable<EventSectionDTO>> GetEventSectionsDTOAsync();
+        Task<IEnumerable<EventSectionDto>> GetEventSectionsDTOAsync();
     }
 }

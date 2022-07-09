@@ -11,7 +11,7 @@ namespace EPlast.BLL.Interfaces.Jwt
         /// </summary>
         /// <param name="user">Authenticated user</param>
         /// <returns>JWT token</returns>
-        Task<string> GenerateJWTTokenAsync(UserDTO userDTO);
+        Task<string> GenerateJWTTokenAsync(UserDto userDTO);
 
         /// <summary>
         /// Generates JWT token for further Bearer authentication

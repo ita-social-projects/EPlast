@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.DTO.Club;
-using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EPlast.BLL.DTO.Club;
+using MediatR;
 
 namespace EPlast.BLL.Queries.Club
 {
-    public class GetAllClubsByPageAndIsArchiveQuery : IRequest<Tuple<IEnumerable<ClubObjectDTO>, int>>
+    public class GetAllClubsByPageAndIsArchiveQuery : IRequest<Tuple<IEnumerable<ClubObjectDto>, int>>
     {
         public int Page { get; set; }
         public int PageSize { get; set; }

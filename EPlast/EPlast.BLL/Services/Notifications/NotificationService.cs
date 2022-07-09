@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Notifications
 {
@@ -23,24 +23,24 @@ namespace EPlast.BLL.Services.Notifications
             _userManagerService = userManagerService;
         }
 
-        public async Task<IEnumerable<NotificationTypeDTO>> GetAllNotificationTypesAsync()
+        public async Task<IEnumerable<NotificationTypeDto>> GetAllNotificationTypesAsync()
         {
             var notificationTypes = await _repoWrapper.NotificationTypes.GetAllAsync();
 
-            return _mapper.Map<IEnumerable<NotificationTypeDTO>>(notificationTypes);
+            return _mapper.Map<IEnumerable<NotificationTypeDto>>(notificationTypes);
         }
 
-        public async Task<IEnumerable<UserNotificationDTO>> GetAllUserNotificationsAsync(string userId)
+        public async Task<IEnumerable<UserNotificationDto>> GetAllUserNotificationsAsync(string userId)
         {
             var userNotitfications = await _repoWrapper.UserNotifications.GetAllAsync(un => un.OwnerUserId == userId);
 
-            return _mapper.Map<IEnumerable<UserNotificationDTO>>(userNotitfications.OrderByDescending(d => d.CreatedAt));
+            return _mapper.Map<IEnumerable<UserNotificationDto>>(userNotitfications.OrderByDescending(d => d.CreatedAt));
         }
 
-        public async Task<IEnumerable<UserNotificationDTO>> AddListUserNotificationAsync(IEnumerable<UserNotificationDTO> userNotificationsDTO)
+        public async Task<IEnumerable<UserNotificationDto>> AddListUserNotificationAsync(IEnumerable<UserNotificationDto> userNotificationsDTO)
         {
             bool addedSuccessfully = true;
-            var resultUserNotifications = new List<UserNotification>(); 
+            var resultUserNotifications = new List<UserNotification>();
             foreach (var userNotificationDTO in userNotificationsDTO)
             {
                 if ((await _userManagerService.FindByIdAsync(userNotificationDTO.OwnerUserId)) != null)
@@ -67,7 +67,7 @@ namespace EPlast.BLL.Services.Notifications
             if (addedSuccessfully)
             {
                 await _repoWrapper.SaveAsync();
-                return _mapper.Map<IEnumerable<UserNotificationDTO>>(resultUserNotifications);
+                return _mapper.Map<IEnumerable<UserNotificationDto>>(resultUserNotifications);
             }
             throw new InvalidOperationException();
         }

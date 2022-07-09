@@ -1,10 +1,10 @@
-﻿using EPlast.DataAccess.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Blank;
-using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.Blank
 {
-   public class BlankBiographyDocumentsDTO
+    public class BlankBiographyDocumentsDto
     {
         public int ID { get; set; }
         public string BlobName { get; set; }

@@ -2,7 +2,7 @@
 
 namespace EPlast.DataAccess.Entities.Blank
 {
-    public class ExtractFromUPUDocuments
+    public class ExtractFromUpuDocuments
     {
         public int ID { get; set; }
         public string BlobName { get; set; }

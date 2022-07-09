@@ -5,9 +5,9 @@ namespace EPlast.BLL.Commands.City
 {
     public class UploadCityPhotoCommand : IRequest
     {
-        public CityDTO City { get; set; }
+        public CityDto City { get; set; }
 
-        public UploadCityPhotoCommand(CityDTO city)
+        public UploadCityPhotoCommand(CityDto city)
         {
             City = city;
         }

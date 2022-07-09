@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.AnnualReport
 {
-    public class MembersStatisticDTO
+    public class MembersStatisticDto
     {
         public int Id { get; set; }
 

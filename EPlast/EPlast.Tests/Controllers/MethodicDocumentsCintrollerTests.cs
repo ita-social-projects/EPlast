@@ -1,16 +1,16 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO;
+using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.MethodicDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Controllers
 {
@@ -42,7 +42,7 @@ namespace EPlast.Tests.Controllers
             _service
 
                 .Setup(x => x.GetGoverningBodyListAsync())
-                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
+                .ReturnsAsync(new List<GoverningBodyDto>().AsEnumerable());
 
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
@@ -66,15 +66,15 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _service
                 .Setup(x => x.GetMethodicDocumentAsync(It.IsAny<int>()))
-                .ReturnsAsync(new MethodicDocumentDTO());
+                .ReturnsAsync(new MethodicDocumentDto());
 
             //Act
             var result = await _controller.Get(It.IsAny<int>());
-            var decisionDTO = (result as ObjectResult).Value as MethodicDocumentDTO;
+            var decisionDTO = (result as ObjectResult).Value as MethodicDocumentDto;
 
             //Assert
             _service.Verify();
-            Assert.IsInstanceOf<MethodicDocumentDTO>(decisionDTO);
+            Assert.IsInstanceOf<MethodicDocumentDto>(decisionDTO);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -85,7 +85,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _service
                 .Setup(x => x.GetMethodicDocumentAsync(It.IsAny<int>()))
-                .ReturnsAsync((MethodicDocumentDTO)null);
+                .ReturnsAsync((MethodicDocumentDto)null);
 
             //Act
             var result = await _controller.Get(It.IsAny<int>());
@@ -99,9 +99,9 @@ namespace EPlast.Tests.Controllers
         public async Task Update_ReturnsNoContentResult()
         {
             //Arrange
-            var mockDoc = new MethodicDocumentDTO();
+            var mockDoc = new MethodicDocumentDto();
             _service
-                .Setup(x => x.ChangeMethodicDocumentAsync(It.IsAny<MethodicDocumentDTO>()));
+                .Setup(x => x.ChangeMethodicDocumentAsync(It.IsAny<MethodicDocumentDto>()));
 
             //Act
             var result = await _controller.Update(It.IsAny<int>(), mockDoc);
@@ -116,7 +116,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var expected = 1;
-            var mockDoc = new MethodicDocumentDTO();
+            var mockDoc = new MethodicDocumentDto();
             mockDoc.ID = 2;
             _service
                 .Setup(x => x.ChangeMethodicDocumentAsync(mockDoc));
@@ -134,11 +134,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var governingBodyName = "SomeName";
-            MethodicDocumentWraperDTO docWrapperDTO = new MethodicDocumentWraperDTO()
+            MethodicDocumentWraperDto docWrapperDTO = new MethodicDocumentWraperDto()
             {
-                MethodicDocument = new MethodicDocumentDTO()
+                MethodicDocument = new MethodicDocumentDto()
                 {
-                    GoverningBody = new GoverningBodyDTO
+                    GoverningBody = new GoverningBodyDto
                     {
                         GoverningBodyName = governingBodyName
                     }
@@ -164,9 +164,9 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsBadRequestResult()
         {
             //Arrange
-            var docWrapper = new MethodicDocumentWraperDTO()
+            var docWrapper = new MethodicDocumentWraperDto()
             {
-                MethodicDocument = new MethodicDocumentDTO
+                MethodicDocument = new MethodicDocumentDto
                 {
                     FileName = "string"
                 },
@@ -207,7 +207,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(x => x.GetMethodicDocumentListAsync())
                 .ReturnsAsync(GetFakeDocumentWraperDtos());
             _mapper
-                .Setup(m => m.Map<MethodicDocumentViewModel>(It.IsAny<MethodicDocumentDTO>()))
+                .Setup(m => m.Map<MethodicDocumentViewModel>(It.IsAny<MethodicDocumentDto>()))
                 .Returns(GetFakeDocumentViewModel());
             _service
                 .Setup(x => x.GetMethodicDocumentTypes())
@@ -296,24 +296,24 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
-        public List<MethodicDocumentWraperDTO> GetFakeDocumentWraperDtos()
-            => new List<MethodicDocumentWraperDTO>
+        public List<MethodicDocumentWraperDto> GetFakeDocumentWraperDtos()
+            => new List<MethodicDocumentWraperDto>
             {
-                new MethodicDocumentWraperDTO
+                new MethodicDocumentWraperDto
                 {
-                    MethodicDocument = new MethodicDocumentDTO
+                    MethodicDocument = new MethodicDocumentDto
                     {
                         ID = 1,
-                        Type = MethodicDocumentTypeDTO.Other
+                        Type = MethodicDocumentTypeDto.Other
                     },
                     FileAsBase64 = "file1"
                 },
-                new MethodicDocumentWraperDTO
+                new MethodicDocumentWraperDto
                 {
-                    MethodicDocument = new MethodicDocumentDTO
+                    MethodicDocument = new MethodicDocumentDto
                     {
                         ID = 2,
-                        Type = MethodicDocumentTypeDTO.Other
+                        Type = MethodicDocumentTypeDto.Other
                     },
                     FileAsBase64 = "file2"
                 }

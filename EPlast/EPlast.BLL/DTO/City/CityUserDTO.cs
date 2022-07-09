@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.City
 {
-    public class CityUserDTO
+    public class CityUserDto
     {
         public string ID { get; set; }
         public string FirstName { get; set; }

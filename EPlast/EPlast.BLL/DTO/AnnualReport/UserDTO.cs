@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.AnnualReport
 {
-    public class UserDTO
+    public class UserDto
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

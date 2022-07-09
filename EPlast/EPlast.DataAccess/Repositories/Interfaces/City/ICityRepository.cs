@@ -8,6 +8,6 @@ namespace EPlast.DataAccess.Repositories.Contracts
 {
     public interface ICityRepository : IRepositoryBase<City>
     {
-        Task<Tuple<IEnumerable<CityObject>, int>> GetCitiesObjects(int pageNum, int pageSize, string searchData, bool isArchive, UkraineOblasts oblasts = UkraineOblasts.NotSpecified);
+        Task<Tuple<IEnumerable<CityObject>, int>> GetCitiesObjects(int pageNum, int pageSize, string searchData, bool isArchive, UkraineOblasts oblast = UkraineOblasts.NotSpecified);
     }
 }

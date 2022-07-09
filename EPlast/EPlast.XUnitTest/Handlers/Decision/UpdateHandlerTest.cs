@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.Decision;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
@@ -6,12 +12,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Handlers.Decision
@@ -41,7 +41,7 @@ namespace EPlast.XUnitTest.Handlers.Decision
             _repository.Setup(rep => rep.Decesion.GetFirstAsync(It.IsAny<Expression<Func<Decesion, bool>>>(),
                     It.IsAny<Func<IQueryable<Decesion>, IIncludableQueryable<Decesion, object>>>()))
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault());
-            var changingDecisionDto = new DecisionDTO();
+            var changingDecisionDto = new DecisionDto();
 
             changingDecisionDto.Name = decisionNewName;
             changingDecisionDto.Description = decisionNewDescription;

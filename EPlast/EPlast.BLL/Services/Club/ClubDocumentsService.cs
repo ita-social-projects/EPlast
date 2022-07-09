@@ -37,15 +37,15 @@ namespace EPlast.BLL.Services.Club
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ClubDocumentTypeDTO>> GetAllClubDocumentTypesAsync()
+        public async Task<IEnumerable<ClubDocumentTypeDto>> GetAllClubDocumentTypesAsync()
         {
             var documentTypes = await GetAllClubDocumentTypeEntities();
 
-            return _mapper.Map<IEnumerable<ClubDocumentType>, IEnumerable<ClubDocumentTypeDTO>>(documentTypes);
+            return _mapper.Map<IEnumerable<ClubDocumentType>, IEnumerable<ClubDocumentTypeDto>>(documentTypes);
         }
 
         /// <inheritdoc />
-        public async Task<ClubDocumentsDTO> AddDocumentAsync(ClubDocumentsDTO documentsDTO)
+        public async Task<ClubDocumentsDto> AddDocumentAsync(ClubDocumentsDto documentsDTO)
         {
             var fileBase64 = documentsDTO.BlobName.Split(',')[1];
             var extension = $".{documentsDTO.FileName.Split('.').LastOrDefault()}";
@@ -58,7 +58,7 @@ namespace EPlast.BLL.Services.Club
                 .FirstOrDefault(dt => dt.Name == documentsDTO.ClubDocumentType.Name);
             documentsDTO.ClubDocumentTypeId = documentsDTO.ClubDocumentType.ID;
 
-            var document = _mapper.Map<ClubDocumentsDTO, ClubDocuments>(documentsDTO);
+            var document = _mapper.Map<ClubDocumentsDto, ClubDocuments>(documentsDTO);
             _repositoryWrapper.ClubDocuments.Attach(document);
             await _repositoryWrapper.ClubDocuments.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();
