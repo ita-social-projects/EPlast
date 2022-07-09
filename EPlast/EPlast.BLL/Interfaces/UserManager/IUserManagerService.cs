@@ -14,21 +14,21 @@ namespace EPlast.BLL.Services.Interfaces
         /// <param name="user">The user(dto) whose roles you want to check</param>
         /// <param name="roles">The roles to check</param>
         /// <returns>Is this user in listed roles</returns>
-        Task<bool> IsInRoleAsync(UserDTO user, params string[] roles);
+        Task<bool> IsInRoleAsync(UserDto user, params string[] roles);
 
         /// <summary>
         /// Finds user by Id
         /// </summary>
         /// <param name="userId">The Id of user you want to find</param>
         /// <returns>User(dto) by the Id you requested</returns>
-        Task<UserDTO> FindByIdAsync(string userId);
+        Task<UserDto> FindByIdAsync(string userId);
 
         /// <summary>
         /// Gets list of roles for requested user
         /// </summary>
         /// <param name="user">The user (dto) you want to get the roles for</param>
         /// <returns>List of roles for the requested user</returns>
-        Task<IEnumerable<string>> GetRolesAsync(UserDTO user);
+        Task<IEnumerable<string>> GetRolesAsync(UserDto user);
 
         /// <summary>
         /// Gets user by the claim-based identity

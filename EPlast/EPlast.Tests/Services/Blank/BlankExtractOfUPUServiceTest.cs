@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Blank;
@@ -7,11 +12,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Blank
 {
@@ -21,14 +21,14 @@ namespace EPlast.Tests.Services.Blank
         private BlankExtractFromUpuDocumentService _blankExtractOfUPUService;
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
-        private Mock<IBlankExtractFromUPUBlobStorageRepository> _blankBlobRepository;
+        private Mock<IBlankExtractFromUpuBlobStorageRepository> _blankBlobRepository;
 
         [SetUp]
         public void SetUp()
         {
             _mapper = new Mock<IMapper>();
             _repoWrapper = new Mock<IRepositoryWrapper>();
-            _blankBlobRepository = new Mock<IBlankExtractFromUPUBlobStorageRepository>();
+            _blankBlobRepository = new Mock<IBlankExtractFromUpuBlobStorageRepository>();
             _blankExtractOfUPUService = new BlankExtractFromUpuDocumentService(_repoWrapper.Object, _mapper.Object, _blankBlobRepository.Object);
         }
 
@@ -39,11 +39,11 @@ namespace EPlast.Tests.Services.Blank
             _blankBlobRepository
                 .Setup(b => b.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _mapper
-                .Setup(m => m.Map<ExtractFromUPUDocumentsDTO, ExtractFromUPUDocuments>(It.IsAny<ExtractFromUPUDocumentsDTO>()))
+                .Setup(m => m.Map<ExtractFromUpuDocumentsDto, ExtractFromUpuDocuments>(It.IsAny<ExtractFromUpuDocumentsDto>()))
                 .Returns(ExtractFromUPUDocuments);
             _repoWrapper
-                .Setup(r => r.ExtractFromUPUDocumentsRepository.Attach(It.IsAny<ExtractFromUPUDocuments>()));
-            _repoWrapper.Setup(rw => rw.ExtractFromUPUDocumentsRepository.CreateAsync(It.IsAny<ExtractFromUPUDocuments>()));
+                .Setup(r => r.ExtractFromUPUDocumentsRepository.Attach(It.IsAny<ExtractFromUpuDocuments>()));
+            _repoWrapper.Setup(rw => rw.ExtractFromUPUDocumentsRepository.CreateAsync(It.IsAny<ExtractFromUpuDocuments>()));
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Services.Blank
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ExtractFromUPUDocumentsDTO>(result);
+            Assert.IsInstanceOf<ExtractFromUpuDocumentsDto>(result);
         }
 
         [Test]
@@ -59,14 +59,14 @@ namespace EPlast.Tests.Services.Blank
         {
             //Arrange
             _repoWrapper
-                .Setup(r => r.ExtractFromUPUDocumentsRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ExtractFromUPUDocuments, bool>>>(),
-                It.IsAny<Func<IQueryable<ExtractFromUPUDocuments>,
-                IIncludableQueryable<ExtractFromUPUDocuments, object>>>()))
+                .Setup(r => r.ExtractFromUPUDocumentsRepository.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ExtractFromUpuDocuments, bool>>>(),
+                It.IsAny<Func<IQueryable<ExtractFromUpuDocuments>,
+                IIncludableQueryable<ExtractFromUpuDocuments, object>>>()))
                 .ReturnsAsync(ExtractFromUPUDocuments);
             _blankBlobRepository
                 .Setup(b => b.DeleteBlobAsync(ExtractFromUPUDocuments.BlobName));
 
-            _repoWrapper.Setup(rw => rw.ExtractFromUPUDocumentsRepository.Delete(It.IsAny<ExtractFromUPUDocuments>()));
+            _repoWrapper.Setup(rw => rw.ExtractFromUPUDocumentsRepository.Delete(It.IsAny<ExtractFromUpuDocuments>()));
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
@@ -96,19 +96,19 @@ namespace EPlast.Tests.Services.Blank
         {
             //Arrange
             _repoWrapper
-                .Setup(r => r.ExtractFromUPUDocumentsRepository.FindByCondition(It.IsAny<Expression<Func<ExtractFromUPUDocuments, bool>>>()))
+                .Setup(r => r.ExtractFromUPUDocumentsRepository.FindByCondition(It.IsAny<Expression<Func<ExtractFromUpuDocuments, bool>>>()))
                 .Returns(GetTestExtract);
             _mapper
-                .Setup(m => m.Map<ExtractFromUPUDocuments, ExtractFromUPUDocumentsDTO>(It.IsAny<ExtractFromUPUDocuments>()))
+                .Setup(m => m.Map<ExtractFromUpuDocuments, ExtractFromUpuDocumentsDto>(It.IsAny<ExtractFromUpuDocuments>()))
                 .Returns(ExtractFromUPUDocumentsDTO);
             //Act
             var result = await _blankExtractOfUPUService.GetDocumentByUserId(new string("1"));
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<ExtractFromUPUDocumentsDTO>(result);
+            Assert.IsInstanceOf<ExtractFromUpuDocumentsDto>(result);
         }
-        private ExtractFromUPUDocuments ExtractFromUPUDocuments => new ExtractFromUPUDocuments
+        private ExtractFromUpuDocuments ExtractFromUPUDocuments => new ExtractFromUpuDocuments
         {
             ID = 1,
             BlobName = "newBlob,lastBlob",
@@ -116,7 +116,7 @@ namespace EPlast.Tests.Services.Blank
             UserId = "fgh123",
         };
 
-        private ExtractFromUPUDocumentsDTO ExtractFromUPUDocumentsDTO => new ExtractFromUPUDocumentsDTO
+        private ExtractFromUpuDocumentsDto ExtractFromUPUDocumentsDTO => new ExtractFromUpuDocumentsDto
         {
             ID = 1,
             BlobName = "newBlob,LastBlob",
@@ -124,11 +124,11 @@ namespace EPlast.Tests.Services.Blank
             UserId = "fgh123",
         };
 
-        public IQueryable<ExtractFromUPUDocuments> GetTestExtract()
+        public IQueryable<ExtractFromUpuDocuments> GetTestExtract()
         {
-            return new List<ExtractFromUPUDocuments>
+            return new List<ExtractFromUpuDocuments>
             {
-                new ExtractFromUPUDocuments
+                new ExtractFromUpuDocuments
                 {
                       ID = 1,
                       BlobName ="BlobName",

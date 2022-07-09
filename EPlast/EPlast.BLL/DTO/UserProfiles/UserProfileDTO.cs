@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class UserProfileDTO
+    public class UserProfileDto
     {
         public int ID { get; set; }
 
@@ -14,19 +14,19 @@ namespace EPlast.BLL.DTO.UserProfiles
         public DateTime? Birthday { get; set; }
 
         public int? EducationId { get; set; }
-        public EducationDTO Education { get; set; }
+        public EducationDto Education { get; set; }
         public int? DegreeId { get; set; }
-        public DegreeDTO Degree { get; set; }
+        public DegreeDto Degree { get; set; }
         public int? NationalityId { get; set; }
-        public NationalityDTO Nationality { get; set; }
+        public NationalityDto Nationality { get; set; }
         public int? ReligionId { get; set; }
-        public ReligionDTO Religion { get; set; }
+        public ReligionDto Religion { get; set; }
         public int? WorkId { get; set; }
-        public WorkDTO Work { get; set; }
+        public WorkDto Work { get; set; }
         public int? GenderID { get; set; }
-        public GenderDTO Gender { get; set; }
+        public GenderDto Gender { get; set; }
         public int? UpuDegreeID { get; set; }
-        public UpuDegreeDTO UpuDegree { get; set; }
+        public UpuDegreeDto UpuDegree { get; set; }
 
         [Display(Name = "Домашня адреса")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`0-9.-]{1,31})*$",
@@ -50,6 +50,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         public string FacebookLink { get; set; }
         public string TwitterLink { get; set; }
         public string InstagramLink { get; set; }
-        public UserDTO User { get; set; }
+        public UserDto User { get; set; }
     }
 }

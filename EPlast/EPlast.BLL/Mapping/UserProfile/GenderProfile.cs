@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.UserProfile
     {
         public GenderProfile()
         {
-            CreateMap<Gender, GenderDTO>().ReverseMap();
+            CreateMap<Gender, GenderDto>().ReverseMap();
         }
     }
 }

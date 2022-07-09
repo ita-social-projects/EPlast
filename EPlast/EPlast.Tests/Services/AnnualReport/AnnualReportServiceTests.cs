@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AnnualReport;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Region;
@@ -10,10 +14,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services
 {
@@ -25,7 +25,7 @@ namespace EPlast.Tests.Services
         private Mock<IRepositoryWrapper> _repositoryWrapper;
         private Mapper _mapper;
         private User _user;
-        private AnnualReportDTO _annualReportDTO;
+        private AnnualReportDto _annualReportDTO;
 
         [SetUp]
         public void SetUp()
@@ -40,9 +40,9 @@ namespace EPlast.Tests.Services
                 _regionAnnualReportService.Object,
                 _mapper);
             _user = new User() { Id = "1" };
-            _annualReportDTO = new AnnualReportDTO() { ID = 0 };
+            _annualReportDTO = new AnnualReportDto() { ID = 0 };
         }
-        
+
         [Test]
         public void CreateAsync_AnnualReportExists_ThrowsInvalidOperationException()
         {
@@ -127,14 +127,14 @@ namespace EPlast.Tests.Services
                    .Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
                        It.IsAny<Expression<Func<DataAccess.Entities.AnnualReport, bool>>>(),
                        It.IsAny<Func<IQueryable<DataAccess.Entities.AnnualReport>, IIncludableQueryable<EPlast.DataAccess.Entities.AnnualReport, object>>>()))
-                   .ReturnsAsync(new DataAccess.Entities.AnnualReport() { Status = AnnualReportStatus.Confirmed});
+                   .ReturnsAsync(new DataAccess.Entities.AnnualReport() { Status = AnnualReportStatus.Confirmed });
 
             _cityAccessService
                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>()))
                .ReturnsAsync(true);
 
             //Act
-            _annualReportService.EditAsync(new User(), new AnnualReportDTO());
+            _annualReportService.EditAsync(new User(), new AnnualReportDto());
 
             //Assert
             _repositoryWrapper.Verify(x => x.AnnualReports.Update(It.IsAny<EPlast.DataAccess.Entities.AnnualReport>()), Times.Once);

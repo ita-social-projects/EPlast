@@ -1,9 +1,9 @@
-﻿using EPlast.DataAccess.Entities;
-using System;
+﻿using System;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public class UserPlastDegreePostDTO
+    public class UserPlastDegreePostDto
     {
         public int Id { get; set; }
         public int PlastDegreeId { get; set; }

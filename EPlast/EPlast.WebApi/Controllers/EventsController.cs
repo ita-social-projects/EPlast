@@ -1,4 +1,7 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -8,9 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -90,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCategoriesByTypeAndPageAsync(int typeId, int page, int pageSize)
         {
-            IEnumerable<BLL.DTO.Events.EventCategoryDTO> categories;
+            IEnumerable<BLL.DTO.Events.EventCategoryDto> categories;
             if (typeId == 1)
             {
                 categories = await _actionManager.GetActionCategoriesAsync();
@@ -113,7 +113,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
         [HttpPost("newCategory")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDTO createDTO)
+        public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
 

@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Club;
-using DatabaseEntities = EPlast.DataAccess.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoMapper;
+using EPlast.BLL.DTO.Club;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.Club
 {
@@ -11,7 +11,7 @@ namespace EPlast.BLL.Mapping.Club
     {
         public ClubReportPlastDegreesProfile()
         {
-            CreateMap<DatabaseEntities.ClubReportPlastDegrees, ClubReportPlastDegreesDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.ClubReportPlastDegrees, ClubReportPlastDegreesDto>().ReverseMap();
         }
     }
 }

@@ -11,7 +11,7 @@ using MediatR;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetAllCitiesByPageAndIsArchiveHandler : IRequestHandler<GetAllCitiesByPageAndIsArchiveQuery, Tuple<IEnumerable<CityObjectDTO>, int>>
+    public class GetAllCitiesByPageAndIsArchiveHandler : IRequestHandler<GetAllCitiesByPageAndIsArchiveQuery, Tuple<IEnumerable<CityObjectDto>, int>>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly ICityBlobStorageRepository _cityBlobStorage;
@@ -26,7 +26,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mapper = mapper;
         }
 
-        public async Task<Tuple<IEnumerable<CityObjectDTO>, int>> Handle(GetAllCitiesByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
+        public async Task<Tuple<IEnumerable<CityObjectDto>, int>> Handle(GetAllCitiesByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
         {
             var tuple = await _repoWrapper.City.GetCitiesObjects(request.Page, request.PageSize, request.Name, request.IsArchive, request.Oblast);
             var cities = tuple.Item1;
@@ -47,7 +47,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 }
             }
             var rows = tuple.Item2;
-            return new Tuple<IEnumerable<CityObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccess.Entities.CityObject>, IEnumerable<CityObjectDTO>>(cities), rows);
+            return new Tuple<IEnumerable<CityObjectDto>, int>(_mapper.Map<IEnumerable<DataAccess.Entities.CityObject>, IEnumerable<CityObjectDto>>(cities), rows);
         }
     }
 }

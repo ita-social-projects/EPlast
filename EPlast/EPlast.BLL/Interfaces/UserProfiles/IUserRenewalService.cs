@@ -13,20 +13,20 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// Adds new Former-Member renewal request
         /// </summary>
         /// <param name="userRenewal">UserRenewal(dto) contains the renewal information</param>
-        Task AddUserRenewalAsync(UserRenewalDTO userRenewal);
-        
+        Task AddUserRenewalAsync(UserRenewalDto userRenewal);
+
         /// <summary>
         /// Makes changes to the Former-Member renewal request status
         /// </summary>
         /// <param name="userRenewal">UserRenewal(dto) contains the renewal information</param>
-        Task ChangeUserRenewalAsync(UserRenewalDTO userRenewal);
+        Task ChangeUserRenewalAsync(UserRenewalDto userRenewal);
 
         /// <summary>
         /// Identifies whether target Former-Member renewal request is valid
         /// </summary>
         /// <param name="userRenewal">UserRenewal(dto) contains the renewal information</param>
         /// <returns>Is this Former-Member renewal request valid</returns>
-        Task<bool> IsValidUserRenewalAsync(UserRenewalDTO userRenewal);
+        Task<bool> IsValidUserRenewalAsync(UserRenewalDto userRenewal);
         
         /// <summary>
         /// Identifies whether the user can renew Former-Member in specified city
@@ -50,7 +50,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// </summary>
         /// <param name="userRenewal">UserRenewal(dto) contains the renewal information</param>
         /// <returns>Information about new city member</returns>
-        Task<CityMembersDTO> RenewFormerMemberUserAsync(UserRenewalDTO userRenewal);
+        Task<CityMembersDto> RenewFormerMemberUserAsync(UserRenewalDto userRenewal);
 
         /// <summary>
         /// Sends confirmation email for renewed Former-Member users

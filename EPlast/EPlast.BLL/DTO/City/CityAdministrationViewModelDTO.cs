@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.City
 {
-    public class CityAdministrationViewModelDTO
+    public class CityAdministrationViewModelDto
     {
-        public IEnumerable<CityAdministrationDTO> Administration { get; set; }
-        public CityAdministrationDTO Head { get; set; }
-        public CityAdministrationDTO HeadDeputy { get; set; }
+        public IEnumerable<CityAdministrationDto> Administration { get; set; }
+        public CityAdministrationDto Head { get; set; }
+        public CityAdministrationDto HeadDeputy { get; set; }
     }
 }

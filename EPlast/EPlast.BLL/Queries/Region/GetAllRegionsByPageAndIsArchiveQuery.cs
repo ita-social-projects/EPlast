@@ -1,13 +1,13 @@
-﻿using EPlast.BLL.DTO.Club;
-using EPlast.BLL.DTO.Region;
-using MediatR;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.DTO.Region;
+using MediatR;
 
 namespace EPlast.BLL.Queries.Region
 {
-    public class GetAllRegionsByPageAndIsArchiveQuery : IRequest<Tuple<IEnumerable<RegionObjectsDTO>, int>>
+    public class GetAllRegionsByPageAndIsArchiveQuery : IRequest<Tuple<IEnumerable<RegionObjectsDto>, int>>
     {
         public int Page { get; set; }
         public int PageSize { get; set; }

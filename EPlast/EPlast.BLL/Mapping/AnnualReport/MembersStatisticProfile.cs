@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.AnnualReport
     {
         public MembersStatisticProfile()
         {
-            CreateMap<MembersStatistic, MembersStatisticDTO>().ReverseMap();
+            CreateMap<MembersStatistic, MembersStatisticDto>().ReverseMap();
         }
     }
 }

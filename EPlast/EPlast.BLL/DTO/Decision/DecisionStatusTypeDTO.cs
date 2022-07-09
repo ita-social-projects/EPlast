@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO
 {
-    public enum DecisionStatusTypeDTO
+    public enum DecisionStatusTypeDto
     {
         [Description("У розгляді")]
         InReview,

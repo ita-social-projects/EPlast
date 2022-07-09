@@ -35,15 +35,15 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
                 .ReturnsAsync(new AdminType());
             _mapper
-                .Setup(s => s.Map<AdminType, AdminTypeDTO>(It.IsAny<AdminType>()))
-                .Returns(new AdminTypeDTO());
+                .Setup(s => s.Map<AdminType, AdminTypeDto>(It.IsAny<AdminType>()))
+                .Returns(new AdminTypeDto());
 
             //Act
             var result = await _adminTypeService.GetAdminTypeByNameAsync(It.IsAny<string>());
 
             //Assert
             Assert.NotNull(result);
-            Assert.IsType<AdminTypeDTO>(result);
+            Assert.IsType<AdminTypeDto>(result);
         }
 
         [Fact]
@@ -54,15 +54,15 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
                 .ReturnsAsync(new AdminType());
             _mapper
-                .Setup(s => s.Map<AdminType, AdminTypeDTO>(It.IsAny<AdminType>()))
-                .Returns(new AdminTypeDTO());
+                .Setup(s => s.Map<AdminType, AdminTypeDto>(It.IsAny<AdminType>()))
+                .Returns(new AdminTypeDto());
 
             //Act
             var result = await _adminTypeService.CreateByNameAsync(It.IsAny<string>());
 
             //Assert
             Assert.NotNull(result);
-            Assert.IsType<AdminTypeDTO>(result);
+            Assert.IsType<AdminTypeDto>(result);
             _repoWrapper.Verify(r => r.AdminType.CreateAsync(It.IsAny<AdminType>()));
             _repoWrapper.Verify(r => r.SaveAsync());
         }
@@ -75,15 +75,15 @@ namespace EPlast.XUnitTest.Services.ClubTests
                     It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
                 .ReturnsAsync(new AdminType());
             _mapper
-                .Setup(s => s.Map<AdminType, AdminTypeDTO>(It.IsAny<AdminType>()))
-                .Returns(new AdminTypeDTO());
+                .Setup(s => s.Map<AdminType, AdminTypeDto>(It.IsAny<AdminType>()))
+                .Returns(new AdminTypeDto());
 
             //Act
-            var result = await _adminTypeService.CreateAsync(new AdminTypeDTO());
+            var result = await _adminTypeService.CreateAsync(new AdminTypeDto());
 
             //Assert
             Assert.NotNull(result);
-            Assert.IsType<AdminTypeDTO>(result);
+            Assert.IsType<AdminTypeDto>(result);
             _repoWrapper.Verify(r => r.AdminType.CreateAsync(It.IsAny<AdminType>()));
             _repoWrapper.Verify(r => r.SaveAsync());
         }

@@ -39,14 +39,14 @@ namespace EPlast.Tests.Services.UserProfiles
             _repoWrapper.Setup(r => r.UpuDegree.GetAllAsync(It.IsAny<Expression<Func<UpuDegree, bool>>>(),
                 It.IsAny<Func<IQueryable<UpuDegree>,
                     IIncludableQueryable<UpuDegree, object>>>())).ReturnsAsync(new List<UpuDegree>().AsQueryable());
-            _mapper.Setup(x => x.Map<UpuDegree, UpuDegreeDTO>(It.IsAny<UpuDegree>())).Returns(new UpuDegreeDTO());
+            _mapper.Setup(x => x.Map<UpuDegree, UpuDegreeDto>(It.IsAny<UpuDegree>())).Returns(new UpuDegreeDto());
 
             // Act
             var result = await _userPersonalDataService.GetAllUpuDegreesAsync();
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<UpuDegreeDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UpuDegreeDto>>(result);
         }
     }
 }

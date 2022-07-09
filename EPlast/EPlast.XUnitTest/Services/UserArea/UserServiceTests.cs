@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -12,10 +16,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.UserArea
@@ -78,17 +78,17 @@ namespace EPlast.XUnitTest.Services.UserArea
             });
 
             var service = GetService();
-            _mapper.Setup(x => x.Map<User, UserDTO>(It.IsAny<User>())).Returns(new UserDTO());
+            _mapper.Setup(x => x.Map<User, UserDto>(It.IsAny<User>())).Returns(new UserDto());
             // Act
             var result = await service.GetUserAsync("1");
             // Assert
             Assert.NotNull(result);
-            Assert.IsType<UserDTO>(result);
+            Assert.IsType<UserDto>(result);
         }
         [Fact]
         public void GetConfirmedUsersTest()
         {
-            UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
+            UserDto user = new UserDto { ConfirmedUsers = new List<ConfirmedUserDto>() };
 
             var service = GetService();            // Act
             var result = service.GetConfirmedUsers(user);
@@ -98,23 +98,23 @@ namespace EPlast.XUnitTest.Services.UserArea
         [Fact]
         public void GetClubAdminConfirmedUserTest()
         {
-            UserDTO user = new UserDTO { ConfirmedUsers = new List<ConfirmedUserDTO>() };
+            UserDto user = new UserDto { ConfirmedUsers = new List<ConfirmedUserDto>() };
 
             var service = GetService();            // Act
             var result = service.GetConfirmedUsers(user);
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDTO>>(result);
+            Assert.IsAssignableFrom<IEnumerable<ConfirmedUserDto>>(result);
         }
 
         [Fact]
         public void CanApproveTest()
         {
-            var conUser = new ConfirmedUserDTO { UserID = "1", ConfirmDate = DateTime.Now, isClubAdmin = false, isCityAdmin = false };
-            var appUser = new ApproverDTO { UserID = "3", ConfirmedUser = conUser };
+            var conUser = new ConfirmedUserDto { UserID = "1", ConfirmDate = DateTime.Now, isClubAdmin = false, isCityAdmin = false };
+            var appUser = new ApproverDto { UserID = "3", ConfirmedUser = conUser };
             conUser.Approver = appUser;
 
-            var confUsers = new List<ConfirmedUserDTO> { conUser, conUser };
+            var confUsers = new List<ConfirmedUserDto> { conUser, conUser };
 
             var service = GetService();            
             // Act
@@ -126,8 +126,8 @@ namespace EPlast.XUnitTest.Services.UserArea
         [Fact]
         public void CanApproveTestFailure()
         {
-            var conUser = new ConfirmedUserDTO();
-            var confUsers = new List<ConfirmedUserDTO> { conUser, conUser, conUser, conUser };
+            var conUser = new ConfirmedUserDto();
+            var confUsers = new List<ConfirmedUserDto> { conUser, conUser, conUser, conUser };
 
             var service = GetService();            
             // Act
@@ -147,23 +147,23 @@ namespace EPlast.XUnitTest.Services.UserArea
         [Fact]
         public async Task UpdateTest()
         {
-            var userDTO = new UserDTO
+            var userDTO = new UserDto
             {
                 FirstName = "Vova",
                 LastName = "Vermii",
-                UserProfile = new UserProfileDTO
+                UserProfile = new UserProfileDto
                 {
-                    Nationality = new NationalityDTO { Name = "Українець" },
+                    Nationality = new NationalityDto { Name = "Українець" },
                     NationalityId = 1,
-                    Religion = new ReligionDTO { Name = "Християнство" },
+                    Religion = new ReligionDto { Name = "Християнство" },
                     ReligionId = 1,
-                    Education = new EducationDTO() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
+                    Education = new EducationDto() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
                     EducationId = 1,
-                    Degree = new DegreeDTO { Name = "Бакалавр" },
+                    Degree = new DegreeDto { Name = "Бакалавр" },
                     DegreeId = 1,
-                    Work = new WorkDTO { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
+                    Work = new WorkDto { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
                     WorkId = 1,
-                    Gender = new GenderDTO { Name = "Чоловік" },
+                    Gender = new GenderDto { Name = "Чоловік" },
                     GenderID = 1
                 }
             };
@@ -193,7 +193,7 @@ namespace EPlast.XUnitTest.Services.UserArea
                 PlaceOfwork = "place",
                 Position = "position",
             });
-            _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
+            _mapper.Setup(x => x.Map<UserDto, User>(It.IsAny<UserDto>())).Returns(user);
             var mockFile = new Mock<IFormFile>();
 
             var service = GetService();            // Act
@@ -206,23 +206,23 @@ namespace EPlast.XUnitTest.Services.UserArea
         [Fact]
         public async Task UpdateAsyncForBase64Test()
         {
-            var userDTO = new UserDTO
+            var userDTO = new UserDto
             {
                 FirstName = "Vova",
                 LastName = "Vermii",
-                UserProfile = new UserProfileDTO
+                UserProfile = new UserProfileDto
                 {
-                    Nationality = new NationalityDTO { Name = "Українець" },
+                    Nationality = new NationalityDto { Name = "Українець" },
                     NationalityId = 1,
-                    Religion = new ReligionDTO { Name = "Християнство" },
+                    Religion = new ReligionDto { Name = "Християнство" },
                     ReligionId = 1,
-                    Education = new EducationDTO() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
+                    Education = new EducationDto() { PlaceOfStudy = "ЛНУ", Speciality = "КН" },
                     EducationId = 1,
-                    Degree = new DegreeDTO { Name = "Бакалавр" },
+                    Degree = new DegreeDto { Name = "Бакалавр" },
                     DegreeId = 1,
-                    Work = new WorkDTO { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
+                    Work = new WorkDto { PlaceOfwork = "SoftServe", Position = "ProjectManager" },
                     WorkId = 1,
-                    Gender = new GenderDTO { Name = "Чоловік" },
+                    Gender = new GenderDto { Name = "Чоловік" },
                     GenderID = 1,
                     FacebookLink = "vovan",
                     TwitterLink = "twitter.com/vovasik",
@@ -258,7 +258,7 @@ namespace EPlast.XUnitTest.Services.UserArea
                 PlaceOfwork = "place",
                 Position = "position",
             });
-            _mapper.Setup(x => x.Map<UserDTO, User>(It.IsAny<UserDTO>())).Returns(user);
+            _mapper.Setup(x => x.Map<UserDto, User>(It.IsAny<UserDto>())).Returns(user);
             _userBlobStorage.Setup(u => u.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
             _userBlobStorage.Setup(u => u.DeleteBlobAsync(It.IsAny<string>()));
 

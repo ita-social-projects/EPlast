@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User.UserProfileFields
     {
         public EducationProfile()
         {
-            CreateMap<EducationDTO, EducationViewModel>().ReverseMap();
+            CreateMap<EducationDto, EducationViewModel>().ReverseMap();
         }
     }
 }

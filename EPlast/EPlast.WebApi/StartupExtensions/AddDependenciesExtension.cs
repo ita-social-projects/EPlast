@@ -93,8 +93,8 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddScoped<IBlankAchievementBlobStorageRepository, BlankAchievementBlobStorageRepository>();
             services.AddScoped<IBlankAchievementDocumentService, AchievementDocumentService>();
             services.AddScoped<IBlankBiographyDocumentService, BlankBiographyDocumentsService>();
-            services.AddScoped<IBlankExtractFromUPUBlobStorageRepository, BlankExtractFromUpuBlobStorageRepository>();
-            services.AddScoped<IBlankExtractFromUPUDocumentService, BlankExtractFromUpuDocumentService>();
+            services.AddScoped<IBlankExtractFromUpuBlobStorageRepository, BlankExtractFromUpuBlobStorageRepository>();
+            services.AddScoped<IBlankExtractFromUpuDocumentService, BlankExtractFromUpuDocumentService>();
             services.AddScoped<IBlankFilesBlobStorageRepository, BlankFilesBlobStorageRepository>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IUserCourseService, UserCourseService>();

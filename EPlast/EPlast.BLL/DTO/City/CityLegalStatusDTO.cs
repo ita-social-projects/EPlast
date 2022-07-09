@@ -1,9 +1,9 @@
-﻿using EPlast.DataAccess.Entities;
-using System;
+﻿using System;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.City
 {
-    public class CityLegalStatusDTO
+    public class CityLegalStatusDto
     {
         public int Id { get; set; }
         public DateTime DateStart { get; set; }

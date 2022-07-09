@@ -1,12 +1,12 @@
-﻿using EPlast.DataAccess.Repositories.Contracts;
+﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
-using EPlast.DataAccess.Repositories.Interfaces.Region;
-using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
-using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Interfaces.User;
 
 namespace EPlast.DataAccess.Repositories
@@ -55,7 +55,7 @@ namespace EPlast.DataAccess.Repositories
         IEventStatusRepository EventStatus { get; }
         IEventTypeRepository EventType { get; }
         IEventSectionRepository EventSection { get; }
-        IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
+        IExtractFromUpuDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
         IGallaryRepository Gallary { get; }
         IGenderRepository Gender { get; }
         string GetCitiesUrl { get; }

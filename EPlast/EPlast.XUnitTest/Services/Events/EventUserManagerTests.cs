@@ -57,10 +57,10 @@ namespace EPlast.XUnitTest.Services.EventUser
         {
             //Arrange
             _eventCategoryManager.Setup(x => x.GetDTOAsync());
-            _mapper.Setup(m => m.Map<List<User>, IEnumerable<UserDTO>>(It.IsAny<List<User>>()))
-                .Returns(new List<UserDTO>());
-            _mapper.Setup(a => a.Map<List<EventType>, IEnumerable<EventTypeDTO>>(It.IsAny<List<EventType>>()))
-                .Returns(new List<EventTypeDTO>());
+            _mapper.Setup(m => m.Map<List<User>, IEnumerable<UserDto>>(It.IsAny<List<User>>()))
+                .Returns(new List<UserDto>());
+            _mapper.Setup(a => a.Map<List<EventType>, IEnumerable<EventTypeDto>>(It.IsAny<List<EventType>>()))
+                .Returns(new List<EventTypeDto>());
             _repoWrapper.Setup(x => x.User.GetFirstAsync(It.IsAny<Expression<Func<User, bool>>>(), null))
                 .ReturnsAsync(new User());
             _repoWrapper.Setup(e => e.EventType.GetFirstAsync(It.IsAny<Expression<Func<EventType, bool>>>(), null))
@@ -71,7 +71,7 @@ namespace EPlast.XUnitTest.Services.EventUser
 
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<EventCreateDTO>(methodResult);
+            Assert.IsType<EventCreateDto>(methodResult);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace EPlast.XUnitTest.Services.EventUser
             int statusId = 1;
             _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
 
-            _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
+            _mapper.Setup(m => m.Map<EventCreationDto, Event>(It.IsAny<EventCreationDto>()))
                 .Returns(new Event());
             _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
             _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
@@ -99,7 +99,7 @@ namespace EPlast.XUnitTest.Services.EventUser
             int statusId = 1;
             _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
 
-            _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
+            _mapper.Setup(m => m.Map<EventCreationDto, Event>(It.IsAny<EventCreationDto>()))
                 .Returns(new Event());
             _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
             _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
@@ -118,7 +118,7 @@ namespace EPlast.XUnitTest.Services.EventUser
             int statusId = 1;
             _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
 
-            _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
+            _mapper.Setup(m => m.Map<EventCreationDto, Event>(It.IsAny<EventCreationDto>()))
                 .Returns(new Event());
             _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
             _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
@@ -143,7 +143,7 @@ namespace EPlast.XUnitTest.Services.EventUser
             int statusId = 1;
             _eventStatusManager.Setup(s => s.GetStatusIdAsync(It.IsAny<string>())).ReturnsAsync(statusId);
 
-            _mapper.Setup(m => m.Map<EventCreationDTO, Event>(It.IsAny<EventCreationDTO>()))
+            _mapper.Setup(m => m.Map<EventCreationDto, Event>(It.IsAny<EventCreationDto>()))
                 .Returns(new Event());
             _repoWrapper.Setup(r => r.EventAdmin.CreateAsync(It.IsAny<EventAdmin>()));
             _repoWrapper.Setup(r => r.EventAdministration.CreateAsync(It.IsAny<EventAdministration>()));
@@ -174,79 +174,79 @@ namespace EPlast.XUnitTest.Services.EventUser
 
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<EventCreateDTO>(methodResult);
+            Assert.IsType<EventCreateDto>(methodResult);
         }
 
-        public EventCreateDTO GetEventCreateDTO()
+        public EventCreateDto GetEventCreateDTO()
         {
-            var eventCreate = new EventCreateDTO
+            var eventCreate = new EventCreateDto
             {
-                Event = new EventCreationDTO { EventDateStart = DateTime.Now.AddDays(2), EventDateEnd = DateTime.Now.AddDays(5) },
-                Сommandant = new EventAdministrationDTO { },
-                Alternate = new EventAdministrationDTO { },
-                Bunchuzhnyi = new EventAdministrationDTO { },
-                Pysar = new EventAdministrationDTO { },
-                EventCategories = new List<EventCategoryDTO>
+                Event = new EventCreationDto { EventDateStart = DateTime.Now.AddDays(2), EventDateEnd = DateTime.Now.AddDays(5) },
+                Сommandant = new EventAdministrationDto { },
+                Alternate = new EventAdministrationDto { },
+                Bunchuzhnyi = new EventAdministrationDto { },
+                Pysar = new EventAdministrationDto { },
+                EventCategories = new List<EventCategoryDto>
                 {
-                    new EventCategoryDTO { }
+                    new EventCategoryDto { }
                 },
-                EventTypes = new List<EventTypeDTO>
+                EventTypes = new List<EventTypeDto>
                 {
-                    new EventTypeDTO { }
+                    new EventTypeDto { }
                 },
-                Users = new List<UserInfoDTO>
+                Users = new List<UserInfoDto>
                 {
-                    new UserInfoDTO { }
+                    new UserInfoDto { }
                 }
             };
             return eventCreate;
         }
 
-        public EventCreateDTO GetEventCreateDTOWithoutAlternate()
+        public EventCreateDto GetEventCreateDTOWithoutAlternate()
         {
-            var eventCreate = new EventCreateDTO
+            var eventCreate = new EventCreateDto
             {
-                Event = new EventCreationDTO { EventDateStart = DateTime.Now.AddDays(2), EventDateEnd = DateTime.Now.AddDays(5) },
-                Сommandant = new EventAdministrationDTO { },
-                Alternate = new EventAdministrationDTO { UserId = null },
-                Bunchuzhnyi = new EventAdministrationDTO { },
-                Pysar = new EventAdministrationDTO { },
-                EventCategories = new List<EventCategoryDTO>
+                Event = new EventCreationDto { EventDateStart = DateTime.Now.AddDays(2), EventDateEnd = DateTime.Now.AddDays(5) },
+                Сommandant = new EventAdministrationDto { },
+                Alternate = new EventAdministrationDto { UserId = null },
+                Bunchuzhnyi = new EventAdministrationDto { },
+                Pysar = new EventAdministrationDto { },
+                EventCategories = new List<EventCategoryDto>
                 {
-                    new EventCategoryDTO { }
+                    new EventCategoryDto { }
                 },
-                EventTypes = new List<EventTypeDTO>
+                EventTypes = new List<EventTypeDto>
                 {
-                    new EventTypeDTO { }
+                    new EventTypeDto { }
                 },
-                Users = new List<UserInfoDTO>
+                Users = new List<UserInfoDto>
                 {
-                    new UserInfoDTO { }
+                    new UserInfoDto { }
                 }
             };
             return eventCreate;
         }
 
-        public EventCreateDTO GetEventCreateDTOException(DateTime startDate, DateTime endDate)
+        public EventCreateDto GetEventCreateDTOException(DateTime startDate, DateTime endDate)
         {
-            var eventCreate = new EventCreateDTO
+            var eventCreate = new EventCreateDto
             {
-                Event = new EventCreationDTO { EventDateStart = startDate, EventDateEnd = endDate },
-                Сommandant = new EventAdministrationDTO { },
-                Alternate = new EventAdministrationDTO { },
-                Bunchuzhnyi = new EventAdministrationDTO { },
-                Pysar = new EventAdministrationDTO { },
-                EventCategories = new List<EventCategoryDTO>
+                Event = new EventCreationDto { EventDateStart = startDate, EventDateEnd = endDate },
+                Сommandant = new EventAdministrationDto { },
+                Alternate = new EventAdministrationDto { },
+                Bunchuzhnyi = new EventAdministrationDto { },
+                Pysar = new EventAdministrationDto { },
+                EventCategories = new List<EventCategoryDto>
                 {
-                    new EventCategoryDTO { }
+                    new EventCategoryDto { }
                 },
-                EventTypes = new List<EventTypeDTO>
+                EventTypes = new List<EventTypeDto>
                 {
-                    new EventTypeDTO { }
+                    new EventTypeDto { }
                 },
-                Users = new List<UserInfoDTO>
+                Users = new List<UserInfoDto>
                 {
-                    new UserInfoDTO { }
+                    new UserInfoDto { }
                 }
             };
             return eventCreate;

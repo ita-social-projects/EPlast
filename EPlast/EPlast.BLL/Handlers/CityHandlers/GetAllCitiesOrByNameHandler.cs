@@ -11,7 +11,7 @@ using MediatR;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetAllCitiesOrByNameHandler : IRequestHandler<GetAllCitiesOrByNameQuery, IEnumerable<CityDTO>>
+    public class GetAllCitiesOrByNameHandler : IRequestHandler<GetAllCitiesOrByNameQuery, IEnumerable<CityDto>>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityDTO>> Handle(GetAllCitiesOrByNameQuery request,
+        public async Task<IEnumerable<CityDto>> Handle(GetAllCitiesOrByNameQuery request,
             CancellationToken cancellationToken)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -30,7 +30,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             if (!string.IsNullOrEmpty(request.CityName))
                 cities = cities.Where(c => c.Name.ToLower().Contains(request.CityName.ToLower()));
 
-            return _mapper.Map<IEnumerable<City>, IEnumerable<CityDTO>>(cities);
+            return _mapper.Map<IEnumerable<City>, IEnumerable<CityDto>>(cities);
         }
     }
 }

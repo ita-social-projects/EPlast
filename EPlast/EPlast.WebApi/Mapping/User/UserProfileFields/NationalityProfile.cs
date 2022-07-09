@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User.UserProfileFields
     {
         public NationalityProfile()
         {
-            CreateMap<NationalityDTO, NationalityViewModel>().ReverseMap();
+            CreateMap<NationalityDto, NationalityViewModel>().ReverseMap();
         }
     }
 }

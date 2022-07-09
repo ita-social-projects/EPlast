@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.ActiveMembership
 {
@@ -21,7 +21,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             _userManagerService = userManagerService;
         }
 
-        public async Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDTO entryAndOathDatesDTO)
+        public async Task<bool> ChangeUserEntryAndOathDateAsync(EntryAndOathDatesDto entryAndOathDatesDTO)
         {
             bool isChanged = false;
             var userDto = await _userManagerService.FindByIdAsync(entryAndOathDatesDTO.UserId);
@@ -60,7 +60,7 @@ namespace EPlast.BLL.Services.ActiveMembership
             return false;
         }
 
-        public async Task<UserMembershipDatesDTO> GetUserMembershipDatesAsync(string userId)
+        public async Task<UserMembershipDatesDto> GetUserMembershipDatesAsync(string userId)
         {
             var userDto = await _userManagerService.FindByIdAsync(userId);
 
@@ -70,7 +70,7 @@ namespace EPlast.BLL.Services.ActiveMembership
 
                 if (userMembershipDates != null)
                 {
-                    return _mapper.Map<UserMembershipDatesDTO>(userMembershipDates);
+                    return _mapper.Map<UserMembershipDatesDto>(userMembershipDates);
                 }
             }
             throw new InvalidOperationException();

@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.Precautions
     {
         public PrecautionProfile()
         {
-            CreateMap<Precaution, PrecautionDTO>().ReverseMap();
+            CreateMap<Precaution, PrecautionDto>().ReverseMap();
         }
     }
 }

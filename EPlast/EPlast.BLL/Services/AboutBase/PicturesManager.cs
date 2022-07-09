@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AboutBase;
 using EPlast.BLL.Interfaces.AboutBase;
 using EPlast.DataAccess.Entities;
@@ -7,10 +11,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.AboutBase
 {
@@ -24,13 +24,13 @@ namespace EPlast.BLL.Services.AboutBase
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<SubsectionPicturesDTO>> GetPicturesAsync(int id)
+        public async Task<IEnumerable<SubsectionPicturesDto>> GetPicturesAsync(int id)
         {
             return await _aboutBaseWrapper.AboutBasePicturesManager.GetPicturesInBase64(id);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<SubsectionPicturesDTO>> FillSubsectionPicturesAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<SubsectionPicturesDto>> FillSubsectionPicturesAsync(int id, IList<IFormFile> files)
         {
             return await _aboutBaseWrapper.AboutBasePicturesManager.AddPicturesAsync(id, files);
         }

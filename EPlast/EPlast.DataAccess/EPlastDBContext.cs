@@ -65,7 +65,7 @@ namespace EPlast.DataAccess
         public DbSet<EventSection> EventSection { get; set; }
         public DbSet<EventStatus> EventStatuses { get; set; }
         public DbSet<EventType> EventTypes { get; set; }
-        public DbSet<ExtractFromUPUDocuments> ExtractFromUPUDocuments { get; set; }
+        public DbSet<ExtractFromUpuDocuments> ExtractFromUPUDocuments { get; set; }
         public DbSet<Gallary> Gallarys { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<GoverningBodyAdministration> GoverningBodyAdministrations { get; set; }
@@ -119,7 +119,7 @@ namespace EPlast.DataAccess
         public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<Work> Works { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(modelBuilder);
 
@@ -133,9 +133,6 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
             modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
             modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
-
-
-
             modelBuilder.Entity<UserCourse>()
                 .HasKey(bc => bc.ID);
             modelBuilder.Entity<UserCourse>()
@@ -146,12 +143,9 @@ namespace EPlast.DataAccess
                 .HasOne(bc => bc.User)
                 .WithMany(c => c.UserCourses)
                 .HasForeignKey(bc => bc.UserId);
-
-
             modelBuilder.Entity<UserRenewal>(entity =>
             {
                 entity.HasKey(e => e.Id);
-
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserRenewals)
                     .HasForeignKey(d => d.UserId)
@@ -169,10 +163,10 @@ namespace EPlast.DataAccess
                     .HasDefaultValue(false);
             });
 
-            modelBuilder.Entity<Pictures>()
+            builder.Entity<Pictures>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<SubsectionPictures>(subsectionPictures =>
+            builder.Entity<SubsectionPictures>(subsectionPictures =>
             {
                 subsectionPictures
                     .HasKey(x => new { x.SubsectionID, x.PictureID });
@@ -187,17 +181,17 @@ namespace EPlast.DataAccess
                     .WithMany(e => e.Subsections)
                     .HasForeignKey(x => x.PictureID);
             });
-            
-            modelBuilder.Entity<Subsection>()
+
+            builder.Entity<Subsection>()
                 .HasKey(x => x.Id);
 
-            modelBuilder.Entity<Event>()
+            builder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<Gallary>()
+            builder.Entity<Gallary>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<EventGallary>(eventGallary =>
+            builder.Entity<EventGallary>(eventGallary =>
             {
                 eventGallary
                     .HasKey(x => new { x.EventID, x.GallaryID });
@@ -213,10 +207,10 @@ namespace EPlast.DataAccess
                     .HasForeignKey(x => x.GallaryID);
             });
 
-            modelBuilder.Entity<Event>()
+            builder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            modelBuilder.Entity<EventAdmin>(eventAdmin =>
+            builder.Entity<EventAdmin>(eventAdmin =>
             {
                 eventAdmin
                     .HasKey(x => new { x.EventID, x.UserID });
@@ -232,7 +226,7 @@ namespace EPlast.DataAccess
                     .HasForeignKey(x => x.UserID);
             });
 
-            modelBuilder.Entity<EventCategoryType>(eventCategoryType =>
+            builder.Entity<EventCategoryType>(eventCategoryType =>
             {
                 eventCategoryType
                     .HasKey(ct => new { ct.EventTypeId, ct.EventCategoryId });
@@ -248,17 +242,17 @@ namespace EPlast.DataAccess
                     .HasForeignKey(ct => ct.EventCategoryId);
             });
 
-            modelBuilder.Entity<CityDocumentType>()
+            builder.Entity<CityDocumentType>()
                 .HasMany(x => x.CityDocuments)
                 .WithOne(x => x.CityDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<ClubDocumentType>()
+            builder.Entity<ClubDocumentType>()
                 .HasMany(x => x.ClubDocuments)
                 .WithOne(x => x.ClubDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<User>(user =>
+            builder.Entity<User>(user =>
             {
                 user
                     .HasMany(x => x.Participants)
@@ -332,12 +326,12 @@ namespace EPlast.DataAccess
 
             });
 
-            modelBuilder.Entity<Distinction>()
+            builder.Entity<Distinction>()
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<AnnualReport>(annualReport =>
+            builder.Entity<AnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Creator)
                     .WithMany(u => u.CreatedAnnualReports)
@@ -347,12 +341,12 @@ namespace EPlast.DataAccess
                     .HasForeignKey(a => a.NewCityAdminId);
             });
 
-            modelBuilder.Entity<ClubAnnualReport>(annualReport =>
+            builder.Entity<ClubAnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Club);
             });
 
-            modelBuilder.Entity<ClubReportAdmins>(reportAdmin =>
+            builder.Entity<ClubReportAdmins>(reportAdmin =>
             {
                 reportAdmin.HasOne(a => a.ClubAnnualReport)
                     .WithMany(r => r.ClubReportAdmins)
@@ -364,7 +358,7 @@ namespace EPlast.DataAccess
                     .OnDelete(DeleteBehavior.NoAction);
             });
 
-            modelBuilder.Entity<ClubReportMember>(reportMember =>
+            builder.Entity<ClubReportMember>(reportMember =>
             {
                 reportMember.HasOne(m => m.ClubAnnualReport)
                     .WithMany(r => r.ClubReportMembers)
@@ -376,7 +370,7 @@ namespace EPlast.DataAccess
                     .OnDelete(DeleteBehavior.NoAction);
             });
 
-            modelBuilder.SeedData();
+            builder.SeedData();
         }
     }
 }

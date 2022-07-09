@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubDTO
+    public class ClubDto
     {
         public int ID { get; set; }
 
@@ -31,9 +31,9 @@ namespace EPlast.BLL.DTO.Club
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
         public int DocumentsCount { get; set; }
-        public IEnumerable<ClubDocumentsDTO> ClubDocuments { get; set; }
-        public IEnumerable<ClubMembersDTO> ClubMembers { get; set; }
-        public IEnumerable<ClubAdministrationDTO> ClubAdministration { get; set; }
-        public IEnumerable<ClubLegalStatusDTO> ClubLegalStatuses { get; set; }
+        public IEnumerable<ClubDocumentsDto> ClubDocuments { get; set; }
+        public IEnumerable<ClubMembersDto> ClubMembers { get; set; }
+        public IEnumerable<ClubAdministrationDto> ClubAdministration { get; set; }
+        public IEnumerable<ClubLegalStatusDto> ClubLegalStatuses { get; set; }
     }
 }

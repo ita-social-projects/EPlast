@@ -1,9 +1,9 @@
-﻿using EPlast.BLL.DTO.Events;
-using EPlast.BLL.Interfaces.Events;
-using EPlast.DataAccess.Repositories;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
+using EPlast.BLL.Interfaces.Events;
+using EPlast.DataAccess.Repositories;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -17,11 +17,11 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsDTOAsync()
+        public async Task<IEnumerable<EventSectionDto>> GetEventSectionsDTOAsync()
         {
             var eventSections = await _repoWrapper.EventSection.GetAllAsync();
             var dto = eventSections
-                .Select(eventSection => new EventSectionDTO()
+                .Select(eventSection => new EventSectionDto()
                 {
                     EventSectionId = eventSection.ID,
                     EventSectionName = eventSection.EventSectionName

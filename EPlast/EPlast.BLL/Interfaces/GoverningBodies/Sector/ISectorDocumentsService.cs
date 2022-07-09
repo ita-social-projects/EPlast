@@ -6,11 +6,11 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
 {
     public interface ISectorDocumentsService
     {
-        Task<SectorDocumentsDTO> AddSectorDocumentAsync(SectorDocumentsDTO documentDto);
+        Task<SectorDocumentsDto> AddSectorDocumentAsync(SectorDocumentsDto documentDto);
 
         Task<string> DownloadSectorDocumentAsync(string documentName);
 
-        Task<IEnumerable<SectorDocumentTypeDTO>> GetAllSectorDocumentTypesAsync();
+        Task<IEnumerable<SectorDocumentTypeDto>> GetAllSectorDocumentTypesAsync();
 
         Task DeleteSectorDocumentAsync(int documentId);
     }

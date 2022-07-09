@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.PrecautionHandlers
 {
-    public class GetPrecautionHandler: IRequestHandler<GetPrecautionQuery, PrecautionDTO>
+    public class GetPrecautionHandler : IRequestHandler<GetPrecautionQuery, PrecautionDto>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -17,9 +17,9 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
         }
-        public async Task<PrecautionDTO> Handle(GetPrecautionQuery request, CancellationToken cancellationToken)
+        public async Task<PrecautionDto> Handle(GetPrecautionQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<PrecautionDTO>(await _repositoryWrapper.Precaution.GetFirstAsync(d => d.Id == request.Id));
+            return _mapper.Map<PrecautionDto>(await _repositoryWrapper.Precaution.GetFirstAsync(d => d.Id == request.Id));
         }
     }
 }

@@ -2499,6 +2499,9 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Logo")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte>("Oblast")
+                        .HasColumnType("tinyint");
+
                     b.Property<string>("OfficeNumber")
                         .HasColumnType("nvarchar(max)");
 
@@ -2530,6 +2533,7 @@ namespace EPlast.DataAccess.Migrations
                             City = "Львів",
                             Description = "Пласт — українська скаутська організація. Метою Пласту є сприяти всебічному, патріотичному вихованню та самовихованню української молоді. Пласт виховує молодь як свідомих, відповідальних і повновартісних громадян місцевої, національної та світової спільноти, провідників суспільства.  Також Пласт є неполітичною та позаконфесійною організацією.  Пласт був створений у 1911 році, невдовзі після заснування скаутського руху Робертом Бейден-Пауелом в 1907 р.,  а вже 12 квітня 1912 року у Львові пластуни склали першу Пластову присягу. Серед засновників організації були д-р. Олександр Тисовський, Петро Франко (син Івана Франка) та Іван Чмола.  В основі назви “Пласт” лежить відповідник англійського Scout (розвідник), взятий за прикладом пластунів-козаків-розвідників. Гербом Пласту є трилиста квітка лілії — символ скаутського руху відомий як Fleur-de-lis — та тризуб, сплетенів одну гармонійну цілісність.  Для досягнення виховних цілей Пласт застосовує власну унікальну методу виховання.",
                             IsActive = true,
+                            Oblast = (byte)0,
                             PostIndex = 0,
                             RegionName = "Крайовий Провід Пласту",
                             Status = 1
@@ -2790,6 +2794,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
 
+                    b.Property<string>("CityURL")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(50)")
                         .HasMaxLength(50);
@@ -2813,9 +2820,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("СityURL")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 

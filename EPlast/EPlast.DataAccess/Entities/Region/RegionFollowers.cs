@@ -28,7 +28,7 @@ namespace EPlast.DataAccess.Entities
         public string Address { get; set; }
         public UkraineOblasts Oblast { get; set; }
         public CityLevel Level { get; set; }
-        public string СityURL { get; set; }
+        public string CityURL { get; set; }
 
         [MaxLength(50, ErrorMessage = "Email can not exceed 50 characters")]
         public string Email { get; set; }

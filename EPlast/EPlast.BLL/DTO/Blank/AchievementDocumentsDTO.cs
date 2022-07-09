@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.Blank
 {
-  public class AchievementDocumentsDTO
+    public class AchievementDocumentsDto
     {
         public int ID { get; set; }
         public string BlobName { get; set; }

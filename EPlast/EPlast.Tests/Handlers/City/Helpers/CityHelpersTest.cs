@@ -13,13 +13,13 @@ namespace EPlast.Tests.Handlers.City.Helpers
         public static void GetCityHead_ReturnsCityHead()
         {
             //Arrange
-            var city = new CityDTO
+            var city = new CityDto
             {
-                CityAdministration = new List<CityAdministrationDTO>()
+                CityAdministration = new List<CityAdministrationDto>()
             {
-                new CityAdministrationDTO()
+                new CityAdministrationDto()
                 {
-                    AdminType = new AdminTypeDTO()
+                    AdminType = new AdminTypeDto()
                     {
                         AdminTypeName = Roles.CityHead
                     },
@@ -33,20 +33,20 @@ namespace EPlast.Tests.Handlers.City.Helpers
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+            Assert.IsInstanceOf<CityAdministrationDto>(result);
         }
 
         [Test]
         public static void GetCityHeadDeputy_ReturnsCityHeadDeputy()
         {
             //Arrange
-            var city = new CityDTO
+            var city = new CityDto
             {
-                CityAdministration = new List<CityAdministrationDTO>()
+                CityAdministration = new List<CityAdministrationDto>()
                 {
-                    new CityAdministrationDTO()
+                    new CityAdministrationDto()
                     {
-                        AdminType = new AdminTypeDTO()
+                        AdminType = new AdminTypeDto()
                         {
                             AdminTypeName = Roles.CityHeadDeputy
                         },
@@ -60,28 +60,28 @@ namespace EPlast.Tests.Handlers.City.Helpers
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+            Assert.IsInstanceOf<CityAdministrationDto>(result);
         }
 
         [Test]
         public static void GetCityAdmins_ReturnsCityAdmins()
         {
             //Arrange
-            var city = new CityDTO
+            var city = new CityDto
             {
-                CityAdministration = new List<CityAdministrationDTO>()
+                CityAdministration = new List<CityAdministrationDto>()
                 {
-                    new CityAdministrationDTO()
+                    new CityAdministrationDto()
                     {
-                        AdminType = new AdminTypeDTO()
+                        AdminType = new AdminTypeDto()
                         {
                             AdminTypeName = Roles.CityHeadDeputy
                         },
                         Status = true
                     },
-                    new CityAdministrationDTO()
+                    new CityAdministrationDto()
                     {
-                        AdminType = new AdminTypeDTO()
+                        AdminType = new AdminTypeDto()
                         {
                             AdminTypeName = Roles.CityHead
                         },
@@ -95,7 +95,7 @@ namespace EPlast.Tests.Handlers.City.Helpers
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<List<CityAdministrationDTO>>(result);
+            Assert.IsInstanceOf<List<CityAdministrationDto>>(result);
         }
     }
 }

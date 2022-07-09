@@ -1,14 +1,14 @@
-﻿using EPlast.BLL.Services.Events;
-using EPlast.DataAccess.Entities.Event;
-using EPlast.DataAccess.Repositories;
-using Moq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.EventUser;
+using EPlast.BLL.Services.Events;
+using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
+using Moq;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services.Events
@@ -48,7 +48,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await eventTypeManager.GetEventTypesDTOAsync();
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsAssignableFrom<IEnumerable<EventTypeDTO>>(methodResult);
+            Assert.IsAssignableFrom<IEnumerable<EventTypeDto>>(methodResult);
             Assert.Equal(GetEventTypes().Count(), methodResult.ToList().Count);
         }
 

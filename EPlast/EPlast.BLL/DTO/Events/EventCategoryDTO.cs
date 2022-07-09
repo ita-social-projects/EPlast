@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.Events
 {
-    public class EventCategoryDTO
+    public class EventCategoryDto
     {
         public int EventCategoryId { get; set; }
         public string EventCategoryName { get; set; }

@@ -1,16 +1,16 @@
-﻿using EPlast.BLL.DTO.Blank;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using EPlast.BLL.DTO.Blank;
 
 namespace EPlast.BLL.Interfaces.Blank
 {
-    public interface IBlankExtractFromUPUDocumentService
+    public interface IBlankExtractFromUpuDocumentService
     {
         /// <summary>
         /// Add a biography document to the blank
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created biography document</returns>
-        Task<ExtractFromUPUDocumentsDTO> AddDocumentAsync(ExtractFromUPUDocumentsDTO extractFromUPUDocumentsDTO);
+        Task<ExtractFromUpuDocumentsDto> AddDocumentAsync(ExtractFromUpuDocumentsDto extractFromUPUDocumentsDTO);
 
         /// <summary>
         /// Get a file in base64 format
@@ -25,6 +25,6 @@ namespace EPlast.BLL.Interfaces.Blank
         /// <param name="documentId">The id of a specific document</param>
         Task DeleteFileAsync(int documentId);
 
-        Task<ExtractFromUPUDocumentsDTO> GetDocumentByUserId(string userid);
+        Task<ExtractFromUpuDocumentsDto> GetDocumentByUserId(string userid);
     }
 }

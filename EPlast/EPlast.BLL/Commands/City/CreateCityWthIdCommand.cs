@@ -5,9 +5,9 @@ namespace EPlast.BLL.Commands.City
 {
     public class CreateCityWthIdCommand : IRequest<int>
     {
-        public CityDTO City { get; set; }
+        public CityDto City { get; set; }
 
-        public CreateCityWthIdCommand(CityDTO city)
+        public CreateCityWthIdCommand(CityDto city)
         {
             City = city;
         }

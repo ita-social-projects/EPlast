@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Sector
     {
         public SectorProfile()
         {
-            CreateMap<DatabaseEntities.GoverningBody.Sector.Sector, SectorDTO>()
+            CreateMap<DatabaseEntities.GoverningBody.Sector.Sector, SectorDto>()
                 .ForMember(g => g.Name, o => o.MapFrom(n => n.Name))
                 .ForMember(g => g.GoverningBodyId, o => o.MapFrom(n => n.GoverningBodyId))
                 .ForMember(g => g.Announcements, o => o.MapFrom(n => n.Announcements))

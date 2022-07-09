@@ -1,6 +1,6 @@
 namespace EPlast.BLL.DTO.Admin
 {
-    public class AdminTypeDTO
+    public class AdminTypeDto
     {
         public int ID { get; set; }
         public string AdminTypeName { get; set; }
