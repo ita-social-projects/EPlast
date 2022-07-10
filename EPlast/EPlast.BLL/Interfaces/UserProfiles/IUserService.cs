@@ -41,7 +41,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// </summary>
         /// <param name="userDto">DTO of user that needs their comment changed</param>
         /// <param name="text">Text of the comment</param>
-        Task UpdateUserComment(UserDTO userDto, string text);
+        Task UpdateUserComment(UserDto userDto, string text);
 
         /// <summary>
         /// Get confirmed users
