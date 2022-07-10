@@ -1,17 +1,17 @@
-﻿using AutoMapper;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Queries.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.ClubHandlers
 {
-    public class GetClubHistoryFollowersHandler : IRequestHandler<GetClubHistoryFollowersQuery, IEnumerable<ClubMemberHistoryDTO>>
+    public class GetClubHistoryFollowersHandler : IRequestHandler<GetClubHistoryFollowersQuery, IEnumerable<ClubMemberHistoryDto>>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ClubMemberHistoryDTO>> Handle(GetClubHistoryFollowersQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ClubMemberHistoryDto>> Handle(GetClubHistoryFollowersQuery request, CancellationToken cancellationToken)
         {
             var clubHistoryFollowers = await _repoWrapper.ClubMemberHistory.GetAllAsync(
                                               predicate: c => c.ClubId == request.ClubId &&
@@ -34,7 +34,7 @@ namespace EPlast.BLL.Handlers.ClubHandlers
                                                       .Include(d => d.User).ThenInclude(c => c.CityMembers)
                                                                            .ThenInclude(c => c.City));
 
-            return _mapper.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>(clubHistoryFollowers);
+            return _mapper.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>(clubHistoryFollowers);
         }
     }
 }

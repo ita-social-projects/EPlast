@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionForAdministrationDTO
+    public class RegionForAdministrationDto
     {
         public int ID { get; set; }
         public string RegionName { get; set; }

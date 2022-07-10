@@ -19,7 +19,7 @@ namespace EPlast.Tests.Services.Notifications
         private Mock<IUserMapService> _userMap;
         private Mock<WebSocket> _socket;
         private NotificationConnectionManager notificationConnectionManager;
-        private ConcurrentDictionary<string, HashSet<ConnectionDTO>> userMap;
+        private ConcurrentDictionary<string, HashSet<ConnectionDto>> userMap;
         private Guid uniqueID;
 
         [SetUp]
@@ -30,9 +30,9 @@ namespace EPlast.Tests.Services.Notifications
             _socket = new Mock<WebSocket>();
             uniqueID = Guid.NewGuid();
             notificationConnectionManager = new NotificationConnectionManager(_userMap.Object);
-            userMap = new ConcurrentDictionary<string, HashSet<ConnectionDTO>>();
-            var hash = new HashSet<ConnectionDTO>();
-            var connectionDTO = new ConnectionDTO()
+            userMap = new ConcurrentDictionary<string, HashSet<ConnectionDto>>();
+            var hash = new HashSet<ConnectionDto>();
+            var connectionDTO = new ConnectionDto()
             {
                 WebSocket = _socket.Object,
                 ConnectionId = "1"
@@ -199,7 +199,7 @@ namespace EPlast.Tests.Services.Notifications
         public void GetUserId_ThrowsException()
         {
             //Arrange
-            _userMap.Setup(a => a.UserConnections).Returns(new ConcurrentDictionary<string, HashSet<ConnectionDTO>>());
+            _userMap.Setup(a => a.UserConnections).Returns(new ConcurrentDictionary<string, HashSet<ConnectionDto>>());
             _notificationConnectionManager.Setup(
                 a => a.GetUserId(_socket.Object));
 

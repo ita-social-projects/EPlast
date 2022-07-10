@@ -41,15 +41,15 @@ namespace EPlast.Tests.Handlers.City
                     It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
                 .ReturnsAsync(new DataAccess.Entities.City());
             _mockMapper
-                .Setup(m => m.Map<DataAccess.Entities.City, CityDTO>(It.IsAny<DataAccess.Entities.City>()))
-                .Returns(new CityDTO());
+                .Setup(m => m.Map<DataAccess.Entities.City, CityDto>(It.IsAny<DataAccess.Entities.City>()))
+                .Returns(new CityDto());
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityDTO>(result);
+            Assert.IsInstanceOf<CityDto>(result);
         }
     }
 }

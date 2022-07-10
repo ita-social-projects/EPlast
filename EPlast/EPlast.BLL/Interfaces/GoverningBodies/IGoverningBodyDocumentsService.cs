@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.GoverningBody;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies
 {
@@ -11,7 +11,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// </summary>
         /// <param name="documentDto">An information about a specific document</param>
         /// <returns>A newly created document</returns>
-        Task<GoverningBodyDocumentsDTO> AddGoverningBodyDocumentAsync(GoverningBodyDocumentsDTO documentDto);
+        Task<GoverningBodyDocumentsDto> AddGoverningBodyDocumentAsync(GoverningBodyDocumentsDto documentDto);
 
         /// <summary>
         /// Get a file in base64 format
@@ -24,7 +24,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// Get all Governing Body document types
         /// </summary>
         /// <returns>All Governing Body document types</returns>
-        Task<IEnumerable<GoverningBodyDocumentTypeDTO>> GetAllGoverningBodyDocumentTypesAsync();
+        Task<IEnumerable<GoverningBodyDocumentTypeDto>> GetAllGoverningBodyDocumentTypesAsync();
 
         /// <summary>
         /// Delete a specific document by id

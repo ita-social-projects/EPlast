@@ -1,15 +1,15 @@
-﻿using EPlast.BLL.DTO.EventCalendar;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.EventCalendar;
 
 namespace EPlast.BLL.Interfaces.EventUser
 {
     public interface IEventsManager
     {
-        Task<List<EventCalendarInfoDTO>> GetActionsAsync();
+        Task<List<EventCalendarInfoDto>> GetActionsAsync();
 
-        Task<List<EventCalendarInfoDTO>> GetEducationsAsync();
+        Task<List<EventCalendarInfoDto>> GetEducationsAsync();
 
-        Task<List<EventCalendarInfoDTO>> GetCampsAsync();
+        Task<List<EventCalendarInfoDto>> GetCampsAsync();
     }
 }

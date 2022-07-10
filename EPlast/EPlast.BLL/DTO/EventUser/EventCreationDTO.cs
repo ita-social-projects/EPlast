@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.EventUser
 {
-    public class EventCreationDTO
+    public class EventCreationDto
     {
         public int ID { get; set; }
         [Required(ErrorMessage = "This field can't be empty")]

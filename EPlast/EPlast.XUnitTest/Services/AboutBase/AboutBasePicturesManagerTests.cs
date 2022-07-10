@@ -88,7 +88,7 @@ namespace EPlast.XUnitTest.Services.AboutBase
             var methodResult = await aboutBasePicturesManager.GetPicturesInBase64(subsectionId);
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<SubsectionPicturesDTO>>(methodResult);
+            Assert.IsType<List<SubsectionPicturesDto>>(methodResult);
             Assert.Equal(GetSubsectionsPictures().Count(), methodResult.ToList().Count);
         }
 
@@ -111,7 +111,7 @@ namespace EPlast.XUnitTest.Services.AboutBase
             var methodResult = await aboutBasePicturesManager.AddPicturesAsync(subsectionId, FakeFiles());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<SubsectionPicturesDTO>>(methodResult);
+            Assert.IsType<List<SubsectionPicturesDto>>(methodResult);
         }
 
         public static IList<IFormFile> FakeFiles()

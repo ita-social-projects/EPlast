@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.Approver
     {
         public ApproverProfile()
         {
-            CreateMap<DataAccess.Entities.Approver, ApproverDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.Approver, ApproverDto>().ReverseMap();
         }
     }
 }

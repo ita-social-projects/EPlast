@@ -52,7 +52,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
+        public async Task<CityAdministrationDto> AddAdministratorAsync(CityAdministrationDto adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
@@ -112,7 +112,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, string userId)
+        public async Task<CityMembersDto> AddFollowerAsync(int cityId, string userId)
         {
             var oldCityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
@@ -163,22 +163,22 @@ namespace EPlast.BLL.Services.City
                 await SendNotificationCityAdminAboutNewFollowerAsync(cityId, cityMember.User);
             }
 
-            return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            return _mapper.Map<CityMembers, CityMembersDto>(cityMember);
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, User user)
+        public async Task<CityMembersDto> AddFollowerAsync(int cityId, User user)
         {
             await _userManager.RemoveFromRolesAsync(user, Roles.DeleteableListOfRoles);
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 
-        public async Task AddNotificationUserWithoutSelectedCity(User user, int? regionID)
+        public async Task AddNotificationUserWithoutSelectedCity(User user, int? regionId)
         {
-            List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+            List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
 
             var regionAdministration = await _repositoryWrapper.RegionAdministration
-                .GetAllAsync(i => i.RegionId == regionID,
+                .GetAllAsync(i => i.RegionId == regionId,
                     i => i
                         .Include(c => c.AdminType)
                         .Include(a => a.User));
@@ -205,7 +205,7 @@ namespace EPlast.BLL.Services.City
 
             if (regionHead != null)
             {
-                userNotificationsDTO.Add(new UserNotificationDTO
+                userNotificationsDTO.Add(new UserNotificationDto
                 {
                     Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                     NotificationTypeId = 1,
@@ -221,7 +221,7 @@ namespace EPlast.BLL.Services.City
 
             if (regionHeadDeputy != null)
             {
-                userNotificationsDTO.Add(new UserNotificationDTO
+                userNotificationsDTO.Add(new UserNotificationDto
                 {
                     Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                     NotificationTypeId = 1,
@@ -239,7 +239,7 @@ namespace EPlast.BLL.Services.City
             {
                 foreach (var referent in regionReferentsUPS)
                 {
-                    userNotificationsDTO.Add(new UserNotificationDTO
+                    userNotificationsDTO.Add(new UserNotificationDto
                     {
                         Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                         NotificationTypeId = 1,
@@ -258,7 +258,7 @@ namespace EPlast.BLL.Services.City
             {
                 foreach (var referent in regionReferentsUSP)
                 {
-                    userNotificationsDTO.Add(new UserNotificationDTO
+                    userNotificationsDTO.Add(new UserNotificationDto
                     {
                         Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                         NotificationTypeId = 1,
@@ -276,7 +276,7 @@ namespace EPlast.BLL.Services.City
             {
                 foreach (var referent in regionReferentsOfActiveMembership)
                 {
-                    userNotificationsDTO.Add(new UserNotificationDTO
+                    userNotificationsDTO.Add(new UserNotificationDto
                     {
                         Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                         NotificationTypeId = 1,
@@ -309,7 +309,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
+        public async Task<CityAdministrationDto> EditAdministratorAsync(CityAdministrationDto adminDTO)
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
@@ -331,17 +331,17 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationByIdAsync(int cityId)
+        public async Task<IEnumerable<CityAdministrationDto>> GetAdministrationByIdAsync(int cityId)
         {
             var cityAdministration = await _repositoryWrapper.CityAdministration.GetAllAsync(
                 predicate: x => x.CityId == cityId,
                 include: x => x.Include(q => q.User).
                      Include(q => q.AdminType));
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDto>>(cityAdministration);
         }
 
-        public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<CityAdministrationDto>> GetAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
@@ -353,30 +353,30 @@ namespace EPlast.BLL.Services.City
                 admin.City.CityAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDto>>(admins);
         }
 
-        public async Task<IEnumerable<CityAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
+        public async Task<IEnumerable<CityAdministrationStatusDto>> GetAdministrationStatuses(string UserId)
         {
             var cityAdmins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
                              include:
                              source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.City)
                              );
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(cityAdmins);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDto>>(cityAdmins);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityMembersDTO>> GetMembersByCityIdAsync(int cityId)
+        public async Task<IEnumerable<CityMembersDto>> GetMembersByCityIdAsync(int cityId)
         {
             var cityMembers = await _repositoryWrapper.CityMembers.GetAllAsync(
                     predicate: c => c.CityId == cityId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
 
-            return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
+            return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDto>>(cityMembers);
         }
 
-        public async Task<IEnumerable<CityAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<CityAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
                  include:
@@ -388,7 +388,7 @@ namespace EPlast.BLL.Services.City
                 admin.City.CityAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins).Reverse();
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDto>>(admins).Reverse();
         }
 
         /// <inheritdoc />
@@ -454,7 +454,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId)
+        public async Task<CityMembersDto> ToggleApproveStatusAsync(int memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.ID == memberId,
@@ -464,7 +464,7 @@ namespace EPlast.BLL.Services.City
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
-            var cityMemberDto = _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            var cityMemberDto = _mapper.Map<CityMembers, CityMembersDto>(cityMember);
             var user = await _userManager.FindByIdAsync(cityMember.UserId);
             if (cityMember.IsApproved && await _userManager.IsInRoleAsync(user, Roles.RegisteredUser))
             {
@@ -633,11 +633,11 @@ namespace EPlast.BLL.Services.City
             var cityReferentsOfActiveMembership = cityAdministration.Where(a =>
                 a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership
                 && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
-            List<UserNotificationDTO> userNotificationsDTO = new List<UserNotificationDTO>();
+            List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
 
             if (cityHead != null)
             {
-                userNotificationsDTO.Add(new UserNotificationDTO
+                userNotificationsDTO.Add(new UserNotificationDto
                 {
                     Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                     NotificationTypeId = 1,
@@ -648,7 +648,7 @@ namespace EPlast.BLL.Services.City
             }
             if (cityHeadDeputy != null)
             {
-                userNotificationsDTO.Add(new UserNotificationDTO
+                userNotificationsDTO.Add(new UserNotificationDto
                 {
                     Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                     NotificationTypeId = 1,
@@ -661,7 +661,7 @@ namespace EPlast.BLL.Services.City
             {
                 foreach (var referent in cityReferentsUPS)
                 {
-                    userNotificationsDTO.Add(new UserNotificationDTO
+                    userNotificationsDTO.Add(new UserNotificationDto
                     {
                         Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                         NotificationTypeId = 1,
@@ -675,7 +675,7 @@ namespace EPlast.BLL.Services.City
             {
                 foreach (var referent in cityReferentsUSP)
                 {
-                    userNotificationsDTO.Add(new UserNotificationDTO
+                    userNotificationsDTO.Add(new UserNotificationDto
                     {
                         Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                         NotificationTypeId = 1,
@@ -689,7 +689,7 @@ namespace EPlast.BLL.Services.City
             {
                 foreach (var referent in cityReferentsOfActiveMembership)
                 {
-                    userNotificationsDTO.Add(new UserNotificationDTO
+                    userNotificationsDTO.Add(new UserNotificationDto
                     {
                         Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
                         NotificationTypeId = 1,

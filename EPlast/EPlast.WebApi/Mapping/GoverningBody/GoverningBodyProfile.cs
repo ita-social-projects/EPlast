@@ -10,8 +10,8 @@ namespace EPlast.WebApi.Mapping.GoverningBody
     {
         public GoverningBodyProfile()
         {
-            CreateMap<GoverningBodyViewModel, GoverningBodyDTO>().ReverseMap();
-            CreateMap<GoverningBodyProfileDTO, GoverningBodyViewModel>()
+            CreateMap<GoverningBodyViewModel, GoverningBodyDto>().ReverseMap();
+            CreateMap<GoverningBodyProfileDto, GoverningBodyViewModel>()
                 .ForMember(r => r.Id, s => s.MapFrom(t => t.GoverningBody.Id))
                 .ForMember(r => r.Head, s => s.MapFrom(t => t.Head))
                 .ForMember(r => r.Administration, s => s.MapFrom(t => t.GoverningBodyAdministration))

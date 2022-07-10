@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.EventUser;
-using DatabaseEntities = EPlast.DataAccess.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AutoMapper;
+using EPlast.BLL.DTO.EventUser;
+using DatabaseEntities = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.EventUser
 {
@@ -11,7 +11,7 @@ namespace EPlast.BLL.Mapping.EventUser
     {
         public UserInfoDtoProfile()
         {
-            CreateMap<DatabaseEntities.User, UserInfoDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.User, UserInfoDto>().ReverseMap();
         }
     }
 }

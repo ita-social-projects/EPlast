@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.EducationsStaff
     {
         public EducatorsStaffTypesProfile()
         {
-            CreateMap<EducatorsStaffTypes, EducatorsStaffTypesDTO>( )
+            CreateMap<EducatorsStaffTypes, EducatorsStaffTypesDto>()
                 .ReverseMap();
         }
 

@@ -190,7 +190,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await adminController.Edit(username);
-            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns((Task<UserDTO>)null);
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).Returns((Task<UserDto>)null);
 
             //Assert
             Assert.NotNull(result);
@@ -202,9 +202,9 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_Valid_Test()
         {
             _userManagerService.Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-               .ReturnsAsync(new UserDTO());
+               .ReturnsAsync(new UserDto());
 
-            _userManagerService.Setup(u => u.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(u => u.GetRolesAsync(It.IsAny<UserDto>()))
               .ReturnsAsync(It.IsAny<IEnumerable<string>>());
 
             _adminService.Setup(a => a.GetRolesExceptAdmin())
@@ -301,7 +301,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             AdminController adminController = GetAdminController();
-            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDto());
 
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(username);
@@ -317,7 +317,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             AdminController adminController = GetAdminController();
-            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
+            _userManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDto)null);
             //Act
             var result = await adminController.GetCityAndRegionAdminsOfUser(username);
             //Assert
@@ -351,7 +351,7 @@ namespace EPlast.Tests.Controllers
                 It.Is<GetAllCitiesOrByNameQuery>(q => q.CityName == null),
                 default
             ))
-                .ReturnsAsync(It.IsAny<IEnumerable<CityDTO>>());
+                .ReturnsAsync(It.IsAny<IEnumerable<CityDto>>());
 
             AdminController adminController = GetAdminController();
 
@@ -400,10 +400,10 @@ namespace EPlast.Tests.Controllers
 
             string userRole = "Admin";
             bool onlyIncludeUsers = true;
-            Type functionType = typeof(Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>);
+            Type functionType = typeof(Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>>);
 
-            _adminService.Setup(a => a.GetUsersByRolesAsync(userRole, onlyIncludeUsers, It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
-                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            _adminService.Setup(a => a.GetUsersByRolesAsync(userRole, onlyIncludeUsers, It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>>>()))
+                .ReturnsAsync(new List<ShortUserInformationDto>() { new ShortUserInformationDto() });
 
             // Act
             var result = await adminController.GetSuperAdmins() as ObjectResult;
@@ -411,14 +411,14 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(result.Value);
+            Assert.IsInstanceOf<List<ShortUserInformationDto>>(result.Value);
         }
 
         [Test]
         public async Task GetUsers_Valid_Test()
         {
             _adminService.Setup(a => a.GetUsersAsync())
-                .ReturnsAsync(new List<ShortUserInformationDTO>());
+                .ReturnsAsync(new List<ShortUserInformationDto>());
 
             AdminController adminController = GetAdminController();
 
@@ -430,7 +430,7 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDto>>(resultValue);
         }
 
         [TestCase("searchString")]
@@ -438,7 +438,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _adminService.Setup(a => a.GetShortUserInfoAsync(It.IsAny<string>()))
-                .ReturnsAsync(new List<ShortUserInformationDTO>());
+                .ReturnsAsync(new List<ShortUserInformationDto>());
 
             var adminController = GetAdminController();
 
@@ -450,15 +450,15 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(resultValue);
-            Assert.IsInstanceOf<List<ShortUserInformationDTO>>(resultValue);
+            Assert.IsInstanceOf<List<ShortUserInformationDto>>(resultValue);
         }
 
         [Test]
         public async Task GetUsersByAllRoles_ReturnsOkObjectResult()
         {
             //Arrange
-            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
-                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>>>()))
+                .ReturnsAsync(new List<ShortUserInformationDto>() { new ShortUserInformationDto() });
             AdminController adminController = GetAdminController();
 
             //Act
@@ -472,8 +472,8 @@ namespace EPlast.Tests.Controllers
         public async Task GetUsersByAnyRole_ReturnsOkObjectResult()
         {
             //Arrange
-            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
-                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>>>()))
+                .ReturnsAsync(new List<ShortUserInformationDto>() { new ShortUserInformationDto() });
             AdminController adminController = GetAdminController();
 
             //Act
@@ -488,7 +488,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _adminService.Setup(x => x.GetUsersForGoverningBodiesAsync())
-                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+                .ReturnsAsync(new List<ShortUserInformationDto>() { new ShortUserInformationDto() });
             AdminController adminController = GetAdminController();
 
             //Act
@@ -502,8 +502,8 @@ namespace EPlast.Tests.Controllers
         public async Task GetUsersByExactRoles_ReturnsOkObjectResult()
         {
             //Arrange
-            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(),It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>>>()))
-                .ReturnsAsync(new List<ShortUserInformationDTO>() { new ShortUserInformationDTO() });
+            _adminService.Setup(x => x.GetUsersByRolesAsync(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>>>()))
+                .ReturnsAsync(new List<ShortUserInformationDto>() { new ShortUserInformationDto() });
             AdminController adminController = GetAdminController();
 
             //Act
@@ -551,12 +551,12 @@ namespace EPlast.Tests.Controllers
             SearchData = "Ольга"
         };
         System.Security.Claims.ClaimsPrincipal claimsPrincipal = new System.Security.Claims.ClaimsPrincipal();
-        private Tuple<IEnumerable<UserTableDTO>, int> CreateTuple => new Tuple<IEnumerable<UserTableDTO>, int>(CreateUserTableObjects, 100);
+        private Tuple<IEnumerable<UserTableDto>, int> CreateTuple => new Tuple<IEnumerable<UserTableDto>, int>(CreateUserTableObjects, 100);
 
-        private IEnumerable<UserTableDTO> CreateUserTableObjects => new List<UserTableDTO>()
+        private IEnumerable<UserTableDto> CreateUserTableObjects => new List<UserTableDto>()
         {
-            new UserTableDTO(),
-            new UserTableDTO()
+            new UserTableDto(),
+            new UserTableDto()
         };
     }
 }

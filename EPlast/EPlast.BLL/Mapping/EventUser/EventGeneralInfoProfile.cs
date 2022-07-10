@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.EventUser
     {
         public EventGeneralInfoProfile()
         {
-            CreateMap<Event, EventGeneralInfoDTO>();
+            CreateMap<Event, EventGeneralInfoDto>();
         }
     }
 }

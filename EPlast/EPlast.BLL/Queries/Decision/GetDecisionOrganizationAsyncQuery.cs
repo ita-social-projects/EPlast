@@ -1,13 +1,13 @@
-﻿using EPlast.BLL.DTO;
+﻿using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using MediatR;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Queries.Decision
 {
-    public class GetDecisionOrganizationAsyncQuery : IRequest<GoverningBodyDTO>
+    public class GetDecisionOrganizationAsyncQuery : IRequest<GoverningBodyDto>
     {
-        public GoverningBodyDTO GoverningBody { get; set; }
-        public GetDecisionOrganizationAsyncQuery(GoverningBodyDTO governingBody)
+        public GoverningBodyDto GoverningBody { get; set; }
+        public GetDecisionOrganizationAsyncQuery(GoverningBodyDto governingBody)
         {
             GoverningBody = governingBody;
         }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EPlast.BLL.DTO.EducatorsStaff
 {
-    public class EducatorsStaffTableSettingsDTO
+    public class EducatorsStaffTableSettingsDto
     {
         public IEnumerable<string> SortByOrder { get; set; }
         public int KadraTypeId { get; set; }

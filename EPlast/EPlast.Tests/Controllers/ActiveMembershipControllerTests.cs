@@ -1,4 +1,8 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
@@ -11,10 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -46,7 +46,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetAllDergees_Valid_Test()
         {
             //Arrange
-            _plastDegreeService.Setup(cs => cs.GetDergeesAsync()).ReturnsAsync(new List<PlastDegreeDTO>());
+            _plastDegreeService.Setup(cs => cs.GetDergeesAsync()).ReturnsAsync(new List<PlastDegreeDto>());
 
             //Act
             var result = await _activeMembershipController.GetAllDergees();
@@ -55,8 +55,8 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
-            Assert.IsInstanceOf<List<PlastDegreeDTO>>(resultValue);
-            Assert.AreEqual(0, (resultValue as List<PlastDegreeDTO>).Count);
+            Assert.IsInstanceOf<List<PlastDegreeDto>>(resultValue);
+            Assert.AreEqual(0, (resultValue as List<PlastDegreeDto>).Count);
         }
 
         [TestCase("2")]
@@ -80,7 +80,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserDergee_Valid_Test(string id)
         {
             //Arrange
-            _plastDegreeService.Setup(cs => cs.GetUserPlastDegreeAsync(It.IsAny<string>())).ReturnsAsync(new UserPlastDegreeDTO());
+            _plastDegreeService.Setup(cs => cs.GetUserPlastDegreeAsync(It.IsAny<string>())).ReturnsAsync(new UserPlastDegreeDto());
 
             //Act
             var result = await _activeMembershipController.GetUserDegree(id);
@@ -89,7 +89,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(result);
-            Assert.IsInstanceOf<UserPlastDegreeDTO>(resultValue);
+            Assert.IsInstanceOf<UserPlastDegreeDto>(resultValue);
         }
 
         [TestCase(2)]
@@ -104,11 +104,11 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string>() { Roles.Admin });
-            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>()))
+            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDto>()))
                 .ReturnsAsync(successfulAdded);
 
             //Act
-            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = degreeId, UserId = userId });
+            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDto() { PlastDegreeId = degreeId, UserId = userId });
 
             //Assert
             Assert.IsInstanceOf<CreatedResult>(result);
@@ -130,12 +130,12 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string>() { Roles.CityHead, Roles.CityHeadDeputy });
-            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>()))
+            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDto>()))
                 .ReturnsAsync(successfulAdded);
             _userService.Setup(x => x.IsUserSameCity(_user, _user)).Returns(true);
 
             //Act
-            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = degreeId, UserId = _userId });
+            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDto() { PlastDegreeId = degreeId, UserId = _userId });
 
             //Assert
             Assert.IsInstanceOf<CreatedResult>(result);
@@ -153,12 +153,12 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
             _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.CityHeadDeputy });
-            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDTO>())).ReturnsAsync(successfulAdded);
+            _plastDegreeService.Setup(cs => cs.AddPlastDegreeForUserAsync(It.IsAny<UserPlastDegreePostDto>())).ReturnsAsync(successfulAdded);
             _plastDegreeService.Setup(ps => ps.CheckDegreeAsync(It.IsAny<int>(), It.IsAny<List<string>>())).ReturnsAsync(true);
             _userService.Setup(x => x.IsUserSameCity(_user, _user)).Returns(true);
 
             //Act
-            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = id });
+            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDto() { PlastDegreeId = id });
 
             //Assert
             Assert.IsInstanceOf<CreatedResult>(result);
@@ -169,7 +169,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             string userId = "2";
-            var user = new UserDTO()
+            var user = new UserDto()
             {
                 Id = userId,
                 CityMembers = new List<CityMembers>(),
@@ -182,7 +182,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDTO() { PlastDegreeId = id, UserId = userId });
+            var result = await _activeMembershipController.AddPlastDegreeForUser(new UserPlastDegreePostDto() { PlastDegreeId = id, UserId = userId });
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -243,7 +243,7 @@ namespace EPlast.Tests.Controllers
         public async Task GetUserDates_Valid_ReturnsOK(string id)
         {
             //Arrange
-            _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(new UserMembershipDatesDTO());
+            _userDatesService.Setup(cs => cs.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(new UserMembershipDatesDto());
 
             //Act
             var result = await _activeMembershipController.GetUserDates(id);
@@ -251,7 +251,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(((OkObjectResult)result).Value);
-            Assert.IsInstanceOf<UserMembershipDatesDTO>(((OkObjectResult)result).Value);
+            Assert.IsInstanceOf<UserMembershipDatesDto>(((OkObjectResult)result).Value);
         }
 
         [Test]
@@ -275,12 +275,12 @@ namespace EPlast.Tests.Controllers
             ArrangeTests(Roles.Admin, successfulChangedDates);
 
             //Act
-            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDto());
 
             //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(((OkObjectResult)result).Value);
-            Assert.IsInstanceOf<EntryAndOathDatesDTO>(((OkObjectResult)result).Value);
+            Assert.IsInstanceOf<EntryAndOathDatesDto>(((OkObjectResult)result).Value);
         }
 
         [Test]
@@ -291,7 +291,7 @@ namespace EPlast.Tests.Controllers
             ArrangeTests(Roles.Admin, failedChangeDates);
 
             //Act
-            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDto());
 
             //Assert
             Assert.IsInstanceOf<BadRequestResult>(result);
@@ -306,7 +306,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             //Act
-            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDto());
             var actual = (result as StatusCodeResult).StatusCode;
 
             //Assert
@@ -321,7 +321,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDto());
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -338,7 +338,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDTO());
+            var result = await _activeMembershipController.ChangeUserEntryandOathDatesAsync(new EntryAndOathDatesDto());
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -384,12 +384,12 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User() { Id = _userId });
             _userService.Setup(x => x.GetUserAsync(It.IsAny<string>())).ReturnsAsync(_user);
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { role });
-            _userDatesService.Setup(cs => cs.ChangeUserEntryAndOathDateAsync(It.IsAny<EntryAndOathDatesDTO>()))
+            _userDatesService.Setup(cs => cs.ChangeUserEntryAndOathDateAsync(It.IsAny<EntryAndOathDatesDto>()))
                              .ReturnsAsync(isChanged);
         }
 
         private string _userId = "1";
-        private UserDTO _user = new UserDTO()
+        private UserDto _user = new UserDto()
         {
             Id = "1",
             CityMembers = new List<CityMembers>(),

@@ -9,7 +9,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Announcement
     {
         public GoverningBodyAnnouncementUserProfile()
         {
-            CreateMap<GoverningBodyAnnouncement, GoverningBodyAnnouncementUserDTO>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncement, GoverningBodyAnnouncementUserDto>().ReverseMap();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EPlast.BLL.DTO.GoverningBody.Announcement
 {
-    public class GoverningBodyAnnouncementDTO
+    public class GoverningBodyAnnouncementDto
     {
         public int Id { get; set; }
         public string Text { get; set; }

@@ -37,7 +37,7 @@ namespace EPlast.BLL.Services.Notifications
         public string GetUserId(WebSocket socket)
         {
             var userConnections = _userMap.UserConnections.FirstOrDefault(p => p.Value.FirstOrDefault(conn => conn.WebSocket == socket) != null);
-            if (userConnections.Equals(default(KeyValuePair<string, HashSet<ConnectionDTO>>)))
+            if (userConnections.Equals(default(KeyValuePair<string, HashSet<ConnectionDto>>)))
             {
                 throw new ArgumentException("Dictionary doesn`t contain this WebSocket", "socket");
             }
@@ -49,9 +49,9 @@ namespace EPlast.BLL.Services.Notifications
             string connectionId = Guid.NewGuid().ToString();
             if (!_userMap.UserConnections.ContainsKey(userId))
             {
-                _userMap.UserConnections.TryAdd(userId, new HashSet<ConnectionDTO>());
+                _userMap.UserConnections.TryAdd(userId, new HashSet<ConnectionDto>());
             }
-            _userMap.UserConnections[userId].Add(new ConnectionDTO { ConnectionId = connectionId, WebSocket = socket });
+            _userMap.UserConnections[userId].Add(new ConnectionDto { ConnectionId = connectionId, WebSocket = socket });
             return connectionId;
         }
 

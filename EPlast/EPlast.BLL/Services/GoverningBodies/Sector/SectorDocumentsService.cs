@@ -33,13 +33,13 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return documentTypes;
         }
 
-        public async Task<IEnumerable<SectorDocumentTypeDTO>> GetAllSectorDocumentTypesAsync()
+        public async Task<IEnumerable<SectorDocumentTypeDto>> GetAllSectorDocumentTypesAsync()
         {
             var documentTypes = await GetAllSectorDocumentTypeEntities();
-            return _mapper.Map<IEnumerable<SectorDocumentType>, IEnumerable<SectorDocumentTypeDTO>>(documentTypes);
+            return _mapper.Map<IEnumerable<SectorDocumentType>, IEnumerable<SectorDocumentTypeDto>>(documentTypes);
         }
 
-        public async Task<SectorDocumentsDTO> AddSectorDocumentAsync(SectorDocumentsDTO documentDto)
+        public async Task<SectorDocumentsDto> AddSectorDocumentAsync(SectorDocumentsDto documentDto)
         {
             var fileBase64 = documentDto.BlobName.Split(',')[1];
             var extension = $".{documentDto.FileName.Split('.').LastOrDefault()}";
@@ -53,7 +53,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 .FirstOrDefault(dt => dt.Name == documentDto.SectorDocumentType.Name);
             documentDto.SectorDocumentTypeId = documentDto.SectorDocumentType.Id;
 
-            var document = _mapper.Map<SectorDocumentsDTO, SectorDocuments>(documentDto);
+            var document = _mapper.Map<SectorDocumentsDto, SectorDocuments>(documentDto);
             _repositoryWrapper.GoverningBodySectorDocuments.Attach(document);
             await _repositoryWrapper.GoverningBodySectorDocuments.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();

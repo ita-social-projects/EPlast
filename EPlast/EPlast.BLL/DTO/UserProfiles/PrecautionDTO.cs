@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL
 {
-    public class PrecautionDTO
+    public class PrecautionDto
     {
         public int Id { get; set; }
         public string Name { get; set; }

@@ -1,7 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.DataAccess.Entities.Event;
-using System.Linq;
 
 namespace EPlast.BLL.Mapping.Events
 {
@@ -9,7 +9,7 @@ namespace EPlast.BLL.Mapping.Events
     {
         public EventInfoProfile()
         {
-            CreateMap<Event, EventInfoDTO>()
+            CreateMap<Event, EventInfoDto>()
                 .ForMember(d => d.EventId, s => s.MapFrom(e => e.ID))
                 .ForMember(d => d.EventName, s => s.MapFrom(e => e.EventName))
                 .ForMember(d => d.Description, s => s.MapFrom(e => e.Description))

@@ -1,4 +1,10 @@
-﻿using EPlast.BLL.DTO.City;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
@@ -6,6 +12,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -15,13 +22,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using EPlast.BLL.Queries.City;
-using System.Threading;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -48,9 +48,9 @@ namespace EPlast.Tests.Services.EmailSending
                 }
             };
 
-            var user = new UserDTO
+            var user = new UserDto
             {
-                UserProfile = new UserProfileDTO
+                UserProfile = new UserProfileDto
                 {
                     Birthday = DateTime.Now
                 },
@@ -67,16 +67,16 @@ namespace EPlast.Tests.Services.EmailSending
                 }
             };
 
-            var cityAdministration = new CityAdministrationViewModelDTO
+            var cityAdministration = new CityAdministrationViewModelDto
             {
-                Administration = new List<CityAdministrationDTO>(),
-                Head = new CityAdministrationDTO
+                Administration = new List<CityAdministrationDto>(),
+                Head = new CityAdministrationDto
                 {
-                    User = new CityUserDTO()
+                    User = new CityUserDto()
                 },
-                HeadDeputy = new CityAdministrationDTO
+                HeadDeputy = new CityAdministrationDto
                 {
-                    User = new CityUserDTO()
+                    User = new CityUserDto()
                 }
             };
                
@@ -208,19 +208,19 @@ namespace EPlast.Tests.Services.EmailSending
                                                                                          _mockUserService.Object);
         }
 
-        private static List<NotificationTypeDTO> FakeTypeId()
+        private static List<NotificationTypeDto> FakeTypeId()
         {
-            return new List<NotificationTypeDTO>
+            return new List<NotificationTypeDto>
             {
-                new NotificationTypeDTO()
+                new NotificationTypeDto()
                 {
                     Id = 0
                 },
-                new NotificationTypeDTO()
+                new NotificationTypeDto()
                 {
                     Id = 1
                 },
-                new NotificationTypeDTO()
+                new NotificationTypeDto()
                 {
                     Id = 2
                 }

@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Handlers.ClubHandlers;
 using EPlast.BLL.Queries.Club;
@@ -6,12 +12,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Club
 {
@@ -38,16 +38,16 @@ namespace EPlast.Tests.Handlers.Club
                 .ReturnsAsync(new List<ClubMemberHistory>());
             _mapper
                 .Setup(m => m.Map<IEnumerable<ClubMemberHistory>,
-                                  IEnumerable<ClubMemberHistoryDTO>>
+                                  IEnumerable<ClubMemberHistoryDto>>
                       (It.IsAny<IEnumerable<ClubMemberHistory>>()))
-                .Returns(new List<ClubMemberHistoryDTO>());
+                .Returns(new List<ClubMemberHistoryDto>());
 
             // Act
             var responce = await _handler.Handle(It.IsAny<GetClubHistoryFollowersQuery>(), It.IsAny<CancellationToken>());
 
             // Assert
             Assert.NotNull(responce);
-            Assert.IsInstanceOf<List<ClubMemberHistoryDTO>>(responce);
+            Assert.IsInstanceOf<List<ClubMemberHistoryDto>>(responce);
         }
     }
 }

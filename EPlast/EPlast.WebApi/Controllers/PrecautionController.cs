@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using EPlast.BLL;
+﻿using EPlast.BLL;
 using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
@@ -11,10 +10,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -64,7 +59,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("UserPrecautions")]
         public async Task<IActionResult> GetUserPrecaution()
         {
-            IEnumerable<UserPrecautionDTO> userPrecautions = await _userPrecautionService.GetAllUsersPrecautionAsync();
+            IEnumerable<UserPrecautionDto> userPrecautions = await _userPrecautionService.GetAllUsersPrecautionAsync();
             return Ok(userPrecautions);
         }
 
@@ -225,7 +220,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Model is not valid</response>
         [HttpPost("Create")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AddPrecaution(PrecautionDTO PrecautionDTO)
+        public async Task<IActionResult> AddPrecaution(PrecautionDto PrecautionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -288,7 +283,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Model is not valid</response>
         [HttpPut("Edit/{PrecautionId}")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> EditPrecaution(PrecautionDTO PrecautionDTO)
+        public async Task<IActionResult> EditPrecaution(PrecautionDto PrecautionDTO)
         {
             if (ModelState.IsValid)
             {

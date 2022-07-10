@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User
     {
         public UserRenewalProfile()
         {
-            CreateMap<UserRenewalDTO, UserRenewalViewModel>()
+            CreateMap<UserRenewalDto, UserRenewalViewModel>()
                 .ForPath(x => x.Id, y => y.MapFrom(z => z.Id))
                 .ForPath(x => x.UserId, y => y.MapFrom(z => z.UserId))
                 .ForPath(x => x.CityId, y => y.MapFrom(z => z.CityId))

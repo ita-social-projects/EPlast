@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.Queries.Precaution
 {
-    public class GetPrecautionQuery: IRequest<PrecautionDTO>
+    public class GetPrecautionQuery : IRequest<PrecautionDto>
     {
         public int Id { get; set; }
         public GetPrecautionQuery(int id)

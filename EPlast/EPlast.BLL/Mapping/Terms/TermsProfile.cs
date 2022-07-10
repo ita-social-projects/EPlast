@@ -9,7 +9,7 @@ namespace EPlast.BLL.Mapping.Terms
     {
         public TermsProfile()
         {
-            CreateMap<DataAccess.Entities.Terms, TermsDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.Terms, TermsDto>().ReverseMap();
         }
     }
 }   

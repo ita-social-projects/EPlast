@@ -7,7 +7,7 @@ using MediatR;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetCityFollowersHandler : IRequestHandler<GetCityFollowersQuery, CityProfileDTO>
+    public class GetCityFollowersHandler : IRequestHandler<GetCityFollowersQuery, CityProfileDto>
     {
         private readonly IMediator _mediator;
 
@@ -16,7 +16,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mediator = mediator;
         }
 
-        public async Task<CityProfileDTO> Handle(GetCityFollowersQuery request, CancellationToken cancellationToken)
+        public async Task<CityProfileDto> Handle(GetCityFollowersQuery request, CancellationToken cancellationToken)
         {
             var query = new GetCityByIdWthFullInfoQuery(request.CityId);
             var city = await _mediator.Send(query, cancellationToken);
@@ -29,7 +29,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 .Where(m => !m.IsApproved)
                 .ToList();
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Followers = followers

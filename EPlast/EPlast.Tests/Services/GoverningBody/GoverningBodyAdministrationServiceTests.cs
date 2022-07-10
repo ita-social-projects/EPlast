@@ -61,7 +61,7 @@ namespace EPlast.Tests.Services.GoverningBody
                     new Tuple<IEnumerable<GoverningBodyAdministration>, int>(new List<GoverningBodyAdministration>(),
                         It.IsAny<int>()));
             _mapperMock.Setup(m =>
-                m.Map<GoverningBodyAdministration, GoverningBodyAdministrationDTO>(
+                m.Map<GoverningBodyAdministration, GoverningBodyAdministrationDto>(
                     It.IsAny<GoverningBodyAdministration>()));
 
             //Act
@@ -70,27 +70,27 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<int>());
 
             //Assert
-            Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>>(result);
         }
 
         [Test]
         public async Task GetGoverningBodyAdministratorsAsync_ReturnsIEnumerableOfGoverningBodyAdministrationDTO()
         {
             //Arrange
-            _adminTypeService.Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>())).ReturnsAsync(It.IsAny<AdminTypeDTO>());
+            _adminTypeService.Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>())).ReturnsAsync(It.IsAny<AdminTypeDto>());
             _repoWrapper
                 .Setup(x => x.GoverningBodyAdministration.GetAllAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(new List<GoverningBodyAdministration>() { new GoverningBodyAdministration() { Id = 1 } });
             _mapperMock.Setup(m =>
-                m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
-                    It.IsAny<IEnumerable<GoverningBodyAdministration>>())).Returns(new List<GoverningBodyAdministrationDTO>() { new GoverningBodyAdministrationDTO() { ID = 1 } });
+                m.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(
+                    It.IsAny<IEnumerable<GoverningBodyAdministration>>())).Returns(new List<GoverningBodyAdministrationDto>() { new GoverningBodyAdministrationDto() { ID = 1 } });
 
             //Act
             var result = await _governingBodyAdministrationService.GetGoverningBodyAdministratorsAsync();
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<GoverningBodyAdministrationDto>>(result);
         }
 
         [Test]
@@ -109,14 +109,14 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Act
             var result = await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDtoEndDateToday);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDto>(result);
         }
 
         [Test]
@@ -135,14 +135,14 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Act
             var result = await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDtoEndDateNull);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDto>(result);
         }
 
         [Test]
@@ -161,7 +161,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.GoverningBodyHead });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDtoEndDateNull));
@@ -179,14 +179,14 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Act
             var result = await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateToday);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDto>(result);
         }
 
         [Test]
@@ -201,7 +201,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
 
             //Act
@@ -209,7 +209,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDto>(result);
         }
 
         [Test]
@@ -224,7 +224,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(true);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
             //Act
             //Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull));
@@ -242,7 +242,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.GoverningBodyAdmin });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull));
@@ -265,7 +265,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.GoverningBodyAdmin });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
 
             //Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDtoEndDateNull));
@@ -279,7 +279,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
             _repoWrapper
                 .SetupSequence(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
@@ -297,7 +297,7 @@ namespace EPlast.Tests.Services.GoverningBody
             //Assert
             _repoWrapper.Verify();
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDto>(result);
         }
 
         [Test]
@@ -324,14 +324,14 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO
+                .ReturnsAsync(new AdminTypeDto
                 {
                     AdminTypeName = Roles.GoverningBodyHead,
                     ID = FakeId
                 });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new AdminTypeDTO
+                .ReturnsAsync(new AdminTypeDto
                 {
                     AdminTypeName = Roles.GoverningBodyHead,
                     ID = FakeId
@@ -343,7 +343,7 @@ namespace EPlast.Tests.Services.GoverningBody
             //Assert
             _repoWrapper.Verify();
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<GoverningBodyAdministrationDTO>(result);
+            Assert.IsInstanceOf<GoverningBodyAdministrationDto>(result);
         }
 
         [Test]
@@ -352,7 +352,7 @@ namespace EPlast.Tests.Services.GoverningBody
             //Arrange
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .ReturnsAsync(new AdminTypeDTO());
+                .ReturnsAsync(new AdminTypeDto());
             _repoWrapper
                 .Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
@@ -379,7 +379,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(GoverningBodyAdmin);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new AdminTypeDTO { ID = 0, AdminTypeName = "Крайовий Адмін" });
+                .ReturnsAsync(new AdminTypeDto { ID = 0, AdminTypeName = "Крайовий Адмін" });
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -409,7 +409,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(GoverningBodyAdmin);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new AdminTypeDTO { ID = 0, AdminTypeName = Roles.GoverningBodyHead });
+                .ReturnsAsync(new AdminTypeDto { ID = 0, AdminTypeName = Roles.GoverningBodyHead });
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -446,7 +446,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(GoverningBodyAdmin);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminType));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminType));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -522,14 +522,14 @@ namespace EPlast.Tests.Services.GoverningBody
                         IIncludableQueryable<User, object>>>()))
                 .ReturnsAsync(GetTestUsers);
             _userManager.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(roles);
-            _mapperMock.Setup(m => m.Map<User, ShortUserInformationDTO>(It.IsAny<User>()))
-                .Returns(new ShortUserInformationDTO());
+            _mapperMock.Setup(m => m.Map<User, ShortUserInformationDto>(It.IsAny<User>()))
+                .Returns(new ShortUserInformationDto());
 
             //Act
             var result = await _governingBodyAdministrationService.GetUsersForGoverningBodyAdminFormAsync();
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDto>>(result);
         }
 
         [Test]
@@ -601,7 +601,7 @@ namespace EPlast.Tests.Services.GoverningBody
 
         private const int FakeId = 3;
 
-        private static readonly AdminTypeDTO AdminType = new AdminTypeDTO
+        private static readonly AdminTypeDto AdminType = new AdminTypeDto
         {
             AdminTypeName = Roles.GoverningBodyHead,
             ID = 1
@@ -624,7 +624,7 @@ namespace EPlast.Tests.Services.GoverningBody
             IsMainStatus = true
         };
 
-        private static readonly GoverningBodyAdministrationDTO GoverningBodyAdministrationDtoEndDateToday = new GoverningBodyAdministrationDTO
+        private static readonly GoverningBodyAdministrationDto GoverningBodyAdministrationDtoEndDateToday = new GoverningBodyAdministrationDto
         {
             ID = 1,
             AdminType = AdminType,
@@ -632,12 +632,12 @@ namespace EPlast.Tests.Services.GoverningBody
             AdminTypeId = 1,
             StartDate = DateTime.Now,
             EndDate = DateTime.Today,
-            User = new GoverningBodyUserDTO(),
+            User = new GoverningBodyUserDto(),
             UserId = Roles.GoverningBodyHead,
             GoverningBodyAdminRole = "Admin"
         };
 
-        private readonly GoverningBodyAdministrationDTO GoverningBodyAdministrationDtoEndDateNull = new GoverningBodyAdministrationDTO
+        private readonly GoverningBodyAdministrationDto GoverningBodyAdministrationDtoEndDateNull = new GoverningBodyAdministrationDto
         {
             ID = 1,
             AdminType = AdminType,
@@ -646,7 +646,7 @@ namespace EPlast.Tests.Services.GoverningBody
             StartDate = DateTime.Now,
             EndDate = null,
             Status = true,
-            User = new GoverningBodyUserDTO(),
+            User = new GoverningBodyUserDto(),
             UserId = Roles.GoverningBodyHead,
             GoverningBodyAdminRole = "Admin"
         };

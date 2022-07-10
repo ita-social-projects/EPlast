@@ -44,7 +44,7 @@ namespace EPlast.Tests.Handlers.City
                 .ReturnsAsync(GetMembers());
             var users = GetMembers().Select(u => u.User);
             _mockMapper
-                .Setup(m => m.Map<IEnumerable<User>, IEnumerable<CityUserDTO>>(users))
+                .Setup(m => m.Map<IEnumerable<User>, IEnumerable<CityUserDto>>(users))
                 .Returns(GetExpectedUsers());
 
             //Act
@@ -52,18 +52,18 @@ namespace EPlast.Tests.Handlers.City
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityUserDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityUserDto>>(result);
         }
 
-        private static IEnumerable<CityUserDTO> GetExpectedUsers()
+        private static IEnumerable<CityUserDto> GetExpectedUsers()
         {
-            return new List<CityUserDTO>
+            return new List<CityUserDto>
             {
-                new CityUserDTO
+                new CityUserDto
                 {
                     ID = "UserId"
                 },
-                new CityUserDTO
+                new CityUserDto
                 {
                     ID = "UserId2"
                 }

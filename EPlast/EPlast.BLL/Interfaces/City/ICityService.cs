@@ -1,9 +1,9 @@
-﻿using EPlast.BLL.DTO.City;
-using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.City;
+using Microsoft.AspNetCore.Http;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.City
@@ -48,7 +48,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>All cities of type CityDTO</returns>
         [Obsolete("Use refactored method via mediator query/handler GetAllCitiesOrByName")]
-        Task<IEnumerable<CityDTO>> GetAllCitiesAsync(string cityName = null);
+        Task<IEnumerable<CityDto>> GetAllCitiesAsync(string cityName = null);
 
         /// <summary>
         /// Gets all active cities
@@ -56,7 +56,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>All active cities of type CityDTO</returns>
         [Obsolete("Method is redundant")]
-        Task<IEnumerable<CityDTO>> GetAllActiveCitiesAsync(string cityName = null);
+        Task<IEnumerable<CityDto>> GetAllActiveCitiesAsync(string cityName = null);
 
         /// <summary>
         /// Gets all not active cities
@@ -64,7 +64,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityName">Optional param to find cities by name</param>
         /// <returns>All not active cities of type CityDTO</returns>
         [Obsolete("Method is redundant")]
-        Task<IEnumerable<CityDTO>> GetAllNotActiveCitiesAsync(string cityName = null);
+        Task<IEnumerable<CityDto>> GetAllNotActiveCitiesAsync(string cityName = null);
 
         /// <summary>
         /// Gets a list of cities by region
@@ -72,7 +72,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="regionId">The id of the region</param>
         /// <returns>List of cities by region</returns>
         [Obsolete("Use this method via mediator query/handler GetCitiesByRegion")]
-        Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId);
+        Task<IEnumerable<CityDto>> GetCitiesByRegionAsync(int regionId);
 
         /// <summary>
         /// Gets a specific city
@@ -80,7 +80,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns></returns>
         [Obsolete("Use this method via mediator query/handler GetCityByIdWthFullInfo")]
-        Task<CityDTO> GetByIdAsync(int cityId);
+        Task<CityDto> GetByIdAsync(int cityId);
 
         /// <summary>
         /// Gets a specific city without getting regions and documents
@@ -88,7 +88,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns></returns>
         [Obsolete("Use this method via mediator query/handler GetCityById")]
-        Task<CityDTO> GetCityByIdAsync(int cityId);
+        Task<CityDto> GetCityByIdAsync(int cityId);
 
         /// <summary>
         /// Gets an information about a specific city with 6 members per section
@@ -97,7 +97,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <returns>An information about a specific city</returns>
         /// See <see cref="ICityService.GetCityProfileAsync(int, ClaimsPrincipal)"/> to get information about a specific city including user roles
         [Obsolete("Use this method via mediator query/handler GetCityProfileBasic")]
-        Task<CityProfileDTO> GetCityProfileAsync(int cityId);
+        Task<CityProfileDto> GetCityProfileAsync(int cityId);
 
         /// <summary>
         /// Gets an information about a specific city with 6 members per section
@@ -106,7 +106,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="user">Current user</param>
         /// See <see cref="ICityService.GetCityProfileAsync(int)"/> to get information about a specific city
         [Obsolete("Use this method via mediator query/handler GetCityProfile")]
-        Task<CityProfileDTO> GetCityProfileAsync(int cityId, DataAccessCity.User user);
+        Task<CityProfileDto> GetCityProfileAsync(int cityId, DataAccessCity.User user);
 
         /// <summary>
         /// Gets a list of members of a specific city
@@ -114,7 +114,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of members of a specific city</returns>
         [Obsolete("Use this method via mediator query/handler GetCityMembers")]
-        Task<CityProfileDTO> GetCityMembersAsync(int cityId);
+        Task<CityProfileDto> GetCityMembersAsync(int cityId);
 
         /// <summary>
         /// Gets a list of followers of a specific city
@@ -122,7 +122,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of followers of a specific city including user roles</returns>
         [Obsolete("Use this method via mediator query/handler GetCityFollowers")]
-        Task<CityProfileDTO> GetCityFollowersAsync(int cityId);
+        Task<CityProfileDto> GetCityFollowersAsync(int cityId);
 
         /// <summary>
         /// Gets a list of administrators of a specific city
@@ -130,7 +130,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of followers of a specific city</returns>
         [Obsolete("Use this method via mediator query/handler GetCityAdmins")]
-        Task<CityProfileDTO> GetCityAdminsAsync(int cityId);
+        Task<CityProfileDto> GetCityAdminsAsync(int cityId);
 
         /// <summary>
         /// Gets Ids of administrators of a specific city
@@ -146,7 +146,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of documents of a specific city</returns>
         [Obsolete("Use this method via mediator query/handler GetCityDocuments")]
-        Task<CityProfileDTO> GetCityDocumentsAsync(int cityId);
+        Task<CityProfileDto> GetCityDocumentsAsync(int cityId);
 
         /// <summary>
         /// Edits a specific city
@@ -154,7 +154,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="cityId">The id of the city</param>
         /// <returns>An information about an edited city</returns>
         [Obsolete("Redundant method")]
-        Task<CityProfileDTO> EditAsync(int cityId);
+        Task<CityProfileDto> EditAsync(int cityId);
 
         /// <summary>
         /// Edits a specific city
@@ -163,7 +163,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="file">A new city image</param>
         /// <returns>An information about an edited city</returns>
         [Obsolete("Redundant method")]
-        Task EditAsync(CityProfileDTO model, IFormFile file);
+        Task EditAsync(CityProfileDto model, IFormFile file);
 
         /// <summary>
         /// Edits a specific city
@@ -171,7 +171,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="model">An information about an edited city</param>
         /// <returns>An information about an edited city</returns>
         [Obsolete("Use this method via mediator command/handler EditCity")]
-        Task EditAsync(CityDTO model);
+        Task EditAsync(CityDto model);
 
         /// <summary>
         /// Creates a new city
@@ -180,7 +180,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="file">A new city image</param>
         /// <returns>The id of a new city</returns>
         [Obsolete("Redundant method")]
-        Task<int> CreateAsync(CityProfileDTO model, IFormFile file);
+        Task<int> CreateAsync(CityProfileDto model, IFormFile file);
 
         /// <summary>
         /// Creates a new city
@@ -188,7 +188,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="model">An information about a new city</param>
         /// <returns>The id of a new city</returns>
         [Obsolete("Use this method via mediator command/handler CreateCityWthId")]
-        Task<int> CreateAsync(CityDTO model);
+        Task<int> CreateAsync(CityDto model);
 
         /// <summary>
         /// Removes a specific city
@@ -210,7 +210,7 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <returns>All cities</returns>
         [Obsolete("Use this method via mediator query/handler GetActiveCities")]
-        Task<IEnumerable<CityForAdministrationDTO>> GetCities();
+        Task<IEnumerable<CityForAdministrationDto>> GetCities();
 
         /// <summary>
         /// Unarchives a specific city
@@ -224,14 +224,14 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [Obsolete("Use this method via mediator query/handler GetCityUsers")]
-        Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId);
+        Task<IEnumerable<CityUserDto>> GetCityUsersAsync(int cityId);
 
         /// <summary>
         /// Get all admins of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         [Obsolete("Use this method via mediator query/handler GetAdministration")]
-        Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId);
+        Task<IEnumerable<CityAdministrationGetDto>> GetAdministrationAsync(int cityId);
 
         /// <summary>
         /// Check if user is plast member
@@ -248,7 +248,7 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="name">name of City</param>
         /// <param name="isArchive">check if City is archive</param>
         [Obsolete("Use refactored method via mediator query/handler GetAllCitiesByPageAndIsArchive")]
-        Task<Tuple<IEnumerable<CityObjectDTO>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize,
+        Task<Tuple<IEnumerable<CityObjectDto>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize,
             string name, bool isArchive);
 
         /// <summary>

@@ -1,18 +1,18 @@
-﻿using EPlast.BLL.DTO.City;
-using System;
+﻿using System;
+using EPlast.BLL.DTO.City;
 
 namespace EPlast.BLL
 {
-    public class UserDistinctionDTO
+    public class UserDistinctionDto
     {
         public int Id { get; set; }
         public int DistinctionId { get; set; }
-        public DistinctionDTO Distinction { get; set; }
+        public DistinctionDto Distinction { get; set; }
         public string Reporter { get; set; }
         public string Reason { get; set; }
         public int Number { get; set; }
         public DateTime Date { get; set; }
         public string UserId { get; set; }
-        public CityUserDTO User { get; set; }
+        public CityUserDto User { get; set; }
     }
 }

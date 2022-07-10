@@ -1,11 +1,11 @@
-﻿using EPlast.BLL.DTO.EventUser;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -28,11 +28,11 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventTypeDTO>> GetEventTypesDTOAsync()
+        public async Task<IEnumerable<EventTypeDto>> GetEventTypesDTOAsync()
         {
             var eventTypes = await _repoWrapper.EventType.GetAllAsync();
             var dto = eventTypes
-                .Select(eventType => new EventTypeDTO()
+                .Select(eventType => new EventTypeDto()
                 {
                     ID = eventType.ID,
                     EventTypeName = eventType.EventTypeName

@@ -1,15 +1,15 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.Club
 {
@@ -29,18 +29,18 @@ namespace EPlast.BLL.Services.Club
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ClubMemberHistoryDTO>> GetClubReportMembersAsync(int ClubAnnualReportID)
+        public async Task<IEnumerable<ClubMemberHistoryDto>> GetClubReportMembersAsync(int ClubAnnualReportID)
         {
             var clubReportMember = await _repositoryWrapper.ClubReportMember.GetAllAsync(predicate: a => a.ClubAnnualReportId == ClubAnnualReportID,
                                                                       include: source => source
                                                                                .Include(a => a.ClubMemberHistory.User.ClubReportPlastDegrees.PlastDegree)
                                                                                .Include(x => x.ClubMemberHistory.User.ClubReportCities.City));
 
-            var users = _mapper.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>(clubReportMember.Select(user => user.ClubMemberHistory));
+            var users = _mapper.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>(clubReportMember.Select(user => user.ClubMemberHistory));
             return users;
         }
 
-        public async Task<IEnumerable<ClubReportAdministrationDTO>> GetClubReportAdminsAsync(int ClubAnnualReportID)
+        public async Task<IEnumerable<ClubReportAdministrationDto>> GetClubReportAdminsAsync(int ClubAnnualReportID)
         {
             var clubReportAdmins = await _repositoryWrapper.ClubReportAdmins.GetAllAsync(predicate: a => a.ClubAnnualReportId == ClubAnnualReportID,
              include: source => source
@@ -48,14 +48,14 @@ namespace EPlast.BLL.Services.Club
                        .Include(a => a.ClubAdministration.User.ClubReportPlastDegrees.PlastDegree)
                        .Include(a => a.ClubAdministration.User.ClubReportCities.City));
 
-            var admins = _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>(clubReportAdmins.Select(admin => admin.ClubAdministration));
+            var admins = _mapper.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDto>>(clubReportAdmins.Select(admin => admin.ClubAdministration));
             return admins;
         }
 
 
 
         ///<inheritdoc/>
-        public async Task<ClubAnnualReportDTO> GetByIdAsync(User user, int id)
+        public async Task<ClubAnnualReportDto> GetByIdAsync(User user, int id)
         {
             var clubReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(predicate: a => a.ID == id);
 
@@ -68,7 +68,7 @@ namespace EPlast.BLL.Services.Club
             var users = await GetClubReportMembersAsync(id);
             var admins = await GetClubReportAdminsAsync(id);
 
-            var clubReportDTO = _mapper.Map<ClubAnnualReport, ClubAnnualReportDTO>(clubReport);
+            var clubReportDTO = _mapper.Map<ClubAnnualReport, ClubAnnualReportDto>(clubReport);
 
             clubReportDTO.Head = admins.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.KurinHead);
             clubReportDTO.Admins = admins.ToList();
@@ -84,7 +84,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task<IEnumerable<ClubAnnualReportDTO>> GetAllAsync(User user)
+        public async Task<IEnumerable<ClubAnnualReportDto>> GetAllAsync(User user)
         {
             var annualReports = await _repositoryWrapper.ClubAnnualReports.GetAllAsync(
                     include: source => source
@@ -92,7 +92,7 @@ namespace EPlast.BLL.Services.Club
                             .ThenInclude(c => c.ClubAdministration)
                         .Include(ca => ca.Club)
                             .ThenInclude(cm => cm.ClubMembers));
-            return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(annualReports);
+            return _mapper.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDto>>(annualReports);
         }
 
         public async Task<IEnumerable<ClubAnnualReportTableObject>> GetAllAsync(User user, bool isAdmin, string searchedData, int page, int pageSize, int sortKey, bool auth)
@@ -100,7 +100,7 @@ namespace EPlast.BLL.Services.Club
             return await _repositoryWrapper.ClubAnnualReports.GetClubAnnualReportsAsync(user.Id, isAdmin, searchedData, page, pageSize, sortKey, auth);
         }
 
-        private void SetClubReportMembersOrFollowers(IEnumerable<ClubMemberHistoryDTO> ReportMembersOrFollowers, List<ClubReportMember> reportUsers, List<ClubReportPlastDegrees> reportUsersPlastDegrees, List<ClubReportCities> reportUsersCity, int clubAnnualReportID)
+        private void SetClubReportMembersOrFollowers(IEnumerable<ClubMemberHistoryDto> ReportMembersOrFollowers, List<ClubReportMember> reportUsers, List<ClubReportPlastDegrees> reportUsersPlastDegrees, List<ClubReportCities> reportUsersCity, int clubAnnualReportID)
         {
             foreach (var clubHistoryMember in ReportMembersOrFollowers)
             {
@@ -127,7 +127,7 @@ namespace EPlast.BLL.Services.Club
             }
         }
 
-        private void SetReportAdmins(IEnumerable<ClubReportAdministrationDTO> Admins, List<ClubReportAdmins> reportAdmins, int clubAnnualReportID)
+        private void SetReportAdmins(IEnumerable<ClubReportAdministrationDto> Admins, List<ClubReportAdmins> reportAdmins, int clubAnnualReportID)
         {
             foreach (var clubReportAdmin in Admins)
             {
@@ -136,7 +136,7 @@ namespace EPlast.BLL.Services.Club
         }
 
 
-        public async Task CreateAsync(User user, ClubAnnualReportDTO clubAnnualReportDTO)
+        public async Task CreateAsync(User user, ClubAnnualReportDto clubAnnualReportDTO)
         {
             var club = await _repositoryWrapper.Club.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == clubAnnualReportDTO.ClubId);
@@ -152,7 +152,7 @@ namespace EPlast.BLL.Services.Club
             }
 
             clubAnnualReportDTO.ClubName = club.Name;
-            var clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDTO);
+            var clubAnnualReport = _mapper.Map<ClubAnnualReportDto, ClubAnnualReport>(clubAnnualReportDTO);
 
             await _repositoryWrapper.ClubAnnualReports.CreateAsync(clubAnnualReport);
             await _repositoryWrapper.SaveAsync();
@@ -264,7 +264,7 @@ namespace EPlast.BLL.Services.Club
         }
 
         ///<inheritdoc/>
-        public async Task EditClubReportAsync(User user, ClubAnnualReportDTO clubAnnualReportDto)
+        public async Task EditClubReportAsync(User user, ClubAnnualReportDto clubAnnualReportDto)
         {
             var clubAnnualReport = await _repositoryWrapper.ClubAnnualReports.GetFirstOrDefaultAsync(
                     predicate: a => a.ClubId == clubAnnualReportDto.ClubId
@@ -277,7 +277,7 @@ namespace EPlast.BLL.Services.Club
             {
                 throw new UnauthorizedAccessException();
             }
-            clubAnnualReport = _mapper.Map<ClubAnnualReportDTO, ClubAnnualReport>(clubAnnualReportDto);
+            clubAnnualReport = _mapper.Map<ClubAnnualReportDto, ClubAnnualReport>(clubAnnualReportDto);
             _repositoryWrapper.ClubAnnualReports.Update(clubAnnualReport);
             await _repositoryWrapper.SaveAsync();
         }
