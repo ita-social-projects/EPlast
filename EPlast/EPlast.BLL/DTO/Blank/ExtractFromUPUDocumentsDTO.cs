@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.Blank
 {
-   public class ExtractFromUPUDocumentsDTO
+    public class ExtractFromUpuDocumentsDto
     {
         public int ID { get; set; }
         public string BlobName { get; set; }

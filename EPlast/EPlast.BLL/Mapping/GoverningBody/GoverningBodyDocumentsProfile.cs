@@ -9,8 +9,8 @@ namespace EPlast.BLL.Mapping.GoverningBody
     {
         public GoverningBodyDocumentsProfile()
         {
-            CreateMap<GoverningBodyDocuments, GoverningBodyDocumentsDTO>().ReverseMap();
-            CreateMap<GoverningBodyDocumentType, GoverningBodyDocumentTypeDTO>().ReverseMap();
+            CreateMap<GoverningBodyDocuments, GoverningBodyDocumentsDto>().ReverseMap();
+            CreateMap<GoverningBodyDocumentType, GoverningBodyDocumentTypeDto>().ReverseMap();
         }
     }
 }

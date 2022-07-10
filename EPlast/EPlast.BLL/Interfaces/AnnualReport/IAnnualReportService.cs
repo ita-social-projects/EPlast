@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.AnnualReport;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.AnnualReport;
 using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services.Interfaces
@@ -15,7 +15,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<AnnualReportDTO> GetByIdAsync(User user, int id);
+        Task<AnnualReportDto> GetByIdAsync(User user, int id);
 
         /// <summary>
         /// Method to get data for the annual report edit form
@@ -25,14 +25,14 @@ namespace EPlast.BLL.Services.Interfaces
         /// <returns>Annual report model</returns>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task<AnnualReportDTO> GetEditFormByIdAsync(User user, int id);
+        Task<AnnualReportDto> GetEditFormByIdAsync(User user, int id);
 
         /// <summary>
         /// Method to get all reports that the user has access to
         /// </summary>
         /// <param name="user">Authorized user</param>
         /// <returns>List of annual report model</returns>
-        Task<IEnumerable<AnnualReportDTO>> GetAllAsync(User user);
+        Task<IEnumerable<AnnualReportDto>> GetAllAsync(User user);
 
         /// <summary>
         /// Method to get all searched reports that the user has access to
@@ -56,14 +56,14 @@ namespace EPlast.BLL.Services.Interfaces
         /// <exception cref="System.InvalidOperationException">Thrown when city has created annual report</exception>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to city</exception>
         /// <exception cref="System.NullReferenceException">Thrown when city doesn't exist</exception>
-        Task CreateAsync(User user, AnnualReportDTO annualReportDTO);
+        Task CreateAsync(User user, AnnualReportDto annualReportDTO);
 
         /// <summary>
         /// Get a list of members of a specific city
         /// </summary>
         /// <param name="cityId">The id of the city</param>
         /// <returns>A list of members of a specific city</returns>
-        Task<CityDTO> GetCityMembersAsync(int cityId);
+        Task<CityDto> GetCityMembersAsync(int cityId);
 
         /// <summary>
         /// Method to edit annual report
@@ -73,7 +73,7 @@ namespace EPlast.BLL.Services.Interfaces
         /// <exception cref="System.InvalidOperationException">Thrown when annual report can not be edited</exception>
         /// <exception cref="System.UnauthorizedAccessException">Thrown when user hasn't access to annual report</exception>
         /// <exception cref="System.NullReferenceException">Thrown when annual report doesn't exist</exception>
-        Task EditAsync(User user, AnnualReportDTO annualReportDTO);
+        Task EditAsync(User user, AnnualReportDto annualReportDTO);
 
         /// <summary>
         /// Method to confirm annual report

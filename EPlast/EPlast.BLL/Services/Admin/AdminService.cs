@@ -1,20 +1,20 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.FormerMember;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.Admin;
-using EPlast.BLL.Interfaces.FormerMember;
 
 namespace EPlast.BLL.Services
 {
@@ -120,7 +120,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetCityRegionAdminsOfUserAsync(string userId)
+        public async Task<IEnumerable<CityDto>> GetCityRegionAdminsOfUserAsync(string userId)
         {
             var cities = await _repoWrapper.City.
                 GetAllAsync(predicate: c => c.CityMembers.FirstOrDefault(c => c.UserId == userId) != null,
@@ -142,21 +142,21 @@ namespace EPlast.BLL.Services
                 }).ToList();
             }
 
-            var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(cities);
+            var citiesDTO = _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDto>>(cities);
 
             foreach (var city in citiesDTO)
             {
-                city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
+                city.Region.Administration = _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(cities.First(c => c.ID == city.ID).Region.RegionAdministration);
             }
             return citiesDTO;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDTO>>> filterRoles)
+        public async Task<IEnumerable<ShortUserInformationDto>> GetUsersByRolesAsync(string rolesString, bool include, Func<IEnumerable<User>, IEnumerable<string>, bool, Task<IEnumerable<ShortUserInformationDto>>> filterRoles)
         {
             var rolesGroups = rolesString.Split('|');
             var users = await _repoWrapper.User.GetAllAsync();
-            var filteredUsers = new List<ShortUserInformationDTO>();
+            var filteredUsers = new List<ShortUserInformationDto>();
             foreach (var rolesGroup in rolesGroups)
             {
                 var roles = rolesGroup.Split(',').OrderByDescending(x => x);
@@ -166,9 +166,9 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ShortUserInformationDTO>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
+        public async Task<IEnumerable<ShortUserInformationDto>> FilterByAnyRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
         {
-            var filteredUsers = new List<ShortUserInformationDTO>();
+            var filteredUsers = new List<ShortUserInformationDto>();
 
             foreach (var user in users)
             {
@@ -176,16 +176,16 @@ namespace EPlast.BLL.Services
                 var intersectedRoles = userRoles.Intersect(roles).OrderByDescending(x => x);
                 if (intersectedRoles.Any() == include)
                 {
-                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDto>(user));
                 }
             }
             return filteredUsers;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ShortUserInformationDTO>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
+        public async Task<IEnumerable<ShortUserInformationDto>> FilterByAllRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
         {
-            var filteredUsers = new List<ShortUserInformationDTO>();
+            var filteredUsers = new List<ShortUserInformationDto>();
 
             foreach (var user in users)
             {
@@ -193,23 +193,23 @@ namespace EPlast.BLL.Services
                 var intersectedRoles = userRoles.Intersect(roles).OrderByDescending(x => x);
                 if (intersectedRoles.SequenceEqual(roles) == include)
                 {
-                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDto>(user));
                 }
             }
             return filteredUsers;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ShortUserInformationDTO>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
+        public async Task<IEnumerable<ShortUserInformationDto>> FilterByExactRoles(IEnumerable<User> users, IEnumerable<string> roles, bool include)
         {
-            var filteredUsers = new List<ShortUserInformationDTO>();
+            var filteredUsers = new List<ShortUserInformationDto>();
 
             foreach (var user in users)
             {
                 var userRoles = (await _userManager.GetRolesAsync(user)).ToList();
                 if (roles.SequenceEqual(userRoles.OrderByDescending(x => x)) == include)
                 {
-                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDTO>(user));
+                    filteredUsers.Add(_mapper.Map<User, ShortUserInformationDto>(user));
                 }
             }
             return filteredUsers;
@@ -224,7 +224,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<UserTableDTO>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId)
+        public async Task<Tuple<IEnumerable<UserTableDto>, int>> GetUsersTableAsync(TableFilterParameters tableFilterParameters, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
@@ -241,7 +241,7 @@ namespace EPlast.BLL.Services
                 strCities = filterTableParametersByRole.Cities;
                 strClubs = filterTableParametersByRole.Clubs;
             }
-           
+
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
@@ -250,19 +250,19 @@ namespace EPlast.BLL.Services
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
-            return new Tuple<IEnumerable<UserTableDTO>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDTO>>(users), rowCount);
+            return new Tuple<IEnumerable<UserTableDto>, int>(_mapper.Map<IEnumerable<UserTableObject>, IEnumerable<UserTableDto>>(users), rowCount);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersAsync()
+        public async Task<IEnumerable<ShortUserInformationDto>> GetUsersAsync()
         {
             var users = await _repoWrapper.User.GetAllAsync();
-            var usersDtos = new List<ShortUserInformationDTO>();
+            var usersDtos = new List<ShortUserInformationDto>();
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
-                var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                var shortUser = _mapper.Map<User, ShortUserInformationDto>(user);
                 shortUser.IsInLowerRole = isInLowerRole;
                 usersDtos.Add(shortUser);
             }
@@ -295,12 +295,12 @@ namespace EPlast.BLL.Services
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetShortUserInfoAsync(string searchString)
+        public async Task<IEnumerable<ShortUserInformationDto>> GetShortUserInfoAsync(string searchString)
         {
             var users = await _repoWrapper.User.GetAllAsync(u =>
                 u.FirstName.Contains(searchString) || u.LastName.Contains(searchString));
 
-            return users.Select(user => _mapper.Map<User, ShortUserInformationDTO>(user)).ToList();
+            return users.Select(user => _mapper.Map<User, ShortUserInformationDto>(user)).ToList();
         }
 
         public Task<int> GetUsersCountAsync()
@@ -336,7 +336,7 @@ namespace EPlast.BLL.Services
             return (await _repoWrapper.CityMembers.GetAllAsync(c => c.UserId == userId && c.IsApproved)).Any();
         }
 
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodiesAsync()
+        public async Task<IEnumerable<ShortUserInformationDto>> GetUsersForGoverningBodiesAsync()
         {
             var adminRoles = new List<string>
             {
@@ -346,13 +346,13 @@ namespace EPlast.BLL.Services
                 Roles.GoverningBodySectorSecretary
             };
             var users = await _repoWrapper.User.GetAllAsync();
-            var usersDtos = new List<ShortUserInformationDTO>();
+            var usersDtos = new List<ShortUserInformationDto>();
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
                 if (roles.Contains(Roles.PlastMember))
                 {
-                    var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                    var shortUser = _mapper.Map<User, ShortUserInformationDto>(user);
                     shortUser.IsInDeputyRole = roles.Intersect(adminRoles).Any();
                     shortUser.IsInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
                     usersDtos.Add(shortUser);

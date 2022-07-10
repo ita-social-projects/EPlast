@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.Club
 {
-    public class ClubForAdministrationDTO
+    public class ClubForAdministrationDto
     {
         public int ID { get; set; }
         public string Name { get; set; }

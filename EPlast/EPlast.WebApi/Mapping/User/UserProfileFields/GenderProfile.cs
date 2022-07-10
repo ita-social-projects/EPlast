@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User.UserProfileFields
     {
         public GenderProfile()
         {
-            CreateMap<GenderDTO, GenderViewModel>().ReverseMap();
+            CreateMap<GenderDto, GenderViewModel>().ReverseMap();
         }
     }
 }

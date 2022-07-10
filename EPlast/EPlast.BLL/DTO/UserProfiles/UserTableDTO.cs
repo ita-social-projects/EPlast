@@ -1,17 +1,17 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
+﻿using System;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.Resources;
-using System;
 
 namespace EPlast.BLL.DTO
 {
-    public class UserTableDTO
+    public class UserTableDto
     {
-        public ShortUserInformationDTO User { get; set; }
+        public ShortUserInformationDto User { get; set; }
         public string ID { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime? Birthday { get; set; }
-        public GenderDTO Gender { get; set; }
+        public GenderDto Gender { get; set; }
         public string Email { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }

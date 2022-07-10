@@ -1,11 +1,11 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.TermsOfUse;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.Queries.TermsOfUse;
 using EPlast.DataAccess.Repositories;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.TermsOfUse
 {
@@ -26,7 +26,7 @@ namespace EPlast.BLL.Handlers.TermsOfUse
         {
             var query = new CheckIfAdminForTermsQuery(request.User);
             await _mediator.Send(query, cancellationToken);
-            var terms = _mapper.Map<TermsDTO, DataAccess.Entities.Terms>(request.TermsDto);
+            var terms = _mapper.Map<TermsDto, DataAccess.Entities.Terms>(request.TermsDto);
             await _repoWrapper.TermsOfUse.CreateAsync(terms);
             await _repoWrapper.SaveAsync();
             return Unit.Value;

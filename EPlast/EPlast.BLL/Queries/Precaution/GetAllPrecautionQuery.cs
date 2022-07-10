@@ -1,9 +1,9 @@
-﻿using MediatR;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using MediatR;
 
 namespace EPlast.BLL.Queries.Precaution
 {
-    public class GetAllPrecautionQuery: IRequest<IEnumerable<PrecautionDTO>>
+    public class GetAllPrecautionQuery : IRequest<IEnumerable<PrecautionDto>>
     {
     }
 }

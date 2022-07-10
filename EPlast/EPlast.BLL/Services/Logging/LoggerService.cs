@@ -5,30 +5,30 @@ namespace EPlast.BLL.Services.Logging
 {
     public class LoggerService<T> : ILoggerService<T>
     {
-        protected readonly ILogger<T> _logger;
+        public ILogger<T> Logger { get; }
         public LoggerService(ILogger<T> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
         public void LogInformation(string msg)
         {
-            _logger.Log(LogLevel.Information, $"{msg}");
+            Logger.Log(LogLevel.Information, $"{msg}");
         }
         public void LogWarning(string msg)
         {
-            _logger.Log(LogLevel.Warning, $"{msg}");
+            Logger.Log(LogLevel.Warning, $"{msg}");
         }
         public void LogTrace(string msg)
         {
-            _logger.Log(LogLevel.Trace, $"{msg}");
+            Logger.Log(LogLevel.Trace, $"{msg}");
         }
         public void LogDebug(string msg)
         {
-            _logger.Log(LogLevel.Debug, $"{msg}");
+            Logger.Log(LogLevel.Debug, $"{msg}");
         }
         public void LogError(string msg)
         {
-            _logger.Log(LogLevel.Error, $"{msg}");
+            Logger.Log(LogLevel.Error, $"{msg}");
         }
     }
 }

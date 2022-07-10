@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -7,16 +13,10 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Handlers.RegionHandlers
 {
-    public class GetAllRegionsByPageAndIsArchiveHandler : IRequestHandler<GetAllRegionsByPageAndIsArchiveQuery, Tuple<IEnumerable<RegionObjectsDTO>, int>>
+    public class GetAllRegionsByPageAndIsArchiveHandler : IRequestHandler<GetAllRegionsByPageAndIsArchiveQuery, Tuple<IEnumerable<RegionObjectsDto>, int>>
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
@@ -29,7 +29,7 @@ namespace EPlast.BLL.Handlers.RegionHandlers
             _regionBlobStorage = regionBlobStorageRepository;
         }
 
-        public async Task<Tuple<IEnumerable<RegionObjectsDTO>, int>> Handle(GetAllRegionsByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
+        public async Task<Tuple<IEnumerable<RegionObjectsDto>, int>> Handle(GetAllRegionsByPageAndIsArchiveQuery request, CancellationToken cancellationToken)
         {
             var filter = GetFilter(request.RegionName, request.IsArchived);
             var order = GetOrder();
@@ -55,7 +55,7 @@ namespace EPlast.BLL.Handlers.RegionHandlers
                 }
             }
 
-            return new Tuple<IEnumerable<RegionObjectsDTO>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(regionPhotos.Item1), regionPhotos.Item2);
+            return new Tuple<IEnumerable<RegionObjectsDto>, int>(_mapper.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDto>>(regionPhotos.Item1), regionPhotos.Item2);
         }
 
         private Expression<Func<Region, bool>> GetFilter(string regionName, bool isArchive)

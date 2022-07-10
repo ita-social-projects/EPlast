@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Services.Announcements;
 using EPlast.BLL.Services.GoverningBodies.Sector;
@@ -9,11 +14,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Announcements
 {
@@ -54,7 +54,7 @@ namespace EPlast.Tests.Services.Announcements
                     new Tuple<IEnumerable<GoverningBodyAnnouncement>, int>(new List<GoverningBodyAnnouncement>(),
                         It.IsAny<int>()));
             _mapper.Setup(m =>
-                m.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDTO>>(
+                m.Map<IEnumerable<GoverningBodyAnnouncement>, IEnumerable<GoverningBodyAnnouncementUserDto>>(
                     It.IsAny<IEnumerable<GoverningBodyAnnouncement>>()));
 
             //Act
@@ -63,7 +63,7 @@ namespace EPlast.Tests.Services.Announcements
                     It.IsAny<int>());
 
             //Assert
-            Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAnnouncementUserDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<GoverningBodyAnnouncementUserDto>, int>>(result);
         }
 
         [Test]
@@ -74,19 +74,19 @@ namespace EPlast.Tests.Services.Announcements
                 .Setup(x => x.GoverningBodyAnnouncement.GetFirstAsync(It.IsAny<Expression<Func<GoverningBodyAnnouncement, bool>>>(),
                     It.IsAny<Func<IQueryable<GoverningBodyAnnouncement>, IIncludableQueryable<GoverningBodyAnnouncement, object>>>()))
                 .ReturnsAsync(GetGoverningBodyAnnouncement());
-            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementUserWithImagesDTO>(It.IsAny<GoverningBodyAnnouncement>()))
+            _mapper.Setup(m => m.Map<GoverningBodyAnnouncementUserWithImagesDto>(It.IsAny<GoverningBodyAnnouncement>()))
                 .Returns(GetGoverningBodyAnnouncementUserDTO());
             var a = _repoWrapper.Setup(u => u.User.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<User, bool>>>(),
               It.IsAny<Func<IQueryable<User>,
               IIncludableQueryable<User, object>>>())).ReturnsAsync(new User());
-            _mapper.Setup(m => m.Map<IEnumerable<UserDTO>>(a));
+            _mapper.Setup(m => m.Map<IEnumerable<UserDto>>(a));
 
             //Act
             var res = await _announcementService.GetAnnouncementByIdAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsNotNull(res);
-            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDTO>(res);
+            Assert.IsInstanceOf<GoverningBodyAnnouncementUserWithImagesDto>(res);
         }
 
 
@@ -128,13 +128,13 @@ namespace EPlast.Tests.Services.Announcements
             };
         }
 
-        private GoverningBodyAnnouncementUserWithImagesDTO GetGoverningBodyAnnouncementUserDTO()
+        private GoverningBodyAnnouncementUserWithImagesDto GetGoverningBodyAnnouncementUserDTO()
         {
-            return new GoverningBodyAnnouncementUserWithImagesDTO
+            return new GoverningBodyAnnouncementUserWithImagesDto
             {
-                Images = new List<GoverningBodyAnnouncementImageDTO>()
+                Images = new List<GoverningBodyAnnouncementImageDto>()
                 {
-                    new GoverningBodyAnnouncementImageDTO
+                    new GoverningBodyAnnouncementImageDto
                     {
                         ImagePath = "image.png"
                     }

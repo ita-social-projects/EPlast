@@ -234,8 +234,8 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(new UserPrecaution());
             _mapperMock
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns(new UserPrecautionDTO());
+                .Setup(m => m.Map<UserPrecautionDto>(It.IsAny<UserPrecaution>()))
+                .Returns(new UserPrecautionDto());
 
             //Act
             var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
@@ -253,7 +253,7 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nullPrecaution);
             _mapperMock
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
+                .Setup(m => m.Map<UserPrecautionDto>(It.IsAny<UserPrecaution>()))
                 .Returns(nullPrecautionDTO);
 
             //Act
@@ -272,8 +272,8 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(new UserPrecaution());
             _mapperMock
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns(new UserPrecautionDTO());
+                .Setup(m => m.Map<UserPrecautionDto>(It.IsAny<UserPrecaution>()))
+                .Returns(new UserPrecautionDto());
 
             //Act
             var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
@@ -292,14 +292,14 @@ namespace EPlast.Tests.Services.Precautions
                 .ReturnsAsync(GetTestUserPrecaution());
 
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
             var result = await _precautionService.GetAllUsersPrecautionAsync();
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<UserPrecautionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UserPrecautionDto>>(result);
         }
 
         [Test]
@@ -311,7 +311,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
@@ -330,7 +330,7 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nulluserPrecautions);
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+                .Setup(m => m.Map<IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                 .Returns(nulluserPrecautionsDTO);
 
             //Act
@@ -349,14 +349,14 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
             var result = await _precautionService.GetUserPrecautionsOfUserAsync(It.IsAny<string>());
 
             //Assert
-            Assert.IsInstanceOf<IEnumerable<UserPrecautionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UserPrecautionDto>>(result);
         }
 
         [Test]
@@ -368,7 +368,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
@@ -387,7 +387,7 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nulluserPrecautions);
             _mapperMock
-                .Setup(m => m.Map<IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+                .Setup(m => m.Map<IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                 .Returns(nulluserPrecautionsDTO);
 
             //Act
@@ -406,7 +406,7 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nullPrecaution);
             _mapperMock
-                .Setup(m => m.Map<UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
+                .Setup(m => m.Map<UserPrecautionDto>(It.IsAny<UserPrecaution>()))
                 .Returns(nullPrecautionDTO);
 
             //Act
@@ -425,8 +425,8 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
             _mapperMock
-                .Setup(m => m.Map<UserPrecaution, UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns((UserPrecaution src) => new UserPrecautionDTO() { Id = src.Id });
+                .Setup(m => m.Map<UserPrecaution, UserPrecautionDto>(It.IsAny<UserPrecaution>()))
+                .Returns((UserPrecaution src) => new UserPrecautionDto() { Id = src.Id });
 
             //Act
             var result = await _precautionService.GetUserPrecautionAsync(1);
@@ -443,14 +443,14 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(userPrecaution);
             _mapperMock
-                .Setup(m => m.Map<UserPrecaution, UserPrecautionDTO>(It.IsAny<UserPrecaution>()))
-                .Returns((UserPrecaution src) => new UserPrecautionDTO() { Id = src.Id });
+                .Setup(m => m.Map<UserPrecaution, UserPrecautionDto>(It.IsAny<UserPrecaution>()))
+                .Returns((UserPrecaution src) => new UserPrecautionDto() { Id = src.Id });
 
             //Act
             var result = await _precautionService.GetUserPrecautionAsync(1);
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<UserPrecautionDTO>(result);
+            Assert.IsInstanceOf<UserPrecautionDto>(result);
         }
         [Test]
         public async Task UsersTableWithoutPrecautionAsync_ReturnsShortUserInformationDTO()
@@ -468,7 +468,7 @@ namespace EPlast.Tests.Services.Precautions
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ShortUserInformationDto>>(result);
         }
 
         [Test]
@@ -480,7 +480,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable < UserPrecautionDTO >> (It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act 
@@ -499,7 +499,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act 
@@ -517,7 +517,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
@@ -536,7 +536,7 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act
@@ -728,9 +728,9 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         readonly UserPrecaution nullPrecaution = null;
-        readonly UserPrecautionDTO nullPrecautionDTO = null;
+        readonly UserPrecautionDto nullPrecautionDTO = null;
         readonly List<UserPrecaution> nulluserPrecautions = null;
-        readonly List<UserPrecautionDTO> nulluserPrecautionsDTO = null;
+        readonly List<UserPrecautionDto> nulluserPrecautionsDTO = null;
 
         private string UserId => Guid.NewGuid().ToString();
 
@@ -764,13 +764,13 @@ namespace EPlast.Tests.Services.Precautions
             Reporter = ""
         };
 
-        private UserPrecautionDTO userPrecautionDTO => new UserPrecautionDTO
+        private UserPrecautionDto userPrecautionDTO => new UserPrecautionDto
         {
             Id = 1,
-            Precaution = new PrecautionDTO { Id = 1, Name = "За силу" },
+            Precaution = new PrecautionDto { Id = 1, Name = "За силу" },
             UserId = UserId,
             Date = DateTime.Now,
-            User = new PrecautionUserDTO()
+            User = new PrecautionUserDto()
             {
                 FirstName = "",
                 LastName = "",
@@ -786,13 +786,13 @@ namespace EPlast.Tests.Services.Precautions
             Reporter = ""
         };
 
-        private UserPrecautionDTO userPrecautionDTO2 => new UserPrecautionDTO
+        private UserPrecautionDto userPrecautionDTO2 => new UserPrecautionDto
         {
             Id = 1,
-            Precaution = new PrecautionDTO { Id = 1, Name = "За все" },
+            Precaution = new PrecautionDto { Id = 1, Name = "За все" },
             UserId = UserId,
             Date = DateTime.Now,
-            User = new PrecautionUserDTO()
+            User = new PrecautionUserDto()
             {
                 FirstName = "",
                 LastName = "",
@@ -808,12 +808,12 @@ namespace EPlast.Tests.Services.Precautions
             Reporter = ""
         };
 
-        private IEnumerable<ShortUserInformationDTO> GetTestShortUserInfo()
+        private IEnumerable<ShortUserInformationDto> GetTestShortUserInfo()
         {
-            return new List<ShortUserInformationDTO>
+            return new List<ShortUserInformationDto>
             {
-                new ShortUserInformationDTO { ID = UserId },
-                new ShortUserInformationDTO { ID = UserId }
+                new ShortUserInformationDto { ID = UserId },
+                new ShortUserInformationDto { ID = UserId }
                 
             }.AsEnumerable();
         }
@@ -847,31 +847,31 @@ namespace EPlast.Tests.Services.Precautions
             }.AsEnumerable();
         }
 
-        private IEnumerable<UserPrecautionDTO> GetTestUserPrecautionDTO()
+        private IEnumerable<UserPrecautionDto> GetTestUserPrecautionDTO()
         {
-            return new List<UserPrecautionDTO>
+            return new List<UserPrecautionDto>
             {
-               new  UserPrecautionDTO
+               new  UserPrecautionDto
                {
-                   Precaution = new PrecautionDTO{Id = 1, Name = "За силу"},
+                   Precaution = new PrecautionDto{Id = 1, Name = "За силу"},
                    IsActive = true,
                    UserId = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
                    Date = DateTime.Now,
-                   User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new PrecautionUserDto { FirstName = "", LastName = "", FatherName =""}
                },
-               new  UserPrecautionDTO
+               new  UserPrecautionDto
                {
-                   Precaution = new PrecautionDTO{Id = 2, Name = "За силу"},
+                   Precaution = new PrecautionDto{Id = 2, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new PrecautionUserDto { FirstName = "", LastName = "", FatherName =""}
                },
-               new  UserPrecautionDTO
+               new  UserPrecautionDto
                {
-                   Precaution = new PrecautionDTO{Id = 3, Name = "За силу"},
+                   Precaution = new PrecautionDto{Id = 3, Name = "За силу"},
                    UserId = UserId,
                    Date = DateTime.Now,
-                   User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
+                   User = new PrecautionUserDto { FirstName = "", LastName = "", FatherName =""}
                }
             }.AsEnumerable();
         }

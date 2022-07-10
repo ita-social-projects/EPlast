@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionDocumentDTO : IDocumentDTO
+    public class RegionDocumentDto : IDocumentDto
     {
             public int ID { get; set; }
             public DateTime? SubmitDate { get; set; }

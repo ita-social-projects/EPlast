@@ -45,7 +45,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             _sectorService = sectorService;
         }
 
-        public async Task<int> CreateAsync(GoverningBodyDTO governingBodyDto)
+        public async Task<int> CreateAsync(GoverningBodyDto governingBodyDto)
         {
             var existingGoverningBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.OrganizationName == governingBodyDto.GoverningBodyName && x.IsActive);
             if (existingGoverningBody != null)
@@ -62,12 +62,12 @@ namespace EPlast.BLL.Services.GoverningBodies
             return governingBody.ID;
         }
 
-        private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDTO governingBody)
+        private Task<Organization> CreateGoverningBodyAsync(GoverningBodyDto governingBody)
         {
-            return Task.Run(() => _mapper.Map<GoverningBodyDTO, Organization>(governingBody));
+            return Task.Run(() => _mapper.Map<GoverningBodyDto, Organization>(governingBody));
         }
 
-        public async Task<int> EditAsync(GoverningBodyDTO governingBody)
+        public async Task<int> EditAsync(GoverningBodyDto governingBody)
         {
             await UploadPhotoAsync(governingBody);
             var createdGoveringBody = await CreateGoverningBodyAsync(governingBody);
@@ -79,12 +79,12 @@ namespace EPlast.BLL.Services.GoverningBodies
             return createdGoveringBody.ID;
         }
 
-        public async Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync()
+        public async Task<IEnumerable<GoverningBodyDto>> GetGoverningBodiesListAsync()
         {
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive)));
+            return _mapper.Map<IEnumerable<GoverningBodyDto>>((await _repoWrapper.GoverningBody.GetAllAsync(x => x.IsActive)));
         }
 
-        public async Task<IEnumerable<GoverningBodyDTO>> GetSectorsListAsync(int governingBodyId)
+        public async Task<IEnumerable<GoverningBodyDto>> GetSectorsListAsync(int governingBodyId)
         {
             var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
             if (governingBody == null)
@@ -93,10 +93,10 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
             governingBody.GoverningBodySectors = governingBody.GoverningBodySectors?.Where(x => x.IsActive);
 
-            return _mapper.Map<IEnumerable<GoverningBodyDTO>>(governingBody);
+            return _mapper.Map<IEnumerable<GoverningBodyDto>>(governingBody);
         }
 
-        private async Task UploadPhotoAsync(GoverningBodyDTO governingBody)
+        private async Task UploadPhotoAsync(GoverningBodyDto governingBody)
         {
             var oldImageName = (await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(i => i.ID == governingBody.Id))?.Logo;
             var logoBase64 = governingBody.Logo;
@@ -128,7 +128,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             return await _governingBodyBlobStorage.GetBlobBase64Async(logoName);
         }
 
-        public async Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int governingBodyId)
+        public async Task<GoverningBodyProfileDto> GetGoverningBodyProfileAsync(int governingBodyId)
         {
             var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
             if (governingBody == null)
@@ -160,7 +160,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 .Take(5)
                 .ToList();
 
-            var governingBodyProfileDto = new GoverningBodyProfileDTO
+            var governingBodyProfileDto = new GoverningBodyProfileDto
             {
                 GoverningBody = governingBody,
                 Head = governingBodyHead,
@@ -173,7 +173,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             return governingBodyProfileDto;
         }
 
-        public async Task<GoverningBodyDTO> GetGoverningBodyByIdAsync(int id)
+        public async Task<GoverningBodyDto> GetGoverningBodyByIdAsync(int id)
         {
             var governingBody = await _repoWrapper.GoverningBody.GetFirstOrDefaultAsync(
                 gb => gb.ID == id && gb.IsActive,
@@ -186,7 +186,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                     .Include(g => g.GoverningBodyDocuments)
                         .ThenInclude(d => d.GoverningBodyDocumentType)
                       .Include(g => g.GoverningBodyAnnouncement));
-            return _mapper.Map<Organization, GoverningBodyDTO>(governingBody);
+            return _mapper.Map<Organization, GoverningBodyDto>(governingBody);
         }
 
         public async Task<int> RemoveAsync(int governingBodyId)
@@ -212,7 +212,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             return governingBodyId;
         }
 
-        public async Task<GoverningBodyProfileDTO> GetGoverningBodyDocumentsAsync(int governingBodyId)
+        public async Task<GoverningBodyProfileDto> GetGoverningBodyDocumentsAsync(int governingBodyId)
         {
             var governingBody = await GetGoverningBodyByIdAsync(governingBodyId);
             if (governingBody == null)
@@ -220,9 +220,9 @@ namespace EPlast.BLL.Services.GoverningBodies
                 return null;
             }
 
-            var governingBodyDoc = DocumentsSorter<GoverningBodyDocumentsDTO>.SortDocumentsBySubmitDate(governingBody.GoverningBodyDocuments);
+            var governingBodyDoc = DocumentsSorter<GoverningBodyDocumentsDto>.SortDocumentsBySubmitDate(governingBody.GoverningBodyDocuments);
 
-            var governingBodyProfileDto = new GoverningBodyProfileDTO
+            var governingBodyProfileDto = new GoverningBodyProfileDto
             {
                 GoverningBody = governingBody,
                 Documents = governingBodyDoc
@@ -236,7 +236,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             return await _securityModel.GetUserAccessAsync(userId);
         }
 
-        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<GoverningBodyAdministrationDto>> GetAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
@@ -244,10 +244,10 @@ namespace EPlast.BLL.Services.GoverningBodies
                  );
 
             admins.Where(x => x.GoverningBody != null).ForAll(x => x.GoverningBody.GoverningBodyAdministration = null);
-            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(admins);
         }
 
-        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<GoverningBodyAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
                  include:
@@ -255,11 +255,11 @@ namespace EPlast.BLL.Services.GoverningBodies
                  );
 
             admins.Where(x => x.GoverningBody != null).ForAll(x => x.GoverningBody.GoverningBodyAdministration = null);
-            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(admins).Reverse();
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(admins).Reverse();
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetAdministrationForTableAsync(
+        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>> GetAdministrationForTableAsync(
             string userId, bool isActive, int pageNumber, int pageSize)
         {
             var admins = await _repoWrapper.GoverningBodyAdministration.GetAllAsync(
@@ -274,8 +274,8 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             admins = admins.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
 
-            return new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>(
-                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+            return new Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>(
+                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(
                     admins), rowCount);
         }
 

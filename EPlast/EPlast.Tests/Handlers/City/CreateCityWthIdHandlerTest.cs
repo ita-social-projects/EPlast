@@ -17,14 +17,14 @@ namespace EPlast.Tests.Handlers.City
         private CreateCityWthIdCommand _command;
         private CreateCityWthIdHandler _handler;
 
-        private CityDTO _city;
+        private CityDto _city;
 
         [SetUp]
         public void SetUp()
         {
             _mockMediator = new Mock<IMediator>();
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
-            _city = new CityDTO { ID = 1 };
+            _city = new CityDto { ID = 1 };
             _command = new CreateCityWthIdCommand(_city);
             _handler = new CreateCityWthIdHandler(_mockMediator.Object, _mockRepoWrapper.Object);
         }

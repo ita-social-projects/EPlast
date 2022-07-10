@@ -91,12 +91,12 @@ namespace EPlast.Tests.Services.City
         public void GetCityHead_ReturnsCityHead_Valid()
         {
             // Arrange
-            CityDTO cityDTO = new CityDTO();
-            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            CityDto cityDTO = new CityDto();
+            cityDTO.CityAdministration = new List<CityAdministrationDto>()
             {
-                new CityAdministrationDTO()
+                new CityAdministrationDto()
                 {
-                    AdminType = new AdminTypeDTO()
+                    AdminType = new AdminTypeDto()
                     {
                         AdminTypeName = Roles.CityHead
                     },
@@ -109,19 +109,19 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+            Assert.IsInstanceOf<CityAdministrationDto>(result);
         }
 
         [Test]
         public void GetCityHead_ReturnsCityHead_InValid()
         {
             // Arrange
-            CityDTO cityDTO = new CityDTO();
-            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            CityDto cityDTO = new CityDto();
+            cityDTO.CityAdministration = new List<CityAdministrationDto>()
             {
-                new CityAdministrationDTO()
+                new CityAdministrationDto()
                 {
-                    AdminType = new AdminTypeDTO()
+                    AdminType = new AdminTypeDto()
                     {
                         AdminTypeName = Roles.CityHead
                     },
@@ -140,7 +140,7 @@ namespace EPlast.Tests.Services.City
         public void GetCityHead_WithoutCityAdministration()
         {
             // Arrange
-            CityDTO cityDTO = new CityDTO();
+            CityDto cityDTO = new CityDto();
 
             // Act
             var result = _cityService.GetCityHead(cityDTO);
@@ -153,12 +153,12 @@ namespace EPlast.Tests.Services.City
         public void GetCityHeadDeputy_ReturnsCityHeadDeputy_Valid()
         {
             // Arrange
-            CityDTO cityDTO = new CityDTO();
-            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            CityDto cityDTO = new CityDto();
+            cityDTO.CityAdministration = new List<CityAdministrationDto>()
             {
-                new CityAdministrationDTO()
+                new CityAdministrationDto()
                 {
-                    AdminType = new AdminTypeDTO()
+                    AdminType = new AdminTypeDto()
                     {
                         AdminTypeName = Roles.CityHeadDeputy
                     },
@@ -171,19 +171,19 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityAdministrationDTO>(result);
+            Assert.IsInstanceOf<CityAdministrationDto>(result);
         }
 
         [Test]
         public void GetCityHeadDeputy_ReturnsCityHeadDeputy_InValid()
         {
             // Arrange
-            CityDTO cityDTO = new CityDTO();
-            cityDTO.CityAdministration = new List<CityAdministrationDTO>()
+            CityDto cityDTO = new CityDto();
+            cityDTO.CityAdministration = new List<CityAdministrationDto>()
             {
-                new CityAdministrationDTO()
+                new CityAdministrationDto()
                 {
-                    AdminType = new AdminTypeDTO()
+                    AdminType = new AdminTypeDto()
                     {
                         AdminTypeName = Roles.CityHeadDeputy
                     },
@@ -202,7 +202,7 @@ namespace EPlast.Tests.Services.City
         public void GetCityHeadDeputy_WithoutCityHeadDeputy()
         {
             // Arrange
-            CityDTO cityDTO = new CityDTO();
+            CityDto cityDTO = new CityDto();
 
             // Act
             var result = _cityService.GetCityHeadDeputy(cityDTO);
@@ -280,7 +280,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             _mapper
-                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(GetTestCityDTO());
             _repoWrapper
                 .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
@@ -292,7 +292,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         [TestCase]
@@ -309,7 +309,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<CityObjectDto>, int>>(result);
         }
 
         [Test]
@@ -317,7 +317,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             _mapper
-                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(GetTestCityDTO());
             _repoWrapper
                 .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
@@ -329,7 +329,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         [Test]
@@ -337,7 +337,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             _mapper
-                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(GetTestCityDTO());
             _repoWrapper
                 .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
@@ -350,7 +350,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         [Test]
@@ -358,7 +358,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             _mapper
-                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                .Setup(m => m.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(GetTestCityDTO());
             _repoWrapper
                 .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(),
@@ -375,7 +375,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
         }
 
         [Test]
@@ -386,8 +386,8 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
                 .ReturnsAsync(new DataAccessCity.City());
             _mapper
-                .Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns(new CityDTO());
+                .Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new CityDto());
 
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
@@ -403,7 +403,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityDTO>(result);
+            Assert.IsInstanceOf<CityDto>(result);
         }
 
         [Test]
@@ -413,8 +413,8 @@ namespace EPlast.Tests.Services.City
                 .Setup(r => r.City.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessCity.City, bool>>>(), null))
                 .ReturnsAsync(new DataAccessCity.City());
             _mapper
-                .Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns(new CityDTO());
+                .Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new CityDto());
 
             _repoWrapper
                 .Setup(r => r.CityAdministration.GetAllAsync(It.IsAny<Expression<Func<CityAdministration, bool>>>(),
@@ -426,7 +426,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityDTO>(result);
+            Assert.IsInstanceOf<CityDto>(result);
         }
 
         [Test]
@@ -440,7 +440,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -455,7 +455,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityUserDTO[]>(result);
+            Assert.IsInstanceOf<CityUserDto[]>(result);
         }
 
         [Test]
@@ -463,8 +463,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns((CityDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDto)null);
 
             // Act
             var result = await cityService.GetCityProfileAsync(Id);
@@ -478,7 +478,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDtoWithExAdmin(count).FirstOrDefault());
 
             // Act
@@ -487,7 +487,7 @@ namespace EPlast.Tests.Services.City
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
-            Assert.AreEqual(result.Admins, new List<CityAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<CityAdministrationDto>());
         }
 
         [Test]
@@ -495,7 +495,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDtoWithoutMembersWithoutAdminEndDate(count).FirstOrDefault());
 
             // Act
@@ -537,7 +537,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -551,7 +551,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -603,8 +603,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns((CityDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDto)null);
 
             // Act
             var result = await cityService.GetCityMembersAsync(Id);
@@ -624,7 +624,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -632,8 +632,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns((CityDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDto)null);
 
             // Act
             var result = await cityService.GetCityFollowersAsync(Id);
@@ -653,7 +653,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -675,8 +675,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns((CityDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDto)null);
 
             // Act
             var result = await cityService.GetCityAdminsIdsAsync(Id);
@@ -693,7 +693,7 @@ namespace EPlast.Tests.Services.City
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new List<CityAdministration>());
 
-            _mapper.Setup(x => x.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(It.IsAny<IEnumerable<CityAdministration>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationGetDto>>(It.IsAny<IEnumerable<CityAdministration>>()))
                 .Returns(GetFakeAdminDTO());
 
             //Act
@@ -701,7 +701,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityAdministrationGetDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityAdministrationGetDto>>(result);
             Assert.AreEqual(3, result.Count());
         }
 
@@ -710,8 +710,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns((CityDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDto)null);
 
             // Act
             var result = await cityService.GetCityAdminsAsync(Id);
@@ -725,7 +725,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDtoWithExAdmin(count).FirstOrDefault());
 
             // Act
@@ -734,7 +734,7 @@ namespace EPlast.Tests.Services.City
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
-            Assert.AreEqual(result.Admins, new List<CityAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<CityAdministrationDto>());
         }
 
         [Test]
@@ -742,7 +742,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDtoWithoutMembersWithoutAdminEndDate(count).FirstOrDefault());
 
             // Act
@@ -766,7 +766,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -774,8 +774,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns((CityDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns((CityDto)null);
 
             // Act
             var result = await cityService.GetCityDocumentsAsync(Id);
@@ -848,7 +848,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
+            Assert.IsInstanceOf<CityProfileDto>(result);
         }
 
         [Test]
@@ -856,8 +856,8 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
-                .Returns(new List<CityDTO>().FirstOrDefault());
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
+                .Returns(new List<CityDto>().FirstOrDefault());
 
             // Act
             var result = await cityService.EditAsync(Id);
@@ -871,7 +871,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDtoWithoutMembersWithoutAdminEndDate(count).FirstOrDefault());
 
             // Act
@@ -879,8 +879,8 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<CityProfileDTO>(result);
-            Assert.AreEqual(new List<CityMembersDTO>(), result.Members);
+            Assert.IsInstanceOf<CityProfileDto>(result);
+            Assert.AreEqual(new List<CityMembersDto>(), result.Members);
         }
 
         [Test]
@@ -888,9 +888,9 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityProfileDTO cityProfileDto = new CityProfileDTO
+            CityProfileDto cityProfileDto = new CityProfileDto
             {
-                City = new CityDTO
+                City = new CityDto
                 {
                     ID = 0
                 }
@@ -913,7 +913,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityDTO cityDto = new CityDTO
+            CityDto cityDto = new CityDto
             {
                 ID = 0
             };
@@ -935,7 +935,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityDTO cityDto = new CityDTO
+            CityDto cityDto = new CityDto
             {
                 ID = 0
             };
@@ -956,7 +956,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityDTO cityDto = new CityDTO
+            CityDto cityDto = new CityDto
             {
                 ID = 0,
                 Logo = "data:application/.jpeg;base64,/9j/"
@@ -978,7 +978,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityDTO cityDto = new CityDTO
+            CityDto cityDto = new CityDto
             {
                 ID = 0,
                 Logo = "data:application/.jpeg;base64,/9j/"
@@ -1002,7 +1002,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityDTO cityDto = new CityDTO
+            CityDto cityDto = new CityDto
             {
                 ID = 0,
                 Logo = "data:application/,/9j/"
@@ -1022,7 +1022,7 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityDTO cityDto = new CityDTO
+            CityDto cityDto = new CityDto
             {
                 ID = 0,
                 Logo = "data:application/base64,/9j/"
@@ -1042,9 +1042,9 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityProfileDTO cityProfileDto = new CityProfileDTO
+            CityProfileDto cityProfileDto = new CityProfileDto
             {
-                City = new CityDTO
+                City = new CityDto
                 {
                     ID = 0
                 }
@@ -1062,14 +1062,14 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityProfileDTO cityProfileDto = new CityProfileDTO
+            CityProfileDto cityProfileDto = new CityProfileDto
             {
-                City = new CityDTO
+                City = new CityDto
                 {
                     ID = 0
                 },
             };
-            _mapper.Setup(m => m.Map<CityDTO, DataAccessCity.City>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDto, DataAccessCity.City>(It.IsAny<CityDto>()))
                 .Returns(GetTestNewCity());
             _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                 .ReturnsAsync((Region)null);
@@ -1088,9 +1088,9 @@ namespace EPlast.Tests.Services.City
         {
             // Arrange
             CityService cityService = CreateCityService();
-            CityProfileDTO cityProfileDto = new CityProfileDTO
+            CityProfileDto cityProfileDto = new CityProfileDto
             {
-                City = new CityDTO
+                City = new CityDto
                 {
                     ID = 0
                 }
@@ -1116,7 +1116,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityForAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityForAdministrationDto>>(result);
         }
 
         [Test]
@@ -1155,13 +1155,13 @@ namespace EPlast.Tests.Services.City
         private string logoName => "logoName";
         private string cityName => "cityName";
 
-        private IEnumerable<CityDTO> GetTestCityDTO()
+        private IEnumerable<CityDto> GetTestCityDTO()
         {
-            return new List<CityDTO>
+            return new List<CityDto>
             {
-                new CityDTO{Name = "Львів"},
-                new CityDTO{Name = "Стрий"},
-                new CityDTO{Name = "Миколаїв"}
+                new CityDto{Name = "Львів"},
+                new CityDto{Name = "Стрий"},
+                new CityDto{Name = "Миколаїв"}
             }.AsEnumerable();
         }
 
@@ -1197,11 +1197,11 @@ namespace EPlast.Tests.Services.City
         private CityService CreateCityService()
         {
             _mapper.Setup(m => m.Map<IEnumerable<DataAccessCity.City>,
-                    IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
+                    IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccessCity.City>>()))
                 .Returns(CreateFakeCityDto(count));
-            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDTO>(It.IsAny<DataAccessCity.City>()))
+            _mapper.Setup(m => m.Map<DataAccessCity.City, CityDto>(It.IsAny<DataAccessCity.City>()))
                 .Returns(CreateFakeCityDto(count).FirstOrDefault());
-            _mapper.Setup(m => m.Map<CityDTO, DataAccessCity.City>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDto, DataAccessCity.City>(It.IsAny<CityDto>()))
                 .Returns(() => new DataAccessCity.City());
             _repoWrapper.Setup(r => r.City.FindAll())
                 .Returns(CreateFakeCities(count));
@@ -1252,69 +1252,69 @@ namespace EPlast.Tests.Services.City
             return cities.AsQueryable();
         }
 
-        private IQueryable<CityDTO> CreateFakeCityDto(int count)
+        private IQueryable<CityDto> CreateFakeCityDto(int count)
         {
-            List<CityDTO> cities = new List<CityDTO>();
+            List<CityDto> cities = new List<CityDto>();
 
             for (int i = 0; i < count; i++)
             {
-                cities.Add(new CityDTO
+                cities.Add(new CityDto
                 {
                     CityAdministration = GetCityAdministrationDTO(),
-                    CityMembers = new List<CityMembersDTO>
+                    CityMembers = new List<CityMembersDto>
                     {
-                        new CityMembersDTO
+                        new CityMembersDto
                         {
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
                             IsApproved = true,
                             UserId = "5"
                         }
                     },
-                    CityDocuments = new List<CityDocumentsDTO>
+                    CityDocuments = new List<CityDocumentsDto>
                     {
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO()
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto()
                     },
                 });
             }
             return cities.AsQueryable();
         }
 
-        private List<CityAdministrationDTO> GetCityAdministrationDTO()
+        private List<CityAdministrationDto> GetCityAdministrationDTO()
         {
-            return new List<CityAdministrationDTO>
+            return new List<CityAdministrationDto>
             {
-                 new CityAdministrationDTO
+                 new CityAdministrationDto
                  {
 
-                      AdminType = new AdminTypeDTO
+                      AdminType = new AdminTypeDto
                       {
                            AdminTypeName = Roles.CityHead
                       },
                       Status = true
                  },
-                 new CityAdministrationDTO
+                 new CityAdministrationDto
                  {
-                      AdminType = new AdminTypeDTO
+                      AdminType = new AdminTypeDto
                       {
                            AdminTypeName = "----------"
                       },
                       Status = true
                  },
-                 new CityAdministrationDTO
+                 new CityAdministrationDto
                  {
-                       AdminType = new AdminTypeDTO
+                       AdminType = new AdminTypeDto
                        {
                             AdminTypeName = Roles.CityHead
                        },
                        Status = true
                  },
-                 new CityAdministrationDTO
+                 new CityAdministrationDto
                  {
-                       AdminType = new AdminTypeDTO
+                       AdminType = new AdminTypeDto
                        {
                             AdminTypeName = "----------"
                        },
@@ -1323,27 +1323,27 @@ namespace EPlast.Tests.Services.City
             };
         }
 
-        private IQueryable<CityDTO> CreateFakeCityDtoWithExAdmin(int count)
+        private IQueryable<CityDto> CreateFakeCityDtoWithExAdmin(int count)
         {
-            List<CityDTO> cities = new List<CityDTO>();
+            List<CityDto> cities = new List<CityDto>();
 
             for (int i = 0; i < count; i++)
             {
                 var cityDto = GetCityDto();
-                cityDto.CityAdministration = new List<CityAdministrationDTO>
+                cityDto.CityAdministration = new List<CityAdministrationDto>
                 {
-                    new CityAdministrationDTO
+                    new CityAdministrationDto
                     {
-                        AdminType = new AdminTypeDTO
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = Roles.CityHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3),
                         Status = false
                     },
-                    new CityAdministrationDTO
+                    new CityAdministrationDto
                     {
-                        AdminType = new AdminTypeDTO
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = "----------",
                         },
@@ -1356,27 +1356,27 @@ namespace EPlast.Tests.Services.City
             return cities.AsQueryable();
         }
 
-        private IQueryable<CityDTO> CreateFakeCityDtoWithoutMembersWithoutAdminEndDate(int count)
+        private IQueryable<CityDto> CreateFakeCityDtoWithoutMembersWithoutAdminEndDate(int count)
         {
-            List<CityDTO> cities = new List<CityDTO>();
+            List<CityDto> cities = new List<CityDto>();
 
             for (int i = 0; i < count; i++)
             {
                 var cityDto = GetCityDtoWithoutMembers();
-                cityDto.CityMembers = new List<CityMembersDTO>();
-                cityDto.CityAdministration = new List<CityAdministrationDTO>
+                cityDto.CityMembers = new List<CityMembersDto>();
+                cityDto.CityAdministration = new List<CityAdministrationDto>
                 {
-                    new CityAdministrationDTO
+                    new CityAdministrationDto
                     {
-                        AdminType = new AdminTypeDTO
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = Roles.CityHead
                         },
                         Status = true
                     },
-                    new CityAdministrationDTO
+                    new CityAdministrationDto
                     {
-                        AdminType = new AdminTypeDTO
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = "----------",
                         },
@@ -1388,12 +1388,12 @@ namespace EPlast.Tests.Services.City
             return cities.AsQueryable();
         }
 
-        private CityDTO GetCityDto()
+        private CityDto GetCityDto()
         {
             var city = GetCityDtoWithoutMembers();
-            city.CityMembers = new List<CityMembersDTO>
+            city.CityMembers = new List<CityMembersDto>
                 {
-                    new CityMembersDTO
+                    new CityMembersDto
                     {
                         StartDate = new Random().Next(0, 1) == 1 ? DateTime.Today : (DateTime?)null
                     }
@@ -1401,20 +1401,20 @@ namespace EPlast.Tests.Services.City
             return city;
         }
 
-        private CityDTO GetCityDtoWithoutMembers()
+        private CityDto GetCityDtoWithoutMembers()
         {
-            return new CityDTO
+            return new CityDto
             {
                 CityAdministration = GetCityAdministrationDTO(),
-                CityDocuments = new List<CityDocumentsDTO>
+                CityDocuments = new List<CityDocumentsDto>
                     {
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO()
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto()
                     },
-                Region = new BLL.DTO.Region.RegionDTO()
+                Region = new BLL.DTO.Region.RegionDto()
             };
         }
 
@@ -1436,13 +1436,13 @@ namespace EPlast.Tests.Services.City
 
             return city;
         }
-        
-        private IEnumerable<CityAdministrationGetDTO> GetFakeAdminDTO()
+
+        private IEnumerable<CityAdministrationGetDto> GetFakeAdminDTO()
         {
-            return new List<CityAdministrationGetDTO>() {
-                new CityAdministrationGetDTO(){ Id = 2, AdminTypeId = 2, CityId = 2 },
-                new CityAdministrationGetDTO(){ Id = 3, AdminTypeId = 3, CityId = 3 },
-                new CityAdministrationGetDTO(){ Id = 4, AdminTypeId = 4, CityId = 4 }
+            return new List<CityAdministrationGetDto>() {
+                new CityAdministrationGetDto(){ Id = 2, AdminTypeId = 2, CityId = 2 },
+                new CityAdministrationGetDto(){ Id = 3, AdminTypeId = 3, CityId = 3 },
+                new CityAdministrationGetDto(){ Id = 4, AdminTypeId = 4, CityId = 4 }
             };
         }
 

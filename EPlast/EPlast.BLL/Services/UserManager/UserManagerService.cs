@@ -28,10 +28,10 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<bool> IsInRoleAsync(UserDTO user, params string[] roles)
+        public async Task<bool> IsInRoleAsync(UserDto user, params string[] roles)
         {
 
-            var userFirst = _mapper.Map<UserDTO, User>(user);
+            var userFirst = _mapper.Map<UserDto, User>(user);
 
             foreach (var i in roles)
             {
@@ -44,16 +44,16 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<UserDTO> FindByIdAsync(string userId)
+        public async Task<UserDto> FindByIdAsync(string userId)
         {
-            var result = _mapper.Map<User, UserDTO>(await _userManager.FindByIdAsync(userId));
+            var result = _mapper.Map<User, UserDto>(await _userManager.FindByIdAsync(userId));
             return result;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<string>> GetRolesAsync(UserDTO user)
+        public async Task<IEnumerable<string>> GetRolesAsync(UserDto user)
         {
-            var result = await _userManager.GetRolesAsync(_mapper.Map<UserDTO, User>(user));
+            var result = await _userManager.GetRolesAsync(_mapper.Map<UserDto, User>(user));
             return result;
         }
 

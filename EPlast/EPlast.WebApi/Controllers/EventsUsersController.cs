@@ -1,14 +1,14 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Http;
-using System.Linq;
-using System;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -82,7 +82,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">When the EventCreateDTO is null or empty</response> 
         [HttpPost("newEvent")]
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
-        public async Task<IActionResult> EventCreate([FromBody] EventCreateDTO createDTO)
+        public async Task<IActionResult> EventCreate([FromBody] EventCreateDto createDTO)
         {
             try
             {
@@ -120,7 +120,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">When the EventCreateDTO is null or empty</response>
         [HttpPut("editedEvent")]
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
-        public async Task<IActionResult> EventEdit([FromBody] EventCreateDTO createDTO)
+        public async Task<IActionResult> EventEdit([FromBody] EventCreateDto createDTO)
         {
             await eventUserManager.EditEventAsync((createDTO));
 

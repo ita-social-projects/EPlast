@@ -9,7 +9,7 @@ using MediatR;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetActiveCitiesHandler : IRequestHandler<GetActiveCitiesQuery, IEnumerable<CityForAdministrationDTO>>
+    public class GetActiveCitiesHandler : IRequestHandler<GetActiveCitiesQuery, IEnumerable<CityForAdministrationDto>>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -20,11 +20,11 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityForAdministrationDTO>> Handle(GetActiveCitiesQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CityForAdministrationDto>> Handle(GetActiveCitiesQuery request, CancellationToken cancellationToken)
         {
             var cities = await _repoWrapper.City.GetAllAsync(c => c.IsActive);
 
-            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDTO>>(cities);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(cities);
         }
     }
 }

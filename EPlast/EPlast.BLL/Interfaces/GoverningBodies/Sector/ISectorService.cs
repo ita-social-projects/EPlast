@@ -7,25 +7,25 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
 {
     public interface ISectorService
     {
-        Task<int> CreateAsync(SectorDTO sectorDto);
+        Task<int> CreateAsync(SectorDto sectorDto);
 
-        Task<IEnumerable<SectorDTO>> GetSectorsByGoverningBodyAsync(int governingBodyId);
+        Task<IEnumerable<SectorDto>> GetSectorsByGoverningBodyAsync(int governingBodyId);
 
         Task<string> GetLogoBase64Async(string logoName);
 
-        Task<SectorProfileDTO> GetSectorProfileAsync(int sectorId);
+        Task<SectorProfileDto> GetSectorProfileAsync(int sectorId);
 
         Task<Dictionary<string, bool>> GetUserAccessAsync(string userId);
-        
-        Task<SectorProfileDTO> GetSectorDocumentsAsync(int sectorId);
 
-        Task<int> EditAsync(SectorDTO sector);
+        Task<SectorProfileDto> GetSectorDocumentsAsync(int sectorId);
+
+        Task<int> EditAsync(SectorDto sector);
 
         Task<int> RemoveAsync(int sectorId);
 
-        Task<IEnumerable<SectorAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
+        Task<IEnumerable<SectorAdministrationDto>> GetAdministrationsOfUserAsync(string UserId);
 
-        Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId);
+        Task<IEnumerable<SectorAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId);
 
         /// <summary>
         /// Gets SectorAdministration history for a specific user
@@ -35,7 +35,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies.Sector
         /// <param name="pageNumber">Page number</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>SectorAdministration history</returns>
-        Task<Tuple<IEnumerable<SectorAdministrationDTO>, int>> GetAdministrationForTableAsync(
+        Task<Tuple<IEnumerable<SectorAdministrationDto>, int>> GetAdministrationForTableAsync(
             string userId, bool isActive, int pageNumber, int pageSize);
 
         /// <summary>

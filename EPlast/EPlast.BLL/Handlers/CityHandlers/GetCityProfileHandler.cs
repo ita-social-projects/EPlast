@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetCityProfileHandler : IRequestHandler<GetCityProfileQuery, CityProfileDTO>
+    public class GetCityProfileHandler : IRequestHandler<GetCityProfileQuery, CityProfileDto>
     {
         private readonly IMediator _mediator;
         private readonly IRepositoryWrapper _repoWrapper;
@@ -29,7 +29,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _cityAccessService = cityAccessService;
         }
 
-        public async Task<CityProfileDTO> Handle(GetCityProfileQuery request, CancellationToken cancellationToken)
+        public async Task<CityProfileDto> Handle(GetCityProfileQuery request, CancellationToken cancellationToken)
         {
             var profileQuery = new GetCityProfileBasicQuery(request.CityId);
             var cityProfileDto = await _mediator.Send(profileQuery, cancellationToken);

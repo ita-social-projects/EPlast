@@ -1,5 +1,5 @@
-﻿using EPlast.BLL.DTO.Blank;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using EPlast.BLL.DTO.Blank;
 
 namespace EPlast.BLL.Interfaces.Blank
 {
@@ -10,7 +10,7 @@ namespace EPlast.BLL.Interfaces.Blank
         /// </summary>
         /// <param name="document">An information about a specific document</param>
         /// <returns>A newly created biography document</returns>
-        Task<BlankBiographyDocumentsDTO> AddDocumentAsync(BlankBiographyDocumentsDTO biographyDocumentDTO);
+        Task<BlankBiographyDocumentsDto> AddDocumentAsync(BlankBiographyDocumentsDto biographyDocumentDTO);
 
         /// <summary>
         /// Get a file in base64 format
@@ -25,6 +25,6 @@ namespace EPlast.BLL.Interfaces.Blank
         /// <param name="documentId">The id of a specific document</param>
         Task DeleteFileAsync(int documentId);
 
-        Task<BlankBiographyDocumentsDTO> GetDocumentByUserId(string userid);
+        Task<BlankBiographyDocumentsDto> GetDocumentByUserId(string userid);
     }
 }

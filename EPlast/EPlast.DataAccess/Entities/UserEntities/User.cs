@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
@@ -11,7 +12,8 @@ namespace EPlast.DataAccess.Entities
 {
     public class User : IdentityUser
     {
-        public string CityName;
+        [NotMapped]
+        public string CityName { get; set; }
         [Display(Name = "Ім'я")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
             ErrorMessage = "Ім'я має містити тільки літери")]

@@ -42,7 +42,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _sectorAdministrationService = sectorAdministrationService;
         }
 
-        private async Task UploadPhotoAsync(SectorDTO sectorDto)
+        private async Task UploadPhotoAsync(SectorDto sectorDto)
         {
             var oldImageName = (await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(i => i.Id == sectorDto.Id))?.Logo;
             var logoBase64 = sectorDto.Logo;
@@ -69,7 +69,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             }
         }
 
-        public async Task<int> CreateAsync(SectorDTO sectorDto)
+        public async Task<int> CreateAsync(SectorDto sectorDto)
         {
             var existingSector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(x => x.Name == sectorDto.Name
                 && x.GoverningBodyId == sectorDto.GoverningBodyId && x.IsActive);
@@ -87,16 +87,16 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return newSector.Id;
         }
 
-        private Task<GBSector> CreateSectorAsync(SectorDTO sector)
+        private Task<GBSector> CreateSectorAsync(SectorDto sector)
         {
-            return Task.Run(() => _mapper.Map<SectorDTO, GBSector>(sector));
+            return Task.Run(() => _mapper.Map<SectorDto, GBSector>(sector));
         }
 
-        public async Task<IEnumerable<SectorDTO>> GetSectorsByGoverningBodyAsync(int governingBodyId)
+        public async Task<IEnumerable<SectorDto>> GetSectorsByGoverningBodyAsync(int governingBodyId)
         {
             var sectors = await _repoWrapper.GoverningBodySector.GetAllAsync(
                 s => s.GoverningBodyId == governingBodyId && s.IsActive);
-            return _mapper.Map<IEnumerable<GBSector>, IEnumerable<SectorDTO>>(sectors);
+            return _mapper.Map<IEnumerable<GBSector>, IEnumerable<SectorDto>>(sectors);
         }
 
         public async Task<string> GetLogoBase64Async(string logoName)
@@ -104,7 +104,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return await _sectorBlobStorage.GetBlobBase64Async(logoName);
         }
 
-        public async Task<SectorProfileDTO> GetSectorProfileAsync(int sectorId)
+        public async Task<SectorProfileDto> GetSectorProfileAsync(int sectorId)
         {
             var sector = await GetSectorByIdAsync(sectorId);
             if (sector == null)
@@ -136,7 +136,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 .Take(5)
                 .ToList();
 
-            var sectorProfileDto = new SectorProfileDTO
+            var sectorProfileDto = new SectorProfileDto
             {
                 Sector = sector,
                 Head = sectorHead,
@@ -148,7 +148,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return sectorProfileDto;
         }
 
-        public async Task<SectorDTO> GetSectorByIdAsync(int id)
+        public async Task<SectorDto> GetSectorByIdAsync(int id)
         {
             var sector = await _repoWrapper.GoverningBodySector.GetFirstOrDefaultAsync(
                 s => s.Id == id && s.IsActive,
@@ -160,10 +160,10 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                     .Include(s => s.Documents)
                         .ThenInclude(d => d.SectorDocumentType)
                     .Include(s => s.Announcements));
-            return _mapper.Map<GBSector, SectorDTO>(sector);
+            return _mapper.Map<GBSector, SectorDto>(sector);
         }
 
-        public async Task<SectorProfileDTO> GetSectorDocumentsAsync(int sectorId)
+        public async Task<SectorProfileDto> GetSectorDocumentsAsync(int sectorId)
         {
             var sector = await GetSectorByIdAsync(sectorId);
             if (sector == null)
@@ -171,9 +171,9 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 return null;
             }
 
-            var sectorDocuments = DocumentsSorter<SectorDocumentsDTO>.SortDocumentsBySubmitDate(sector.Documents);
+            var sectorDocuments = DocumentsSorter<SectorDocumentsDto>.SortDocumentsBySubmitDate(sector.Documents);
 
-            var sectorProfileDto = new SectorProfileDTO()
+            var sectorProfileDto = new SectorProfileDto()
             {
                 Sector = sector,
                 Documents = sectorDocuments
@@ -187,7 +187,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return await _securityModel.GetUserAccessAsync(userId);
         }
 
-        public async Task<int> EditAsync(SectorDTO sector)
+        public async Task<int> EditAsync(SectorDto sector)
         {
             await UploadPhotoAsync(sector);
             var newSector = await CreateSectorAsync(sector);
@@ -216,7 +216,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return sectorId;
         }
 
-        public async Task<IEnumerable<SectorAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<SectorAdministrationDto>> GetAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
@@ -224,10 +224,10 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  );
             admins.Where(a => a.Sector != null).ForAll(a => a.Sector.Administration = null);
 
-            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDto>>(admins);
         }
 
-        public async Task<IEnumerable<SectorAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<SectorAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == UserId && a.EndDate < DateTime.Now,
                  include:
@@ -235,11 +235,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                  );
             admins.Where(a => a.Sector != null).ForAll(a => a.Sector.Administration = null);
 
-            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins).Reverse();
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDto>>(admins).Reverse();
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<SectorAdministrationDTO>, int>> GetAdministrationForTableAsync(
+        public async Task<Tuple<IEnumerable<SectorAdministrationDto>, int>> GetAdministrationForTableAsync(
             string userId, bool isActive, int pageNumber, int pageSize)
         {
             var admins = await _repoWrapper.GoverningBodySectorAdministration.GetAllAsync(
@@ -254,8 +254,8 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
             admins = admins.Skip(pageSize * (pageNumber - 1)).Take(pageSize);
 
-            return new Tuple<IEnumerable<SectorAdministrationDTO>, int>(
-                _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDTO>>(admins), rowCount);
+            return new Tuple<IEnumerable<SectorAdministrationDto>, int>(
+                _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDto>>(admins), rowCount);
         }
 
         /// <inheritdoc />

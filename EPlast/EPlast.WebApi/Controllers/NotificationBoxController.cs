@@ -1,11 +1,11 @@
 ﻿using System;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Notifications;
 using System.Collections.Generic;
-using EPlast.BLL.DTO.Notification;
 using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Notification;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.WebApi.WebSocketHandlers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -70,9 +70,9 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("addNotifications")]
-        public async Task<IActionResult> AddNotificationList(IEnumerable<UserNotificationDTO> userNotifications)
+        public async Task<IActionResult> AddNotificationList(IEnumerable<UserNotificationDto> userNotifications)
         {
-            IEnumerable<UserNotificationDTO> AddedUserNotifications;
+            IEnumerable<UserNotificationDto> AddedUserNotifications;
             try
             {
                 AddedUserNotifications = await _notificationService.AddListUserNotificationAsync(userNotifications);
@@ -87,14 +87,14 @@ namespace EPlast.WebApi.Controllers
             return NoContent();
         }
 
-        private IEnumerable<UserNotificationDTO> GetOnlineUserFromList(IEnumerable<UserNotificationDTO> userNotificationDTOs)
+        private IEnumerable<UserNotificationDto> GetOnlineUserFromList(IEnumerable<UserNotificationDto> userNotificationDTOs)
         {
             List<string> onlineUsers = _userNotificationHandler.GetOnlineUsers().ToList();
             return userNotificationDTOs.Where(un => onlineUsers.Contains(un.OwnerUserId));
         }
 
 
-        private async Task SendPrivateNotification(UserNotificationDTO userNotificationDTO)
+        private async Task SendPrivateNotification(UserNotificationDto userNotificationDTO)
         {
            await _userNotificationHandler.SendUserNotificationAsync(userNotificationDTO);
         }

@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.Commands.Decision;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
@@ -7,12 +13,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Decision
 {
@@ -42,7 +42,7 @@ namespace EPlast.Tests.Handlers.Decision
                 .ReturnsAsync(GetTestDecesionQueryable().FirstOrDefault());
 
             //Act
-            var changingDecisionDto = new DecisionDTO();
+            var changingDecisionDto = new DecisionDto();
             changingDecisionDto.Name = decisionNewName;
             changingDecisionDto.Description = decisionNewDescription;
             _query = new UpdateCommand(changingDecisionDto);

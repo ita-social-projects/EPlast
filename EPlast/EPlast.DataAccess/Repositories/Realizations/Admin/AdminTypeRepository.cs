@@ -1,10 +1,10 @@
-﻿using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories.Contracts;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -20,7 +20,18 @@ namespace EPlast.DataAccess.Repositories
             return EPlastDBContext.Users.CountAsync();
         }
 
-        public async Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab, string regions, string cities, string clubs, string degrees, int sortKey, string searchData, string filterRoles = "", string andClubs = null)
+        public async Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(
+            int pageNum,
+            int pageSize,
+            string tab,
+            string regions,
+            string cities,
+            string clubs,
+            string degrees,
+            int sortKey,
+            string searchData,
+            string filterRoles = "",
+            string andClubs = null)
         {
             var items = EPlastDBContext.Set<User>()
                 .Include(x => x.UserProfile)
@@ -35,9 +46,9 @@ namespace EPlast.DataAccess.Repositories
                     Birthday = x.UserProfile.Birthday,
                     Gender = x.UserProfile.Gender.Name,
                     RegionName = EPlastDBContext.Set<Region>().FirstOrDefault(y => y.ID == x.RegionId).RegionName
-                        ?? x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.RegionName,
-                    CityName = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Name,
-                    ClubName = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.Name,
+                        ?? x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.Region.RegionName,
+                    CityName = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.Name,
+                    ClubName = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).Club.Name,
                     Address = x.UserProfile.Address,
                     PhoneNumber = x.PhoneNumber,
                     Referal = x.UserProfile.Referal,
@@ -47,9 +58,9 @@ namespace EPlast.DataAccess.Repositories
                     EmailConfirmed = x.EmailConfirmed,
                     UPUDegree = x.UserProfile.UpuDegree.Name,
                     UserSystemId = x.UserProfile.ID,
-                    RegionId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault() != null ? x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.Region.ID : x.RegionId,
-                    CityId = x.CityMembers.Where(y => y.UserId == x.Id).FirstOrDefault().City.ID,
-                    ClubId = x.ClubMembers.Where(y => y.UserId == x.Id).FirstOrDefault().Club.ID,
+                    RegionId = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.Region.ID : x.RegionId,
+                    CityId = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.ID,
+                    ClubId = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).Club.ID,
                     DegreeId = x.UserPlastDegrees.PlastDegree.Id,
                     Roles = string.Join(", ", EPlastDBContext.Roles
                        .Where(r => (EPlastDBContext.UserRoles
@@ -147,7 +158,7 @@ namespace EPlast.DataAccess.Repositories
             int rowCount = finalItems.Count();
 
             //items ordering
-            finalItems = sortItems(finalItems, sortKey);
+            finalItems = SortItems(finalItems, sortKey);
 
             finalItems = finalItems
             .Skip((pageNum - 1) * pageSize)
@@ -156,7 +167,7 @@ namespace EPlast.DataAccess.Repositories
             return new Tuple<IEnumerable<UserTableObject>, int>(finalItems, rowCount);
         }
 
-        private IEnumerable<UserTableObject> sortItems(IEnumerable<UserTableObject> items, int sortKey)
+        private IEnumerable<UserTableObject> SortItems(IEnumerable<UserTableObject> items, int sortKey)
         {
             switch (sortKey)
             {

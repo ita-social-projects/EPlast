@@ -1,15 +1,15 @@
-﻿using EPlast.BLL.DTO.Club;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Club;
 using EPlast.DataAccess.Entities;
-using System;
 
 namespace EPlast.BLL.Interfaces.Club
 {
     public interface IClubAccessService
     {
-        Task<IEnumerable<ClubDTO>> GetClubsAsync(User user);
-        Task<IEnumerable<ClubForAdministrationDTO>> GetAllClubsIdAndName(User user);
+        Task<IEnumerable<ClubDto>> GetClubsAsync(User user);
+        Task<IEnumerable<ClubForAdministrationDto>> GetAllClubsIdAndName(User user);
         Task<bool> HasAccessAsync(User user, int ClubId);
         Task<bool> HasAccessAsync(User user);
     }

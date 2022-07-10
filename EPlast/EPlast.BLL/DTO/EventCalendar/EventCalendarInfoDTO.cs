@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.EventCalendar
 {
-    public class EventCalendarInfoDTO
+    public class EventCalendarInfoDto
     {
         public int ID { get; set; }
         public string Title { get; set; }

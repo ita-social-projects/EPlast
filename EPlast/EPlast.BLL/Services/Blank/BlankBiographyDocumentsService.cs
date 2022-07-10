@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Blank
 {
@@ -24,7 +24,7 @@ namespace EPlast.BLL.Services.Blank
             _mapper = mapper;
             _blankFilesBlobStorage = blankFilesBlobStorage;
         }
-        public async Task<BlankBiographyDocumentsDTO> AddDocumentAsync(BlankBiographyDocumentsDTO biographyDocumentDTO)
+        public async Task<BlankBiographyDocumentsDto> AddDocumentAsync(BlankBiographyDocumentsDto biographyDocumentDTO)
         {
             var fileBase64 = biographyDocumentDTO.BlobName.Split(',')[1];
             var extension = "." + biographyDocumentDTO.FileName.Split('.').LastOrDefault();
@@ -32,7 +32,7 @@ namespace EPlast.BLL.Services.Blank
             await _blankFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             biographyDocumentDTO.BlobName = fileName;
 
-            var document = _mapper.Map<BlankBiographyDocumentsDTO, BlankBiographyDocuments>(biographyDocumentDTO);
+            var document = _mapper.Map<BlankBiographyDocumentsDto, BlankBiographyDocuments>(biographyDocumentDTO);
             _repositoryWrapper.BiographyDocumentsRepository.Attach(document);
             await _repositoryWrapper.BiographyDocumentsRepository.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();
@@ -54,13 +54,13 @@ namespace EPlast.BLL.Services.Blank
 
         public async Task<string> DownloadFileAsync(string fileName)
         {
-            return await _blankFilesBlobStorage.GetBlobBase64Async(fileName); 
+            return await _blankFilesBlobStorage.GetBlobBase64Async(fileName);
         }
 
 
-        public async Task<BlankBiographyDocumentsDTO> GetDocumentByUserId(string userid)
+        public async Task<BlankBiographyDocumentsDto> GetDocumentByUserId(string userid)
         {
-            return _mapper.Map<BlankBiographyDocuments, BlankBiographyDocumentsDTO>(
+            return _mapper.Map<BlankBiographyDocuments, BlankBiographyDocumentsDto>(
                 await _repositoryWrapper.BiographyDocumentsRepository.GetFirstOrDefaultAsync(i => i.UserId == userid));
         }
     }

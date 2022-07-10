@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Handlers.RegionHandlers;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -8,12 +14,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Regions
 {
@@ -55,14 +55,14 @@ namespace EPlast.Tests.Handlers.Regions
             _mockBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>()));
             _mockMapper
                 .Setup(m =>
-                    m.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(It.IsAny<IEnumerable<RegionObject>>()));
+                    m.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDto>>(It.IsAny<IEnumerable<RegionObject>>()));
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDto>, int>>(result);
         }
 
         [Test]
@@ -80,14 +80,14 @@ namespace EPlast.Tests.Handlers.Regions
             _mockBlobStorage.Setup(x => x.GetBlobBase64Async(It.IsAny<string>())).ThrowsAsync(new Exception());
             _mockMapper
                 .Setup(m =>
-                    m.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDTO>>(It.IsAny<IEnumerable<RegionObject>>()));
+                    m.Map<IEnumerable<RegionObject>, IEnumerable<RegionObjectsDto>>(It.IsAny<IEnumerable<RegionObject>>()));
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDto>, int>>(result);
         }
 
         private List<Region> GetRegionsByPage()

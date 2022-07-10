@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.Notification
 {
-    public class UserNotificationDTO
+    public class UserNotificationDto
     {
         public int Id { get; set; }
         [Required]

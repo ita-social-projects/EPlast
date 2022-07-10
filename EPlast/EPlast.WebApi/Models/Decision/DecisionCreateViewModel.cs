@@ -1,14 +1,14 @@
-﻿using EPlast.BLL.DTO;
+﻿using System.Collections.Generic;
+using EPlast.BLL.DTO;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
 
 namespace EPlast.WebApi.Models.Decision
 {
     public class DecisionCreateViewModel
     {
-        public IEnumerable<GoverningBodyDTO> GoverningBodies { get; set; }
+        public IEnumerable<GoverningBodyDto> GoverningBodies { get; set; }
         public IEnumerable<SelectListItem> DecisionStatusTypeListItems { get; set; }
-        public IEnumerable<DecisionTargetDTO> DecisionTargets { get; set; }
+        public IEnumerable<DecisionTargetDto> DecisionTargets { get; set; }
 
     }
 }

@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Notification
     {
         public UserNotificationProfile()
         {
-            CreateMap<UserNotification, UserNotificationDTO>().ReverseMap();
+            CreateMap<UserNotification, UserNotificationDto>().ReverseMap();
         }
     }
 

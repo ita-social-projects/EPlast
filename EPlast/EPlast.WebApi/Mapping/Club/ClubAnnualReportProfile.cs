@@ -1,11 +1,11 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Club;
-using EPlast.WebApi.Models.Club;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.Club;
+using EPlast.WebApi.Models.Club;
 
 namespace EPlast.WebApi.Mapping.Club
 {
@@ -13,7 +13,7 @@ namespace EPlast.WebApi.Mapping.Club
     {
         public ClubAnnualReportProfile()
         {
-            CreateMap<ClubAnnualReportDTO, ClubAnnualReportViewModel>().ReverseMap();
+            CreateMap<ClubAnnualReportDto, ClubAnnualReportViewModel>().ReverseMap();
         }
     }
 }

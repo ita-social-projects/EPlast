@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Handlers.ClubHandlers;
@@ -10,12 +16,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Handlers.Club
@@ -47,7 +47,7 @@ namespace EPlast.Tests.Handlers.Club
                 .ReturnsAsync(new DataAccessClub.Club());
 
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin());
 
             _mediator
@@ -56,11 +56,11 @@ namespace EPlast.Tests.Handlers.Club
 
             _mediator
                 .Setup(m => m.Send(It.IsAny<GetClubHistoryMembersQuery>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new List<ClubMemberHistoryDTO>());
+                .ReturnsAsync(new List<ClubMemberHistoryDto>());
 
             _mediator
                .Setup(m => m.Send(It.IsAny<GetClubHistoryFollowersQuery>(), It.IsAny<CancellationToken>()))
-               .ReturnsAsync(new List<ClubMemberHistoryDTO>());
+               .ReturnsAsync(new List<ClubMemberHistoryDto>());
 
             _mediator
                 .Setup(m => m.Send(It.IsAny<GetCountUsersPerYearQuery>(), It.IsAny<CancellationToken>()))
@@ -75,7 +75,7 @@ namespace EPlast.Tests.Handlers.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubReportDataDTO>(result);
+            Assert.IsInstanceOf<ClubReportDataDto>(result);
         }
 
         private GetClubDataForReportQuery query = new GetClubDataForReportQuery(GetFakeNumber()); 
@@ -101,26 +101,26 @@ namespace EPlast.Tests.Handlers.Club
             }
         };
 
-        private ClubDTO CreateFakeClubDtoWithExAdmin()
+        private ClubDto CreateFakeClubDtoWithExAdmin()
         {
             var clubDto = GetClubDto();
-            clubDto.ClubAdministration = new List<ClubAdministrationDTO>
+            clubDto.ClubAdministration = new List<ClubAdministrationDto>
             {
-                new ClubAdministrationDTO
+                new ClubAdministrationDto
                 {
                     UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                    User = new ClubUserDTO(),
-                    AdminType = new AdminTypeDTO
+                    User = new ClubUserDto(),
+                    AdminType = new AdminTypeDto
                     {
                         AdminTypeName = Roles.KurinHead
                     },
                     EndDate = DateTime.Now.AddMonths(-3)
                 },
-                new ClubAdministrationDTO
+                new ClubAdministrationDto
                 {
                     UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                    User = new ClubUserDTO(),
-                    AdminType = new AdminTypeDTO
+                    User = new ClubUserDto(),
+                    AdminType = new AdminTypeDto
                     {
                         AdminTypeName = "----------",
                     },
@@ -131,55 +131,55 @@ namespace EPlast.Tests.Handlers.Club
             return clubDto;
         }
 
-        private ClubDTO GetClubDto()
+        private ClubDto GetClubDto()
         {
             var club = GetClubDtoWithoutMembers();
-            club.ClubMembers = new List<ClubMembersDTO>
+            club.ClubMembers = new List<ClubMembersDto>
                 {
-                    new ClubMembersDTO
+                    new ClubMembersDto
                     {
                         UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                        User = new ClubUserDTO(),
+                        User = new ClubUserDto(),
                         StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null
                     }
                 };
             return club;
         }
 
-        private ClubDTO GetClubDtoWithoutMembers()
+        private ClubDto GetClubDtoWithoutMembers()
         {
-            return new ClubDTO
+            return new ClubDto
             {
                 ClubAdministration = GetClubAdministrationDTO(),
-                ClubDocuments = new List<ClubDocumentsDTO>
+                ClubDocuments = new List<ClubDocumentsDto>
                     {
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO()
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto()
                     }
             };
         }
 
-        private List<ClubAdministrationDTO> GetClubAdministrationDTO()
+        private List<ClubAdministrationDto> GetClubAdministrationDTO()
         {
-            return new List<ClubAdministrationDTO>
+            return new List<ClubAdministrationDto>
             {
-                 new ClubAdministrationDTO
+                 new ClubAdministrationDto
                  {
                       UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                      User = new ClubUserDTO(),
-                      AdminType = new AdminTypeDTO
+                      User = new ClubUserDto(),
+                      AdminType = new AdminTypeDto
                       {
                            AdminTypeName = Roles.KurinHead
                       }
                  },
-                 new ClubAdministrationDTO
+                 new ClubAdministrationDto
                  {
                       UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                      User = new ClubUserDTO(),
-                      AdminType = new AdminTypeDTO
+                      User = new ClubUserDto(),
+                      AdminType = new AdminTypeDto
                       {
                            AdminTypeName = "----------"
                       }

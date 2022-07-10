@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.City
     {
         public CityLegalStatusProfile()
         {
-            CreateMap<DatabaseEntities.CityLegalStatus, CityLegalStatusDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.CityLegalStatus, CityLegalStatusDto>().ReverseMap();
         }
     }
 }

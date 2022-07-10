@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace EPlast.BLL.DTO.City
 {
-    public class CityDTO
+    public class CityDto
     {
         public int ID { get; set; }
 
@@ -37,7 +37,7 @@ namespace EPlast.BLL.DTO.City
         public string Logo { get; set; }
         public bool IsActive { get; set; }
         public int RegionId { get; set; }
-        public RegionDTO Region { get; set; }
+        public RegionDto Region { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }
@@ -45,11 +45,11 @@ namespace EPlast.BLL.DTO.City
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
         public int DocumentsCount { get; set; }
-        public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
-        public IEnumerable<CityMembersDTO> CityMembers { get; set; }
+        public IEnumerable<CityDocumentsDto> CityDocuments { get; set; }
+        public IEnumerable<CityMembersDto> CityMembers { get; set; }
         [JsonIgnore]
-        public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
-        public IEnumerable<CityLegalStatusDTO> CityLegalStatuses { get; set; }
-        public IEnumerable<UserRenewalDTO> UserRenewals { get; set; }
+        public IEnumerable<CityAdministrationDto> CityAdministration { get; set; }
+        public IEnumerable<CityLegalStatusDto> CityLegalStatuses { get; set; }
+        public IEnumerable<UserRenewalDto> UserRenewals { get; set; }
     }
 }

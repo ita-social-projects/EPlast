@@ -6,7 +6,7 @@ using MediatR;
 
 namespace EPlast.BLL.Queries.City
 {
-    public class GetAllCitiesByPageAndIsArchiveQuery : IRequest<Tuple<IEnumerable<CityObjectDTO>, int>>
+    public class GetAllCitiesByPageAndIsArchiveQuery : IRequest<Tuple<IEnumerable<CityObjectDto>, int>>
     {
         public int Page { get; set; }
         public int PageSize { get; set; }

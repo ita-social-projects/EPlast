@@ -363,8 +363,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int>()))
                 .Returns(Task.CompletedTask);
             _mapperMock
-                .Setup(m => m.Map<UserDTO>(It.Is<User>(v => v == user)))
-                .Returns(new UserDTO());
+                .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
+                .Returns(new UserDto());
 
             var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
             _controller.Url = urlHelper.Object;
@@ -426,8 +426,8 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.AddFollowerAsync(It.Is<int>(v => v == registerDto.CityId), It.Is<string>(v => v == user.Id)))
                 .ReturnsAsync(value: null!);
             _mapperMock
-                .Setup(m => m.Map<UserDTO>(It.Is<User>(v => v == user)))
-                .Returns(new UserDTO());
+                .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
+                .Returns(new UserDto());
 
             var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
             _controller.Url = urlHelper.Object;
