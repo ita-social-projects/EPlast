@@ -215,7 +215,7 @@ namespace EPlast.Tests.Controllers
 
             _userManagerService
                 .Setup((svc) => svc.FindByIdAsync(userId))
-                .ReturnsAsync(new UserDTO() { Id = userId });
+                .ReturnsAsync(new UserDto() { Id = userId });
 
             // Act
             var result = await _userController.PutComment(userId, comment);
@@ -234,7 +234,7 @@ namespace EPlast.Tests.Controllers
 
             _userManagerService
                 .Setup((svc) => svc.FindByIdAsync(userId))
-                .ReturnsAsync((UserDTO)null);
+                .ReturnsAsync((UserDto)null);
 
             // Act
             var result = await _userController.PutComment(userId, comment);
