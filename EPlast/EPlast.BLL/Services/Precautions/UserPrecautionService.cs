@@ -295,7 +295,8 @@ namespace EPlast.BLL.Services.Precautions
 
                 if (isCreatorGoverningBodyAdmin)
                 {
-                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin);
+                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin) &&
+                                                !roles.Contains(Roles.Admin);
                 }
                 else
                 {
