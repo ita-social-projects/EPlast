@@ -100,11 +100,10 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Adds or updates a comment for a specified user
+        /// Adds or updates a comment for the specified user
         /// </summary>
         /// <param name="userId">The id of the user</param>
-        /// <param name="comment">The text of a comment</param>
-        /// <returns>A user</returns>
+        /// <param name="comment">The text of the comment</param>
         /// <response code="200">Successful operation</response>
         /// <response code="404">User not found</response>
         /// <response code="400">The incoming userId is not valid</response>
