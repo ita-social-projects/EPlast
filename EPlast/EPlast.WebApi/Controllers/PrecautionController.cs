@@ -10,6 +10,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -188,7 +191,7 @@ namespace EPlast.WebApi.Controllers
                 var user = await _userManager.GetUserAsync(User);
 
                 bool isAdded =
-                    await _userPrecautionService.AddUserPrecautionAsync(new UserPrecautionDTO
+                    await _userPrecautionService.AddUserPrecautionAsync(new UserPrecautionDto
                     {
                         Precaution = precaution,
                         PrecautionId = userPrecaution.PrecautionId,
@@ -247,7 +250,7 @@ namespace EPlast.WebApi.Controllers
             {
                 User user = await _userManager.FindByIdAsync(model.UserId);
 
-                var userPrecautionDTO = new UserPrecautionDTO
+                var userPrecautionDTO = new UserPrecautionDto
                 {
                     Id = model.Id,
                     PrecautionId = model.PrecautionId,
