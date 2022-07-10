@@ -116,7 +116,7 @@ namespace EPlast.WebApi.Controllers
                 var annualreport =
                     await _RegionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year,
                         regionAnnualReportQuestions);
-                return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт округи успішно створено!", report = annualreport });
+                return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт округи успішно створено!", report= annualreport });
             }
             catch (NullReferenceException)
             {
@@ -578,7 +578,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of regions</returns>
         [HttpGet("Regions")]
-        [AllowAnonymous]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegions(UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
             var regions = await _regionService.GetRegions(oblast);
