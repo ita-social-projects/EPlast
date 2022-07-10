@@ -58,7 +58,7 @@ namespace EPlast.Tests.Services.Precautions
                     It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                 .ReturnsAsync(nullPrecaution);
             //Act
-            var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO,new User());
+            var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
             Assert.AreEqual(true, result);
@@ -122,8 +122,6 @@ namespace EPlast.Tests.Services.Precautions
         public async Task ChangeUserPrecautionAsync_SuperAdmin_ReturnsTrue()
         {
             //Arrange
-            userPrecaution.IsActive = true;
-
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
             _repoWrapperMock
@@ -142,7 +140,7 @@ namespace EPlast.Tests.Services.Precautions
         public async Task ChangeUserPrecautionAsync_GoverningBodyUserInactivePrecaution_ReturnsFalse()
         {
             //Arrange
-            userPrecaution.IsActive = false;
+
             var currentUser = new User();
 
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
@@ -163,8 +161,6 @@ namespace EPlast.Tests.Services.Precautions
         public async Task DeleteUserPrecautionAsync_SuperAdmin_ReturnsTrue()
         {
             //Arrange
-            userPrecaution.IsActive = true;
-
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(false);
             _repoWrapperMock
@@ -183,7 +179,6 @@ namespace EPlast.Tests.Services.Precautions
         public async Task DeleteUserPrecautionAsync_GoverningBodyUserInactivePrecaution_ReturnsFalse()
         {
             //Arrange
-            userPrecaution.IsActive = false;
             var currentUser = new User();
 
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
@@ -204,8 +199,6 @@ namespace EPlast.Tests.Services.Precautions
         public async Task GetUserPrecautionsForTableAsync_SuperAdmin_ReturnsUserPrecautionsTableInfo()
         {
             //Arrange
-            userPrecaution.IsActive = true;
-
             _mediatorMock
                 .Setup(x => x.Send(It.IsAny<GetUsersPrecautionsForTableQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(CreateTuple);
@@ -480,7 +473,7 @@ namespace EPlast.Tests.Services.Precautions
                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
                .ReturnsAsync(GetTestUserPrecaution());
             _mapperMock
-               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable < UserPrecautionDTO >> (It.IsAny<IEnumerable<UserPrecaution>>()))
+               .Setup(m => m.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(It.IsAny<IEnumerable<UserPrecaution>>()))
                .Returns(GetTestUserPrecautionDTO());
 
             //Act 
@@ -572,7 +565,7 @@ namespace EPlast.Tests.Services.Precautions
 
             _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(assignableRoles);
             var expected = GetAvailableSuggestedUsers().ToList();
- 
+
             //Act
             var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
             var resultList = result.ToList();
@@ -704,7 +697,7 @@ namespace EPlast.Tests.Services.Precautions
                 FirstName = "John",
                 LastName = "Brian",
             };
-            
+
             var currentUser = new User();
 
             _userManagerMock.Setup(m => m.IsInRoleAsync(It.IsAny<User>(), Roles.GoverningBodyAdmin)).ReturnsAsync(true);
@@ -814,7 +807,7 @@ namespace EPlast.Tests.Services.Precautions
             {
                 new ShortUserInformationDTO { ID = UserId },
                 new ShortUserInformationDTO { ID = UserId }
-                
+
             }.AsEnumerable();
         }
 
@@ -826,7 +819,6 @@ namespace EPlast.Tests.Services.Precautions
                {
                    Precaution = new Precaution{Id = 1, Name = "За силу"},
                    UserId = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
-                   IsActive = true,
                    Date = DateTime.Now,
                    User = new DataAccess.Entities.User { FirstName = "", LastName = "", FatherName =""}
                },
@@ -851,24 +843,23 @@ namespace EPlast.Tests.Services.Precautions
         {
             return new List<UserPrecautionDTO>
             {
-               new  UserPrecautionDTO
+               new UserPrecautionDTO
                {
-                   Precaution = new PrecautionDTO{Id = 1, Name = "За силу"},
-                   IsActive = true,
+                   Precaution = new PrecautionDTO{Id = 1, Name = "За силу", MonthsPeriod = 6},
                    UserId = "a84473c3-140b-4cae-ac80-b7cd5759d3b5",
                    Date = DateTime.Now,
                    User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
                },
                new  UserPrecautionDTO
                {
-                   Precaution = new PrecautionDTO{Id = 2, Name = "За силу"},
+                   Precaution = new PrecautionDTO{Id = 2, Name = "За силу", MonthsPeriod = 12},
                    UserId = UserId,
                    Date = DateTime.Now,
                    User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
                },
                new  UserPrecautionDTO
                {
-                   Precaution = new PrecautionDTO{Id = 3, Name = "За силу"},
+                   Precaution = new PrecautionDTO{Id = 3, Name = "За силу", MonthsPeriod = 9},
                    UserId = UserId,
                    Date = DateTime.Now,
                    User = new PrecautionUserDTO { FirstName = "", LastName = "", FatherName =""}
@@ -916,7 +907,7 @@ namespace EPlast.Tests.Services.Precautions
                     LastName = "Brian",
                 }
             }.AsEnumerable();
-         }
+        }
 
         private IEnumerable<SuggestedUserDto> GetAvailableSuggestedUsers()
         {

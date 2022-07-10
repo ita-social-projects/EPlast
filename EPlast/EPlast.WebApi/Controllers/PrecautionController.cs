@@ -1,9 +1,12 @@
-﻿using EPlast.BLL;
+﻿using AutoMapper;
+using EPlast.BLL;
 using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.DTO.PrecautionsDTO;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using EPlast.WebApi.Models.Precaution;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -21,12 +24,12 @@ namespace EPlast.WebApi.Controllers
     [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser)]
 
     public class PrecautionController : ControllerBase
-    {        
-        private readonly IUserPrecautionService _userPrecautionService;                
+    {
+        private readonly IUserPrecautionService _userPrecautionService;
         private readonly UserManager<User> _userManager;
         private readonly IMediator _mediator;
 
-        public PrecautionController(            
+        public PrecautionController(
             IUserPrecautionService userPrecautionService,
             UserManager<User> userManager,
             IMediator mediator)
@@ -73,7 +76,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersPrecautionsForTable")]
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery]  PrecautionTableSettings tableSettings)
+        public async Task<IActionResult> GetUsersPrecautionsForTable([FromQuery] PrecautionTableSettings tableSettings)
         {
             var tableInfo =
                 await _userPrecautionService.GetUserPrecautionsForTableAsync(tableSettings);
@@ -92,7 +95,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetPrecaution(int id)
         {
             var query = new GetPrecautionQuery(id);
-            var Precaution = await _mediator.Send(query);            
+            var Precaution = await _mediator.Send(query);
             if (Precaution == null)
                 return NotFound();
             return Ok(Precaution);
@@ -107,7 +110,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminPlastMemberAndSupporter)]
         public async Task<IActionResult> GetPrecaution()
         {
-            var query = new GetAllPrecautionQuery();            
+            var query = new GetAllPrecautionQuery();
             return Ok(await _mediator.Send(query));
         }
 
@@ -141,7 +144,7 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 var query = new DeletePrecautionCommand(id, await _userManager.GetUserAsync(User));
-                await _mediator.Send(query);                
+                await _mediator.Send(query);
                 return NoContent();
             }
             catch (NullReferenceException)
@@ -175,20 +178,32 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Add user Precaution
         /// </summary>
-        /// <param name="userPrecautionDTO">User Precaution model</param>
+        /// <param name="userPrecaution">User Precaution model</param>
         /// <returns> Answer from backend </returns>
         /// <response code="204">User Precaution was successfully created</response>
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
-        [HttpPost("UserPrecaution/Create/{userId}")]
+        [HttpPost("UserPrecaution/Create")]
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
-        public async Task<IActionResult> AddUserPrecaution(UserPrecautionDTO userPrecautionDTO)
+        public async Task<IActionResult> AddUserPrecaution(UserPrecautionCreateViewModel userPrecaution)
         {
             if (ModelState.IsValid)
             {
+                var precaution = await _mediator.Send(new GetPrecautionQuery(userPrecaution.PrecautionId));
+                var user = await _userManager.GetUserAsync(User);
+
                 bool isAdded =
-                    await _userPrecautionService.AddUserPrecautionAsync(userPrecautionDTO,
-                        await _userManager.GetUserAsync(User));
+                    await _userPrecautionService.AddUserPrecautionAsync(new UserPrecautionDTO
+                    {
+                        Precaution = precaution,
+                        PrecautionId = userPrecaution.PrecautionId,
+                        Reporter = userPrecaution.Reporter,
+                        Reason = userPrecaution.Reason,
+                        Status = userPrecaution.Status,
+                        Number = userPrecaution.Number,
+                        Date = userPrecaution.Date,
+                        UserId = userPrecaution.UserId,
+                    }, user);
 
                 if (!isAdded)
                 {
@@ -215,7 +230,7 @@ namespace EPlast.WebApi.Controllers
             if (ModelState.IsValid)
             {
                 var query = new AddPrecautionCommand(PrecautionDTO, await _userManager.GetUserAsync(User));
-                await _mediator.Send(query);                
+                await _mediator.Send(query);
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -224,19 +239,34 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Edit user Precaution
         /// </summary>
-        /// <param name="userPrecautionDTO">User Precaution model</param>
+        /// <param name="model">User Precaution model</param>
         /// <returns> Answer from backend </returns>
         /// <response code="204">User Precaution was successfully edited</response>
         /// <response code="404">User Precaution does not exist</response>
         /// <response code="400">Model is not valid</response>
-        [HttpPut("UserPrecaution/Edit/{userPrecautionId}")]
+        [HttpPut("UserPrecaution/Edit")]
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
-        public async Task<IActionResult> EditUserPrecaution(UserPrecautionDTO userPrecautionDTO)
+        public async Task<IActionResult> EditUserPrecaution(UserPrecautionEditViewModel model)
         {
             if (ModelState.IsValid)
             {
-                bool isFinished = await _userPrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO,
-                    await _userManager.GetUserAsync(User));
+                User user = await _userManager.FindByIdAsync(model.UserId);
+
+                var userPrecautionDTO = new UserPrecautionDTO
+                {
+                    Id = model.Id,
+                    PrecautionId = model.PrecautionId,
+                    Reporter = model.Reporter,
+                    Reason = model.Reason,
+                    Status = model.Status,
+                    Number = model.Number,
+                    Date = model.Date,
+                    UserId = model.UserId,
+                };
+
+                bool isFinished
+                    = await _userPrecautionService.ChangeUserPrecautionAsync(userPrecautionDTO, user);
+
                 if (!isFinished)
                 {
                     return NotFound();
@@ -265,7 +295,7 @@ namespace EPlast.WebApi.Controllers
                 try
                 {
                     var query = new ChangePrecautionCommand(PrecautionDTO, await _userManager.GetUserAsync(User));
-                    await _mediator.Send(query);                    
+                    await _mediator.Send(query);
                     return NoContent();
                 }
                 catch (NullReferenceException)

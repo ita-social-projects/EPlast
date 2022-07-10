@@ -109,7 +109,6 @@ namespace EPlast.DataAccess
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
         public DbSet<UserPrecaution> UserPrecautions { get; set; }
-        public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
