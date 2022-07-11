@@ -388,3 +388,5 @@ EPlast/EPlast/wwwroot/images/Club/*
 appsettings.json 
 manifests/.DS_Store
 .DS_Store
+
+.sonarqube/
