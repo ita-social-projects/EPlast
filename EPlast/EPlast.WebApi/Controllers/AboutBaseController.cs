@@ -1,19 +1,19 @@
-﻿using AutoMapper;
-using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.WebApi.Models.AboutBase;
-using Microsoft.AspNetCore.Authorization;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.AboutBase;
-using Microsoft.AspNetCore.Identity;
-using EPlast.DataAccess.Entities;
+using AutoMapper;
+using EPlast.BLL;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.AboutBase;
+using EPlast.BLL.Interfaces.AboutBase;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using EPlast.WebApi.Models.AboutBase;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -42,7 +42,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("AboutBaseSection/{id}")]
         public async Task<IActionResult> GetAboutBaseSection(int id)
         {
-            SectionDTO sectionDTO = await _aboutBaseSectionService.GetSection(id);
+            SectionDto sectionDTO = await _aboutBaseSectionService.GetSection(id);
             if (sectionDTO == null)
                 return NotFound();
             return Ok(sectionDTO);
@@ -51,14 +51,14 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("AboutBaseSections")]
         public async Task<IActionResult> GetAboutBaseSections()
         {
-            IEnumerable<SectionDTO> sectionDTOs = await _aboutBaseSectionService.GetAllSectionAsync();
+            IEnumerable<SectionDto> sectionDTOs = await _aboutBaseSectionService.GetAllSectionAsync();
             return Ok(sectionDTOs);
         }
 
         [HttpGet("AboutBaseSubsection/{id}")]
         public async Task<IActionResult> GetAboutBaseSubsection(int id)
         {
-            SubsectionDTO subsectionDTO = await _aboutBaseSubsectionService.GetSubsection(id);
+            SubsectionDto subsectionDTO = await _aboutBaseSubsectionService.GetSubsection(id);
             if (subsectionDTO == null)
                 return NotFound();
             return Ok(subsectionDTO);
@@ -67,7 +67,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("AboutBaseSubsections")]
         public async Task<IActionResult> GetAboutBaseSubsections()
         {
-            IEnumerable<SubsectionDTO> subsectionDTOs = await _aboutBaseSubsectionService.GetAllSubsectionAsync();
+            IEnumerable<SubsectionDto> subsectionDTOs = await _aboutBaseSubsectionService.GetAllSubsectionAsync();
             return Ok(subsectionDTOs);
         }
 
@@ -131,7 +131,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("AboutBaseSection/Create")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AddAboutBaseSection(SectionDTO sectionDTO)
+        public async Task<IActionResult> AddAboutBaseSection(SectionDto sectionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -149,7 +149,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AboutBaseSubsection/Create")]
-        public async Task<IActionResult> AddAboutBaseSubsection(SubsectionDTO subsectionDTO)
+        public async Task<IActionResult> AddAboutBaseSubsection(SubsectionDto subsectionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -182,7 +182,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditSection/{id}")]
-        public async Task<IActionResult> EditAboutBaseSection(SectionDTO sectionDTO)
+        public async Task<IActionResult> EditAboutBaseSection(SectionDto sectionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -200,7 +200,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditSubsection/{id}")]
-        public async Task<IActionResult> EditAboutBaseSubsection(SubsectionDTO subsectionDTO)
+        public async Task<IActionResult> EditAboutBaseSubsection(SubsectionDto subsectionDTO)
         {
             if (ModelState.IsValid)
             {

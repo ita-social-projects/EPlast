@@ -41,19 +41,19 @@ namespace EPlast.XUnitTest.Handlers.Decision
         public async Task SaveDecisionTest(int decisionId)
         {
 
-            var decision = new DecisionWrapperDTO
+            var decision = new DecisionWrapperDto
             {
-                Decision = new DecisionDTO
+                Decision = new DecisionDto
                 {
                     ID = decisionId,
-                    DecisionTarget = new DecisionTargetDTO
+                    DecisionTarget = new DecisionTargetDto
                     {
                         ID = new Random().Next(),
                         TargetName = Guid.NewGuid().ToString()
                     }
                 },
             };
-            _mockMapper.Setup(m => m.Map<Decesion>(It.IsAny<DecisionDTO>())).Returns(new Decesion());
+            _mockMapper.Setup(m => m.Map<Decesion>(It.IsAny<DecisionDto>())).Returns(new Decesion());
             _repository.Setup(x => x.Decesion.Attach(It.IsAny<Decesion>()));
             _repository.Setup(x => x.Decesion.Create(It.IsAny<Decesion>()));
 

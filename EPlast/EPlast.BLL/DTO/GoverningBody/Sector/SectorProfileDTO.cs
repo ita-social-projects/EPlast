@@ -1,16 +1,16 @@
-﻿using EPlast.BLL.DTO.GoverningBody.Announcement;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.BLL.DTO.GoverningBody.Sector
 {
-    public class SectorProfileDTO
+    public class SectorProfileDto
     {
-        public SectorDTO Sector { get; set; }
-        public IEnumerable<SectorDocumentsDTO> Documents { get; set; }
-        public IEnumerable<GoverningBodyAnnouncementDTO> Announcements { get; set; }
-        public SectorAdministrationDTO Head { get; set; }
-        public IEnumerable<SectorAdministrationDTO> Administration { get; set; }
+        public SectorDto Sector { get; set; }
+        public IEnumerable<SectorDocumentsDto> Documents { get; set; }
+        public IEnumerable<GoverningBodyAnnouncementDto> Announcements { get; set; }
+        public SectorAdministrationDto Head { get; set; }
+        public IEnumerable<SectorAdministrationDto> Administration { get; set; }
     }
 }

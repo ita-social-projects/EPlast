@@ -1,6 +1,6 @@
-﻿using EPlast.BLL.DTO.Notification;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
+using EPlast.BLL.DTO.Notification;
 
 namespace EPlast.BLL.Interfaces.Notifications
 {
@@ -12,6 +12,6 @@ namespace EPlast.BLL.Interfaces.Notifications
         /// <summary>
         /// Returns the list of user connections
         /// </summary>
-        ConcurrentDictionary<string, HashSet<ConnectionDTO>> UserConnections { get; }
+        ConcurrentDictionary<string, HashSet<ConnectionDto>> UserConnections { get; }
     }
 }

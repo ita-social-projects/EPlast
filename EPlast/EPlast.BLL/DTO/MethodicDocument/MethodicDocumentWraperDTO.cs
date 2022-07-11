@@ -4,9 +4,9 @@ using System.Text;
 
 namespace EPlast.BLL.DTO
 {
-   public class MethodicDocumentWraperDTO
+    public class MethodicDocumentWraperDto
     {
-        public MethodicDocumentDTO MethodicDocument { get; set; }
+        public MethodicDocumentDto MethodicDocument { get; set; }
         public string FileAsBase64 { get; set; }
     }
 }

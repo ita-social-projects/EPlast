@@ -9,8 +9,8 @@ namespace EPlast.BLL.Mapping.GoverningBody.Announcement
     {
         public GoverningBodyAnnouncementWithImages()
         {
-            CreateMap<GoverningBodyAnnouncementWithImagesDTO, GoverningBodyAnnouncement>().ReverseMap();
-            CreateMap<GoverningBodyAnnouncementImageDTO, GoverningBodyAnnouncementImage>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncementWithImagesDto, GoverningBodyAnnouncement>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncementImageDto, GoverningBodyAnnouncementImage>().ReverseMap();
         }
     }
 }

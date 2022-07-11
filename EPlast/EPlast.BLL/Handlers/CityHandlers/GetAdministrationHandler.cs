@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Handlers.CityHandlers
 {
-    public class GetAdministrationHandler : IRequestHandler<GetAdministrationQuery, IEnumerable<CityAdministrationGetDTO>>
+    public class GetAdministrationHandler : IRequestHandler<GetAdministrationQuery, IEnumerable<CityAdministrationGetDto>>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -22,7 +22,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CityAdministrationGetDTO>> Handle(GetAdministrationQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<CityAdministrationGetDto>> Handle(GetAdministrationQuery request, CancellationToken cancellationToken)
         {
             var admins = await _repoWrapper.CityAdministration.GetAllAsync(
                 predicate: d => d.CityId == request.CityId && d.Status,
@@ -30,7 +30,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                     .Include(t => t.User)
                     .Include(t => t.City)
                     .Include(t => t.AdminType));
-            var admin = _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(admins);
+            var admin = _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationGetDto>>(admins);
             return admin;
         }
     }

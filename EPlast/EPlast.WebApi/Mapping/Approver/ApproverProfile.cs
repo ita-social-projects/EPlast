@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.Approver
     {
         public ApproverProfile()
         {
-            CreateMap<ApproverDTO, ApproverViewModel>().ReverseMap();
+            CreateMap<ApproverDto, ApproverViewModel>().ReverseMap();
         }
     }
 }

@@ -1,20 +1,20 @@
-﻿using EPlast.BLL.DTO.GoverningBody;
-using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Interfaces.GoverningBodies;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Threading.Tasks;
-using EPlast.DataAccess.Entities.GoverningBody;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Admin;
+using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Admin;
+using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 
@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services.GoverningBodies
             _mapper = mapper;
         }
 
-        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>>
+        public async Task<Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>>
             GetGoverningBodyAdministratorsByPageAsync(int pageNumber, int pageSize)
         {
             var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
@@ -52,16 +52,16 @@ namespace EPlast.BLL.Services.GoverningBodies
             );
 
             var governingBodyAdmins =
-                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+                _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(
                     tuple.Item1);
 
             var rows = tuple.Item2;
 
-            return new Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>
+            return new Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>
                 (governingBodyAdmins, rows);
         }
 
-        public async Task<IEnumerable<GoverningBodyAdministrationDTO>> GetGoverningBodyAdministratorsAsync()
+        public async Task<IEnumerable<GoverningBodyAdministrationDto>> GetGoverningBodyAdministratorsAsync()
         {
             var governingBodyAdminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
 
@@ -70,11 +70,11 @@ namespace EPlast.BLL.Services.GoverningBodies
                     predicate: a => a.Status && a.AdminTypeId == governingBodyAdminType.ID,
                     include: GetInclude());
 
-            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDTO>>(
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(
                 governingBodyAdmins);
         }
 
-        public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
+        public async Task<GoverningBodyAdministrationDto> AddGoverningBodyMainAdminAsync(GoverningBodyAdministrationDto governingBodyAdministrationDto)
         {
             var user = await _userManager.FindByIdAsync(governingBodyAdministrationDto.UserId);
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -119,7 +119,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         }
 
         /// <inheritdoc />
-        public async Task<GoverningBodyAdministrationDTO> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
+        public async Task<GoverningBodyAdministrationDto> AddGoverningBodyAdministratorAsync(GoverningBodyAdministrationDto governingBodyAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(governingBodyAdministrationDto.AdminType.AdminTypeName);
             var IsMainStatus = (await _repositoryWrapper.GoverningBody.GetFirstOrDefaultAsync(x => x.ID == governingBodyAdministrationDto.GoverningBodyId)).IsMainStatus;
@@ -166,7 +166,7 @@ namespace EPlast.BLL.Services.GoverningBodies
         }
 
         /// <inheritdoc />
-        public async Task<GoverningBodyAdministrationDTO> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDTO governingBodyAdministrationDto)
+        public async Task<GoverningBodyAdministrationDto> EditGoverningBodyAdministratorAsync(GoverningBodyAdministrationDto governingBodyAdministrationDto)
         {
             if (await CheckRoleNameExistsAsync(governingBodyAdministrationDto.GoverningBodyAdminRole))
             {
@@ -279,10 +279,10 @@ namespace EPlast.BLL.Services.GoverningBodies
             return expr;
         }
 
-        public async Task<IEnumerable<ShortUserInformationDTO>> GetUsersForGoverningBodyAdminFormAsync()
+        public async Task<IEnumerable<ShortUserInformationDto>> GetUsersForGoverningBodyAdminFormAsync()
         {
             var users = await _repositoryWrapper.User.GetAllAsync();
-            var usersDtos = new List<ShortUserInformationDTO>();
+            var usersDtos = new List<ShortUserInformationDto>();
             foreach (var user in users)
             {
                 var roles = await _userManager.GetRolesAsync(user);
@@ -290,7 +290,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 {
                     var isInDeputyRole = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
                     var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
-                    var shortUser = _mapper.Map<User, ShortUserInformationDTO>(user);
+                    var shortUser = _mapper.Map<User, ShortUserInformationDto>(user);
                     shortUser.IsInDeputyRole = isInDeputyRole;
                     shortUser.IsInLowerRole = isInLowerRole;
                     usersDtos.Add(shortUser);

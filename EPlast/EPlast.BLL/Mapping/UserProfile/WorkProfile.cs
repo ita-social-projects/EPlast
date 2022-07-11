@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.UserProfile
     {
         public WorkProfile()
         {
-            CreateMap<Work, WorkDTO>().ReverseMap();
+            CreateMap<Work, WorkDto>().ReverseMap();
         }
     }
 }

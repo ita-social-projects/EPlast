@@ -6,10 +6,10 @@ namespace EPlast.BLL.Commands.TermsOfUse
 {
     public class AddTermsCommand : IRequest
     {
-        public TermsDTO TermsDto { get; set; }
+        public TermsDto TermsDto { get; set; }
         public User User { get; set; }
 
-        public AddTermsCommand(TermsDTO termsDto, User user)
+        public AddTermsCommand(TermsDto termsDto, User user)
         {
             TermsDto = termsDto;
             User = user;

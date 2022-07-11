@@ -38,11 +38,11 @@ namespace EPlast.XUnitTest.Services.City
         private CityService CreateCityService()
         {
             _mapper.Setup(m => m.Map<IEnumerable<DataAccess.Entities.City>,
-                    IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
+                    IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
                 .Returns(CreateFakeCityDto(10));
-            _mapper.Setup(m => m.Map<DataAccess.Entities.City, CityDTO>(It.IsAny<DataAccess.Entities.City>()))
+            _mapper.Setup(m => m.Map<DataAccess.Entities.City, CityDto>(It.IsAny<DataAccess.Entities.City>()))
                 .Returns(CreateFakeCityDto(10).FirstOrDefault());
-            _mapper.Setup(m => m.Map<CityDTO, DataAccess.Entities.City>(It.IsAny<CityDTO>()))
+            _mapper.Setup(m => m.Map<CityDto, DataAccess.Entities.City>(It.IsAny<CityDto>()))
                 .Returns(() => new DataAccess.Entities.City());
             _repoWrapper.Setup(r => r.City.FindAll())
                 .Returns(CreateFakeCities(10));
@@ -98,7 +98,7 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.GetByIdAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityDTO>(result);
+            Assert.IsType<CityDto>(result);
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.GetCityProfileAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.IsType<CityProfileDto>(result);
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.GetCityMembersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.IsType<CityProfileDto>(result);
         }
 
         [Fact]
@@ -131,7 +131,7 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.GetCityFollowersAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.IsType<CityProfileDto>(result);
         }
 
         [Fact]
@@ -142,7 +142,7 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.GetCityAdminsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.IsType<CityProfileDto>(result);
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.GetCityDocumentsAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.IsType<CityProfileDto>(result);
         }
 
         [Fact]
@@ -164,16 +164,16 @@ namespace EPlast.XUnitTest.Services.City
             var result = await cityService.EditAsync(GetIdForSearch);
 
             Assert.NotNull(result);
-            Assert.IsType<CityProfileDTO>(result);
+            Assert.IsType<CityProfileDto>(result);
         }
 
         [Fact]
         public async Task CreateTest()
         {
             CityService cityService = CreateCityService();
-            CityProfileDTO cityProfileDto = new CityProfileDTO
+            CityProfileDto cityProfileDto = new CityProfileDto
             {
-                City = new CityDTO
+                City = new CityDto
                 {
                     ID = 0
                 }
@@ -220,61 +220,61 @@ namespace EPlast.XUnitTest.Services.City
             return city;
         }
 
-        public IQueryable<CityDTO> CreateFakeCityDto(int count)
+        public IQueryable<CityDto> CreateFakeCityDto(int count)
         {
-            List<CityDTO> cities = new List<CityDTO>();
+            List<CityDto> cities = new List<CityDto>();
 
             for (int i = 0; i < count; i++)
             {
-                cities.Add(new CityDTO
+                cities.Add(new CityDto
                 {
-                    CityAdministration = new List<CityAdministrationDTO>
+                    CityAdministration = new List<CityAdministrationDto>
                     {
-                        new CityAdministrationDTO
+                        new CityAdministrationDto
                         {
 
-                           AdminType = new AdminTypeDTO
+                           AdminType = new AdminTypeDto
                            {
                                AdminTypeName = Roles.CityHead
                            }
 
                         },
-                        new CityAdministrationDTO
+                        new CityAdministrationDto
                         {
-                            AdminType = new AdminTypeDTO
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = "----------"
                             }
                         },
-                        new CityAdministrationDTO
+                        new CityAdministrationDto
                         {
-                            AdminType = new AdminTypeDTO
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = Roles.CityHead
                             }
                         },
-                        new CityAdministrationDTO
+                        new CityAdministrationDto
                         {
-                            AdminType = new AdminTypeDTO
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = "----------"
                             }
                         }
                     },
-                    CityMembers = new List<CityMembersDTO>
+                    CityMembers = new List<CityMembersDto>
                     {
-                        new CityMembersDTO
+                        new CityMembersDto
                         {
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null
                         }
                     },
-                    CityDocuments = new List<CityDocumentsDTO>
+                    CityDocuments = new List<CityDocumentsDto>
                     {
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO(),
-                        new CityDocumentsDTO()
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto(),
+                        new CityDocumentsDto()
                     }
                 });
             }

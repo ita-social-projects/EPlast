@@ -7,7 +7,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Sector
     {
         public SectorUserProfile()
         {
-            CreateMap<DataAccess.Entities.User, SectorUserDTO>().ReverseMap();
+            CreateMap<DataAccess.Entities.User, SectorUserDto>().ReverseMap();
         }
     }
 }

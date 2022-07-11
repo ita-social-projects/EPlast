@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using EPlast.WebApi.Models.GoverningBody.Sector;
 using EPlast.BLL.DTO.GoverningBody.Sector;
+using EPlast.WebApi.Models.GoverningBody.Sector;
 
 namespace EPlast.WebApi.Mapping.GoverningBody.Sector
 {
@@ -8,8 +8,8 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
     {
         public SectorProfile()
         {
-            CreateMap<SectorViewModel, SectorDTO>().ReverseMap();
-            CreateMap<SectorProfileDTO, SectorViewModel>()
+            CreateMap<SectorViewModel, SectorDto>().ReverseMap();
+            CreateMap<SectorProfileDto, SectorViewModel>()
                 .ForMember(r => r.Id, s => s.MapFrom(t => t.Sector.Id))
                 .ForMember(r => r.Head, s => s.MapFrom(t => t.Head))
                 .ForMember(r => r.Administration, s => s.MapFrom(t => t.Administration))

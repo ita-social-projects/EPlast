@@ -42,16 +42,16 @@ namespace EPlast.Tests.Handlers.City
                 .ReturnsAsync(new List<DataAccess.Entities.City>());
             _mockMapper
                 .Setup(m =>
-                    m.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDTO>>(
+                    m.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(
                         It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
-                .Returns(new List<CityForAdministrationDTO>());
+                .Returns(new List<CityForAdministrationDto>());
 
             //Act
             var result = await _handler.Handle(_query, It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<CityForAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityForAdministrationDto>>(result);
         }
     }
 }

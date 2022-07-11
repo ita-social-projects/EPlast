@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Region
     {
         public RegionAdministrationProfile()
         {
-            CreateMap<DatabaseEntities.RegionAdministration, RegionAdministrationDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.RegionAdministration, RegionAdministrationDto>().ReverseMap();
         }
     }
 }

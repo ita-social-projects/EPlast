@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace EPlast.BLL.DTO.GoverningBody.Announcement
 {
-    public class GoverningBodyAnnouncementWithImagesDTO
+    public class GoverningBodyAnnouncementWithImagesDto
     {
         public int Id { get; set; }
         public string Text { get; set; }

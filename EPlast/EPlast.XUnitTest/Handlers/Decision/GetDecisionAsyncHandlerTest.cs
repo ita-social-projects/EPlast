@@ -1,16 +1,16 @@
-﻿using AutoMapper;
-using EPlast.BLL.Handlers.DecisionHandlers;
-using EPlast.DataAccess.Repositories;
-using Moq;
-using EPlast.BLL.Queries.Decision;
-using System.Threading.Tasks;
-using Xunit;
-using System.Threading;
+﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
 using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.Handlers.DecisionHandlers;
+using EPlast.BLL.Queries.Decision;
+using EPlast.DataAccess.Repositories;
+using Microsoft.EntityFrameworkCore.Query;
+using Moq;
+using Xunit;
 
 namespace EPlast.XUnitTest.Handlers.Decision
 {
@@ -36,7 +36,7 @@ namespace EPlast.XUnitTest.Handlers.Decision
               Setup(x => x.Decesion.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Decesion, bool>>>(),
               It.IsAny<Func<IQueryable<DataAccess.Entities.Decesion>, IIncludableQueryable<DataAccess.Entities.Decesion, object>>>())).ReturnsAsync(new DataAccess.Entities.Decesion());
             _mockMapper
-                .Setup(x => x.Map<DecisionDTO>(It.IsAny<DataAccess.Entities.Decesion>())).Returns(new DecisionDTO() { ID = decisionId});
+                .Setup(x => x.Map<DecisionDto>(It.IsAny<DataAccess.Entities.Decesion>())).Returns(new DecisionDto() { ID = decisionId });
             var query = new GetDecisionAsyncQuery(decisionId);
             var decision = await _handler.Handle( query, It.IsAny<CancellationToken>());
 

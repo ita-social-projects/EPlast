@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
@@ -8,12 +14,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Notifications
 {
@@ -40,18 +40,18 @@ namespace EPlast.Tests.Services.Notifications
             _repoWrapper.Setup(m => m.NotificationTypes.GetAllAsync(It.IsAny<Expression<Func<NotificationType, bool>>>(),
                     It.IsAny<Func<IQueryable<NotificationType>, IIncludableQueryable<NotificationType, object>>>())).ReturnsAsync(new List<NotificationType>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<NotificationTypeDTO>>(It.IsAny<IEnumerable<NotificationType>>()))
-                .Returns(new List<NotificationTypeDTO>());
+            _mapper.Setup(m => m.Map<IEnumerable<NotificationTypeDto>>(It.IsAny<IEnumerable<NotificationType>>()))
+                .Returns(new List<NotificationTypeDto>());
 
             //Act
             var result = await _notificationService.GetAllNotificationTypesAsync();
             //Assert
-            Assert.IsInstanceOf<IEnumerable<NotificationTypeDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<NotificationTypeDto>>(result);
 
             _repoWrapper.Verify(f => f.NotificationTypes.GetAllAsync(It.IsAny<Expression<Func<NotificationType, bool>>>(),
                     It.IsAny<Func<IQueryable<NotificationType>, IIncludableQueryable<NotificationType, object>>>()));
-            
-            _mapper.Verify(f => f.Map< IEnumerable<NotificationTypeDTO>>(It.IsAny<IEnumerable<NotificationType>>()));
+
+            _mapper.Verify(f => f.Map<IEnumerable<NotificationTypeDto>>(It.IsAny<IEnumerable<NotificationType>>()));
         }
 
         [Test]
@@ -60,28 +60,28 @@ namespace EPlast.Tests.Services.Notifications
             _repoWrapper.Setup(m => m.UserNotifications.GetAllAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
                     It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>())).ReturnsAsync(new List<UserNotification>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<UserNotificationDTO>>(It.IsAny<IEnumerable<UserNotification>>()))
-                .Returns(new List<UserNotificationDTO>());
+            _mapper.Setup(m => m.Map<IEnumerable<UserNotificationDto>>(It.IsAny<IEnumerable<UserNotification>>()))
+                .Returns(new List<UserNotificationDto>());
 
             _repoWrapper.Setup(m => m.SaveAsync());
 
             //Act
             var result = await _notificationService.GetAllUserNotificationsAsync("");
             //Assert
-            Assert.IsInstanceOf<IEnumerable<UserNotificationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UserNotificationDto>>(result);
            
             _repoWrapper.Verify(f => f.UserNotifications.GetAllAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
                     It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>()));
-            
-            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDTO>>(It.IsAny<IEnumerable<UserNotification>>()));
+
+            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDto>>(It.IsAny<IEnumerable<UserNotification>>()));
         }
 
         [Test]
         public async Task AddListUserNotificationAsync_Valid_ReturnsListNotify()
         {
-            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDto());
 
-            _mapper.Setup(m => m.Map<UserNotification>(It.IsAny<UserNotificationDTO>()))
+            _mapper.Setup(m => m.Map<UserNotification>(It.IsAny<UserNotificationDto>()))
                 .Returns(new UserNotification());
 
             _repoWrapper.Setup(m => m.NotificationTypes.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<NotificationType, bool>>>(),
@@ -94,22 +94,22 @@ namespace EPlast.Tests.Services.Notifications
             //Act
             var result = await _notificationService.AddListUserNotificationAsync(GetTestUserNotificationDTO());
             //Assert
-            Assert.IsInstanceOf<IEnumerable<UserNotificationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<UserNotificationDto>>(result);
 
             _repoWrapper.Verify(f => f.UserNotifications.CreateAsync(It.IsAny<UserNotification>()), Times.Exactly(3));
-            _mapper.Verify(f => f.Map<UserNotification>(It.IsAny<UserNotificationDTO>()), Times.Exactly(3));
+            _mapper.Verify(f => f.Map<UserNotification>(It.IsAny<UserNotificationDto>()), Times.Exactly(3));
 
 
-            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDTO>>(It.IsAny<IEnumerable<UserNotification>>()));
+            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDto>>(It.IsAny<IEnumerable<UserNotification>>()));
             _repoWrapper.Verify(f => f.SaveAsync(), Times.Once);
         }
 
         [Test]
         public void AddListUserNotificationAsync_InValidType_ThrowException()
         {
-            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDto());
 
-            _mapper.Setup(m => m.Map<UserNotification>(It.IsAny<UserNotificationDTO>()))
+            _mapper.Setup(m => m.Map<UserNotification>(It.IsAny<UserNotificationDto>()))
                 .Returns(new UserNotification());
 
             _repoWrapper.Setup(m => m.NotificationTypes.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<NotificationType, bool>>>(),
@@ -118,36 +118,36 @@ namespace EPlast.Tests.Services.Notifications
             //Assert & Act 
             Assert.ThrowsAsync<InvalidOperationException>(() => _notificationService.AddListUserNotificationAsync(GetTestUserNotificationDTO()));
 
-            _mapper.Verify(f => f.Map<UserNotification>(It.IsAny<UserNotificationDTO>()), Times.Exactly(3));
+            _mapper.Verify(f => f.Map<UserNotification>(It.IsAny<UserNotificationDto>()), Times.Exactly(3));
 
             _repoWrapper.Verify(f => f.UserNotifications.CreateAsync(It.IsAny<UserNotification>()), Times.Never);
 
-            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDTO>>(It.IsAny<IEnumerable<UserNotification>>()), Times.Never);
+            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDto>>(It.IsAny<IEnumerable<UserNotification>>()), Times.Never);
             _repoWrapper.Verify(f => f.SaveAsync(), Times.Never);
         }
 
         [Test]
         public void AddListUserNotificationAsync_InValidUserId_ThrowException()
         {
-            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDto)null);
 
             //Assert & Act 
             Assert.ThrowsAsync<InvalidOperationException>(() => _notificationService.AddListUserNotificationAsync(GetTestUserNotificationDTO()));
 
             _userManagerService.Verify(f => f.FindByIdAsync(It.IsAny<string>()), Times.Exactly(3));
 
-            _mapper.Verify(f => f.Map<UserNotification>(It.IsAny<UserNotificationDTO>()), Times.Never);
+            _mapper.Verify(f => f.Map<UserNotification>(It.IsAny<UserNotificationDto>()), Times.Never);
 
             _repoWrapper.Verify(f => f.UserNotifications.CreateAsync(It.IsAny<UserNotification>()), Times.Never);
 
-            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDTO>>(It.IsAny<IEnumerable<UserNotification>>()), Times.Never);
+            _mapper.Verify(f => f.Map<IEnumerable<UserNotificationDto>>(It.IsAny<IEnumerable<UserNotification>>()), Times.Never);
             _repoWrapper.Verify(f => f.SaveAsync(), Times.Never);
         }
 
         [Test]
         public async Task SetCheckForListNotificationAsync_Valid_ReturnsTrue()
         {
-            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDTO());
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new UserDto());
 
             _repoWrapper.Setup(m => m.UserNotifications.GetAllAsync(It.IsAny<Expression<Func<UserNotification, bool>>>(),
         It.IsAny<Func<IQueryable<UserNotification>, IIncludableQueryable<UserNotification, object>>>())).ReturnsAsync(GetTestUserNotification().Where(c => c.OwnerUserId == "1"));
@@ -173,7 +173,7 @@ namespace EPlast.Tests.Services.Notifications
         [Test]
         public async Task SetCheckForListNotificationAsync_InValid_ReturnsFalse()
         {
-            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDTO)null);
+            _userManagerService.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((UserDto)null);
 
             _repoWrapper.Setup(m => m.SaveAsync());
 
@@ -280,25 +280,25 @@ namespace EPlast.Tests.Services.Notifications
         }
 
 
-        private IEnumerable<UserNotificationDTO> GetTestUserNotificationDTO()
+        private IEnumerable<UserNotificationDto> GetTestUserNotificationDTO()
         {
-            return new List<UserNotificationDTO>
+            return new List<UserNotificationDto>
             {
-               new  UserNotificationDTO
+               new  UserNotificationDto
                {
                    OwnerUserId="1",
                    Id=1,
                    NotificationTypeId = 1,
                    Message="New message #1"
                },
-               new  UserNotificationDTO
+               new  UserNotificationDto
                {
                    OwnerUserId="2",
                    Id=2,
                    NotificationTypeId = 1,
                    Message="New message #2"
                },
-               new  UserNotificationDTO
+               new  UserNotificationDto
                {
                    OwnerUserId="3",
                    Id=3,

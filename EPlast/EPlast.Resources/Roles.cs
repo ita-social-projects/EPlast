@@ -132,7 +132,7 @@ namespace EPlast.Resources
                                                                                 "," + CityReferentUPS +
                                                                                 "," + CityReferentUSP +
                                                                                 "," + CityReferentOfActiveMembership;
-        public static List<string> ListOfRoles = new List<string>
+        public static List<string> ListOfRoles => new List<string>
         {
             Roles.Admin,
             Roles.Supporter,
@@ -164,7 +164,7 @@ namespace EPlast.Resources
             Roles.GoverningBodySectorSecretary
         };
 
-        public static List<string> DeleteableListOfRoles = new List<string>
+        public static List<string> DeleteableListOfRoles => new List<string>
         {
             Roles.OkrugaSecretary,
             Roles.OkrugaHeadDeputy,
@@ -174,7 +174,7 @@ namespace EPlast.Resources
             Roles.CityHeadDeputy
         };
 
-        public static List<string> LowerRoles = new List<string>
+        public static List<string> LowerRoles => new List<string>
         {
             Roles.RegisteredUser,
             Roles.Supporter,

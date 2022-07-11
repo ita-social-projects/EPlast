@@ -1,8 +1,8 @@
-﻿using EPlast.BLL.DTO;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL
 {
@@ -13,13 +13,13 @@ namespace EPlast.BLL
         /// </summary>
         /// <param name="documentId"> MethodicDocument id </param>
         /// <returns>MethodicDocument dto</returns>
-        Task<MethodicDocumentDTO> GetMethodicDocumentAsync(int documentId);
+        Task<MethodicDocumentDto> GetMethodicDocumentAsync(int documentId);
         /// <summary>
         /// Changes the name and description of the MethodicDocument
         /// </summary>
         /// <param name="decisionDto">MethodicDocument dto</param>
         /// <returns>The bool value that says whether the changes were successful</returns>
-        Task ChangeMethodicDocumentAsync(MethodicDocumentDTO documentDto);
+        Task ChangeMethodicDocumentAsync(MethodicDocumentDto documentDto);
         /// <summary>
         /// Deletes the MethodicDocument
         /// </summary>
@@ -31,30 +31,30 @@ namespace EPlast.BLL
         /// </summary>
         /// <param name="decision">The wrapper which contains MethodicDocument dto and file as base64</param>
         /// <returns>An id of created MethodicDocument</returns>
-        Task<int> SaveMethodicDocumentAsync(MethodicDocumentWraperDTO document);
+        Task<int> SaveMethodicDocumentAsync(MethodicDocumentWraperDto document);
 
         /// <summary>
         /// Creates new MethodicDocument wrapper dto
         /// </summary>
         /// <returns> New MethodicDocument wrapper dto</returns>
-        MethodicDocumentWraperDTO CreateMethodicDocument();
+        MethodicDocumentWraperDto CreateMethodicDocument();
         /// <summary>
         /// Returns the organizations dto 
         /// </summary>
         /// <param name="governingBody"></param>
         /// <returns>The organizations dto and  null if organization does now exist</returns>
-        Task<GoverningBodyDTO> GetMethodicDocumentOrganizationAsync(GoverningBodyDTO governingBody);
+        Task<GoverningBodyDto> GetMethodicDocumentOrganizationAsync(GoverningBodyDto governingBody);
         /// <summary>
         /// Returns the IEnumerable of the organizations dto
         /// </summary>
         /// <returns>The IEnumerable of the organizations dto</returns>
-        Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync();
+        Task<IEnumerable<GoverningBodyDto>> GetGoverningBodyListAsync();
 
         /// <summary>
         /// Returns the IEnumerable of the MethodicDocument wrappers dto
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<MethodicDocumentWraperDTO>> GetMethodicDocumentListAsync();
+        Task<IEnumerable<MethodicDocumentWraperDto>> GetMethodicDocumentListAsync();
         /// <summary>
         /// Returns the SelectListItem of the MethodicDocument types
         /// </summary>
@@ -70,7 +70,7 @@ namespace EPlast.BLL
         /// Returns MethodicDocument
         /// </summary>
         /// <returns>Return last MethodicDocument</returns>
-        Task<MethodicDocumentDTO> GetLastAsync();
+        Task<MethodicDocumentDto> GetLastAsync();
         IEnumerable<MethodicDocumentTableObject> GetDocumentsForTable(string searchedData, int page, int pageSize, string status);
     }
 }

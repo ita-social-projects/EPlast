@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Handlers.DistinctionHandlers;
 using EPlast.BLL.Queries.Distinction;
@@ -6,11 +11,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Distinction
 {
@@ -37,14 +37,14 @@ namespace EPlast.Tests.Handlers.Distinction
                                 It.IsAny<Func<IQueryable<DataAccess.Entities.UserEntities.Distinction>, IIncludableQueryable<DataAccess.Entities.UserEntities.Distinction, object>>>()))
                             .ReturnsAsync(new DataAccess.Entities.UserEntities.Distinction());
             _mockMapper
-                .Setup(x => x.Map<DistinctionDTO>(It.IsAny<DataAccess.Entities.UserEntities.Distinction>())).Returns(new DistinctionDTO());
+                .Setup(x => x.Map<DistinctionDto>(It.IsAny<DataAccess.Entities.UserEntities.Distinction>())).Returns(new DistinctionDto());
 
             //Act
             var result = await _handler.Handle(It.IsAny<GetDistinctionQuery>(), It.IsAny<CancellationToken>());
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<DistinctionDTO>(result);
+            Assert.IsInstanceOf<DistinctionDto>(result);
         }
     }
 }

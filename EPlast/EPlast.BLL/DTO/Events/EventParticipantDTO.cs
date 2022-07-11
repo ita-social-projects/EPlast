@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.DTO.Events
 {
-    public class EventParticipantDTO
+    public class EventParticipantDto
     {
         public int ParticipantId { get; set; }
         public string FullName { get; set; }

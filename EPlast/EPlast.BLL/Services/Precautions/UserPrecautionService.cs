@@ -1,21 +1,21 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Queries.Precaution;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.BLL.Services.UserAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.PrecautionsDTO;
-using EPlast.BLL.Interfaces.UserAccess;
-using EPlast.BLL.Queries.Precaution;
-using EPlast.BLL.Services.UserAccess;
-using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace EPlast.BLL.Services.Precautions
@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services.Precautions
             _mediator = mediator;
         }
 
-        private async Task<bool> CanUserAddPrecaution(UserPrecautionDTO userPrecautionDto, User user)
+        private async Task<bool> CanUserAddPrecaution(UserPrecautionDto userPrecautionDto, User user)
         {
             var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.UserId);
 
@@ -63,7 +63,7 @@ namespace EPlast.BLL.Services.Precautions
             return true;
         }
 
-        public async Task<bool> AddUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
+        public async Task<bool> AddUserPrecautionAsync(UserPrecautionDto userPrecautionDTO, User user)
         {
             bool canUserAddPrecaution = await CanUserAddPrecaution(userPrecautionDTO, user);
 
@@ -129,37 +129,37 @@ namespace EPlast.BLL.Services.Precautions
 
         }
 
-        public async Task<bool> ChangeUserPrecautionAsync(UserPrecautionDTO userPrecautionDTO, User user)
+        public async Task<bool> ChangeUserPrecautionAsync(UserPrecautionDto userPrecautionDTO, User user)
         {
-                bool canUserChangePrecautionAsync = await CanUserChangePrecautionAsync(userPrecautionDTO.Id, user);
-                if (!canUserChangePrecautionAsync)
-                {
-                    return false;
-                }
+            bool canUserChangePrecautionAsync = await CanUserChangePrecautionAsync(userPrecautionDTO.Id, user);
+            if (!canUserChangePrecautionAsync)
+            {
+                return false;
+            }
 
-                bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
-                if (existRegisterNumber)
-                {
-                    return false;
-                }
+            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            if (existRegisterNumber)
+            {
+                return false;
+            }
 
-                var userPrecaution = new UserPrecaution()
-                {
-                    Id = userPrecautionDTO.Id,
-                    UserId = userPrecautionDTO.UserId,
-                    PrecautionId = userPrecautionDTO.PrecautionId,
-                    Date = userPrecautionDTO.Date,
-                    Reason = userPrecautionDTO.Reason,
-                    Reporter = userPrecautionDTO.Reporter,
-                    Number = userPrecautionDTO.Number,
-                    Status = userPrecautionDTO.Status,
-                    EndDate = userPrecautionDTO.EndDate,
-                    IsActive = userPrecautionDTO.IsActive
-                };
-                _repoWrapper.UserPrecaution.Update(userPrecaution);
-                await _repoWrapper.SaveAsync();
-                return true;
-            
+            var userPrecaution = new UserPrecaution()
+            {
+                Id = userPrecautionDTO.Id,
+                UserId = userPrecautionDTO.UserId,
+                PrecautionId = userPrecautionDTO.PrecautionId,
+                Date = userPrecautionDTO.Date,
+                Reason = userPrecautionDTO.Reason,
+                Reporter = userPrecautionDTO.Reporter,
+                Number = userPrecautionDTO.Number,
+                Status = userPrecautionDTO.Status,
+                EndDate = userPrecautionDTO.EndDate,
+                IsActive = userPrecautionDTO.IsActive
+            };
+            _repoWrapper.UserPrecaution.Update(userPrecaution);
+            await _repoWrapper.SaveAsync();
+            return true;
+
         }
 
         public async Task<bool> DeleteUserPrecautionAsync(int id, User user)
@@ -197,7 +197,7 @@ namespace EPlast.BLL.Services.Precautions
             return tableInfo;
         }
 
-        public async Task<IEnumerable<UserPrecautionDTO>> GetAllUsersPrecautionAsync()
+        public async Task<IEnumerable<UserPrecautionDto>> GetAllUsersPrecautionAsync()
         {
             var userPrecautions = await _repoWrapper.UserPrecaution.GetAllAsync(include:
                 source => source
@@ -205,36 +205,36 @@ namespace EPlast.BLL.Services.Precautions
                 .Include(d => d.Precaution)
                 );
             var precautions = await CheckEndDateAsync(userPrecautions);
-            return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(precautions);
+            return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(precautions);
         }
 
-        public async Task<UserPrecautionDTO> GetUserPrecautionAsync(int id)
+        public async Task<UserPrecautionDto> GetUserPrecautionAsync(int id)
         {
             var userPrecaution = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(d => d.Id == id, include:
                 source => source
                 .Include(c => c.User)
                 .Include(d => d.Precaution));
-            return _mapper.Map<UserPrecaution, UserPrecautionDTO>(userPrecaution);
+            return _mapper.Map<UserPrecaution, UserPrecautionDto>(userPrecaution);
         }
 
-        public async Task<IEnumerable<UserPrecautionDTO>> GetUserPrecautionsOfUserAsync(string UserId)
+        public async Task<IEnumerable<UserPrecautionDto>> GetUserPrecautionsOfUserAsync(string UserId)
         {
             var userPrecautions = await _repoWrapper.UserPrecaution.GetAllAsync(u => u.UserId == UserId,
                 include: source => source
                 .Include(c => c.User)
                 .Include(d => d.Precaution));
-            return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDTO>>(userPrecautions);
+            return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(userPrecautions);
         }
 
         public async Task<bool> IsNumberExistAsync(int number, int? id = null)
-        {                        
+        {
             var distNum = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(x => x.Number == number);
             if (distNum == null)
             {
                 return false;
             }
 
-            return distNum.Id != id;   
+            return distNum.Id != id;
         }
 
 
@@ -255,7 +255,7 @@ namespace EPlast.BLL.Services.Precautions
             return userPrecaution;
         }
 
-        public async Task<IEnumerable<ShortUserInformationDTO>> UsersTableWithoutPrecautionAsync()
+        public async Task<IEnumerable<ShortUserInformationDto>> UsersTableWithoutPrecautionAsync()
         {
             var usersWithoutPrecautions = await _adminService.GetUsersAsync();
             foreach (var user in usersWithoutPrecautions)
@@ -274,7 +274,7 @@ namespace EPlast.BLL.Services.Precautions
             return (await GetUserPrecautionsOfUserAsync(userId)).Any(x => x.IsActive && x.Precaution.Name.Equals(type));
         }
 
-        public async Task<UserPrecautionDTO> GetUserActivePrecaution(string userId, string type)
+        public async Task<UserPrecautionDto> GetUserActivePrecaution(string userId, string type)
         {
             return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
         }

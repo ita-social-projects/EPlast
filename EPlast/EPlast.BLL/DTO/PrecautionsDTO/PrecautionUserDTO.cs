@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EPlast.BLL.DTO.PrecautionsDTO
 {
-    public class PrecautionUserDTO
+    public class PrecautionUserDto
     {
         public string ID { get; set; }
         public string FirstName { get; set; }

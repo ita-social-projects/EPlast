@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Handlers.DecisionHandlers;
 using EPlast.BLL.Queries.Decision;
@@ -6,11 +11,6 @@ using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Decision
 {
@@ -34,13 +34,13 @@ namespace EPlast.Tests.Handlers.Decision
                 Setup(x => x.Decesion.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Decesion, bool>>>(),
                 It.IsAny<Func<IQueryable<DataAccess.Entities.Decesion>, IIncludableQueryable<DataAccess.Entities.Decesion, object>>>())).ReturnsAsync(new DataAccess.Entities.Decesion());
             _mockMapper
-                .Setup(x => x.Map<DecisionDTO>(It.IsAny<DataAccess.Entities.Decesion>())).Returns(new DecisionDTO());
+                .Setup(x => x.Map<DecisionDto>(It.IsAny<DataAccess.Entities.Decesion>())).Returns(new DecisionDto());
 
             //Act
             var result = await _handler.Handle(It.IsAny<GetDecisionAsyncQuery>(), It.IsAny<CancellationToken>());
 
             //Assert
-            Assert.IsInstanceOf<DecisionDTO>(result);
+            Assert.IsInstanceOf<DecisionDto>(result);
         }
 
     }

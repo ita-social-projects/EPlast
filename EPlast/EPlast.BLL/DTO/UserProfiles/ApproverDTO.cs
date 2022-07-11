@@ -2,11 +2,11 @@
 
 namespace EPlast.BLL.DTO
 {
-    public class ApproverDTO
+    public class ApproverDto
     {
         public int ID { get; set; }
         public string UserID { get; set; }
-        public UserDTO User { get; set; }
-        public ConfirmedUserDTO ConfirmedUser { get; set; }
+        public UserDto User { get; set; }
+        public ConfirmedUserDto ConfirmedUser { get; set; }
     }
 }

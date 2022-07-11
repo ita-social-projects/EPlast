@@ -1,14 +1,14 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class UserDTO : IdentityUser
+    public class UserDto : IdentityUser
     {
         [Display(Name = "Ім'я")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
@@ -39,25 +39,25 @@ namespace EPlast.BLL.DTO.UserProfiles
         public DateTime EmailSendedOnForgotPassword { get; set; }
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
-        public UserProfileDTO UserProfile { get; set; }
-        public IEnumerable<ConfirmedUserDTO> ConfirmedUsers { get; set; }
-        public IEnumerable<ApproverDTO> Approvers { get; set; }
+        public UserProfileDto UserProfile { get; set; }
+        public IEnumerable<ConfirmedUserDto> ConfirmedUsers { get; set; }
+        public IEnumerable<ApproverDto> Approvers { get; set; }
         public IEnumerable<EventAdmin> Events { get; set; }
         public IEnumerable<Participant> Participants { get; set; }
         public IEnumerable<CityMembers> CityMembers { get; set; }
         public IEnumerable<CityAdministration> CityAdministrations { get; set; }
         public IEnumerable<ClubMembers> ClubMembers { get; set; }
         public IEnumerable<RegionAdministration> RegionAdministrations { get; set; }
-        public IEnumerable<UserDistinctionDTO> UserDistinctions { get; set; }
-        public IEnumerable<UserRenewalDTO> UserRenewals { get; set; }
-        public UserMembershipDatesDTO UserMembershipDates { get; set; }
-        public UserPlastDegreeDTO UserPlastDegrees { get; set; }
+        public IEnumerable<UserDistinctionDto> UserDistinctions { get; set; }
+        public IEnumerable<UserRenewalDto> UserRenewals { get; set; }
+        public UserMembershipDatesDto UserMembershipDates { get; set; }
+        public UserPlastDegreeDto UserPlastDegrees { get; set; }
         public string CityName { get; set; }
 
-        public UserDTO()
+        public UserDto()
         {
-            Approvers = new List<ApproverDTO>();
-            ConfirmedUsers = new List<ConfirmedUserDTO>();
+            Approvers = new List<ApproverDto>();
+            ConfirmedUsers = new List<ConfirmedUserDto>();
         }
     }
 }

@@ -1,14 +1,14 @@
-﻿using MediatR;
-using EPlast.BLL.DTO;
-using AutoMapper;
-using EPlast.DataAccess.Repositories;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using System.Threading;
+using AutoMapper;
+using EPlast.BLL.DTO;
 using EPlast.BLL.Queries.Decision;
+using EPlast.DataAccess.Repositories;
+using MediatR;
 
 namespace EPlast.BLL.Handlers.DecisionHandlers
 {
-    public class GetDecisionOrganizationAsyncHandler : IRequestHandler<GetDecisionOrganizationAsyncQuery, GoverningBodyDTO>
+    public class GetDecisionOrganizationAsyncHandler : IRequestHandler<GetDecisionOrganizationAsyncQuery, GoverningBodyDto>
     {
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IMapper _mapper;
@@ -19,9 +19,9 @@ namespace EPlast.BLL.Handlers.DecisionHandlers
             _mapper = mapper;
         }
 
-        public async Task<GoverningBodyDTO> Handle(GetDecisionOrganizationAsyncQuery request, CancellationToken cancellationToken)
+        public async Task<GoverningBodyDto> Handle(GetDecisionOrganizationAsyncQuery request, CancellationToken cancellationToken)
         {
-            return _mapper.Map<GoverningBodyDTO>(string.IsNullOrEmpty(request.GoverningBody.GoverningBodyName)
+            return _mapper.Map<GoverningBodyDto>(string.IsNullOrEmpty(request.GoverningBody.GoverningBodyName)
                    ? await _repoWrapper.GoverningBody.GetFirstAsync(x => x.ID == request.GoverningBody.Id)
                    : await _repoWrapper.GoverningBody.GetFirstAsync(x => x.OrganizationName.Equals(request.GoverningBody.GoverningBodyName)));
 

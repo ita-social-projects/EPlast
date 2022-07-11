@@ -3,7 +3,7 @@ using EPlast.Resources;
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionFollowerDTO
+    public class RegionFollowerDto
     {
         public int ID { get; set; }
         public string UserId { get; set; }
@@ -15,7 +15,7 @@ namespace EPlast.BLL.DTO.Region
         public string Address { get; set; }
         public UkraineOblasts Oblast { get; set; }
         public CityLevel Level { get; set; }
-        public string СityURL { get; set; }
+        public string CityURL { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
     }

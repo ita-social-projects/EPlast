@@ -28,10 +28,10 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventGalleryDTO>> AddPicturesAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<EventGalleryDto>> AddPicturesAsync(int id, IList<IFormFile> files)
         {
 
-            var uploadedPictures = new List<EventGalleryDTO>();
+            var uploadedPictures = new List<EventGalleryDto>();
             var createdGalleries = new List<Gallary>();
             foreach (IFormFile file in files)
             {
@@ -49,7 +49,7 @@ namespace EPlast.BLL.Services.Events
             await _repoWrapper.SaveAsync();
             foreach (var gallery in createdGalleries)
             {
-                uploadedPictures.Add(new EventGalleryDTO
+                uploadedPictures.Add(new EventGalleryDto
                 {
                     GalleryId = gallery.ID,
                     FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
@@ -79,7 +79,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventGalleryDTO>> GetPicturesInBase64(int eventId)
+        public async Task<IEnumerable<EventGalleryDto>> GetPicturesInBase64(int eventId)
         {
             var galleries = (await _repoWrapper.EventGallary
                 .GetAllAsync(
@@ -88,10 +88,10 @@ namespace EPlast.BLL.Services.Events
                 ))
                 .Select(eg => eg.Gallary);
 
-            List<EventGalleryDTO> pictures = new List<EventGalleryDTO>();
+            List<EventGalleryDto> pictures = new List<EventGalleryDto>();
             foreach (var gallery in galleries)
             {
-                pictures.Add(new EventGalleryDTO
+                pictures.Add(new EventGalleryDto
                 {
                     GalleryId = gallery.ID,
                     FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)

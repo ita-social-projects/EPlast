@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class UpuDegreeDTO
+    public class UpuDegreeDto
     {
         public int ID { get; set; }
 

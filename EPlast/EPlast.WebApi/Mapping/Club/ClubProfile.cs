@@ -9,9 +9,9 @@ namespace EPlast.WebApi.Mapping.Club
     {
         public ClubProfile()
         {
-            CreateMap<DataAccessClub.Club, ClubDTO>().ReverseMap();
-            CreateMap<ClubDTO, ClubViewModel>().ReverseMap();
-            CreateMap<ClubProfileDTO, ClubViewModel>()
+            CreateMap<DataAccessClub.Club, ClubDto>().ReverseMap();
+            CreateMap<ClubDto, ClubViewModel>().ReverseMap();
+            CreateMap<ClubProfileDto, ClubViewModel>()
                 .ForMember(r => r.Head, s => s.MapFrom(t => t.Head))
                 .ForMember(r => r.Administration, s => s.MapFrom(t => t.Admins))
                 .ForMember(r => r.Members, s => s.MapFrom(t => t.Members))

@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User.UserProfileFields
     {
         public UpuDegreeProfile()
         {
-            CreateMap<UpuDegreeDTO, UpuDegreeViewModel>().ReverseMap();
+            CreateMap<UpuDegreeDto, UpuDegreeViewModel>().ReverseMap();
         }
     }
 }

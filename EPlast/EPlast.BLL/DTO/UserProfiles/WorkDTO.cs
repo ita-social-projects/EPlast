@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class WorkDTO
+    public class WorkDto
     {
         public int ID { get; set; }
 
@@ -19,6 +19,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         [StringLength(30, MinimumLength = 3, ErrorMessage = "Посада повинна складати від 3 до 30 символів")]
         public string Position { get; set; }
 
-        public ICollection<UserProfileDTO> UserProfiles { get; set; }
+        public ICollection<UserProfileDto> UserProfiles { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.Commands.Precaution;
 using EPlast.BLL.Handlers.PrecautionHandlers;
@@ -9,8 +11,6 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Handlers.Precaution
 {
@@ -24,7 +24,7 @@ namespace EPlast.Tests.Handlers.Precaution
         private Mock<UserManager<User>> _userManager;
 
         private User _user;
-        private PrecautionDTO _precautionDTO;
+        private PrecautionDto _precautionDTO;
 
         [SetUp]
         public void SetUp()
@@ -33,7 +33,7 @@ namespace EPlast.Tests.Handlers.Precaution
             _mockMediator = new Mock<IMediator>();
             _mapper = new Mock<IMapper>();
             _handler = new AddPrecautionHandler(_mockRepoWrapper.Object, _mapper.Object, _mockMediator.Object);
-            _precautionDTO = new PrecautionDTO();
+            _precautionDTO = new PrecautionDto();
             _user = new User();
             _query = new AddPrecautionCommand(_precautionDTO, _user);
             var store = new Mock<IUserStore<User>>();
