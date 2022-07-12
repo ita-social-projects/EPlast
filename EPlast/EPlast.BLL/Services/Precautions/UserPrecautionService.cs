@@ -247,7 +247,11 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<UserPrecautionDto> GetUserActivePrecaution(string userId, string type)
         {
-            return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
+            return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(
+                x => x.Date < DateTime.Now && DateTime.Now < x.Date.AddMonths(x.Precaution.MonthsPeriod)
+                && x.Precaution.Name.Equals(type) 
+                && x.Status != UserPrecautionStatus.Cancelled
+            );
         }
 
         public async Task<IEnumerable<SuggestedUserDto>> GetUsersForPrecautionAsync(User currentUser)
