@@ -1,7 +1,6 @@
 ﻿using EPlast.Resources;
 using EPlast.WebApi.ValidationAttributes;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.WebApi.Models.Precaution
 {
