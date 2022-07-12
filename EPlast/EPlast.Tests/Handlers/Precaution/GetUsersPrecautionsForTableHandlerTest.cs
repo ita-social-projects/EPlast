@@ -4,6 +4,7 @@ using EPlast.BLL.Handlers.PrecautionHandlers;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -171,7 +172,7 @@ namespace EPlast.Tests.Handlers.Precaution
             _tableSettings.SortByOrder = new List<string> { "endDate", "ascend" };
             _tableSettings.PrecautionNameFilter = new List<string> { "Догана", "Сувора догана" };
             _tableSettings.SearchedData = "2021";
-            _tableSettings.StatusFilter = new List<string> { "Прийнято", "Потверджено" };
+            _tableSettings.StatusFilter = new List<UserPrecautionStatus> { UserPrecautionStatus.Accepted, UserPrecautionStatus.Confirmed };
             _tableSettings.DateFilter = new List<string> { "2021", "2022" };
 
             _repoWrapper
