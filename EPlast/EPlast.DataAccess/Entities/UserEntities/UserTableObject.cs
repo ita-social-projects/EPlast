@@ -13,6 +13,10 @@ namespace EPlast.DataAccess.Entities
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Referal { get; set; }
+        public string Comment { get; set; }
         public UkraineOblasts Oblast { get; set; }
         public string PlastDegree { get; set; }
         public string Roles { get; set; }
