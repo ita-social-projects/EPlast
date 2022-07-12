@@ -14,6 +14,7 @@ namespace EPlast.DataAccess.Repositories
             user.FatherName = item.FatherName;
             user.ImagePath = item.ImagePath;
             user.PhoneNumber = item.PhoneNumber;
+            user.Comment = item.Comment;
             EPlastDBContext.Users.Update(user);
         }
     }
