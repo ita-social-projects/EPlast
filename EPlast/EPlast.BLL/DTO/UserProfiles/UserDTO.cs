@@ -38,6 +38,7 @@ namespace EPlast.BLL.DTO.UserProfiles
         public DateTime EmailSendedOnRegister { get; set; }
         public DateTime EmailSendedOnForgotPassword { get; set; }
         public string ImagePath { get; set; }
+        public string Comment { get; set; }
         public bool SocialNetworking { get; set; }
         public UserProfileDto UserProfile { get; set; }
         public IEnumerable<ConfirmedUserDto> ConfirmedUsers { get; set; }
