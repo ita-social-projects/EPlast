@@ -16,7 +16,8 @@
     "statistics": true,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Крайовий Адмін": {
     "decisions": true,
@@ -35,7 +36,8 @@
     "statistics": true,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Голова Округи": {
     "decisions": true,
@@ -54,7 +56,8 @@
     "statistics": true,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Заступник Голови Округи": {
     "decisions": true,
@@ -73,7 +76,8 @@
     "statistics": true,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Голова Станиці": {
     "decisions": true,
@@ -92,7 +96,8 @@
     "statistics": true,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Заступник Голови Станиці": {
     "decisions": true,
@@ -111,7 +116,8 @@
     "statistics": true,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Голова Куреня": {
     "decisions": true,
@@ -130,7 +136,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Заступник Голови Куреня": {
     "decisions": true,
@@ -149,7 +156,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Прихильник": {
     "decisions": false,
@@ -168,7 +176,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Дійсний член організації": {
     "decisions": true,
@@ -187,7 +196,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": true
+    "announcements": true,
+    "directory": true
   },
   "Зареєстрований користувач": {
     "decisions": false,
@@ -206,7 +216,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": false
   },
   "Референт/-ка УПС Округи": {
     "decisions": false,
@@ -225,7 +236,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": true
   },
   "Референт/-ка УСП Округи": {
     "decisions": false,
@@ -244,7 +256,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": true
   },
   "Референт дійсного членства Округи": {
     "decisions": false,
@@ -263,7 +276,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": true
   },
   "Референт/-ка УПС Станиці": {
     "decisions": false,
@@ -282,7 +296,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": true
   },
   "Референт/-ка УСП Станиці": {
     "decisions": false,
@@ -301,7 +316,8 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": true
   },
   "Референт дійсного членства Станиці": {
     "decisions": false,
@@ -320,6 +336,7 @@
     "statistics": false,
     "aboutBase": true,
     "terms": true,
-    "announcements": false
+    "announcements": false,
+    "directory": true
   }
 }
