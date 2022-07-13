@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.BLL.Services.UserAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
@@ -16,7 +14,6 @@ using EPlast.Resources;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace EPlast.BLL.Services.Precautions
 {
