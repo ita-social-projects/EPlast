@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Decision;
@@ -109,28 +109,45 @@ namespace EPlast.DataAccess
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
         public DbSet<UserPrecaution> UserPrecautions { get; set; }
-        public DbSet<UserPrecautionsTableObject> UserPrecautionsTableObject { get; set; }
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UserRenewal> UserRenewals { get; set; }
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
+       
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<UserCourse> UserCourses { get; set; }
         public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<Work> Works { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
-            builder.Entity<UserTableObject>().HasNoKey();
-            builder.Entity<AnnualReportTableObject>().HasNoKey();
-            builder.Entity<ClubAnnualReportTableObject>().HasNoKey();
-            builder.Entity<RegionAnnualReportTableObject>().HasNoKey();
-            builder.Entity<UserDistinctionsTableObject>().HasNoKey();
-            builder.Entity<DecisionTableObject>().HasNoKey();
-            builder.Entity<RegionMembersInfoTableObject>().HasNoKey();
-            builder.Entity<MethodicDocumentTableObject>().HasNoKey();
-            builder.Entity<UserRenewalsTableObject>().HasNoKey();
-            builder.Entity<EducatorsStaffTableObject>().HasNoKey();
-            builder.Entity<UserRenewal>(entity =>
+            modelBuilder.Entity<UserTableObject>().HasNoKey();
+            modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
+            modelBuilder.Entity<UserDistinctionsTableObject>().HasNoKey();
+            modelBuilder.Entity<DecisionTableObject>().HasNoKey();
+            modelBuilder.Entity<RegionMembersInfoTableObject>().HasNoKey();
+            modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
+            modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
+            modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
+
+
+
+            modelBuilder.Entity<UserCourse>()
+                .HasKey(bc => bc.ID);
+            modelBuilder.Entity<UserCourse>()
+                .HasOne(bc => bc.Сourse)
+                .WithMany(b => b.UserCourses)
+                .HasForeignKey(bc => bc.CourseId);
+            modelBuilder.Entity<UserCourse>()
+                .HasOne(bc => bc.User)
+                .WithMany(c => c.UserCourses)
+                .HasForeignKey(bc => bc.UserId);
+
+
+            modelBuilder.Entity<UserRenewal>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
@@ -151,10 +168,10 @@ namespace EPlast.DataAccess
                     .HasDefaultValue(false);
             });
 
-            builder.Entity<Pictures>()
+            modelBuilder.Entity<Pictures>()
                 .HasKey(x => x.ID);
 
-            builder.Entity<SubsectionPictures>(subsectionPictures =>
+            modelBuilder.Entity<SubsectionPictures>(subsectionPictures =>
             {
                 subsectionPictures
                     .HasKey(x => new { x.SubsectionID, x.PictureID });
@@ -169,17 +186,17 @@ namespace EPlast.DataAccess
                     .WithMany(e => e.Subsections)
                     .HasForeignKey(x => x.PictureID);
             });
-
-            builder.Entity<Subsection>()
+            
+            modelBuilder.Entity<Subsection>()
                 .HasKey(x => x.Id);
 
-            builder.Entity<Event>()
+            modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            builder.Entity<Gallary>()
+            modelBuilder.Entity<Gallary>()
                 .HasKey(x => x.ID);
 
-            builder.Entity<EventGallary>(eventGallary =>
+            modelBuilder.Entity<EventGallary>(eventGallary =>
             {
                 eventGallary
                     .HasKey(x => new { x.EventID, x.GallaryID });
@@ -195,10 +212,10 @@ namespace EPlast.DataAccess
                     .HasForeignKey(x => x.GallaryID);
             });
 
-            builder.Entity<Event>()
+            modelBuilder.Entity<Event>()
                 .HasKey(x => x.ID);
 
-            builder.Entity<EventAdmin>(eventAdmin =>
+            modelBuilder.Entity<EventAdmin>(eventAdmin =>
             {
                 eventAdmin
                     .HasKey(x => new { x.EventID, x.UserID });
@@ -214,7 +231,7 @@ namespace EPlast.DataAccess
                     .HasForeignKey(x => x.UserID);
             });
 
-            builder.Entity<EventCategoryType>(eventCategoryType =>
+            modelBuilder.Entity<EventCategoryType>(eventCategoryType =>
             {
                 eventCategoryType
                     .HasKey(ct => new { ct.EventTypeId, ct.EventCategoryId });
@@ -230,17 +247,17 @@ namespace EPlast.DataAccess
                     .HasForeignKey(ct => ct.EventCategoryId);
             });
 
-            builder.Entity<CityDocumentType>()
+            modelBuilder.Entity<CityDocumentType>()
                 .HasMany(x => x.CityDocuments)
                 .WithOne(x => x.CityDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<ClubDocumentType>()
+            modelBuilder.Entity<ClubDocumentType>()
                 .HasMany(x => x.ClubDocuments)
                 .WithOne(x => x.ClubDocumentType)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<User>(user =>
+            modelBuilder.Entity<User>(user =>
             {
                 user
                     .HasMany(x => x.Participants)
@@ -314,12 +331,12 @@ namespace EPlast.DataAccess
 
             });
 
-            builder.Entity<Distinction>()
+            modelBuilder.Entity<Distinction>()
                 .HasMany(x => x.UserDistinctions)
                 .WithOne(x => x.Distinction)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<AnnualReport>(annualReport =>
+            modelBuilder.Entity<AnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Creator)
                     .WithMany(u => u.CreatedAnnualReports)
@@ -329,12 +346,12 @@ namespace EPlast.DataAccess
                     .HasForeignKey(a => a.NewCityAdminId);
             });
 
-            builder.Entity<ClubAnnualReport>(annualReport =>
+            modelBuilder.Entity<ClubAnnualReport>(annualReport =>
             {
                 annualReport.HasOne(a => a.Club);
             });
 
-            builder.Entity<ClubReportAdmins>(reportAdmin =>
+            modelBuilder.Entity<ClubReportAdmins>(reportAdmin =>
             {
                 reportAdmin.HasOne(a => a.ClubAnnualReport)
                     .WithMany(r => r.ClubReportAdmins)
@@ -346,7 +363,7 @@ namespace EPlast.DataAccess
                     .OnDelete(DeleteBehavior.NoAction);
             });
 
-            builder.Entity<ClubReportMember>(reportMember =>
+            modelBuilder.Entity<ClubReportMember>(reportMember =>
             {
                 reportMember.HasOne(m => m.ClubAnnualReport)
                     .WithMany(r => r.ClubReportMembers)
@@ -358,7 +375,7 @@ namespace EPlast.DataAccess
                     .OnDelete(DeleteBehavior.NoAction);
             });
 
-            builder.SeedData();
+            modelBuilder.SeedData();
         }
     }
 }

@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220710184839_UserPrecautionFixMigtation")]
+    partial class UserPrecautionFixMigtation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -444,31 +446,7 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("BlankBiographyDocuments");
                 });
 
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.Course", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Courses");
-                });
-
-
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.ExtractFromUpuDocuments", b =>
-
                 {
                     b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
@@ -490,32 +468,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ExtractFromUPUDocuments");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.UserCourse", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("StatusPassedCourse")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserCourses");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>
@@ -3046,9 +2998,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -3551,9 +3500,6 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserTableObject", b =>
                 {
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
 
@@ -3567,9 +3513,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ClubName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("DegreeId")
@@ -3596,13 +3539,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<byte>("Oblast")
                         .HasColumnType("tinyint");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PlastDegree")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Referal")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("RegionId")
@@ -3849,21 +3786,6 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.UserCourse", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Blank.Course", "Сourse")
-                        .WithMany("UserCourses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany("UserCourses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
