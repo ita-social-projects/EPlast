@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.EducatorsStaff;
@@ -7,6 +8,7 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -288,16 +290,19 @@ namespace EPlast.DataAccess.ExtensionMethods
                 new Precaution
                 {
                     Id = 1,
-                    Name = "Догана"
+                    Name = "Догана",
+                    MonthsPeriod = 3
                 },
                 new Precaution
                 {
                     Id = 2,
-                    Name = "Сувора догана"
+                    Name = "Сувора догана",
+                    MonthsPeriod = 6
                 }, new Precaution
                 {
                     Id = 3,
-                    Name = "Догана із загрозою виключення з Пласту"
+                    Name = "Догана із загрозою виключення з Пласту",
+                    MonthsPeriod = 12
                 });
 
             modelBuilder.Entity<CityDocumentType>().HasData(
