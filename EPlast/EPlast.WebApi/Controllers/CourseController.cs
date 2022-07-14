@@ -48,12 +48,6 @@ namespace EPlast.WebApi.Controllers
             }
 
             var courses = await _usercourseService.GetCourseByIdAsync(userId);
-            
-            if (!courses.Any())
-            {
-                return NotFound();
-            }
-
             return Ok(courses);
         }
         [HttpPut("{userId}")]
