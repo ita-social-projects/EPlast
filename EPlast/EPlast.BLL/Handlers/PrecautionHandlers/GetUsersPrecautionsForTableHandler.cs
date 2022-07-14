@@ -142,7 +142,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
         }
         private Expression<Func<UserPrecaution, object>> GetOrderByEndDate()
         {
-            Expression<Func<UserPrecaution, object>> expr = x => x.EndDate;
+            Expression<Func<UserPrecaution, object>> expr = x => x.Date.AddMonths(x.Precaution.MonthsPeriod); 
             return expr;
         }
     }

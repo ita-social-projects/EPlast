@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 
 namespace EPlast.DataAccess.Entities.UserEntities
 {
@@ -23,6 +24,6 @@ namespace EPlast.DataAccess.Entities.UserEntities
         public DateTime EndDate => Date.AddMonths(Precaution.MonthsPeriod);
         
         [NotMapped]
-        public bool IsActive => EndDate > DateTime.Now;
+        public bool IsActive => Date < DateTime.Now && DateTime.Now < EndDate && Status != UserPrecautionStatus.Cancelled;
     }
 }
