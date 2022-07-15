@@ -1,5 +1,6 @@
 ﻿using System;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.Resources;
 
 namespace EPlast.BLL.DTO
 {
@@ -15,6 +16,10 @@ namespace EPlast.BLL.DTO
         public string RegionName { get; set; }
         public string CityName { get; set; }
         public string ClubName { get; set; }
+        public string Address { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Referal { get; set; }
+        public UkraineOblasts Oblast { get; set; }
         public string UserPlastDegreeName { get; set; }
         public string UserRoles { get; set; }
         public string Comment { get; set; }
