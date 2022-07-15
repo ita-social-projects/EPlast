@@ -57,8 +57,9 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="cityUrl">City url</param>
         /// <param name="cityName">City name</param>
+        /// <param name="comment">Comment stating a reason for the removal</param>
         /// <returns>Email content</returns>
-        EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName);
+        EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName, string comment);
 
         /// <summary>
         /// Get email to inform user about his new supporter role when he was approved
