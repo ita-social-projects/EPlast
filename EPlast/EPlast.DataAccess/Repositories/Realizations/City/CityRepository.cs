@@ -21,7 +21,8 @@ namespace EPlast.DataAccess.Repositories
 
             IQueryable<City> found = EPlastDBContext.Set<City>()
                 .Where(s => string.IsNullOrWhiteSpace(searchData) || s.Name.ToLower().Contains(searchData))
-                .Where(s => oblast == UkraineOblasts.NotSpecified || s.Oblast == oblast);
+                .Where(s => oblast == UkraineOblasts.NotSpecified || s.Oblast == oblast)
+                .Where(c => c.IsActive != isArchive);
 
             IEnumerable<CityObject> result = await found
                 .Skip(pageSize * (pageNum - 1))
