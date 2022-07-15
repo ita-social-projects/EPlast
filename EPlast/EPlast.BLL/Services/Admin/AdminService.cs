@@ -316,11 +316,13 @@ namespace EPlast.BLL.Services
                           || roles.Contains(Roles.CityReferentUPS)
                           || roles.Contains(Roles.CityReferentUSP)
                           || roles.Contains(Roles.CityReferentOfActiveMembership);
+
             bool Regions = roles.Contains(Roles.OkrugaHead)
                            || roles.Contains(Roles.OkrugaHeadDeputy)
                            || roles.Contains(Roles.OkrugaReferentUPS)
                            || roles.Contains(Roles.OkrugaReferentUSP)
-                           || roles.Contains(Roles.OkrugaReferentOfActiveMembership); ;
+                           || roles.Contains(Roles.OkrugaReferentOfActiveMembership);
+
             bool Clubs = roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy);
 
             FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
