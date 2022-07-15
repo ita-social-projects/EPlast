@@ -130,7 +130,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
+            string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
             Tuple<IEnumerable<CityObjectDto>, int> cache;
             try
             {
