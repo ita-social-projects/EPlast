@@ -11,6 +11,7 @@ using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using EPlast.WebApi.Models.Precaution;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -19,16 +20,6 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using EPlast.BLL.DTO.PrecautionsDTO;
-using MediatR;
-using EPlast.BLL.Queries.Precaution;
-using System.Threading;
-using EPlast.BLL.Commands.Precaution;
-using EPlast.WebApi.Models.Precaution;
-using AutoMapper;
 
 namespace EPlast.Tests.Controllers
 {
