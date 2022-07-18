@@ -8,6 +8,8 @@ namespace EPlast.DataAccess.Entities.UserEntities
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
+        [Required]
+        public int MonthsPeriod { get; set; }
         public ICollection<UserPrecaution> UserPrecautions { get; set; }
     }
 }

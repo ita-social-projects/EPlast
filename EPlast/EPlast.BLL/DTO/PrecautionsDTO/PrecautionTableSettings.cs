@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EPlast.Resources;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace EPlast.BLL.DTO.PrecautionsDTO
     public class PrecautionTableSettings
     {
         public IEnumerable<string> SortByOrder { get; set; }
-        public IEnumerable<string> StatusFilter { get; set; }
+        public IEnumerable<UserPrecautionStatus> StatusFilter { get; set; }
         public IEnumerable<string> PrecautionNameFilter { get; set; }
         public IEnumerable<string> DateFilter { get; set; }
 

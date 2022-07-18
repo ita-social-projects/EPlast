@@ -9,5 +9,6 @@ namespace EPlast.BLL.DTO.Blank
         public string FileName { get; set; }
         [Required]
         public string UserId { get; set; }
+
     }
 }

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
@@ -37,14 +39,14 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
 
             return new Tuple<IEnumerable<UserPrecautionsTableObject>, int>(_mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionsTableObject>>(precautions), rows);
         }
-        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<string> statusFilter, IEnumerable<string> precautionNameFilter, IEnumerable<string> dateFilter)
+        private Expression<Func<UserPrecaution, bool>> GetFilter(string searchedData, IEnumerable<UserPrecautionStatus> statusFilter, IEnumerable<string> precautionNameFilter, IEnumerable<string> dateFilter)
         {
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
             var getDate = searchedDataEmty ? "" : String.Join("-", searchedData.Split(".").Reverse());
             Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
-                false => x => x.Number.ToString().Contains(searchedData) || x.Status.Contains(searchedData)
+                false => x => x.Number.ToString().Contains(searchedData) || x.Status.GetDescription().Contains(searchedData)
                 || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
                 || x.Date.Date.ToString().Contains(getDate) || x.EndDate.Date.ToString().Contains(getDate)
                 || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
@@ -140,7 +142,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
         }
         private Expression<Func<UserPrecaution, object>> GetOrderByEndDate()
         {
-            Expression<Func<UserPrecaution, object>> expr = x => x.EndDate;
+            Expression<Func<UserPrecaution, object>> expr = x => x.Date.AddMonths(x.Precaution.MonthsPeriod); 
             return expr;
         }
     }

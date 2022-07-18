@@ -49,6 +49,10 @@ namespace EPlast.DataAccess.Repositories
                         ?? x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.Region.RegionName,
                     CityName = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.Name,
                     ClubName = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).Club.Name,
+                    Address = x.UserProfile.Address,
+                    PhoneNumber = x.PhoneNumber,
+                    Referal = x.UserProfile.Referal,
+                    Oblast = x.UserProfile.Oblast,
                     PlastDegree = x.UserPlastDegrees.PlastDegree.Name,
                     Email = x.Email,
                     EmailConfirmed = x.EmailConfirmed,
@@ -62,7 +66,8 @@ namespace EPlast.DataAccess.Repositories
                        .Where(r => (EPlastDBContext.UserRoles
                        .Where(y => y.UserId == x.Id)
                        .Select(y => y.RoleId))
-                       .Contains(r.Id)))
+                       .Contains(r.Id))),
+                    Comment = x.Comment
                 });
             //tab sorting
             if (tab == "confirmed" || tab == "registered")
