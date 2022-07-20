@@ -33,7 +33,6 @@ namespace EPlast.WebApi.StartupExtensions
                     .AddNewtonsoftJson();
             services.AddLogging();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
-            services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
             services.AddAuthorization();
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
