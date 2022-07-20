@@ -1077,14 +1077,17 @@ namespace EPlast.Tests.Controllers
         public async Task RemoveFollower_Valid_Test()
         {
             // Arrange
+            int id = 1;
+            string comment = "I love unit testing!";
+
             _cityParticipantsService
-                .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>()));
+                .Setup(c => c.RemoveFollowerAsync(It.IsAny<int>(), It.IsAny<string>()));
             _logger
                 .Setup(l => l.LogInformation(It.IsAny<string>()));
             CitiesController controller = CreateCityController;
 
             // Act
-            var result = await controller.RemoveFollower(GetFakeID());
+            var result = await controller.RemoveFollower(id, comment);
 
             // Assert
             Assert.NotNull(result);

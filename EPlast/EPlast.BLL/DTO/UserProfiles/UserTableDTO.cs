@@ -28,5 +28,7 @@ namespace EPlast.BLL.DTO
         public int? RegionId { get; set; }
         public int? CityId { get; set; }
         public int? ClubId { get; set; }
+        public bool IsCityFollower { get; set; }
+        public bool IsClubFollower { get; set; }
     }
 }

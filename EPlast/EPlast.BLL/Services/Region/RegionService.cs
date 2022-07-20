@@ -274,6 +274,7 @@ namespace EPlast.BLL.Services.Region
             ChangedRegion.Description = region.Description;
             ChangedRegion.Street = region.Street;
             ChangedRegion.HouseNumber = region.HouseNumber;
+            ChangedRegion.Oblast = region.Oblast;
 
             _repoWrapper.Region.Update(ChangedRegion);
             await _repoWrapper.SaveAsync();

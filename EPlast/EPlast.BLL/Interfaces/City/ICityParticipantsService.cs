@@ -109,7 +109,8 @@ namespace EPlast.BLL.Interfaces.City
         /// Remove a specific follower from the city
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
-        Task RemoveFollowerAsync(int followerId);
+        /// <param name="comment">The text of the reasoning comment</param>
+        Task RemoveFollowerAsync(int followerId, string comment);
 
         /// <summary>
         /// Remove a specific member from the city
