@@ -8,6 +8,7 @@ using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Volunteer;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -39,20 +40,21 @@ namespace EPlast.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
+        private readonly IVolunteerInformingService _volunteerInformingService;
 
         public AuthController(
             IUserDatesService userDatesService,
             IEmailSendingService emailSendingService,
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
-            UserManager<User> userManager
-        )
+            UserManager<User> userManager, IVolunteerInformingService volunteerInformingService)
         {
             _userDatesService = userDatesService;
             _emailSendingService = emailSendingService;
             _mapper = mapper;
             _cityParticipantsService = cityParticipantsService;
             _userManager = userManager;
+            _volunteerInformingService = volunteerInformingService;
         }
 
         /// <summary>
@@ -89,6 +91,11 @@ namespace EPlast.WebApi.Controllers
                 return Redirect(frontendUrl + "?error=404");
             }
 
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                return Redirect(frontendUrl);
+            }
+
             TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
             if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
             {
@@ -102,6 +109,9 @@ namespace EPlast.WebApi.Controllers
             {
                 return Redirect(frontendUrl + "?error=400");
             }
+
+            await _volunteerInformingService.SendNewVolunteerNotificationToAdministratorsAsync(userId);
+            await _volunteerInformingService.SendNewVolunteerEmailToAdministratorsAsync(userId);
 
             return Redirect(frontendUrl);
         }
@@ -169,10 +179,6 @@ namespace EPlast.WebApi.Controllers
             if (registerDto.CityId != null)
             {
                 await _cityParticipantsService.AddFollowerAsync((int)registerDto.CityId, user.Id);
-            }
-            else
-            {
-                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, registerDto.RegionId);
             }
 
             return NoContent();

@@ -76,12 +76,6 @@ namespace EPlast.BLL.Interfaces.City
         /// See <see cref="ICityMembersService.AddFollowerAsync(int, string)"/> to add user by id
         Task<CityMembersDto> AddFollowerAsync(int cityId, User user);
 
-        /// <summary>
-        /// Add user to the table of users with not selected city
-        /// </summary>
-        /// <param name="user">The new User without selected city</param>
-        /// <param name="regionId">The regionID of user</param>
-        Task AddNotificationUserWithoutSelectedCity(User user, int? regionId);
 
         /// <summary>
         /// Returns either given user is approved or not
@@ -123,11 +117,5 @@ namespace EPlast.BLL.Interfaces.City
         /// <param name="userId">The id of the user</param>
         Task RemoveAdminRolesByUserIdAsync(string userId);
 
-        /// <summary>
-        /// Send notification to city administration abou new user
-        /// </summary>
-        /// <param name="cityId">The id of the city</param>
-        /// <param name="user">The new user</param>
-        Task SendNotificationCityAdminAboutNewFollowerAsync(int cityId, User user);
     }
 }
