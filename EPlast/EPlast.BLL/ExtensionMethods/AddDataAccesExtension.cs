@@ -9,8 +9,7 @@ namespace EPlast.WebApi.StartupExtensions
     {
         public static IServiceCollection AddDataAccess(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContextPool<EPlastDBContext>(options =>
-              options.UseSqlServer(configuration.GetConnectionString("EPlastDBConnection")));
+            services.AddDbContextPool<EPlastDBContext>(o => o.UseSqlServer(configuration.GetConnectionString("EplastDatabase")));
 
             return services;
         }
