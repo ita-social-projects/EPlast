@@ -9,6 +9,7 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Volunteer;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
@@ -22,6 +23,14 @@ namespace EPlast.Tests.Controllers
 {
     public class AuthControllerTestsAuth
     {
+        private Mock<IUserDatesService> _userDatesServiceMock = null!;
+        private Mock<IEmailSendingService> _emailSendingServiceMock = null!;
+        private Mock<IMapper> _mapperMock = null!;
+        private Mock<ICityParticipantsService> _cityParticipantServiceMock = null!;
+        private Mock<UserManager<User>> _userManagerMock = null!;
+        private AuthController _controller = null!;
+        private Mock<IVolunteerInformingService> _volunteerInformingServiceMock;
+
         [SetUp]
         public void SetUp()
         {
@@ -32,13 +41,15 @@ namespace EPlast.Tests.Controllers
             _userManagerMock = new Mock<UserManager<User>>(MockBehavior.Strict, Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             _userManagerMock
                 .SetupSet(m => m.Logger = null);
+            _volunteerInformingServiceMock = new Mock<IVolunteerInformingService>();
 
             _controller = new AuthController(
                 _userDatesServiceMock.Object,
                 _emailSendingServiceMock.Object,
                 _mapperMock.Object,
                 _cityParticipantServiceMock.Object,
-                _userManagerMock.Object
+                _userManagerMock.Object,
+                _volunteerInformingServiceMock.Object
             );
         }
 
@@ -87,7 +98,8 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
                 .ReturnsAsync(value: null!);
-
+            _userManagerMock.Setup(m => m.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .ReturnsAsync(false);
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
 
@@ -112,6 +124,8 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed());
+            _userManagerMock.Setup(m => m.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .ReturnsAsync(false);
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -137,6 +151,8 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
+            _userManagerMock.Setup(m => m.IsEmailConfirmedAsync(It.IsAny<User>()))
+                .ReturnsAsync(false);
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -356,12 +372,6 @@ namespace EPlast.Tests.Controllers
             _userDatesServiceMock
                 .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
                 .ReturnsAsync(true);
-            _cityParticipantServiceMock
-                .Setup(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int?>()))
-                .Returns(Task.CompletedTask);
-            _cityParticipantServiceMock
-                .Setup(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int>()))
-                .Returns(Task.CompletedTask);
             _mapperMock
                 .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
                 .Returns(new UserDto());
@@ -378,7 +388,6 @@ namespace EPlast.Tests.Controllers
             _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
             _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
             _userDatesServiceMock.Verify(m => m.AddDateEntryAsync(It.IsAny<string>()), Times.Once);
-            _cityParticipantServiceMock.Verify(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int?>()), Times.Once);
         }
 
         [Test]
@@ -564,11 +573,6 @@ namespace EPlast.Tests.Controllers
             _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
         }
 
-        private Mock<IUserDatesService> _userDatesServiceMock = null!;
-        private Mock<IEmailSendingService> _emailSendingServiceMock = null!;
-        private Mock<IMapper> _mapperMock = null!;
-        private Mock<ICityParticipantsService> _cityParticipantServiceMock = null!;
-        private Mock<UserManager<User>> _userManagerMock = null!;
-        private AuthController _controller = null!;
+        
     }
 }
