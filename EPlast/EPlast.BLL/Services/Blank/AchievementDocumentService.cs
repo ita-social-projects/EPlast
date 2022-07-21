@@ -15,16 +15,19 @@ namespace EPlast.BLL.Services.Blank
     public class AchievementDocumentService : IBlankAchievementDocumentService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IUserCourseService _usercourseService;
         private readonly IMapper _mapper;
         private readonly IBlankAchievementBlobStorageRepository _blobStorageRepo;
 
         public AchievementDocumentService(IRepositoryWrapper repositoryWrapper,
            IMapper mapper,
-           IBlankAchievementBlobStorageRepository blobStorageRepo)
+           IBlankAchievementBlobStorageRepository blobStorageRepo,
+           IUserCourseService usercourseService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _blobStorageRepo = blobStorageRepo;
+            _usercourseService = usercourseService;
         }
 
         public async Task<IEnumerable<AchievementDocumentsDto>> AddDocumentAsync(IEnumerable<AchievementDocumentsDto> achievementDocumentsDTO)
@@ -46,10 +49,15 @@ namespace EPlast.BLL.Services.Blank
             return achievementDocumentsDTO;
         }
 
-        public async Task DeleteFileAsync(int documentId)
+        public async Task DeleteFileAsync(int documentId, int courseId, string userId)
         {
             var document = await _repositoryWrapper.AchievementDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
+            
+            if(document.CourseId == courseId)
+            {
+                await _usercourseService.ChangeCourseStatus(userId, courseId);
+            }
 
             await _blobStorageRepo.DeleteBlobAsync(document.BlobName);
 

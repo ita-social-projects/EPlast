@@ -73,7 +73,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="achievementDocuments">An information about a specific document</param>
         /// <returns>A newly created Blank achievement document</returns>
-        [HttpPost("AddAchievementDocumet/{userId}")]
+        [HttpPost("AddAchievementDocumet")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> AddAchievementDocument(IEnumerable<AchievementDocumentsDto> achievementDocuments)
         {
@@ -168,11 +168,11 @@ namespace EPlast.WebApi.Controllers
         /// Delete the achievement document by document ID
         /// </summary>
         /// <param Id="documentId">An Id of document</param>
-        [HttpDelete("RemoveAchievementDocument/{documentId}")]
+        [HttpDelete("RemoveAchievementDocument/{documentId}/{courseId}/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> RemoveAchievementDocument(int documentId)
+        public async Task<IActionResult> RemoveAchievementDocument(int documentId,int courseId ,string userId)
         {
-            await _blankAchievementDocumentService.DeleteFileAsync(documentId);
+            await _blankAchievementDocumentService.DeleteFileAsync(documentId,courseId, userId);
 
             return NoContent();
         }

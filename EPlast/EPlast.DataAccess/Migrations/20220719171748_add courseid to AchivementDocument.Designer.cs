@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220719171748_add courseid to AchivementDocument")]
+    partial class addcourseidtoAchivementDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1188,9 +1190,6 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ApproveType")
-                        .HasColumnType("int");
-
                     b.Property<int?>("ApproverID")
                         .HasColumnType("int");
 
@@ -1200,6 +1199,12 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("UserID")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("isCityAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("isClubAdmin")
+                        .HasColumnType("bit");
 
                     b.HasKey("ID");
 
@@ -2048,8 +2053,8 @@ namespace EPlast.DataAccess.Migrations
                         .HasMaxLength(255);
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(18)")
-                        .HasMaxLength(18);
+                        .HasColumnType("nvarchar(12)")
+                        .HasMaxLength(12);
 
                     b.HasKey("Id");
 
@@ -3042,9 +3047,6 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
@@ -3106,7 +3108,7 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("RegionId")
+                    b.Property<int>("RegionId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("RegistredOn")
@@ -3546,6 +3548,80 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRenewals");
+                });
+
+            modelBuilder.Entity("EPlast.DataAccess.Entities.UserTableObject", b =>
+                {
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Birthday")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CityId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ClubId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClubName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DegreeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte>("Oblast")
+                        .HasColumnType("tinyint");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlastDegree")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Referal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("RegionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Roles")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UPUDegree")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserSystemId")
+                        .HasColumnType("int");
+
+                    b.ToTable("UserTableObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Work", b =>

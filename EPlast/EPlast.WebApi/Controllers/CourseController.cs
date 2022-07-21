@@ -1,6 +1,8 @@
+using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -50,12 +52,22 @@ namespace EPlast.WebApi.Controllers
             var courses = await _usercourseService.GetCourseByIdAsync(userId);
             return Ok(courses);
         }
-        [HttpPut("{userId}")]
+        [HttpPut("{userId}/{courseid}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public  async Task<IActionResult> ChangeStatusCourseByUseerId(string userid)
+        public  async Task<IActionResult> ChangeStatusCourseByUseerId(string userid, int courseid)
         {
-            await _usercourseService.ChangeCourseStatus(userid);
+            await _usercourseService.ChangeCourseStatus(userid,courseid);
             return Ok();
         }
+
+        [HttpPost("CreateCourse")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        public async Task<IActionResult> AddCourse(CourseDTO courseDTO)
+        {
+            await _courseService.AddCourseAsync(courseDTO);
+
+            return Created("Course", courseDTO);
+        }
+
     }
 }
