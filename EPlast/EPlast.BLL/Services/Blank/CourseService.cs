@@ -28,5 +28,14 @@ namespace EPlast.BLL.Services.Blank
 
             return result;
         }
+
+        public async Task<CourseDTO> AddCourseAsync(CourseDTO courseDto)
+        {
+            var course =  _mapper.Map<Course>(courseDto);
+            await _repositoryWrapper.Course.CreateAsync(course);
+            await _repositoryWrapper.SaveAsync();
+
+            return courseDto;
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace EPlast.BLL.Services.Blank
                     include: a => a.Include(uc => uc.Сourse)))
                 .Select(uc => new CourseDTO
                 { 
-                    ID = uc.ID,
+                    ID = uc.Сourse.ID,
                     Link = uc.Сourse.Link,
                     Name = uc.Сourse.Name                    
                 });
@@ -38,14 +38,27 @@ namespace EPlast.BLL.Services.Blank
             return result;        
         }
 
-
-
-        public  async Task ChangeCourseStatus(string userid)
+        public  async Task ChangeCourseStatus(string userid , int courseId)
         {
-            var result = await _repositoryWrapper.UserCourse.GetFirstOrDefaultAsync(predicate: uc => uc.UserId == userid,null);
-            result.StatusPassedCourse = true;
-            _repositoryWrapper.UserCourse.Update(result);
-            await _repositoryWrapper.SaveAsync();
+            var result = await _repositoryWrapper.UserCourse.GetFirstOrDefaultAsync(predicate: uc => uc.UserId == userid && uc.CourseId == courseId, null);
+            if (result != null )
+            {
+                if (  result.StatusPassedCourse == false)
+                {
+                    result.StatusPassedCourse = true;
+                    _repositoryWrapper.UserCourse.Update(result);
+                    await _repositoryWrapper.SaveAsync();
+                }
+                else
+                {
+                    result.StatusPassedCourse = false;
+                    _repositoryWrapper.UserCourse.Update(result);
+                    await _repositoryWrapper.SaveAsync();
+                }
+             
+            }
+
         }
+      
     }
 }

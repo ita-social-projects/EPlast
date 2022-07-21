@@ -9,6 +9,7 @@ namespace EPlast.BLL.Interfaces.Blank
     public interface ICourseService
     {
         Task<IEnumerable<CourseDTO>> GetAllAsync();
+        Task<CourseDTO> AddCourseAsync(CourseDTO courseDto);
 
     }
 }
