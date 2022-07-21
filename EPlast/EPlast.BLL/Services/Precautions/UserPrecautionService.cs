@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.BLL.Services.Interfaces;
-using EPlast.BLL.Services.UserAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
@@ -16,7 +14,6 @@ using EPlast.Resources;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace EPlast.BLL.Services.Precautions
 {
@@ -247,7 +244,11 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<UserPrecautionDto> GetUserActivePrecaution(string userId, string type)
         {
-            return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(x => x.IsActive && x.Precaution.Name.Equals(type));
+            return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(
+                x => x.Date < DateTime.Now && DateTime.Now < x.Date.AddMonths(x.Precaution.MonthsPeriod)
+                && x.Precaution.Name.Equals(type) 
+                && x.Status != UserPrecautionStatus.Cancelled
+            );
         }
 
         public async Task<IEnumerable<SuggestedUserDto>> GetUsersForPrecautionAsync(User currentUser)
@@ -266,7 +267,8 @@ namespace EPlast.BLL.Services.Precautions
 
                 if (isCreatorGoverningBodyAdmin)
                 {
-                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin);
+                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin) &&
+                                                !roles.Contains(Roles.Admin);
                 }
                 else
                 {

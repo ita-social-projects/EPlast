@@ -253,13 +253,15 @@ namespace EPlast.BLL.Services.EmailSending
         }
 
         /// <inheritdoc />
-        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName)
+        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName, string comment)
         {
+            var commentText = string.IsNullOrEmpty(comment) ? ".</p>" : $" з наступним коментарем: </p><p>\"{comment}\"</p>";
+
             return new EmailModel
             {
                 Title = "EPlast",
                 Subject = "Зміна статусу заявки у станицю",
-                Message = $"<p>На жаль, Тебе було виключено з прихильників станиці: <a href='{cityUrl}'>{cityName}</a>."
+                Message = $"<p>На жаль, Твоє зголошення до станиці <a href='{cityUrl}'>{cityName}</a> було відхилено{commentText}"
             };
         }
 
