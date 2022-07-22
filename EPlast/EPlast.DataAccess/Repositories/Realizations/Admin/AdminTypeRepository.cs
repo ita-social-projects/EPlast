@@ -67,17 +67,20 @@ namespace EPlast.DataAccess.Repositories
                        .Where(y => y.UserId == x.Id)
                        .Select(y => y.RoleId))
                        .Contains(r.Id))),
-                    Comment = x.Comment
+                    Comment = x.Comment,
+                    IsCityFollower = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : true,
+                    IsClubFollower = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : false
                 });
+
             //tab sorting
-            if (tab == "confirmed" || tab == "registered")
+            items = tab switch
             {
-                items = items.Where(r => r.EmailConfirmed);
-            }
-            if (tab == "unconfirmed")
-            {
-                items = items.Where(r => !r.EmailConfirmed);
-            }
+                "confirmed" => items.Where(r => r.EmailConfirmed),
+                "registered" => items.Where(r => r.EmailConfirmed && (r.IsCityFollower || r.IsClubFollower)),
+                "unconfirmed" => items.Where(r => !r.EmailConfirmed),
+                _ => items.Where(r => r.EmailConfirmed)
+            };
+            
             //region sorting
             if (!string.IsNullOrEmpty(regions))
             {

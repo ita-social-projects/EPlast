@@ -28,6 +28,8 @@ namespace EPlast.DataAccess.Entities
         public int? CityId { get; set; }
         public int? ClubId { get; set; }
         public int? DegreeId { get; set; }
+        public bool IsCityFollower { get; set; }
+        public bool IsClubFollower { get; set; }
 
     }
 }
