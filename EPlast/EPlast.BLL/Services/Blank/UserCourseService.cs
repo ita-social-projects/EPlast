@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.Blank
             var result = await _repositoryWrapper.UserCourse.GetFirstOrDefaultAsync(predicate: uc => uc.UserId == userid && uc.CourseId == courseId, null);
             if (result != null )
             {
-                if (  result.StatusPassedCourse == false)
+                if (result.StatusPassedCourse == false)
                 {
                     result.StatusPassedCourse = true;
                     _repositoryWrapper.UserCourse.Update(result);
@@ -54,11 +54,8 @@ namespace EPlast.BLL.Services.Blank
                     result.StatusPassedCourse = false;
                     _repositoryWrapper.UserCourse.Update(result);
                     await _repositoryWrapper.SaveAsync();
-                }
-             
+                }    
             }
-
         }
-      
     }
 }
