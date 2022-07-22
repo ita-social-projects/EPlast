@@ -53,16 +53,16 @@ namespace EPlast.BLL.Services.Blank
         {
             var document = await _repositoryWrapper.AchievementDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
-            
-            if(document.CourseId == courseId)
+            if (document != null)
             {
-                await _usercourseService.ChangeCourseStatus(userId, courseId);
+                if (document.CourseId == courseId)
+                {
+                    await _usercourseService.ChangeCourseStatus(userId, courseId);
+                }
+                await _blobStorageRepo.DeleteBlobAsync(document.BlobName);
+                _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
+                await _repositoryWrapper.SaveAsync();
             }
-
-            await _blobStorageRepo.DeleteBlobAsync(document.BlobName);
-
-            _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
-            await _repositoryWrapper.SaveAsync();
         }
 
         public async Task<string> DownloadFileAsync(string fileName)
