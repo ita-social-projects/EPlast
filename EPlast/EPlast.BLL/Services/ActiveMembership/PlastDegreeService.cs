@@ -66,6 +66,12 @@ namespace EPlast.BLL.Services.ActiveMembership
             var previousDegreeUserPlastDegree = await _repoWrapper.UserPlastDegree
                 .GetFirstOrDefaultAsync(i => i.UserId == userPlastDegreePostDTO.UserId);
 
+            PlastDegree plastDegree =
+                await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd =>
+                    pd.Id == userPlastDegreePostDTO.PlastDegreeId);
+
+            if (plastDegree == null) return false;
+
             if (previousDegreeUserPlastDegree != null)
             {
                 if (previousDegreeUserPlastDegree.PlastDegreeId == userPlastDegreePostDTO.PlastDegreeId)
@@ -83,11 +89,6 @@ namespace EPlast.BLL.Services.ActiveMembership
             }
             
             UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
-            PlastDegree plastDegree =
-                await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd =>
-                    pd.Id == userPlastDegreePostDTO.PlastDegreeId);
-
-            if (plastDegree == null) return false;
 
             userPlastDegree.PlastDegree = plastDegree;
             _repoWrapper.UserPlastDegree.Attach(userPlastDegree);
