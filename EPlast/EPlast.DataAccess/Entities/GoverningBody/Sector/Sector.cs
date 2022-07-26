@@ -14,7 +14,7 @@ namespace EPlast.DataAccess.Entities.GoverningBody.Sector
 
         public string Description { get; set; }
 
-        [StringLength(12, ErrorMessage = "Контактний номер напряму повинен містити 12 цифр")]
+        [StringLength(18, ErrorMessage = "Контактний номер напряму повинен містити 18 цифр")]
         public string PhoneNumber { get; set; }
 
         public string Email { get; set; }
