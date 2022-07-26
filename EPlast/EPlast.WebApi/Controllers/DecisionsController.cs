@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Queries.Decision;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
+using EPlast.WebApi.CustomAttributes;
 using EPlast.WebApi.Models.Decision;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +22,6 @@ namespace EPlast.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
     public class DecisionsController : ControllerBase
     {
         private readonly IPdfService _pdfService;
@@ -44,9 +44,11 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Data for creating new decision</returns>
         /// <response code="200">Array of organizations, targets and status types</response>
         [HttpGet("NewDecision")]
-        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputyAndReferentKurinHeadDeputyAndPlastMember)]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AuthorizeAllRolesExcept(Roles.RegisteredUser)]
         public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
+
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel
             {
                 GoverningBodies = await _governingBodiesService.GetGoverningBodiesListAsync(),
@@ -64,6 +66,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of decision</response>
         /// <response code="404">The decision does not exist</response>
         [HttpGet("{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> Get(int id)
         {
             var query = new GetDecisionAsyncQuery(id);
@@ -82,6 +85,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>All decisions</returns>
         /// <response code="200">Array of all decisions</response>
         [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> Get()
         {
             var query = new GetDecisionListAsyncQuery();         
@@ -110,6 +114,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of DecisionTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("DecisionsForTable")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public IActionResult GetDecisionsForTable(string searchedData, int page, int pageSize)
         {
             var query = new GetDecisionsForTableQuery(searchedData, page, pageSize);
@@ -126,7 +131,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">An instance of decision was created</response>
         /// <response code="400">The id and decision id are not same</response>
         [HttpPut("{id:int}")]
-        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> Update(int id, DecisionDto decision)
         {
             if (id != decision.ID)
@@ -155,7 +160,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created decision object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
-        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> Save(DecisionWrapperDto decisionWrapper)
         {
 
@@ -183,7 +188,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Decision was deleted</response>
         /// <response code="404">Decision does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = Roles.AdminAndRegionBoardHead)]
+        [Authorize(AuthenticationSchemes = "Bearer",Roles = Roles.AdminAndRegionBoardHead)]
         public async Task<IActionResult> Delete(int id)
         {
             var query = new DeleteDecisionAsyncCommand(id);
@@ -199,6 +204,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>File as base64</returns>
         /// <response code="200">File as base64</response>
         [HttpGet("downloadfile/{filename}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> Download(string filename)
         {
             var query = new DownloadDecisionFileFromBlobAsyncQuery(filename);
@@ -214,6 +220,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Pdf file as base64 what was created with decision data</returns>
         /// <response code="200">Pdf file as base64</response>
         [HttpGet("createpdf/{objId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> CreatePdf(int objId)
         {
             byte[] fileBytes = await _pdfService.DecisionCreatePDFAsync(objId);
@@ -228,6 +235,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>List of Targets</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("targetList/{searchedData}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> GetDecisionTargetSearchList(string searchedData)
         {
             var query = new GetDecisionTargetSearchListAsyncQuery(searchedData);
