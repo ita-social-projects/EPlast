@@ -201,7 +201,7 @@
   },
   "Зареєстрований користувач": {
     "decisions": false,
-    "regionBoard": true,
+    "regionBoard": false,
     "userTable": false,
     "regions": false,
     "cities": true,

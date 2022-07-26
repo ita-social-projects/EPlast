@@ -10,20 +10,20 @@ using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EPlast.BLL.Services.Jwt
 {
     public class JwtService : IJwtService
     {
-        private readonly IConfiguration _configuration;
+        private readonly JwtOptions _jwtOptions;
         private readonly IUserManagerService _userManagerService;
         private readonly UserManager<User> _userManager;
 
-        public JwtService(IConfiguration configuration, IUserManagerService userManagerService, UserManager<User> userManager)
+        public JwtService(IOptions<JwtOptions> jwtOptions, IUserManagerService userManagerService, UserManager<User> userManager)
         {
-            _configuration = configuration;
+            _jwtOptions = jwtOptions.Value;
             _userManagerService = userManagerService;
             _userManager = userManager;
         }
@@ -31,41 +31,50 @@ namespace EPlast.BLL.Services.Jwt
         ///<inheritdoc/>
         public async Task<string> GenerateJWTTokenAsync(UserDto userDTO)
         {
-            var id = userDTO.Id;
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, userDTO.Email),
+                new Claim(JwtRegisteredClaimNames.NameId, userDTO.Id),
+                new Claim(JwtRegisteredClaimNames.FamilyName, userDTO.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
             var roles = await _userManagerService.GetRolesAsync(userDTO);
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            return Generate(id, roles);
+            var token = new JwtSecurityToken(
+              issuer: _jwtOptions.Issuer,
+              audience: _jwtOptions.Audience,
+              claims: claims,
+              expires: DateTime.Now.AddMinutes(_jwtOptions.Time),
+              signingCredentials: creds);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            return tokenHandler.WriteToken(token);
         }
 
         public async Task<string> GenerateJWTTokenAsync(User user)
         {
-            var id = user.Id;
-            var roles = await _userManager.GetRolesAsync(user);
-
-            return Generate(id, roles);
-        }
-
-        private string Generate(string id, IEnumerable<string> roles)
-        {
             var claims = new List<Claim>
             {
-                // Note 1: Use ClaimTypes.NameIdentifier instead of JwtRegisteredClaimNames.NameId in any future projects
-                //
-                // Note 2: Currently it is not possible to change it to ClaimTypes.NameIdentifier, because 
-                // JwtRegisteredClaimNames.NameId is used everywhere on frontend, in every component, to fetch
-                // information by stored user's ID in JWT. 
-                // ...While using Cookie authorization at the same time. 
-                // ...Don't ask me why it is that way.
-                new Claim(JwtRegisteredClaimNames.NameId, id)
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
-            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JwtIssuerSigningKey")));
+            var roles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+              issuer: _jwtOptions.Issuer,
+              audience: _jwtOptions.Audience,
               claims: claims,
-              expires: DateTime.UtcNow.AddMinutes(120),
+              expires: DateTime.Now.AddMinutes(_jwtOptions.Time),
               signingCredentials: creds
             );
 
