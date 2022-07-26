@@ -27,7 +27,6 @@ namespace EPlast.Resources
         public const string FormerPlastMember = "Колишній член Пласту";
         public const string RegisteredUser = "Зареєстрований користувач";
         public const string Interested = "Зацікавлений";
-        public const string RegionBoardHead = "Голова Краю";
         public const string GoverningBodyAdmin = "Крайовий Адмін";
         public const string GoverningBodyHead = "Голова Керівного Органу";
         public const string GoverningBodySecretary = "Діловод Керівного Органу";
@@ -36,15 +35,23 @@ namespace EPlast.Resources
 
         public const string AdminAndGBAdmin = Admin + "," + GoverningBodyAdmin;
         public const string AdminAndOkrugaHead = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead;
-        public const string AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead + "," + RegionBoardHead + "," + CityHead + "," + KurinHead;
-        public const string AdminAndRegionBoardHead = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead;
+        public const string AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin = Admin + "," + GoverningBodyAdmin + "," + OkrugaHead  + "," + CityHead + "," + KurinHead;
+        public const string AdminAndRegionBoardHead = Admin + "," + GoverningBodyAdmin;
         public const string AdminAndGBHeadAndGBSectorHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + GoverningBodySectorHead;
 
         public const string AdminAndGBHead = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead;
         public const string DegreeAssignRoles = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastHead + "," + EventAdministrator + "," + KurinHead + "," + KurinHeadDeputy + "," + KurinSecretary + "," 
             + OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
-        public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
-            + KurinHead + "," + KurinHeadDeputy + "," + PlastMember;
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin +
+                                                                     "," + GoverningBodyAdmin + 
+                                                                     "," + GoverningBodyHead +
+                                                                     "," + OkrugaHead +
+                                                                     "," + OkrugaHeadDeputy + 
+                                                                     "," + CityHead + 
+                                                                     "," + CityHeadDeputy + 
+                                                                     "," + KurinHead + 
+                                                                     "," + KurinHeadDeputy + 
+                                                                     "," + PlastMember;
         public const string HeadsAndHeadDeputiesAndAdmin = Admin +
                                                            "," + GoverningBodyAdmin + 
                                                            "," + GoverningBodyHead + 
@@ -75,12 +82,11 @@ namespace EPlast.Resources
         public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputy = Admin +
                                                                           "," + GoverningBodyAdmin +
                                                                           "," + GoverningBodyHead +
-                                                                          "," + RegionBoardHead +
                                                                           "," + OkrugaHead +
                                                                           "," + OkrugaHeadDeputy +
                                                                           "," + CityHead +
                                                                           "," + CityHeadDeputy;
-        public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + RegionBoardHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
+        public const string AdminRegionBoardHeadOkrugaHeadAndDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string AdminAndCityHeadAndCityHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + CityHead + "," + CityHeadDeputy;
 
         public const string HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead = Admin +
@@ -115,7 +121,6 @@ namespace EPlast.Resources
 
         public const string CanEditCity = Admin +
                                           "," + GoverningBodyAdmin +
-                                          "," + RegionBoardHead +
                                           "," + OkrugaHead +
                                           "," + OkrugaHeadDeputy +
                                           "," + OkrugaReferentUPS +
@@ -127,8 +132,8 @@ namespace EPlast.Resources
                                           "," + CityReferentUPS +
                                           "," + CityReferentUSP +
                                           "," + CityReferentOfActiveMembership;
-        public const string CanEditClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
-        public const string CanCreateClub = Admin + "," + GoverningBodyAdmin + "," + RegionBoardHead + "," + GoverningBodyHead;
+        public const string CanEditClub = Admin + "," + GoverningBodyAdmin + "," + KurinHead + "," + KurinHeadDeputy + "," + GoverningBodyHead;
+        public const string CanCreateClub = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead;
         public const string AdminRegionBoardHeadOkrugaCityHeadAndDeputyReferent= Admin +
                                                                                 "," + GoverningBodyAdmin +
                                                                                 "," + GoverningBodyHead +
