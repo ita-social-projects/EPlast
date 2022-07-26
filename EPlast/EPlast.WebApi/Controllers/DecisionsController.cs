@@ -44,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Data for creating new decision</returns>
         /// <response code="200">Array of organizations, targets and status types</response>
         [HttpGet("NewDecision")]
-        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputyAndReferentKurinHeadDeputyAndPlastMember)]
         public async Task<ActionResult<DecisionCreateViewModel>> GetMetaData()
         {
             DecisionCreateViewModel decisionViewModel = new DecisionCreateViewModel

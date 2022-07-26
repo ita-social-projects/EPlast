@@ -45,8 +45,15 @@ namespace EPlast.Resources
             + OkrugaHead + "," + OkrugaHeadDeputy + "," + OkrugaSecretary + "," + CityHead + "," + CityHeadDeputy + "," + CitySecretary;
         public const string HeadsAndHeadDeputiesAndAdminAndPlastun = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
             + KurinHead + "," + KurinHeadDeputy + "," + PlastMember;
-        public const string HeadsAndHeadDeputiesAndAdmin = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," + CityHeadDeputy + ","
-            + KurinHead + "," + KurinHeadDeputy;
+        public const string HeadsAndHeadDeputiesAndAdmin = Admin +
+                                                           "," + GoverningBodyAdmin + 
+                                                           "," + GoverningBodyHead + 
+                                                           "," + OkrugaHead + 
+                                                           "," + OkrugaHeadDeputy + 
+                                                           "," + CityHead + 
+                                                           "," + CityHeadDeputy + 
+                                                           "," + KurinHead + 
+                                                           "," + KurinHeadDeputy;
         public const string AdminAndOkrugaHeadAndOkrugaHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
             + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter;
