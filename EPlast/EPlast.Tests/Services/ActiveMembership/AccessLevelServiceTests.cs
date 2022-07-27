@@ -50,28 +50,6 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task GetUserAccessLevelsAsync_SupporterDegree_ReturnsIEnumerableOfStringsWithSupporterRolesForActiveMembership()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
-                .ReturnsAsync(GetUserRolesWithNoRoles());
-            _plastDegreeService.Setup(pds => pds.GetUserPlastDegreeAsync(It.IsAny<string>()))
-                .ReturnsAsync(GetUserPlastDegreeDtos());
-
-            // Act
-            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
-            var listResult = result.ToList();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserRolesAsRegisteredUser().Count(), listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDto.Supporter.GetDescription(), listResult[0]);
-        }
-
-        [Test]
         public async Task GetUserAccessLevelsAsync_UserIsFormer_ReturnsIEnumerableOfStringsWithFormerRolesForActiveMembership()
         {
             // Arrange

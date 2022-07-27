@@ -9,7 +9,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using NUnit.Framework;
@@ -18,7 +18,7 @@ namespace EPlast.Tests.Services.Jwt
 {
     class JwtServiceTests
     {
-        private IConfiguration _configuration;
+        private Mock<IOptions<JwtOptions>> _jwtOptionsMock;
         private Mock<IUserManagerService> _userManagerServiceMock;
         private Mock<UserManager<User>> _userManagerMock;
         private JwtService _jwtService;
@@ -26,19 +26,32 @@ namespace EPlast.Tests.Services.Jwt
         [SetUp]
         public void SetUp()
         {
-            _configuration = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>()
+            _jwtOptionsMock = new Mock<IOptions<JwtOptions>>();
+            _jwtOptionsMock.SetupGet(x => x.Value)
+                .Returns(new JwtOptions
                 {
-                    ["JwtIssuerSigningKey"] = "124356789012345678901234567890"
-                })
-                .Build();
+                    Key = "2af4ff57-4ca0-4b3a-804b-178ad27aaf88",
+                    Audience = "https://localhost:3000/",
+                    Issuer = "https://localhost:44350/",
+                    Time = 120
+                });
 
             _userManagerServiceMock = new Mock<IUserManagerService>();
 
-            _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
+            _userManagerMock = new Mock<UserManager<User>>(
+                Mock.Of<IUserStore<User>>(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
 
             _jwtService = new JwtService(
-                _configuration,
+                _jwtOptionsMock.Object,
                 _userManagerServiceMock.Object,
                 _userManagerMock.Object
             );
@@ -66,7 +79,10 @@ namespace EPlast.Tests.Services.Jwt
 
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.Name, userDto.Email),
                 new Claim(JwtRegisteredClaimNames.NameId, userDto.Id),
+                new Claim(JwtRegisteredClaimNames.FamilyName, userDto.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[0]),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[1])
             };
@@ -75,6 +91,8 @@ namespace EPlast.Tests.Services.Jwt
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+                issuer: "https://localhost:44350/",
+                audience: "https://localhost:3000/",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: creds);
@@ -111,7 +129,10 @@ namespace EPlast.Tests.Services.Jwt
 
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.Name, user.Email),
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[0]),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[1])
             };
@@ -120,6 +141,8 @@ namespace EPlast.Tests.Services.Jwt
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
+                issuer: "https://localhost:44350/",
+                audience: "https://localhost:3000/",
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: creds);
