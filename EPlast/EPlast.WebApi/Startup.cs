@@ -1,4 +1,6 @@
-﻿using EPlast.WebApi.Extensions;
+﻿using System;
+using System.Globalization;
+using EPlast.WebApi.Extensions;
 using EPlast.WebApi.StartupExtensions;
 using EPlast.WebApi.WebSocketHandlers;
 using Hangfire;
@@ -9,8 +11,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Globalization;
 
 namespace EPlast.WebApi
 {

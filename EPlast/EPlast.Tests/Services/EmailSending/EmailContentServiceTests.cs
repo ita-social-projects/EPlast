@@ -1,12 +1,13 @@
-﻿using EPlast.BLL.Interfaces.UserProfiles;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -14,6 +15,7 @@ namespace EPlast.Tests.Services.EmailSending
     {
         private EmailContentService _emailContentService;
         private Mock<IUserService> _mockUserService;
+        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
 
         [Test]
         public void GetAuthFacebookRegisterEmail_ReturnsEmailModel()
@@ -249,7 +251,10 @@ namespace EPlast.Tests.Services.EmailSending
         {
             _mockUserService = new Mock<IUserService>();
 
-            _emailContentService = new EmailContentService(_mockUserService.Object);
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _httpContextAccessorMock.Setup(m => m.HttpContext).Returns(Mock.Of<HttpContext>());
+
+            _emailContentService = new EmailContentService(_mockUserService.Object, _httpContextAccessorMock.Object);
         }
     }
 }
