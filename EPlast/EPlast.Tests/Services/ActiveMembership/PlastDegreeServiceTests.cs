@@ -121,16 +121,17 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task AddPlastDegreeForUserAsync_UserHasDegreeWhichHeAlreadyHas()
+        public async Task AddPlastDegreeForUserAsync_UserAlreadyHasThisDegree_ReturnsFalse()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _mapper.Setup(m => m.Map<UserPlastDegree>(It.IsAny<UserPlastDegreeDto>()))
-                .Returns(new UserPlastDegree { PlastDegreeId = 1 });
             _repoWrapper.Setup(x => x.UserPlastDegree.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(new UserPlastDegree());
+                .ReturnsAsync(new UserPlastDegree() { PlastDegreeId = 1 });
+            _repoWrapper.Setup(x => x.PlastDegrees.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(),
+                    It.IsAny<Func<IQueryable<PlastDegree>, IIncludableQueryable<PlastDegree, object>>>()))
+                .ReturnsAsync(new PlastDegree() { Id = 1 });
 
             //Act
             var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDto { PlastDegreeId = 1 });
@@ -140,26 +141,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         }
 
         [Test]
-        public async Task AddPlastDegreeForUserAsync_UserHasDegreeWhichHeAlreadyHas_ReturnsFalse()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _mapper.Setup(m => m.Map<IEnumerable<UserPlastDegree>>(It.IsAny<IEnumerable<UserPlastDegreeDto>>()))
-                .Returns(GetTestUserPlastDegree());
-            _repoWrapper.Setup(x => x.UserPlastDegree.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
-                .ReturnsAsync(new UserPlastDegree());
-
-            //Act
-            var result = await _activeMembershipService.AddPlastDegreeForUserAsync(new UserPlastDegreePostDto { PlastDegreeId = 1 });
-
-            // Assert
-            Assert.IsFalse(result);
-        }
-
-        [Test]
-        public async Task AddPlastDegreeForUserAsync_AddDegreeWhihDoesNotExist_ReturnsFalse()
+        public async Task AddPlastDegreeForUserAsync_AddDegreeWhichDoesNotExist_ReturnsFalse()
         {
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
