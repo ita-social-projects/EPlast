@@ -89,7 +89,8 @@ namespace EPlast.BLL.Services.UserProfiles
         public IEnumerable<ConfirmedUserDto> GetConfirmedUsers(UserDto user)
         {
             var result = user.ConfirmedUsers.
-                Where(x => !x.isCityAdmin && !x.isClubAdmin);
+                Where(x => x.ApproveType != ApproveType.City 
+                && x.ApproveType != ApproveType.Club);
             return result;
         }
 
@@ -97,7 +98,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDto GetClubAdminConfirmedUser(UserDto user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isClubAdmin);
+                FirstOrDefault(x => x.ApproveType == ApproveType.Club);
 
             return result;
         }
@@ -106,7 +107,7 @@ namespace EPlast.BLL.Services.UserProfiles
         public ConfirmedUserDto GetCityAdminConfirmedUser(UserDto user)
         {
             var result = user.ConfirmedUsers.
-                FirstOrDefault(x => x.isCityAdmin);
+                FirstOrDefault(x => x.ApproveType == ApproveType.City);
 
             return result;
         }
@@ -125,7 +126,9 @@ namespace EPlast.BLL.Services.UserProfiles
             {
                 var timeToJoinPlast = registeredOn.AddYears(1) - DateTime.Now;
                 TimeSpan halfOfYear = new TimeSpan(182, 0, 0, 0);
-                if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == userId).Any(q => q.isClubAdmin))
+                if (_repoWrapper.ConfirmedUser
+                    .FindByCondition(x => x.UserID == userId)
+                    .Any(q => q.ApproveType == ApproveType.Club))
                 {
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }

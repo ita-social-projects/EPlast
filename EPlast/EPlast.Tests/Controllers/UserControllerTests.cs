@@ -982,7 +982,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _userController.ApproveUser(idString);
+            var result = await _userController.ApproveUser(idString, ApproveType.PlastMember);
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -1003,7 +1003,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _userController.ApproveUser(idString);
+            var result = await _userController.ApproveUser(idString, ApproveType.PlastMember);
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -1017,7 +1017,7 @@ namespace EPlast.Tests.Controllers
         public async Task ApproveUser_NullUserIdString_ReturnsNotFoundResult()
         {
             // Act
-            var result = await _userController.ApproveUser(It.IsAny<string>());
+            var result = await _userController.ApproveUser(It.IsAny<string>(), It.IsAny<ApproveType>());
 
             // Assert
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
@@ -1031,12 +1031,12 @@ namespace EPlast.Tests.Controllers
             var idString = "1";
 
             _confirmedUserService
-                .Setup((x) => x.CreateAsync(It.IsAny<User>(), idString, It.IsAny<bool>(), It.IsAny<bool>()));
+                .Setup((x) => x.CreateAsync(It.IsAny<User>(), idString, It.IsAny<ApproveType>()));
             _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(new List<string> {Roles.KurinHead});
 
             // Act
-            var result = await _userController.ApproveUser(idString, It.IsAny<bool>(), It.IsAny<bool>());
+            var result = await _userController.ApproveUser(idString, It.IsAny<ApproveType>());
 
             // Assert
             _confirmedUserService.Verify();

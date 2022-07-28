@@ -415,21 +415,20 @@ namespace EPlast.WebApi.Controllers
         /// Approving user
         /// </summary>
         /// <param name="userId">The user ID which is confirmed</param>
-        /// <param name="isClubAdmin">Confirm as an club Admin</param>
-        /// <param name="isCityAdmin">Confirm as an city Admin</param>
+        /// <param name="approveType">Approve type</param>
         /// <response code="200">Successful operation</response>
         /// <responce code="403">Access denied</responce>
         /// <response code="404">User not found</response>
-        [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
+        [HttpPost("approveUser/{userId}/{approveType}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
-        public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async Task<IActionResult> ApproveUser(string userId, ApproveType approveType)
         {
             if (userId != null)
             {
                 var userRoles = await _userManagerService.GetRolesAsync(await _userService.GetUserAsync(userId));
                 if (!userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember))
                 {
-                    await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
+                    await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, approveType);
                     return Ok();
                 }
                 _loggerService.LogError("Forbidden");

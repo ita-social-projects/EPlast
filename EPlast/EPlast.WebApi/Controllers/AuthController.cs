@@ -24,14 +24,20 @@ namespace EPlast.WebApi.Controllers
     {
         public struct ConflictErrorObject
         {
-            public ConflictErrorObject(string error, bool isEmailConfirmed)
+            public ConflictErrorObject(string error, bool isEmailConfirmed) : this()
             {
                 Error = error;
                 IsEmailConfirmed = isEmailConfirmed;
             }
+            public ConflictErrorObject(string error, bool isEmailConfirmed, DateTime registeredExpire) : this(error, isEmailConfirmed)
+            {
+
+                RegisteredExpire = registeredExpire;
+            }
 
             public string Error { get; }
             public bool IsEmailConfirmed { get; }
+            public DateTime? RegisteredExpire { get; }
         }
 
         private readonly IUserDatesService _userDatesService;
@@ -138,7 +144,15 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false));
+                    TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
+                    if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
+                    {
+                        await _userManager.DeleteAsync(user);
+                    }
+                    else
+                    {
+                        return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false, user.RegistredOn.AddHours(12)));
+                    }
                 }
             }
 
