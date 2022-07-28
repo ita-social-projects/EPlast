@@ -36,6 +36,7 @@ namespace EPlast.BLL.DTO.Account
         public int? CityId { get; set; }
 
         public int? RegionId { get; set; }
+
         [Url]
         public string FacebookLink { get; set; }
         [Url]
