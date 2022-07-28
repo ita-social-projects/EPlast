@@ -692,7 +692,7 @@ namespace EPlast.Tests.Services
             DataAccess.Entities.City city = new DataAccess.Entities.City { Name = "qwerty" };
 
             _repoWrapper
-                .Setup(x => x.CityMembers.GetSingleAsync
+                .Setup(x => x.CityMembers.GetFirstAsync
                 (
                     It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
@@ -700,7 +700,7 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(cityMembers);
             _repoWrapper
-              .Setup(x => x.City.GetSingleAsync
+              .Setup(x => x.City.GetFirstAsync
               (
                   It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
@@ -952,7 +952,7 @@ namespace EPlast.Tests.Services
             Region region = new Region { RegionAdministration = regionAdministrations, RegionName = "qwerty"};
 
             _repoWrapper
-                .Setup(x => x.RegionAdministration.GetSingleAsync
+                .Setup(x => x.RegionAdministration.GetFirstAsync
                 (
                     It.IsAny<Expression<Func<DataAccess.Entities.RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>,
@@ -960,7 +960,7 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(regionAdministration);
             _repoWrapper
-              .Setup(x => x.Region.GetSingleAsync
+              .Setup(x => x.Region.GetFirstAsync
               (
                   It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.Region>,
@@ -984,7 +984,7 @@ namespace EPlast.Tests.Services
             DataAccess.Entities.City city = new DataAccess.Entities.City {  Name = "qwerty" };
 
             _repoWrapper
-                .Setup(x => x.CityMembers.GetSingleAsync
+                .Setup(x => x.CityMembers.GetFirstAsync
                 (
                     It.IsAny<Expression<Func<DataAccess.Entities.CityMembers, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.CityMembers>,
@@ -992,7 +992,7 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(cityMembers);
             _repoWrapper
-              .Setup(x => x.City.GetSingleAsync
+              .Setup(x => x.City.GetFirstAsync
               (
                   It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
@@ -1018,7 +1018,7 @@ namespace EPlast.Tests.Services
             DataAccess.Entities.Club club = new DataAccess.Entities.Club { ClubAdministration = clubAdministrations, Name = "qwerty" };
 
             _repoWrapper
-                .Setup(x => x.ClubAdministration.GetSingleAsync
+                .Setup(x => x.ClubAdministration.GetFirstAsync
                 (
                     It.IsAny<Expression<Func<DataAccess.Entities.ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.ClubAdministration>,
@@ -1026,7 +1026,7 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(clubAdministration);
             _repoWrapper
-              .Setup(x => x.Club.GetSingleAsync
+              .Setup(x => x.Club.GetFirstAsync
               (
                   It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
@@ -1051,7 +1051,7 @@ namespace EPlast.Tests.Services
             DataAccess.Entities.Club club = new DataAccess.Entities.Club { ClubAdministration = clubAdministrations, Name = "qwerty" };
 
             _repoWrapper
-                .Setup(x => x.ClubAdministration.GetSingleAsync
+                .Setup(x => x.ClubAdministration.GetFirstAsync
                 (
                     It.IsAny<Expression<Func<DataAccess.Entities.ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.ClubAdministration>,
@@ -1059,7 +1059,7 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(clubAdministration);
             _repoWrapper
-              .Setup(x => x.Club.GetSingleAsync
+              .Setup(x => x.Club.GetFirstAsync
               (
                   It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
@@ -1072,7 +1072,7 @@ namespace EPlast.Tests.Services
             Region region = new Region { RegionAdministration = regionAdministrations, RegionName = "qwerty" };
 
             _repoWrapper
-                .Setup(x => x.RegionAdministration.GetSingleAsync
+                .Setup(x => x.RegionAdministration.GetFirstAsync
                 (
                     It.IsAny<Expression<Func<DataAccess.Entities.RegionAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.RegionAdministration>,
@@ -1080,7 +1080,7 @@ namespace EPlast.Tests.Services
                 )
                 .ReturnsAsync(regionAdministration);
             _repoWrapper
-              .Setup(x => x.Region.GetSingleAsync
+              .Setup(x => x.Region.GetFirstAsync
               (
                   It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.Region>,
