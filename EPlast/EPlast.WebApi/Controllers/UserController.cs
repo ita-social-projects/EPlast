@@ -6,6 +6,7 @@ using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -32,13 +33,14 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<UserController> _loggerService;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
+        private readonly IUserAccessService _userAccessService;
 
         public UserController(IUserService userService,
             IUserPersonalDataService userPersonalDataService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
             ILoggerService<UserController> loggerService,
-            IMapper mapper, UserManager<User> userManager)
+            IMapper mapper, UserManager<User> userManager, IUserAccessService userAccessService)
         {
             _userService = userService;
             _userPersonalDataService = userPersonalDataService;
@@ -47,6 +49,7 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _mapper = mapper;
             _userManager = userManager;
+            _userAccessService = userAccessService;
         }
 
 
@@ -138,51 +141,45 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogError("User id is null");
                 return NotFound();
             }
-            var currentUser = await _userService.GetUserAsync(currentUserId);
-            var focusUser = await _userService.GetUserAsync(focusUserId);
 
+            var currentUser = await _userManager.FindByIdAsync(currentUserId);
+
+            var currentUserAccess = await 
+                _userAccessService.GetUserProfileAccessAsync(currentUserId, focusUserId, currentUser);
+            if (currentUserAccess == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+
+            var focusUser = await _userService.GetUserAsync(focusUserId);
             if (focusUser == null)
             {
-                _loggerService.LogError($"User not found. UserId:{focusUserId}");
                 return NotFound();
             }
-            var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
-            var isThisUser = currentUserId == focusUserId;
-            var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
-            var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
-            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
-                || !(isFocusUserSupporter && (await _userService.IsApprovedCityMember(focusUserId) || await _userService.IsApprovedCLubMember(focusUserId)));
-            if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
-            {
-                _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
 
-            PersonalDataViewModel model;
-            if (isThisUser ||
-                     isUserAdmin ||
-                     await _userService.IsUserInClubAsync(currentUser, focusUser) ||
-                     await _userService.IsUserInCityAsync(currentUser, focusUser) ||
-                     await _userService.IsUserInRegionAsync(currentUser, focusUser)
-            )
+            var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
+            var isFocusUserPlastMember = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember);
+
+            if (currentUserAccess["CanViewUserFullProfile"])
             {
-                model = new PersonalDataViewModel
+                var viewModel = new PersonalDataViewModel
                 {
                     User = _mapper.Map<UserDto, UserViewModel>(focusUser),
-                    TimeToJoinPlast = (int)time.TotalDays,
-                    IsUserPlastun = isFocusUserPlastun,
+                    TimeToJoinPlast = (int)timeToJoinPlast.TotalDays,
+                    IsUserPlastun = isFocusUserPlastMember
                 };
-
-                return Ok(model);
+                return Ok(viewModel);
             }
-
-            model = new PersonalDataViewModel
+            else
             {
-                ShortUser = _mapper.Map<UserDto, UserShortViewModel>(focusUser),
-                TimeToJoinPlast = (int)time.TotalDays,
-                IsUserPlastun = isFocusUserPlastun,
-            };
-            return Ok(model);
+                var viewModel = new PersonalDataViewModel
+                {
+                    ShortUser = _mapper.Map<UserDto, UserShortViewModel>(focusUser),
+                    TimeToJoinPlast = (int)timeToJoinPlast.TotalDays,
+                    IsUserPlastun = isFocusUserPlastMember
+                };
+                return Ok(viewModel);
+            }
         }
 
         /// <summary>

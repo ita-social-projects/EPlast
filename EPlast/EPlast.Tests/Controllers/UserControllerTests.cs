@@ -6,6 +6,7 @@ using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -35,6 +36,7 @@ namespace EPlast.Tests.Controllers
         private Mock<ILoggerService<UserController>> _loggerService;
         private Mock<IMapper> _mapper;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IUserAccessService> _userAccessService;
 
         private UserController _userController;
 
@@ -49,6 +51,7 @@ namespace EPlast.Tests.Controllers
             _mapper = new Mock<IMapper>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _userAccessService = new Mock<IUserAccessService>();
 
             _userController = new UserController(
                 _userService.Object,
@@ -57,7 +60,8 @@ namespace EPlast.Tests.Controllers
                 _userManagerService.Object,
                 _loggerService.Object,
                 _mapper.Object,
-                _userManager.Object);
+                _userManager.Object,
+                _userAccessService.Object);
         }
 
         [Test]
