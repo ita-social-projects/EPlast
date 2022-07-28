@@ -42,85 +42,85 @@ namespace EPlast.Tests.Controllers
             );
         }
 
-        [Test]
-        public void ConfirmEmail_InvalidModelState_ReturnsRedirectWithError400()
-        {
-            // Arrange
-            _controller.ModelState.AddModelError("", "");
+        // [Test]
+        // public void ConfirmEmail_InvalidModelState_ReturnsRedirectWithError400()
+        // {
+        //     // Arrange
+        //     _controller.ModelState.AddModelError("", "");
 
-            // Act
-            var response = _controller.ConfirmEmail("", "").Result;
+        //     // Act
+        //     var response = _controller.ConfirmEmail("", "").Result;
 
-            // Assert
-            Assert.IsInstanceOf<RedirectResult>(response);
-            Assert.True((response as RedirectResult)?.Url.Contains("error=400"));
-        }
+        //     // Assert
+        //     Assert.IsInstanceOf<RedirectResult>(response);
+        //     Assert.True((response as RedirectResult)?.Url.Contains("error=400"));
+        // }
 
-        [Test]
-        public void ConfirmEmail_UserDoesNotExist_ReturnsRedirectWithError404()
-        {
-            // Arrange
-            _userManagerMock
-                .Setup(m => m.FindByIdAsync(""))
-                .ReturnsAsync(value: null!);
+        // [Test]
+        // public void ConfirmEmail_UserDoesNotExist_ReturnsRedirectWithError404()
+        // {
+        //     // Arrange
+        //     _userManagerMock
+        //         .Setup(m => m.FindByIdAsync(""))
+        //         .ReturnsAsync(value: null!);
 
-            // Act
-            var response = _controller.ConfirmEmail("", "").Result;
+        //     // Act
+        //     var response = _controller.ConfirmEmail("", "").Result;
 
-            // Assert
-            Assert.IsInstanceOf<RedirectResult>(response);
-            Assert.True((response as RedirectResult)?.Url.Contains("error=404"));
-        }
+        //     // Assert
+        //     Assert.IsInstanceOf<RedirectResult>(response);
+        //     Assert.True((response as RedirectResult)?.Url.Contains("error=404"));
+        // }
 
-        [Test]
-        public void ConfirmEmail_12HrElapsed_DeletesUserAndRedirectsWithError410()
-        {
-            // Arrange
-            var user = new User()
-            {
-                RegistredOn = DateTime.Now.AddHours(-12)
-            };
+        // [Test]
+        // public void ConfirmEmail_12HrElapsed_DeletesUserAndRedirectsWithError410()
+        // {
+        //     // Arrange
+        //     var user = new User()
+        //     {
+        //         RegistredOn = DateTime.Now.AddHours(-12)
+        //     };
 
-            _userManagerMock
-                .Setup(m => m.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(user);
-            _userManagerMock
-                .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
-                .ReturnsAsync(value: null!);
+        //     _userManagerMock
+        //         .Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+        //         .ReturnsAsync(user);
+        //     _userManagerMock
+        //         .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
+        //         .ReturnsAsync(value: null!);
 
-            // Act
-            var response = _controller.ConfirmEmail("", "").Result;
+        //     // Act
+        //     var response = _controller.ConfirmEmail("", "").Result;
 
-            // Assert
-            Assert.IsInstanceOf<RedirectResult>(response);
-            Assert.True((response as RedirectResult)?.Url.Contains("error=410"));
-            _userManagerMock.Verify(m => m.DeleteAsync(It.IsAny<User>()), Times.Once);
-        }
+        //     // Assert
+        //     Assert.IsInstanceOf<RedirectResult>(response);
+        //     Assert.True((response as RedirectResult)?.Url.Contains("error=410"));
+        //     _userManagerMock.Verify(m => m.DeleteAsync(It.IsAny<User>()), Times.Once);
+        // }
 
-        [Test]
-        public void ConfirmEmail_UserManagerReturnsError_ReturnsRedirectWithError400()
-        {
-            // Arrange
-            var user = new User()
-            {
-                RegistredOn = DateTime.Now
-            };
+        // [Test]
+        // public void ConfirmEmail_UserManagerReturnsError_ReturnsRedirectWithError400()
+        // {
+        //     // Arrange
+        //     var user = new User()
+        //     {
+        //         RegistredOn = DateTime.Now
+        //     };
 
-            _userManagerMock
-                .Setup(m => m.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(user);
-            _userManagerMock
-                .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
-                .ReturnsAsync(IdentityResult.Failed());
+        //     _userManagerMock
+        //         .Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+        //         .ReturnsAsync(user);
+        //     _userManagerMock
+        //         .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+        //         .ReturnsAsync(IdentityResult.Failed());
 
-            // Act
-            var response = _controller.ConfirmEmail("", "").Result;
+        //     // Act
+        //     var response = _controller.ConfirmEmail("", "").Result;
 
-            // Assert
-            Assert.IsInstanceOf<RedirectResult>(response);
-            Assert.True((response as RedirectResult)?.Url.Contains("error=400"));
-            _userManagerMock.Verify(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-        }
+        //     // Assert
+        //     Assert.IsInstanceOf<RedirectResult>(response);
+        //     Assert.True((response as RedirectResult)?.Url.Contains("error=400"));
+        //     _userManagerMock.Verify(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        // }
 
         [Test]
         public void ConfirmEmail_Valid_RedirectsWithNoError()

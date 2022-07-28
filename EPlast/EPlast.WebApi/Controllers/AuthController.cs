@@ -80,13 +80,15 @@ namespace EPlast.WebApi.Controllers
 
             if (!ModelState.IsValid)
             {
-                return Redirect(frontendUrl + "?error=400");
+                // return Redirect(frontendUrl + "?error=400");
+                return BadRequest(ModelState);
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return Redirect(frontendUrl + "?error=404");
+                // return Redirect(frontendUrl + "?error=404");
+                return NotFound();
             }
 
             TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
@@ -94,13 +96,15 @@ namespace EPlast.WebApi.Controllers
             {
                 // 410 GONE - User should be deleted, because 12hrs elapsed from registration and email is still is not confirmed
                 await _userManager.DeleteAsync(user);
-                return Redirect(frontendUrl + "?error=410");
+                // return Redirect(frontendUrl + "?error=410");
+                return StatusCode(410);
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
-                return Redirect(frontendUrl + "?error=400");
+                // return Redirect(frontendUrl + "?error=400");
+                return BadRequest(new { error = result.Errors });
             }
 
             return Redirect(frontendUrl);
