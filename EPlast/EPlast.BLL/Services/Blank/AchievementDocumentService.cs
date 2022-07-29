@@ -49,7 +49,7 @@ namespace EPlast.BLL.Services.Blank
             return achievementDocumentsDTO;
         }
 
-        public async Task DeleteFileAsync(int documentId, int courseId, string userId)
+        public async Task DeleteFileAsync(int documentId, int? courseId, string userId)
         {
             var document = await _repositoryWrapper.AchievementDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
