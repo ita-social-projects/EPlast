@@ -2,6 +2,7 @@
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using System;
 using System.Threading.Tasks;
@@ -11,10 +12,12 @@ namespace EPlast.BLL.Services.EmailSending
     public class EmailContentService : IEmailContentService
     {
         private readonly IUserService _userService;
+        private readonly IRepositoryWrapper _repositoryWrapper;
 
-        public EmailContentService(IUserService userService)
+        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper)
         {
             _userService = userService;
+            _repositoryWrapper = repositoryWrapper;
         }
 
         /// <inheritdoc />
@@ -211,7 +214,7 @@ namespace EPlast.BLL.Services.EmailSending
                 Title = "EPlast",
                 Subject = "Ти отримав Пластове поручення!",
                 Message = "<h3>СКОБ!</h3>"
-                            + $"<p>Вітаємо, Ти {got} поручення у своєму профілі від {friend} {vaucherUser.FirstName} {vaucherUser.LastName}. "
+                            + $"<p>Вітаємо, Ти {got} поручення у своєму профілі від {friend} <a href='{_repositoryWrapper.GetUserPageUrl + vaucherUser.Id}'>{vaucherUser.FirstName} {vaucherUser.LastName}</a>. "
                             + "Виконуй усі завдання Пластового Чек-листа (мобільного додатку Старт Пласт)"
                             + " та отримай ступінь “Дійсного члена організації”!</p>"
                             + "<p>Ми радіємо Твоїм успіхам!</p>"

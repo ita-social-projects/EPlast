@@ -59,6 +59,7 @@ namespace EPlast.DataAccess.Repositories
         IGallaryRepository Gallary { get; }
         IGenderRepository Gender { get; }
         string GetCitiesUrl { get; }
+        string GetUserPageUrl { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
         IMembersStatisticsRepository MembersStatistics { get; }
