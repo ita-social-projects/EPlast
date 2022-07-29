@@ -1,6 +1,7 @@
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Entities.Blank;
+using EPlast.DataAccess.Entities.Course;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
@@ -114,15 +115,14 @@ namespace EPlast.DataAccess
         public DbSet<UserRenewalsTableObject> UserRenewalsTableObjects { get; set; }
        
         public DbSet<Course> Courses { get; set; }
-        public DbSet<UserCourse> UserCourses { get; set; }
-        public DbSet<UserTableObject> UserTableObjects { get; set; }
+    
         public DbSet<Work> Works { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserTableObject>().HasNoKey();
+          
             modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
@@ -134,17 +134,6 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
 
 
-
-            modelBuilder.Entity<UserCourse>()
-                .HasKey(bc => bc.ID);
-            modelBuilder.Entity<UserCourse>()
-                .HasOne(bc => bc.Сourse)
-                .WithMany(b => b.UserCourses)
-                .HasForeignKey(bc => bc.CourseId);
-            modelBuilder.Entity<UserCourse>()
-                .HasOne(bc => bc.User)
-                .WithMany(c => c.UserCourses)
-                .HasForeignKey(bc => bc.UserId);
 
 
             modelBuilder.Entity<UserRenewal>(entity =>
@@ -372,6 +361,18 @@ namespace EPlast.DataAccess
                 reportMember.HasOne(a => a.ClubMemberHistory)
                     .WithMany(c => c.ClubReportMembers)
                     .HasForeignKey(a => a.ClubMemberHistoryId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            modelBuilder.Entity<AchievementDocuments>(achievementDocuments =>
+            {
+                achievementDocuments.HasOne(m => m.Course)
+                    .WithMany(r => r.AchievementDocuments)
+                    .HasForeignKey(m => m.CourseId)
+                    .OnDelete(DeleteBehavior.SetNull);
+                achievementDocuments.HasOne(a => a.User)
+                    .WithMany(c => c.AchievementDocuments)
+                    .HasForeignKey(a => a.UserId)
                     .OnDelete(DeleteBehavior.NoAction);
             });
 

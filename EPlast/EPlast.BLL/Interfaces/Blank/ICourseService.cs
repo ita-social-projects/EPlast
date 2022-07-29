@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.DTO.Blank;
+﻿using EPlast.BLL.DTO.Course;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,8 +8,8 @@ namespace EPlast.BLL.Interfaces.Blank
 {
     public interface ICourseService
     {
-        Task<IEnumerable<CourseDTO>> GetAllAsync();
-        Task<CourseDTO> AddCourseAsync(CourseDTO courseDto);
+        Task<IEnumerable<CourseDto>> GetAllAsync();
+        Task<CourseDto> AddCourseAsync(CourseDto courseDto);
 
     }
 }

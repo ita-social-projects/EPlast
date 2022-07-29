@@ -63,8 +63,9 @@ namespace EPlast.DataAccess.Entities
         public ICollection<UserRenewal> UserRenewals { get; set; }
         public ClubReportPlastDegrees ClubReportPlastDegrees { get; set; }
         public ClubReportCities ClubReportCities { get; set; }
-        public ICollection<UserCourse> UserCourses { get; set; }
+       
 
+        public ICollection<AchievementDocuments> AchievementDocuments { get; set; }
         public User()
         {
             Approvers = new List<Approver>();
