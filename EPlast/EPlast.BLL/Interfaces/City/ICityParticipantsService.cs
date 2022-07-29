@@ -81,7 +81,7 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="user">The new User without selected city</param>
         /// <param name="regionId">The regionID of user</param>
-        Task AddNotificationUserWithoutSelectedCity(User user, int? regionId);
+        Task AddNotificationUserWithoutSelectedCity(User user, int regionId);
 
         /// <summary>
         /// Returns either given user is approved or not

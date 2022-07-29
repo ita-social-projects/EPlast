@@ -328,16 +328,16 @@ namespace EPlast.BLL.Services
             FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
             if (Regions)
             {
-                filterTableParametersByRole.Regions = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).RegionId.ToString();              
+                filterTableParametersByRole.Regions = (await _repoWrapper.RegionAdministration.GetFirstAsync(r => r.UserId == userId && r.Status)).RegionId.ToString();              
             }
             if (Cities && !Regions)
             {
-                filterTableParametersByRole.Cities = (await _repoWrapper.CityMembers.GetSingleAsync(r => r.UserId == userId && r.IsApproved)).CityId.ToString();
+                filterTableParametersByRole.Cities = (await _repoWrapper.CityMembers.GetFirstAsync(r => r.UserId == userId && r.IsApproved)).CityId.ToString();
             }
            
             if (Clubs)
             {
-                filterTableParametersByRole.AndClubs = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId.ToString();
+                filterTableParametersByRole.AndClubs = (await _repoWrapper.ClubAdministration.GetFirstAsync(r => r.UserId == userId && r.Status)).ClubId.ToString();
             }
 
             return filterTableParametersByRole;
