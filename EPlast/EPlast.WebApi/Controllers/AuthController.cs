@@ -2,17 +2,21 @@
 
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MimeKit;
 
 namespace EPlast.WebApi.Controllers
@@ -65,7 +69,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">UserId or Token were found invalid</response>
         /// <response code="404">User by specified id is not found</response>
         [HttpGet("confirmEmail")]
-        public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token)
+        public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token, [FromServices] EPlastDBContext ctx)
         {
             var frontendUrl = Request?.Host.Host ?? "localhost";
             if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
@@ -104,7 +108,12 @@ namespace EPlast.WebApi.Controllers
             if (!result.Succeeded)
             {
                 // return Redirect(frontendUrl + "?error=400");
-                return BadRequest(new { error = result.Errors });
+                var tokens = await ctx.UserTokens
+                    .Where(ut => ut.UserId == user.Id)
+                    .Select(ut => ut.Value)
+                    .ToListAsync();
+
+                return BadRequest(new { error = result.Errors, tokens, included = tokens.Contains(token) });
             }
 
             return Redirect(frontendUrl);
@@ -243,7 +252,7 @@ namespace EPlast.WebApi.Controllers
         {
             var reciever = new MailboxAddress($"{user.FirstName} {user.LastName}", user.Email);
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user));
 
             string url = Url.Action(
                 "ConfirmEmail",
