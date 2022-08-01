@@ -115,14 +115,13 @@ namespace EPlast.DataAccess
        
         public DbSet<Course> Courses { get; set; }
         public DbSet<UserCourse> UserCourses { get; set; }
-        public DbSet<UserTableObject> UserTableObjects { get; set; }
         public DbSet<Work> Works { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserTableObject>().HasNoKey();
+            // WARN: Треба проаналізувати які з наступних ентіті взагалі використовуються:
             modelBuilder.Entity<AnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<ClubAnnualReportTableObject>().HasNoKey();
             modelBuilder.Entity<RegionAnnualReportTableObject>().HasNoKey();
@@ -132,8 +131,8 @@ namespace EPlast.DataAccess
             modelBuilder.Entity<MethodicDocumentTableObject>().HasNoKey();
             modelBuilder.Entity<UserRenewalsTableObject>().HasNoKey();
             modelBuilder.Entity<EducatorsStaffTableObject>().HasNoKey();
-
-
+            // Бо навіщо їх взагалі додали до БД - незрозуміло.
+            // END WARN
 
             modelBuilder.Entity<UserCourse>()
                 .HasKey(bc => bc.ID);
