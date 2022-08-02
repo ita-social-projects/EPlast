@@ -25,8 +25,6 @@ namespace EPlast.DataAccess.Repositories
                 .Where(c => c.IsActive != isArchive);
 
             IEnumerable<CityObject> result = await found
-                .Skip(pageSize * (pageNum - 1))
-                .Take(pageSize)
                 .Select(c => new CityObject()
                 {
                     ID = c.ID,
@@ -35,6 +33,8 @@ namespace EPlast.DataAccess.Repositories
                     Count = found.Count()
                 })
                 .OrderBy(c => c.Name)
+                .Skip(pageSize * (pageNum - 1))
+                .Take(pageSize)
                 .ToListAsync();
 
             return new Tuple<IEnumerable<CityObject>, int>(result, result.FirstOrDefault()?.Count ?? 0);
