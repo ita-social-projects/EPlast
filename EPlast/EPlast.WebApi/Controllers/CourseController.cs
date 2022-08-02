@@ -53,13 +53,6 @@ namespace EPlast.WebApi.Controllers
             var courses = await _usercourseService.GetCourseByUserIdAsync(userId);
             return Ok(courses);
         }
-        [HttpPut("{userId}/{courseid}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public  async Task<IActionResult> ChangeStatusCourseByUseerId(string userid, int courseid)
-        {
-            await _usercourseService.ChangeCourseStatus(userid,courseid);
-            return Ok();
-        }
 
         [HttpPost("CreateCourse")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]

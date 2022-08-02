@@ -25,20 +25,7 @@ namespace EPlast.BLL.Services.Blank
         }
 
         public async Task<IEnumerable<CourseDto>> GetCourseByUserIdAsync(string userid)
-        {
-            //var result = (await _repositoryWrapper.UserCourse
-            //    .GetAllAsync(
-            //        predicate: uc => uc.UserId == userid && !uc.StatusPassedCourse ,
-            //        include: a => a.Include(uc => uc.Сourse)))
-            //    .Select(uc => new CourseDTO
-            //    { 
-            //        ID = uc.Сourse.ID,
-            //        Link = uc.Сourse.Link,
-            //        Name = uc.Сourse.Name                    
-            //    });
-
-            //return result;        
-
+        {      
             var allcourse = (await _repositoryWrapper.Course
                 .GetAllAsync(include: a=> a.Include(a =>a.AchievementDocuments))).Select(c => new CourseDto
                 {
@@ -52,9 +39,5 @@ namespace EPlast.BLL.Services.Blank
 
         }
 
-        public  async Task ChangeCourseStatus(string userid , int? courseId)
-        {
-         
-        }
     }
 }
