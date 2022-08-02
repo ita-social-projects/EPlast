@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,11 +11,13 @@ using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Queries.Decision;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Decision;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -123,9 +126,16 @@ namespace EPlast.Tests.Controllers
             var mockDecision = new DecisionDto() { UserId = "qwerty" };
             _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(mockDecision);
             _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));
-            _userManagerService.Setup(x => x.GetCurrentUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>())).Returns("qwerty");
+
+            var user = new User() { Id = "qwerty" };
+            var _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
+            _userManagerMock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(user);
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(false);
+
             //Act
-            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision);
+            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision, _userManagerMock.Object);
 
             //Assert
             _mockMediator.Verify();
@@ -140,35 +150,42 @@ namespace EPlast.Tests.Controllers
 
             var fakeIdentity = new GenericIdentity("User");
             var principal = new GenericPrincipal(fakeIdentity, null);
-            var expected = StatusCodes.Status403Forbidden;
             _httpContext.Setup(t => t.User).Returns(principal);
             DecisionsController decisionsController = _decisionsController;
             decisionsController.ControllerContext = _context;
-            var mockDecision = new DecisionDto() { UserId = "qwerty1" };
+            var mockDecision = new DecisionDto() { UserId = "qazzaq" };
             _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(mockDecision);
-            _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));           
-            _userManagerService.Setup(x => x.GetCurrentUserId(It.IsAny<System.Security.Claims.ClaimsPrincipal>())).Returns("qwerty");
+            _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));
+
+            var user = new User() { Id = "qwerty" };
+            var _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
+            _userManagerMock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(user);
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(false);
+
             //Act
-            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision);
-            var actual = (result as StatusCodeResult).StatusCode;
+            var actual = await _decisionsController.Update(It.IsAny<int>(), mockDecision, _userManagerMock.Object);
+
             //Assert
             _mockMediator.Verify();
-            Assert.AreEqual(expected, actual);
+            Assert.IsInstanceOf<ForbidResult>(actual);
         }
 
         [Test]
         public async Task Update_InvalidID_ReturnsBadRequestResult()
         {
             //Arrange
-            var expected = 1;
+            var id = 1;
             var mockDecision = new DecisionDto();
+            var _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
 
             //Act
-            var result = await _decisionsController.Update(expected, mockDecision);
+            var result = await _decisionsController.Update(id, mockDecision, _userManagerMock.Object);
 
             //Assert
             _mockMediator.Verify();
-            Assert.IsInstanceOf<BadRequestResult>(result);
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
         [Test]
