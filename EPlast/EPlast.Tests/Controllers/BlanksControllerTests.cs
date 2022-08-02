@@ -343,10 +343,10 @@ namespace EPlast.Tests.Controllers
             int documentId = 1;
 
             _mockBlankAchievementDocumentService
-                .Setup(x => x.DeleteFileAsync(documentId, It.IsAny<int>(), It.IsAny<string>()));
+                .Setup(x => x.DeleteFileAsync(documentId, It.IsAny<string>()));
 
             //Act
-            var document = await _blanksController.RemoveAchievementDocument(documentId, It.IsAny<int>(), It.IsAny<string>());
+            var document = await _blanksController.RemoveAchievementDocument(documentId,  It.IsAny<string>());
             var statusCodeDocument = document as StatusCodeResult;
 
             //Assert
