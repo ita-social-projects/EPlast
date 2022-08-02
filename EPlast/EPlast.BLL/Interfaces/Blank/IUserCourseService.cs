@@ -10,7 +10,7 @@ namespace EPlast.BLL.Interfaces.Blank
     public interface IUserCourseService
     {
         Task<IEnumerable<CourseDto>> GetCourseByUserIdAsync(string userid);
-        public  Task ChangeCourseStatus(string userid,int? courseid);
+        
       
     }
 }

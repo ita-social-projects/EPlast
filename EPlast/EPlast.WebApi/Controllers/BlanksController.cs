@@ -168,11 +168,11 @@ namespace EPlast.WebApi.Controllers
         /// Delete the achievement document by document ID
         /// </summary>
         /// <param Id="documentId">An Id of document</param>
-        [HttpDelete("RemoveAchievementDocument/{documentId}/{courseId}/{userId}")]
+        [HttpDelete("RemoveAchievementDocument/{documentId}/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> RemoveAchievementDocument(int documentId,int courseId ,string userId)
+        public async Task<IActionResult> RemoveAchievementDocument(int documentId ,string userId)
         {
-            await _blankAchievementDocumentService.DeleteFileAsync(documentId,courseId, userId);
+            await _blankAchievementDocumentService.DeleteFileAsync(documentId, userId);
 
             return NoContent();
         }
