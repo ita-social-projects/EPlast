@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories
@@ -157,6 +158,10 @@ namespace EPlast.DataAccess.Repositories
                     finalItems = finalItems.Where(r => r.Roles.Contains(filter));
                 }
             }
+
+            // filter out super admins and former members of plast
+            finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.Admin));
+            if (tab == "registered") finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.FormerPlastMember));
 
             int rowCount = finalItems.Count();
 

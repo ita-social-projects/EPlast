@@ -36,7 +36,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                 .Select(ur => new UserRenewalsTableObject
                 {
                     Id = ur.Id,
-                    UserName = ur.User.FirstName + ur.User.LastName,
+                    UserName = ur.User.FirstName + ' ' + ur.User.LastName,
                     UserId = ur.User.Id,
                     Approved = ur.Approved,
                     CityName = ur.City.Name,
