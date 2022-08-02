@@ -69,7 +69,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">UserId or Token were found invalid</response>
         /// <response code="404">User by specified id is not found</response>
         [HttpGet("confirmEmail")]
-        public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token, [FromServices] EPlastDBContext ctx)
+        public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
             var frontendUrl = Request?.Host.Host ?? "localhost";
             if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
