@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using NLog.Extensions.Logging;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -37,6 +38,13 @@ namespace EPlast.WebApi.Controllers
             _aboutBaseSubsectionService = aboutBaseSubsectionService;
             _userManager = userManager;
             _picturesManager = picturesManager;
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GET()
+        {
+            return Ok(ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("Jwt")["Audience"]);
         }
 
         [HttpGet("AboutBaseSection/{id}")]
