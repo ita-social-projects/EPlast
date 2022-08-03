@@ -30,6 +30,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                     || ur.City.Region.RegionName.ToLower().Contains(searchData)
                     || ur.RequestDate.ToString().Contains(searchData)
                     || ur.User.Email.Contains(searchData)
+                    || ur.User.Comment.ToLower().Contains(searchData)
                 );
 
             var selected = found
@@ -45,7 +46,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                     RegionName = ur.City.Region.RegionName,
                     RequestDate = ur.RequestDate,
                     Subtotal = found.Count(),
-                    Total = EPlastDBContext.Set<UserRenewal>().Count()
+                    Total = EPlastDBContext.Set<UserRenewal>().Count(),
+                    Comment = ur.User.Comment
                 });
 
             var items = selected

@@ -143,6 +143,7 @@ namespace EPlast.DataAccess.Repositories
                     || r.PlastDegree.ToLower().Contains(searchData)
                     || r.UPUDegree.ToLower().Contains(searchData)
                     || r.Email.ToLower().Contains(searchData)
+                    || r.Comment.ToLower().Contains(searchData)
                     );
             }
 
