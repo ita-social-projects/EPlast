@@ -142,18 +142,14 @@ namespace EPlast.WebApi.Controllers
                 {
                     return Conflict(new ConflictErrorObject("User exists and email is confirmed", true));
                 }
-                else
+
+                TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
+                if (elapsedTimeFromRegistration < TimeSpan.FromHours(12))
                 {
-                    TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
-                    if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
-                    {
-                        await _userManager.DeleteAsync(user);
-                    }
-                    else
-                    {
-                        return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false, user.RegistredOn.AddHours(12)));
-                    }
+                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false, user.RegistredOn.AddHours(12)));
                 }
+
+                await _userManager.DeleteAsync(user);
             }
 
             user = _mapper.Map<User>(registerDto);
