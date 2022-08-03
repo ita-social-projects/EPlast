@@ -164,7 +164,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(_resources.ResourceForErrors["Login-InCorrectPassword"]);
                 }
             }
-            return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
+            return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
         }
 
         [HttpGet("logout")]
