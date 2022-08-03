@@ -132,9 +132,9 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A focus user profile</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Focus user not found</response>
-        [HttpGet("{currentUserId}/{focusUserId}")]
+        [HttpGet("UserProfile/{focusUserId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUserProfile(string currentUserId, string focusUserId)
+        public async Task<IActionResult> GetUserProfile(string focusUserId)
         {
             if (string.IsNullOrEmpty(focusUserId))
             {
@@ -142,10 +142,10 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var currentUser = await _userManager.FindByIdAsync(currentUserId);
+            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
 
             var currentUserAccess = await 
-                _userAccessService.GetUserProfileAccessAsync(currentUserId, focusUserId, currentUser);
+                _userAccessService.GetUserProfileAccessAsync(currentUser.Id, focusUserId, currentUser);
             if (currentUserAccess == null)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
