@@ -2,6 +2,7 @@
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.DataAccess.Entities;
+using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -89,7 +90,8 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(_resources.ResourceForErrors["Forgot-NotRegisteredUser"]);
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
-                var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
+                var frontendUrl = Request.GetFrontEndURL();
+                var confirmationLink = string.Format($"{frontendUrl}/resetPassword?token={HttpUtility.UrlEncode(token)}");
                 await _authEmailServices.SendEmailResetingAsync(confirmationLink, forgotpasswordDto);
                 return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
             }
