@@ -81,7 +81,7 @@ namespace EPlast.BLL.Interfaces.City
         /// </summary>
         /// <param name="user">The new User without selected city</param>
         /// <param name="regionId">The regionID of user</param>
-        Task AddNotificationUserWithoutSelectedCity(User user, int? regionId);
+        Task AddNotificationUserWithoutSelectedCity(User user, int regionId);
 
         /// <summary>
         /// Returns either given user is approved or not
@@ -109,7 +109,8 @@ namespace EPlast.BLL.Interfaces.City
         /// Remove a specific follower from the city
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
-        Task RemoveFollowerAsync(int followerId);
+        /// <param name="comment">The text of the reasoning comment</param>
+        Task RemoveFollowerAsync(int followerId, string comment);
 
         /// <summary>
         /// Remove a specific member from the city

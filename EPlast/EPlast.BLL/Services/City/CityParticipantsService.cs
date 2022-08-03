@@ -173,7 +173,7 @@ namespace EPlast.BLL.Services.City
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
         }
 
-        public async Task AddNotificationUserWithoutSelectedCity(User user, int? regionId)
+        public async Task AddNotificationUserWithoutSelectedCity(User user, int regionId)
         {
             List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
 
@@ -429,7 +429,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task RemoveFollowerAsync(int followerId)
+        public async Task RemoveFollowerAsync(int followerId, string comment)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.ID == followerId,
@@ -439,7 +439,7 @@ namespace EPlast.BLL.Services.City
             _repositoryWrapper.CityMembers.Delete(cityMember);
             await _repositoryWrapper.SaveAsync();
 
-            await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City);
+            await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City, comment);
         }
 
         public async Task RemoveMemberAsync(string userId)
@@ -711,10 +711,10 @@ namespace EPlast.BLL.Services.City
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
-        private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city)
+        private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city, string comment)
         {
             var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name);
+            var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name, comment);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
         }

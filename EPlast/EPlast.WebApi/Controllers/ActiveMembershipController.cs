@@ -102,13 +102,6 @@ namespace EPlast.WebApi.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
 
-            var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
-            if(roles.Contains(Roles.Admin) || roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy))
-            {
-                await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO);
-                return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
-            }
-
             await _plastDegreeService.AddPlastDegreeForUserAsync(userPlastDegreePostDTO);
             return Created("GetAllDegrees", userPlastDegreePostDTO.PlastDegreeId);
         }

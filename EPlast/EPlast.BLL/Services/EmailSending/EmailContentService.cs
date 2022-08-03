@@ -1,11 +1,13 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BLL.Services.EmailSending
 {
@@ -13,11 +15,13 @@ namespace EPlast.BLL.Services.EmailSending
     {
         private readonly IUserService _userService;
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly HttpContext _context;
 
-        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper)
+        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper, IHttpContextAccessor contextAccessor)
         {
             _userService = userService;
             _repositoryWrapper = repositoryWrapper;
+            _context = contextAccessor.HttpContext;
         }
 
         /// <inheritdoc />
@@ -256,13 +260,15 @@ namespace EPlast.BLL.Services.EmailSending
         }
 
         /// <inheritdoc />
-        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName)
+        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName, string comment)
         {
+            var commentText = string.IsNullOrEmpty(comment) ? ".</p>" : $" з наступним коментарем: </p><p>\"{comment}\"</p>";
+
             return new EmailModel
             {
                 Title = "EPlast",
                 Subject = "Зміна статусу заявки у станицю",
-                Message = $"<p>На жаль, Тебе було виключено з прихильників станиці: <a href='{cityUrl}'>{cityName}</a>."
+                Message = $"<p>На жаль, Твоє зголошення до станиці <a href='{cityUrl}'>{cityName}</a> було відхилено{commentText}"
             };
         }
 
@@ -298,18 +304,23 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
+            string host = _context.Request?.Host.Host;
+            var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
+            url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
+
             return new EmailModel
             {
                 Title = "EPlast",
                 Subject = $"{title}",
                 Message = "<h3>СКОБ!</h3>"
-                          + $"<p>До Твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
-                          + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
-                          + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
-                          + $"'{follower}'. Або аргументовано його не підтвердити."
-                          + "Дякуємо Тобі за роботу.</p>"
-                          + "<p>Гарного дня.</p>"
-                          + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
+                        + $"<p>До Твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
+                        + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
+                        + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
+                        + $"'{follower}'. Або аргументовано його не підтвердити."
+                        + $"<p>Посилання на профіль користувача: <a href=\"{url}\">посилання</a></p>"
+                        + "Дякуємо Тобі за роботу.</p>"
+                        + "<p>Гарного дня.</p>"
+                        + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
             };
         }
 
@@ -335,6 +346,10 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
+            string host = _context.Request?.Host.Host;
+            var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
+            url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
+
             return new EmailModel
             {
                 Title = "EPlast",
@@ -344,6 +359,7 @@ namespace EPlast.BLL.Services.EmailSending
                           + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
                           + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
                           + $"'{follower}'. Або аргументовано його не підтвердити."
+                          + $"<p>Посилання на профіль користувача: <a href=\"{url}\">посилання</a></p>"
                           + "Дякуємо Тобі за роботу.</p>"
                           + "<p>Гарного дня.</p>"
                           + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"

@@ -123,11 +123,12 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void ConfirmEmail_Valid_RedirectsWithNoError()
+        public void ConfirmEmail_ValidWithCityIdSet_RedirectsWithNoError()
         {
             // Arrange
             var user = new User()
             {
+                CityId = 1,
                 RegistredOn = DateTime.Now
             };
 
@@ -137,6 +138,15 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
+            _userDatesServiceMock
+                .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
+                .ReturnsAsync(true);
+            _cityParticipantServiceMock
+                .Setup(m => m.AddFollowerAsync(It.Is<int>(v => v == user.CityId), It.Is<string>(v => v == user.Id)))
+                .ReturnsAsync(value: null!);
+            _userManagerMock
+                .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(value: null!);
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -145,6 +155,45 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<RedirectResult>(response);
             Assert.False((response as RedirectResult)?.Url.Contains("error"));
             _userManagerMock.Verify(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+            _userDatesServiceMock.Verify(m => m.AddDateEntryAsync(It.IsAny<string>()), Times.Once);
+            _cityParticipantServiceMock.Verify(m => m.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+        }
+
+        [Test]
+        public void ConfirmEmail_ValidWithRegionIdSet_RedirectsWithNoError()
+        {
+            // Arrange
+            var user = new User()
+            {
+                RegionId = 1,
+                RegistredOn = DateTime.Now
+            };
+
+            _userManagerMock
+                .Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManagerMock
+                .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(IdentityResult.Success);
+            _userDatesServiceMock
+                .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
+                .ReturnsAsync(true);
+            _cityParticipantServiceMock
+                .Setup(m => m.AddNotificationUserWithoutSelectedCity(It.Is<User>(v => v == user), It.Is<int>(v => v == user.RegionId)))
+                .Returns(Task.CompletedTask);
+            _userManagerMock
+                .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(value: null!);
+
+            // Act
+            var response = _controller.ConfirmEmail("", "").Result;
+
+            // Assert
+            Assert.IsInstanceOf<RedirectResult>(response);
+            Assert.False((response as RedirectResult)?.Url.Contains("error"));
+            _userManagerMock.Verify(m => m.ConfirmEmailAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+            _userDatesServiceMock.Verify(m => m.AddDateEntryAsync(It.IsAny<string>()), Times.Once);
+            _cityParticipantServiceMock.Verify(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int>()), Times.Once);
         }
 
         [TestCase(0)]
@@ -316,7 +365,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void SignUp_ValidWithCityIdNotNull_SendsEmailAndReturnsOkWithUserDTO()
+        public void SignUp_Valid_SendsEmailAndReturnsOkWithUserDTO()
         {
             // Arrange
             var registerDto = new RegisterDto()
@@ -350,18 +399,6 @@ namespace EPlast.Tests.Controllers
             _emailSendingServiceMock
                 .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
                 .Returns(Task.CompletedTask);
-            _userManagerMock
-                .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
-                .ReturnsAsync(value: null!);
-            _userDatesServiceMock
-                .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
-                .ReturnsAsync(true);
-            _cityParticipantServiceMock
-                .Setup(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int?>()))
-                .Returns(Task.CompletedTask);
-            _cityParticipantServiceMock
-                .Setup(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int>()))
-                .Returns(Task.CompletedTask);
             _mapperMock
                 .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
                 .Returns(new UserDto());
@@ -377,71 +414,6 @@ namespace EPlast.Tests.Controllers
             _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
             _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
             _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
-            _userDatesServiceMock.Verify(m => m.AddDateEntryAsync(It.IsAny<string>()), Times.Once);
-            _cityParticipantServiceMock.Verify(m => m.AddNotificationUserWithoutSelectedCity(It.IsAny<User>(), It.IsAny<int?>()), Times.Once);
-        }
-
-        [Test]
-        public void SignUp_ValidWithCityIdNull_SendsEmailAndSendsNotificationAndReturnsOkWithUserDTO()
-        {
-            // Arrange
-            var registerDto = new RegisterDto()
-            {
-                GenderId = 1,
-                Email = "",
-                CityId = 1
-            };
-            var user = new User()
-            {
-                Id = "",
-                Email = registerDto.Email
-            };
-            var message = new MimeMessage();
-
-            _userManagerMock
-                .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(value: null!);
-            _mapperMock
-                .Setup(m => m.Map<User>(It.Is<RegisterDto>(v => v == registerDto)))
-                .Returns(user);
-            _userManagerMock
-                .Setup(m => m.CreateAsync(It.Is<User>(v => v == user), It.Is<string>(v => v == registerDto.Password)))
-                .ReturnsAsync(IdentityResult.Success);
-            _userManagerMock
-                .Setup(m => m.GenerateEmailConfirmationTokenAsync(It.Is<User>(v => v == user)))
-                .ReturnsAsync("");
-            _emailSendingServiceMock
-                .Setup(m => m.Compose(It.Is<MailboxAddress>(v => v.Address == user.Email), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(message);
-            _emailSendingServiceMock
-                .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
-                .Returns(Task.CompletedTask);
-            _userManagerMock
-                .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
-                .ReturnsAsync(value: null!);
-            _userDatesServiceMock
-                .Setup(m => m.AddDateEntryAsync(It.Is<string>(v => v == user.Id)))
-                .ReturnsAsync(true);
-            _cityParticipantServiceMock
-                .Setup(m => m.AddFollowerAsync(It.Is<int>(v => v == registerDto.CityId), It.Is<string>(v => v == user.Id)))
-                .ReturnsAsync(value: null!);
-            _mapperMock
-                .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
-                .Returns(new UserDto());
-
-            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
-            _controller.Url = urlHelper.Object;
-
-            // Act
-            var response = _controller.SignUp(registerDto).Result;
-
-            // Assert
-            Assert.IsInstanceOf<NoContentResult>(response);
-            _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
-            _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
-            _userDatesServiceMock.Verify(m => m.AddDateEntryAsync(It.IsAny<string>()), Times.Once);
-            _cityParticipantServiceMock.Verify(m => m.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
         }
 
         [Test]

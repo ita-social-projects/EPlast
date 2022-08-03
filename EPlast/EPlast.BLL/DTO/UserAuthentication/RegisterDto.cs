@@ -27,6 +27,7 @@ namespace EPlast.BLL.DTO.Account
         public DateTime Birthday { get; set; }
 
         [Required(ErrorMessage = "Потрібно вказати адресу проживання")]
+        [MaxLength(50)]
         public string Address { get; set; }
 
         [Required, Range(1, int.MaxValue)]
@@ -36,10 +37,11 @@ namespace EPlast.BLL.DTO.Account
 
         public int? RegionId { get; set; }
 
+        [Url]
         public string FacebookLink { get; set; }
-
+        [Url]
         public string TwitterLink { get; set; }
-
+        [Url]
         public string InstagramLink { get; set; }
 
         [Required]

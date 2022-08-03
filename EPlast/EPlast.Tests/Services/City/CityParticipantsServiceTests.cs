@@ -869,8 +869,8 @@ namespace EPlast.Tests.Services.City
             _repoWrapper.Verify();
         }
 
-        [TestCase("email", "CityName")]
-        public async Task RemoveFollowerAsync_Valid_Test(string email, string cityName)
+        [TestCase("email", "CityName", "comment")]
+        public async Task RemoveFollowerAsync_Valid_Test(string email, string cityName, string comment)
         {
             // Arrange
             _repoWrapper
@@ -895,11 +895,11 @@ namespace EPlast.Tests.Services.City
                     It.IsAny<string>()))
                 .ReturnsAsync(true);
             _emailContentService
-                .Setup(x => x.GetCityRemoveFollowerEmail(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(x => x.GetCityRemoveFollowerEmail(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(new EmailModel());
 
             // Act
-            await _cityParticipantsService.RemoveFollowerAsync(fakeId);
+            await _cityParticipantsService.RemoveFollowerAsync(fakeId, comment);
 
             // Assert
             _repoWrapper.Verify();

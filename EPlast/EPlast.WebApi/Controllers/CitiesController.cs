@@ -130,7 +130,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveCities(int page, int pageSize, string name, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}";
+            string cacheKey = $"{ArchivedCitiesCacheKey}_{page}_{pageSize}_{name}_{oblast}";
             Tuple<IEnumerable<CityObjectDto>, int> cache;
             try
             {
@@ -480,11 +480,12 @@ namespace EPlast.WebApi.Controllers
         /// Remove a specific follower from the city
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
-        [HttpDelete("RemoveFollower/{followerId}")]
+        /// <param name="comment">The text of the reasoning comment</param>
+        [HttpPost("RemoveFollower/{followerId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> RemoveFollower(int followerId)
+        public async Task<IActionResult> RemoveFollower(int followerId, [FromBody] string comment)
         {
-            await _cityParticipantsService.RemoveFollowerAsync(followerId);
+            await _cityParticipantsService.RemoveFollowerAsync(followerId, comment);
             _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
 
             return Ok();

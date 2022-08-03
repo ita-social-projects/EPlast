@@ -109,6 +109,24 @@ namespace EPlast.WebApi.Controllers
                 return Redirect(frontendUrl + "?error=400");
             }
 
+            await _userDatesService.AddDateEntryAsync(user.Id);
+
+            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
+
+            if (user.CityId != null)
+            {
+                await _cityParticipantsService.AddFollowerAsync((int)user.CityId, user.Id);
+            }
+            else if (user.RegionId != null)
+            {
+                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, (int)user.RegionId);
+            }
+            else
+            {
+                await _userManager.DeleteAsync(user);
+                throw new ArgumentException("User had both RegionId and CityId set to null, which is an anomaly", nameof(user));
+            }
+
             return Redirect(frontendUrl);
         }
 
@@ -170,19 +188,6 @@ namespace EPlast.WebApi.Controllers
             {
                 await _userManager.DeleteAsync(user);
                 throw;
-            }
-
-            await _userDatesService.AddDateEntryAsync(user.Id);
-
-            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
-
-            if (registerDto.CityId != null)
-            {
-                await _cityParticipantsService.AddFollowerAsync((int)registerDto.CityId, user.Id);
-            }
-            else
-            {
-                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, registerDto.RegionId);
             }
 
             return NoContent();

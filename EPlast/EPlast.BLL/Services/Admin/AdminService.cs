@@ -310,23 +310,34 @@ namespace EPlast.BLL.Services
 
         public async Task<FilterTableParametersByRole> TableFilterParameters_byRole (IList<string> roles, string userId)
         {
-            bool Cities = roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy) || roles.Contains(Roles.PlastMember);
-            bool Regions = roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy);
+            bool Cities = roles.Contains(Roles.CityHead)
+                          || roles.Contains(Roles.CityHeadDeputy)
+                          || roles.Contains(Roles.PlastMember)
+                          || roles.Contains(Roles.CityReferentUPS)
+                          || roles.Contains(Roles.CityReferentUSP)
+                          || roles.Contains(Roles.CityReferentOfActiveMembership);
+
+            bool Regions = roles.Contains(Roles.OkrugaHead)
+                           || roles.Contains(Roles.OkrugaHeadDeputy)
+                           || roles.Contains(Roles.OkrugaReferentUPS)
+                           || roles.Contains(Roles.OkrugaReferentUSP)
+                           || roles.Contains(Roles.OkrugaReferentOfActiveMembership);
+
             bool Clubs = roles.Contains(Roles.KurinHead) || roles.Contains(Roles.KurinHeadDeputy);
 
             FilterTableParametersByRole filterTableParametersByRole = new FilterTableParametersByRole();
             if (Regions)
             {
-                filterTableParametersByRole.Regions = (await _repoWrapper.RegionAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).RegionId.ToString();              
+                filterTableParametersByRole.Regions = (await _repoWrapper.RegionAdministration.GetFirstAsync(r => r.UserId == userId && r.Status)).RegionId.ToString();              
             }
             if (Cities && !Regions)
             {
-                filterTableParametersByRole.Cities = (await _repoWrapper.CityMembers.GetSingleAsync(r => r.UserId == userId && r.IsApproved)).CityId.ToString();
+                filterTableParametersByRole.Cities = (await _repoWrapper.CityMembers.GetFirstAsync(r => r.UserId == userId && r.IsApproved)).CityId.ToString();
             }
            
             if (Clubs)
             {
-                filterTableParametersByRole.AndClubs = (await _repoWrapper.ClubAdministration.GetSingleAsync(r => r.UserId == userId && r.Status)).ClubId.ToString();
+                filterTableParametersByRole.AndClubs = (await _repoWrapper.ClubAdministration.GetFirstAsync(r => r.UserId == userId && r.Status)).ClubId.ToString();
             }
 
             return filterTableParametersByRole;

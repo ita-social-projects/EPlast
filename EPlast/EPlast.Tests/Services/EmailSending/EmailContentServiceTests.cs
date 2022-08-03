@@ -1,13 +1,14 @@
-﻿using EPlast.BLL.Interfaces.UserProfiles;
+using System;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -16,6 +17,7 @@ namespace EPlast.Tests.Services.EmailSending
         private EmailContentService _emailContentService;
         private Mock<IUserService> _mockUserService;
         private Mock<IRepositoryWrapper> _mockRepositoryWrapper;
+        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
 
         [Test]
         public void GetAuthFacebookRegisterEmail_ReturnsEmailModel()
@@ -151,11 +153,11 @@ namespace EPlast.Tests.Services.EmailSending
             Assert.IsInstanceOf<EmailModel>(result);
         }
 
-        [TestCase("cityUrl", "cityName")]
-        public void GetCityRemoveFollowerEmail_ReturnsEmailModel(string cityUrl, string cityName)
+        [TestCase("cityUrl", "cityName", "comment")]
+        public void GetCityRemoveFollowerEmail_ReturnsEmailModel(string cityUrl, string cityName, string comment)
         {
             // Act
-            var result = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, cityName);
+            var result = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, cityName, comment);
 
             // Assert
             Assert.NotNull(result);
@@ -252,7 +254,10 @@ namespace EPlast.Tests.Services.EmailSending
             _mockUserService = new Mock<IUserService>();
             _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
 
-            _emailContentService = new EmailContentService(_mockUserService.Object, _mockRepositoryWrapper.Object);
+            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _httpContextAccessorMock.Setup(m => m.HttpContext).Returns(Mock.Of<HttpContext>());
+
+            _emailContentService = new EmailContentService(_mockUserService.Object, _mockRepositoryWrapper.Object, _httpContextAccessorMock.Object);
         }
     }
 }
