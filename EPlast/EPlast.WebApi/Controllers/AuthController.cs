@@ -68,7 +68,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token)
         {
-            var frontendUrl = Request.GetFrontEndURL();
+            var frontendUrl = Request.GetFrontEndSignInURL();
 
             if (!ModelState.IsValid)
             {
