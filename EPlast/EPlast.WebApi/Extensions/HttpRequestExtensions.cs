@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
 namespace EPlast.WebApi.Extensions
 {
     public static class HttpRequestExtensions
     {
-        public static string GetFrontEndURL(this HttpRequest request, [NotNull] string queryEnd = "")
+        public static string GetFrontEndURL(this HttpRequest request)
         {
             var frontendUrl = request?.Host.Host ?? "localhost";
             if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
@@ -21,12 +16,22 @@ namespace EPlast.WebApi.Extensions
             {
                 frontendUrl = "https://" + frontendUrl;
             }
-            return frontendUrl + queryEnd;
+            return frontendUrl;
+        }
+
+        public static string GetFrontEndURL(this HttpRequest request, string tail)
+        {
+            return request.GetFrontEndURL() + (tail ?? "");
         }
 
         public static string GetFrontEndSignInURL(this HttpRequest request)
         {
             return request.GetFrontEndURL("/signin");
+        }
+
+        public static string GetFrontEndResetPasswordURL(this HttpRequest request, string token)
+        {
+            return request.GetFrontEndURL($"/resetPassword?token={HttpUtility.UrlEncode(token)}");
         }
     }
 }

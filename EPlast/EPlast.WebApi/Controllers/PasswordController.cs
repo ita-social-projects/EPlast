@@ -90,8 +90,7 @@ namespace EPlast.WebApi.Controllers
                     return BadRequest(_resources.ResourceForErrors["Forgot-NotRegisteredUser"]);
                 }
                 string token = await _authService.GenerateResetTokenAsync(userDto);
-                var frontendUrl = Request.GetFrontEndSignInURL();
-                var confirmationLink = string.Format($"{frontendUrl}/resetPassword?token={HttpUtility.UrlEncode(token)}");
+                var confirmationLink = Request.GetFrontEndResetPasswordURL(token);
                 await _authEmailServices.SendEmailResetingAsync(confirmationLink, forgotpasswordDto);
                 return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
             }
