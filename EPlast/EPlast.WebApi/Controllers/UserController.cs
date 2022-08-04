@@ -139,6 +139,11 @@ namespace EPlast.WebApi.Controllers
             if (string.IsNullOrEmpty(focusUserId))
             {
                 _loggerService.LogError("User id is null");
+                return BadRequest("user id cannot be empty");
+            }
+            var focusUser = await _userService.GetUserAsync(focusUserId);
+            if (focusUser == null)
+            {
                 return NotFound();
             }
 
@@ -146,16 +151,6 @@ namespace EPlast.WebApi.Controllers
 
             var currentUserAccess = await 
                 _userAccessService.GetUserProfileAccessAsync(currentUser.Id, focusUserId, currentUser);
-            if (currentUserAccess == null)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError);
-            }
-
-            var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (focusUser == null)
-            {
-                return NotFound();
-            }
 
             var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
             var isFocusUserPlastMember = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember);
