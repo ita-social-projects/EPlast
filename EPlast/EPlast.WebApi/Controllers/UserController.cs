@@ -147,7 +147,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var currentUser = await _userManager.GetUserAsync(HttpContext.User);
+            var currentUser = await _userManager.GetUserAsync(User);
 
             var currentUserAccess = await 
                 _userAccessService.GetUserProfileAccessAsync(currentUser.Id, focusUserId, currentUser);
