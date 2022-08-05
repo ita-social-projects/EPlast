@@ -346,19 +346,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetUserProfile_FocusUserIdIsEmpty_ReturnsBadRequest()
-        {
-            //Arrange
-            string focusUserId = null;
-           
-            //Act
-            var result = await _userController.GetUserProfile(focusUserId);
-
-            //Assert
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-        }
-
-        [Test]
         public async Task GetUserProfile_FocusUserIsNotFound_ReturnsNotFound()
         {
             //Arrange

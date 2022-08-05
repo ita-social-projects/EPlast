@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -128,19 +129,13 @@ namespace EPlast.WebApi.Controllers
         /// Get a specify user profile
         /// </summary>
         /// <param name="focusUserId">The id of the focus user</param>
-        /// <param name="currentUserId">The id of the current user</param>
         /// <returns>A focus user profile</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Focus user not found</response>
         [HttpGet("UserProfile/{focusUserId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUserProfile(string focusUserId)
+        public async Task<IActionResult> GetUserProfile([Required]string focusUserId)
         {
-            if (string.IsNullOrEmpty(focusUserId))
-            {
-                _loggerService.LogError("User id is null");
-                return BadRequest("user id cannot be empty");
-            }
             var focusUser = await _userService.GetUserAsync(focusUserId);
             if (focusUser == null)
             {
