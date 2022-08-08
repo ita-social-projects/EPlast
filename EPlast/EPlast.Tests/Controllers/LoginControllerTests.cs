@@ -475,17 +475,12 @@ namespace EPlast.Tests.Controllers
                 loginController) = CreateLoginController();
             loginController.ModelState.AddModelError("NameError", "Required");
 
-            mockResources
-                .Setup(s => s.ResourceForErrors["ModelIsNotValid"])
-                .Returns(GetModelIsNotValid());
-
             //Act
             var result = await loginController.Login(GetTestLoginDto()) as ObjectResult;
 
             //Assert
             mockResources.Verify();
             Assert.IsInstanceOf<ObjectResult>(result);
-            Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
 
@@ -617,13 +612,6 @@ namespace EPlast.Tests.Controllers
         {
             var localizedString = new LocalizedString("Login-InCorrectPassword",
                 "Невірний пароль. Спробуйте, будь ласка, ще раз");
-            return localizedString;
-        }
-
-        private LocalizedString GetModelIsNotValid()
-        {
-            var localizedString = new LocalizedString("ModelIsNotValid",
-                "Введені дані є неправильними");
             return localizedString;
         }
 

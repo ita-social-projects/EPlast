@@ -10,12 +10,14 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Queries.Decision;
 using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.CustomAttributes;
 using EPlast.WebApi.Models.Decision;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
@@ -88,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> Get()
         {
-            var query = new GetDecisionListAsyncQuery();         
+            var query = new GetDecisionListAsyncQuery();
             List<DecisionViewModel> decisions = (await _mediator.Send(query))
                         .Select(decesion =>
                         {
@@ -127,25 +129,29 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="id">decision id</param>
         /// <param name="decision">decision</param>
+        /// <param name="userManager">Dependency injection of user manager</param>
         /// <returns>Info that decision was created</returns>
         /// <response code="204">An instance of decision was created</response>
         /// <response code="400">The id and decision id are not same</response>
         [HttpPut("{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer",Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
-        public async Task<IActionResult> Update(int id, DecisionDto decision)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        public async Task<IActionResult> Update(int id, DecisionDto decision, [FromServices] UserManager<User> userManager)
         {
-            if (id != decision.ID)
+            if (id != decision.ID) ModelState.AddModelError(nameof(DecisionDto.ID), "Id mismatch with url");
+
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var currentUser = await userManager.GetUserAsync(HttpContext.User);
+            var isAdmin = await userManager.IsInRoleAsync(currentUser, Roles.Admin) || await userManager.IsInRoleAsync(currentUser, Roles.GoverningBodyAdmin);
+
+            var query = new GetDecisionAsyncQuery(decision.ID);
+            var decisionInDb = await _mediator.Send(query);
+
+            if (!isAdmin && decisionInDb.UserId != currentUser.Id)
             {
-                return BadRequest();
+                return Forbid();
             }
 
-            var userId = _userManagerService.GetCurrentUserId(HttpContext.User);
-            var query = new GetDecisionAsyncQuery(decision.ID);
-            var decisionCreatorIs = (await _mediator.Send(query)).UserId;
-            if (!decisionCreatorIs.Equals(userId) )
-            {
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
             var command = new UpdateCommand(decision);
             await _mediator.Send(command);
 
@@ -160,7 +166,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created decision object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
-        [Authorize(AuthenticationSchemes = "Bearer",Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> Save(DecisionWrapperDto decisionWrapper)
         {
 
@@ -188,7 +194,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Decision was deleted</response>
         /// <response code="404">Decision does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(AuthenticationSchemes = "Bearer",Roles = Roles.AdminAndRegionBoardHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndRegionBoardHead)]
         public async Task<IActionResult> Delete(int id)
         {
             var query = new DeleteDecisionAsyncCommand(id);

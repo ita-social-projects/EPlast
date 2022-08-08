@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Account-Locked" xml:space="preserve">
-    <value>Ваш акаунт заблоковано. Повторіть цю дію пізніше, або скиньте свій пароль.</value>
+    <value>Ваш акаунт тимчасово заблоковано в цілях безпеки. Повторіть спробу через 15 хвилин.</value>
   </data>
   <data name="Change-PasswordProblems" xml:space="preserve">
     <value>Проблема зі зміною пароля, можливо неправильно введений старий пароль</value>
