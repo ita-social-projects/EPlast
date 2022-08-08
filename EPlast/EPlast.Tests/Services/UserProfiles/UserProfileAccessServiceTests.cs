@@ -73,7 +73,7 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.OkrugaHead });
-            _mockUserService.Setup(u => u.IsUserInSameCellAsync(It.IsAny<UserDto>(), It.IsAny<UserDto>(), CellType.Region)).ReturnsAsync(true);
+            _mockUserService.Setup(u => u.IsUserInSameCellAsync(It.IsAny<UserDto>(), It.IsAny<UserDto>(), CellType.City)).ReturnsAsync(true);
 
 
             //Act
