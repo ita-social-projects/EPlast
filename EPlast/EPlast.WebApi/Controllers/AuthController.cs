@@ -10,6 +10,7 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -73,16 +74,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token)
         {
-            var frontendUrl = Request?.Host.Host ?? "localhost";
-            if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
-            {
-                frontendUrl = "http://" + frontendUrl + ":3000";
-            }
-            else
-            {
-                frontendUrl = "https://" + frontendUrl;
-            }
-            frontendUrl += "/signin";
+            var frontendUrl = Request.GetFrontEndSignInURL();
 
             if (!ModelState.IsValid)
             {

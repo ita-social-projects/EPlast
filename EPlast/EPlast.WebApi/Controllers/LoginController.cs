@@ -130,41 +130,37 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = await _authService.FindByEmailAsync(loginDto.Email);
-                if (user == null)
-                {
-                    return BadRequest(_resources.ResourceForErrors["Login-NotRegistered"]);
-                }
-                else
-                {
-                    if (!await _authService.IsEmailConfirmedAsync(user))
-                    {
-                        return BadRequest(_resources.ResourceForErrors["Login-NotConfirmed"]);
-                    }
-
-                    if (await _userManagerService.IsInRoleAsync(user, Roles.FormerPlastMember))
-                    {
-                        return BadRequest(_resources.ResourceForErrors["User-FormerMember"]);
-                    }
-                }
-                var result = await _authService.SignInAsync(loginDto);
-                if (result.IsLockedOut)
-                {
-                    return BadRequest(_resources.ResourceForErrors["Account-Locked"]);
-                }
-                if (result.Succeeded)
-                {
-                    var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
-                    return Ok(new { token = generatedToken });
-                }
-                else
-                {
-                    return BadRequest(_resources.ResourceForErrors["Login-InCorrectPassword"]);
-                }
+                return BadRequest(ModelState);
             }
-            return Ok(_resources.ResourceForErrors["ModelIsNotValid"]);
+
+            var user = await _authService.FindByEmailAsync(loginDto.Email);
+            if (user == null)
+            {
+                return BadRequest(_resources.ResourceForErrors["Login-NotRegistered"]);
+            }
+            if (!await _authService.IsEmailConfirmedAsync(user))
+            {
+                return BadRequest(_resources.ResourceForErrors["Login-NotConfirmed"]);
+            }
+            if (await _userManagerService.IsInRoleAsync(user, Roles.FormerPlastMember))
+            {
+                return BadRequest(_resources.ResourceForErrors["User-FormerMember"]);
+            }
+
+            var result = await _authService.SignInAsync(loginDto);
+            if (result.IsLockedOut)
+            {
+                return BadRequest(_resources.ResourceForErrors["Account-Locked"]);
+            }
+            if (result.Succeeded == false)
+            {
+                return BadRequest(_resources.ResourceForErrors["Login-InCorrectPassword"]);
+            }
+
+            var generatedToken = await _jwtService.GenerateJWTTokenAsync(user);
+            return Ok(new { token = generatedToken });
         }
 
         [HttpGet("logout")]

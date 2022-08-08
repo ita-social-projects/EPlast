@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
