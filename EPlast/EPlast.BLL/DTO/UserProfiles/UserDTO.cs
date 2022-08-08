@@ -41,6 +41,7 @@ namespace EPlast.BLL.DTO.UserProfiles
         public string Comment { get; set; }
         public bool SocialNetworking { get; set; }
         public UserProfileDto UserProfile { get; set; }
+        public int? RegionId { get; set; }
         public IEnumerable<ConfirmedUserDto> ConfirmedUsers { get; set; }
         public IEnumerable<ApproverDto> Approvers { get; set; }
         public IEnumerable<EventAdmin> Events { get; set; }
