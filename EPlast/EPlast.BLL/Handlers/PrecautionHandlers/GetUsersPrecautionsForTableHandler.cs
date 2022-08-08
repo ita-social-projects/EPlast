@@ -46,10 +46,13 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
             Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
-                false => x => x.Number.ToString().Contains(searchedData) || x.Status.GetDescription().Contains(searchedData)
+                false => x => 
+                x.Number.ToString().Contains(searchedData) 
                 || (x.User.FirstName + " " + x.User.LastName).Contains(searchedData)
-                || x.Date.Date.ToString().Contains(getDate) || x.EndDate.Date.ToString().Contains(getDate)
-                || x.Reporter.Contains(searchedData) || x.Reason.Contains(searchedData)
+                || x.Date.Date.ToString().Contains(getDate) 
+                || x.Date.AddMonths(x.Precaution.MonthsPeriod).Date.ToString().Contains(getDate)
+                || x.Reporter.Contains(searchedData) 
+                || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
             };
 
