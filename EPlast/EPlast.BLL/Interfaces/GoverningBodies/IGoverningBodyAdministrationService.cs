@@ -52,7 +52,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// Removes Administration roles of user in Governing Body
         /// </summary>
         /// <param name="userId">The id of the user</param>
-        Task RemoveAdminRolesByUserIdAsync(string userId);
+        Task RemoveGbAdminRoleAsync(string userId);
 
         Task<bool> CheckRoleNameExistsAsync(string roleName);
     }
