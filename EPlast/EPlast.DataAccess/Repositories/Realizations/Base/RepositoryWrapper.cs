@@ -1241,5 +1241,13 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
             }
         }
+
+        public string GetUserPageUrl
+        {
+            get
+            {
+                return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["UserPage"];
+            }
+        }
     }
 }
