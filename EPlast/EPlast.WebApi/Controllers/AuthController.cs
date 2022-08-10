@@ -10,6 +10,7 @@ using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +25,20 @@ namespace EPlast.WebApi.Controllers
     {
         public struct ConflictErrorObject
         {
-            public ConflictErrorObject(string error, bool isEmailConfirmed)
+            public ConflictErrorObject(string error, bool isEmailConfirmed) : this()
             {
                 Error = error;
                 IsEmailConfirmed = isEmailConfirmed;
             }
+            public ConflictErrorObject(string error, bool isEmailConfirmed, DateTime registeredExpire) : this(error, isEmailConfirmed)
+            {
+
+                RegisteredExpire = registeredExpire;
+            }
 
             public string Error { get; }
             public bool IsEmailConfirmed { get; }
+            public DateTime? RegisteredExpire { get; }
         }
 
         private readonly IUserDatesService _userDatesService;
@@ -65,18 +72,9 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">UserId or Token were found invalid</response>
         /// <response code="404">User by specified id is not found</response>
         [HttpGet("confirmEmail")]
-        public async Task<IActionResult> ConfirmEmail([Required] string userId, [Required] string token)
+        public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
-            var frontendUrl = Request?.Host.Host ?? "localhost";
-            if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
-            {
-                frontendUrl = "http://" + frontendUrl + ":3000";
-            }
-            else
-            {
-                frontendUrl = "https://" + frontendUrl;
-            }
-            frontendUrl += "/signin";
+            var frontendUrl = Request.GetFrontEndSignInURL();
 
             if (!ModelState.IsValid)
             {
@@ -154,10 +152,14 @@ namespace EPlast.WebApi.Controllers
                 {
                     return Conflict(new ConflictErrorObject("User exists and email is confirmed", true));
                 }
-                else
+
+                TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
+                if (elapsedTimeFromRegistration < TimeSpan.FromHours(12))
                 {
-                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false));
+                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false, user.RegistredOn.AddHours(12)));
                 }
+
+                await _userManager.DeleteAsync(user);
             }
 
             user = _mapper.Map<User>(registerDto);

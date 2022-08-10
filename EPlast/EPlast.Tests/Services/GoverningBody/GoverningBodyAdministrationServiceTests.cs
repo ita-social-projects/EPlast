@@ -105,8 +105,8 @@ namespace EPlast.Tests.Services.GoverningBody
                        IIncludableQueryable<Organization, object>>>()))
                .ReturnsAsync(GoverningBody);
             _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.PlastMember });
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.Is<string>(v => v == Roles.PlastMember)))
+                .ReturnsAsync(true);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDto());
@@ -131,8 +131,8 @@ namespace EPlast.Tests.Services.GoverningBody
                         IIncludableQueryable<Organization, object>>>()))
                 .ReturnsAsync(GoverningBody);
             _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.PlastMember });
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.Is<string>(v => v == Roles.PlastMember)))
+                .ReturnsAsync(true);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDto());
@@ -175,8 +175,8 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
             _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.PlastMember });
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.Is<string>(v => v == Roles.PlastMember)))
+                .ReturnsAsync(true);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDto());
@@ -197,8 +197,8 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(s => s.GoverningBodyAdministration.CreateAsync(GoverningBodyAdmin));
             _userManager.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
             _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.PlastMember });
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.Is<string>(v => v == Roles.PlastMember)))
+                .ReturnsAsync(true);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDto());
@@ -320,8 +320,8 @@ namespace EPlast.Tests.Services.GoverningBody
                        IIncludableQueryable<Organization, object>>>()))
                .ReturnsAsync(GoverningBody);
             _userManager
-                .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-                .ReturnsAsync(new List<string> { Roles.PlastMember });
+                .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.Is<string>(v => v == Roles.PlastMember)))
+                .ReturnsAsync(true);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
                 .ReturnsAsync(new AdminTypeDto
@@ -426,7 +426,7 @@ namespace EPlast.Tests.Services.GoverningBody
             var result = _governingBodyAdministrationService.RemoveAdministratorAsync(It.IsAny<int>());
             //Assert
             _repoWrapper.Verify();
-            _userManager.Verify(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Exactly(2));
+            _userManager.Verify(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
 
             Assert.NotNull(result);
         }
@@ -460,7 +460,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .Setup(r => r.SaveAsync());
 
             //Act
-            await _governingBodyAdministrationService.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
+            await _governingBodyAdministrationService.RemoveGbAdminRoleAsync(It.IsAny<string>());
 
             //Assert
             _repoWrapper.Verify();
