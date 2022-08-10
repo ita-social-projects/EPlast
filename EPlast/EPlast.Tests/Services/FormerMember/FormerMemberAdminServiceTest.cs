@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.Interfaces.City;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
@@ -8,8 +10,6 @@ using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.FormerMember
 {
@@ -58,7 +58,7 @@ namespace EPlast.Tests.Services.FormerMember
             _regionAdministrationService
                 .Setup(x => x.RemoveAdminRolesByUserIdAsync(It.IsAny<string>()));
             _governingBodyAdministrationService
-              .Setup(x => x.RemoveAdminRolesByUserIdAsync(It.IsAny<string>()));
+              .Setup(x => x.RemoveGbAdminRoleAsync(It.IsAny<string>()));
             _sectorAdministrationService
                 .Setup(x => x.RemoveAdminRolesByUserIdAsync(It.IsAny<string>()));
             //Act

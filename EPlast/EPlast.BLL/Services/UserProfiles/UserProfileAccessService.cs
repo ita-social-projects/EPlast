@@ -1,4 +1,4 @@
-﻿using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -32,8 +32,7 @@ namespace EPlast.BLL.Services.UserProfiles
             return role switch
             {
                 Roles.CityHead =>
-                    (roles.Contains(Roles.CityHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)) ||
-                    (roles.Contains(Roles.OkrugaHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Region)),
+                    (roles.Contains(Roles.CityHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)),
                 Roles.KurinHead =>
                     (roles.Contains(Roles.KurinHead) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Club)),
                 _ => false,
@@ -60,7 +59,7 @@ namespace EPlast.BLL.Services.UserProfiles
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
             var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (await IsAdminAsync(user))
+            if (await IsAdminAsync(user) || user.Id == focusUserId)
             {
                 return true;
             }
@@ -76,7 +75,9 @@ namespace EPlast.BLL.Services.UserProfiles
         private async Task<bool> IsAdminAsync(User user)
         {
             var roles = await _userManager.GetRolesAsync(user);
-            return roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead);
+            return roles.Contains(Roles.Admin) || 
+                roles.Contains(Roles.GoverningBodyHead) || 
+                roles.Contains(Roles.GoverningBodyAdmin);
         }
     }
 }

@@ -90,7 +90,7 @@ namespace EPlast.Tests.Services.EmailSending
             {
                 new ConfirmedUser()
                 {
-                    isClubAdmin = true
+                    ApproveType = ApproveType.Club
                 }
             }.AsQueryable<ConfirmedUser>();
             _mockRepoWrapper
