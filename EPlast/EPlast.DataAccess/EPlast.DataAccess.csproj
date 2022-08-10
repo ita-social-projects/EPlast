@@ -45,6 +45,40 @@
     <Compile Remove="Migrations\20220627152859_addcoursetables.Designer.cs" />
     <Compile Remove="Migrations\20220627164310_Add_User_Courses.cs" />
     <Compile Remove="Migrations\20220627164310_Add_User_Courses.Designer.cs" />
+    <Compile Remove="Migrations\20220809191456_AddEventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220809191456_AddEventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220809194232_AddEventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220809194232_AddEventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220809194433_AddEventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220809194433_AddEventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220809200742_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220809200742_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220809204407_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220809204407_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220810070536_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220810070536_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220810122801_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220810122801_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220810123132_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220810123132_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220810124442_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220810124442_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220810124740_EventFeedbacks.cs" />
+    <Compile Remove="Migrations\20220810124740_EventFeedbacks.Designer.cs" />
+    <Compile Remove="Migrations\20220810125156_AAAAAAAA.cs" />
+    <Compile Remove="Migrations\20220810125156_AAAAAAAA.Designer.cs" />
+    <Compile Remove="Migrations\20220810125910_blin.cs" />
+    <Compile Remove="Migrations\20220810125910_blin.Designer.cs" />
+    <Compile Remove="Migrations\20220810131241_aaaa.cs" />
+    <Compile Remove="Migrations\20220810131241_aaaa.Designer.cs" />
+    <Compile Remove="Migrations\20220810132053_pipec.cs" />
+    <Compile Remove="Migrations\20220810132053_pipec.Designer.cs" />
+    <Compile Remove="Migrations\20220810133240_EventFeedback.cs" />
+    <Compile Remove="Migrations\20220810133240_EventFeedback.Designer.cs" />
+    <Compile Remove="Migrations\20220810134538_EventFeedback.cs" />
+    <Compile Remove="Migrations\20220810134538_EventFeedback.Designer.cs" />
+    <Compile Remove="Migrations\20220810140354_EventFeedback.cs" />
+    <Compile Remove="Migrations\20220810140354_EventFeedback.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

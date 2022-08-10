@@ -85,13 +85,13 @@ namespace EPlast.BLL.Interfaces.Events
         Task<int> UnSubscribeOnEventAsync(int id, User user);
 
         /// <summary>
-        /// Set an estimate of the participant's event.
+        /// Create a feedback entry for the participant's event.
         /// </summary>
-        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>
+        /// <returns>Status code of the operation.</returns>
         /// <param name="eventId">The Id of event</param>
         /// <param name="user">User object</param>
-        /// <param name="estimate">The value of estimate</param>
-        Task<int> EstimateEventAsync(int eventId, User user, double estimate);
+        /// <param name="feedback">Feedback object</param>
+        Task<int> LeaveFeedbackAsync(int eventId, User user, EventFeedbackDto feedback);
 
         /// <summary>
         /// Change event participant status to approved.

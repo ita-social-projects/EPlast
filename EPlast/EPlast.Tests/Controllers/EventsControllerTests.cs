@@ -272,24 +272,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EstimateEvent_OkObjectResult_ReturnsOkObjectResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup(x => x.EstimateEventAsync(It.IsAny<int>(), It.IsAny<User>(), It.IsAny<double>()))
-                .ReturnsAsync(200);
-
-            // Act
-            var result = await _eventsController.EstimateEvent(It.IsAny<int>(), It.IsAny<double>());
-            var resultValue = (result as OkObjectResult).Value;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(200, resultValue);
-        }
-
-        [Test]
         public async Task Delete_Status200OK_ReturnsStatus200OK()
         {
             // Arrange

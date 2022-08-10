@@ -57,6 +57,7 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<EventCategory> EventCategories { get; set; }
         public DbSet<EventCategoryType> EventCategoryTypes { get; set; }
+        public DbSet<EventFeedback> EventFeedbacks { get; set; }
         public DbSet<EventGallary> EventGallarys { get; set; }
         public DbSet<EventSection> EventSection { get; set; }
         public DbSet<EventStatus> EventStatuses { get; set; }
@@ -129,8 +130,10 @@ namespace EPlast.DataAccess
                     .HasDefaultValue(false);
             });
 
-            modelBuilder.Entity<Pictures>()
-                .HasKey(x => x.ID);
+            modelBuilder.Entity<Participant>()
+                .HasOne(a => a.EventFeedback)
+                .WithOne(f => f.Participant)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<SubsectionPictures>(subsectionPictures =>
             {

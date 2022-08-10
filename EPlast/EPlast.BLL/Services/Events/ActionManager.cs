@@ -66,7 +66,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventCategoryDto>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
+        public async Task<IEnumerable<EventCategoryDto>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize)
         {
             return await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
         }
@@ -102,6 +102,8 @@ namespace EPlast.BLL.Services.Events
                         .ThenInclude(p => p.User)
                         .Include(e => e.Participants)
                         .ThenInclude(p => p.ParticipantStatus)
+                        .Include(e => e.Participants)
+                        .ThenInclude(p => p.EventFeedback)
                         .Include(e => e.EventStatus)
                         .Include(e => e.EventAdministrations)
                         .ThenInclude(a => a.User)
@@ -208,23 +210,38 @@ namespace EPlast.BLL.Services.Events
             await _participantManager.ChangeUserPresentStatusAsync(participantId);
         }
 
-        public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
+        public async Task<int> LeaveFeedbackAsync(int eventId, User user, EventFeedbackDto feedback)
         {
-            try
-            {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var newRating = await _participantManager.EstimateEventByParticipantAsync(eventId, userId, estimate);
-                var targetEvent = await _repoWrapper.Event.GetFirstAsync(e => e.ID == eventId);
-                targetEvent.Rating = newRating;
-                _repoWrapper.Event.Update(targetEvent);
-                await _repoWrapper.SaveAsync();
+            var eventEntity = await _repoWrapper.Event.GetFirstOrDefaultAsync(e => e.ID == eventId);
 
+            if (eventEntity == null) return StatusCodes.Status404NotFound;
+
+            var userId = await _userManager.GetUserIdAsync(user);
+            var participant = 
+                await _repoWrapper.Participant.GetFirstOrDefaultAsync(e => e.EventId == eventId && e.UserId == userId && e.WasPresent);
+
+            if (participant == null) return StatusCodes.Status403Forbidden;
+
+            var existingFeedback = await _repoWrapper.EventFeedback.GetFirstOrDefaultAsync(f => f.ParticipantId == participant.ID);
+
+            if (existingFeedback != null)
+            {
+                existingFeedback.Text = feedback.Text;
+                existingFeedback.Rating = feedback.Rating;
+
+                _repoWrapper.EventFeedback.Update(existingFeedback);
+                await _repoWrapper.SaveAsync();
                 return StatusCodes.Status200OK;
             }
-            catch
-            {
-                return StatusCodes.Status400BadRequest;
-            }
+
+            var createdFeedback = _mapper.Map<EventFeedbackDto, EventFeedback>(feedback);
+
+            createdFeedback.ParticipantId = participant.ID;
+
+            await _repoWrapper.EventFeedback.CreateAsync(createdFeedback);
+            await _repoWrapper.SaveAsync();
+
+            return StatusCodes.Status200OK;
         }
 
         /// <inheritdoc />

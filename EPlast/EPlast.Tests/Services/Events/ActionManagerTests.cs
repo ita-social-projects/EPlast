@@ -70,46 +70,6 @@ namespace EPlast.Tests.Services.Events
             //Assert
             Assert.IsNotNull(result);
         }
-
-        [Test]
-        public async Task EstimateEventAsync_Valid()
-        {
-            //Arrange
-            _mockUserManager.Setup(x => x.GetUserIdAsync(It.IsAny<User>()))
-                .ReturnsAsync(fakeIdString);
-            _mockParticipantManager.Setup(x =>
-                    x.EstimateEventByParticipantAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<double>()))
-                .ReturnsAsync(testEstimate);
-            _mockRepositoryWrapper.Setup(x =>
-                    x.Event.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Event.Event, bool>>>(), null))
-                .ReturnsAsync(new DataAccess.Entities.Event.Event());
-
-            //Act
-            var result = await _actionManager.EstimateEventAsync(testEventId, new User(), testEstimate);
-
-            //Assert
-            Assert.AreEqual(StatusCodes.Status200OK, result);
-        }
-
-        [Test]
-        public async Task EstimateEventAsync_Failed()
-        {
-            //Arrange
-            _mockUserManager.Setup(x => x.GetUserIdAsync(It.IsAny<User>()))
-                .ReturnsAsync(fakeIdString);
-            _mockParticipantManager.Setup(x =>
-                    x.EstimateEventByParticipantAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<double>()))
-                .ReturnsAsync(testEstimate);
-            _mockRepositoryWrapper.Setup(x =>
-                    x.Event.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Event.Event, bool>>>(), null))
-                .ThrowsAsync(new Exception()); ;
-
-            //Act
-            var result = await _actionManager.EstimateEventAsync(testEventId, new User(), testEstimate);
-
-            //Assert
-            Assert.AreEqual(StatusCodes.Status400BadRequest, result);
-        }
         
         [TestCase(1)]
         [TestCase(2)]

@@ -46,6 +46,7 @@ namespace EPlast.DataAccess.Repositories
         IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
+        IEventFeedbackRepository EventFeedback { get; }
         IEventAdminRepository EventAdmin { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventAdministrationTypeRepository EventAdministrationType { get; }
