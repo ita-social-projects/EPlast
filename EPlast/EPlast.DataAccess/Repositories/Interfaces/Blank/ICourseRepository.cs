@@ -1,4 +1,4 @@
-﻿using EPlast.DataAccess.Entities.Blank;
+﻿using EPlast.DataAccess.Entities.Course;
 using System;
 using System.Collections.Generic;
 using System.Text;
