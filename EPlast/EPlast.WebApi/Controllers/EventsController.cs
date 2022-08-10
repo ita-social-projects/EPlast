@@ -190,15 +190,24 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>  
         /// <param name="id">The Id of event</param>
-        /// <param name="estimate">The value of estimate</param>
+        /// <param name="feedback">Feedback DTO</param>
         /// <response code="200">OK</response>
+        /// <response code="403">The user was not present at an event</response>
+        /// <response code="404">The event was not found</response>
         /// <response code="400">Bad Request</response>  
-        [HttpPut("{id:int}/estimate/{estimate:double}")]
+        [HttpPut("{id:int}/feedback")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> EstimateEvent(int id, double estimate)
+        public async Task<IActionResult> LeaveFeedback(int id, EventFeedbackDto feedback)
         {
-            var result = await _actionManager.EstimateEventAsync(id, await _userManager.GetUserAsync(User), estimate);
-            return Ok(result);
+            var result = await _actionManager.LeaveFeedbackAsync(id, await _userManager.GetUserAsync(User), feedback);
+
+            return result switch
+            {
+                StatusCodes.Status200OK => Ok(result),
+                StatusCodes.Status403Forbidden => Forbid(),
+                StatusCodes.Status404NotFound => NotFound(),
+                _ => BadRequest()
+            };
         }
 
         /// <summary>

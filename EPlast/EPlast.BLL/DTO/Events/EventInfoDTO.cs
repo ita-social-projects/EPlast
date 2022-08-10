@@ -21,5 +21,6 @@ namespace EPlast.BLL.DTO.Events
         public double Rating { get; set; }
         public List<EventAdminDto> EventAdmins { get; set; }
         public IEnumerable<EventParticipantDto> EventParticipants { get; set; }
+        public IEnumerable<EventFeedbackDto> EventFeedbacks { get; set; }
     }
 }
