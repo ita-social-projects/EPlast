@@ -12,6 +12,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -110,7 +111,7 @@ namespace EPlast.XUnitTest.Services.UserArea
         [Fact]
         public void CanApproveTest()
         {
-            var conUser = new ConfirmedUserDto { UserID = "1", ConfirmDate = DateTime.Now, isClubAdmin = false, isCityAdmin = false };
+            var conUser = new ConfirmedUserDto { UserID = "1", ConfirmDate = DateTime.Now, ApproveType = ApproveType.PlastMember };
             var appUser = new ApproverDto { UserID = "3", ConfirmedUser = conUser };
             conUser.Approver = appUser;
 
