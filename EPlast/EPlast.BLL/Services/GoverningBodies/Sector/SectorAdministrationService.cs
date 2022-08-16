@@ -48,6 +48,14 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             var user = await _userManager.FindByIdAsync(sectorAdministrationDto.UserId);
             var userRoles = await _userManager.GetRolesAsync(user);
 
+            if (!sectorAdministration.Status)
+            {
+                await _repositoryWrapper.GoverningBodySectorAdministration.CreateAsync(sectorAdministration);
+                await _repositoryWrapper.SaveAsync();
+                sectorAdministrationDto.Id = sectorAdministration.Id;
+                return sectorAdministrationDto;
+            }
+
             if (!userRoles.Contains(Roles.PlastMember))
             {
                 throw new ArgumentException("Can't add user with the roles");
