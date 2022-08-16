@@ -57,7 +57,6 @@ namespace EPlast.BLL.Services.City
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHeadDeputy);
-            adminDTO.Status = DateTime.Today < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new CityAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
@@ -68,29 +67,25 @@ namespace EPlast.BLL.Services.City
                 Status = adminDTO.Status
             };
 
-            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            if (CheckCityWasAdmin(newAdmin))
             {
-                case Roles.CityHead:
-                    role = Roles.CityHead;
-                    break;
-                case Roles.CityHeadDeputy:
-                    role = Roles.CityHeadDeputy;
-                    break;
-                case Roles.CityReferentUPS:
-                    role = Roles.CityReferentUPS;
-                    break;
-                case Roles.CityReferentUSP:
-                    role = Roles.CityReferentUSP;
-                    break;
-                case Roles.CityReferentOfActiveMembership:
-                    role = Roles.CityReferentOfActiveMembership;
-                    break;
-                default:
-                    role = Roles.CitySecretary;
-                    break;
+                newAdmin.Status = false;
+                await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
+                await _repositoryWrapper.SaveAsync();
+                adminDTO.ID = newAdmin.ID;
+                return adminDTO;
             }
+
+            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
+            string role = adminType.AdminTypeName switch
+            {
+                Roles.CityHead => Roles.CityHead,
+                Roles.CityHeadDeputy => Roles.CityHeadDeputy,
+                Roles.CityReferentUPS => Roles.CityReferentUPS,
+                Roles.CityReferentUSP => Roles.CityReferentUSP,
+                Roles.CityReferentOfActiveMembership => Roles.CityReferentOfActiveMembership,
+                _ => Roles.CitySecretary,
+            };
             await _userManager.AddToRoleAsync(user, role);
             if (adminType.AdminTypeName == headType.AdminTypeName)
             {
@@ -235,7 +230,7 @@ namespace EPlast.BLL.Services.City
                     emailContent.Title);
             }
 
-            if (regionReferentsUPS.Count!=0)
+            if (regionReferentsUPS.Count != 0)
             {
                 foreach (var referent in regionReferentsUPS)
                 {
@@ -400,28 +395,15 @@ namespace EPlast.BLL.Services.City
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.CityHead:
-                    role = Roles.CityHead;
-                    break;
-                case Roles.CityHeadDeputy:
-                    role = Roles.CityHeadDeputy;
-                    break;
-                case Roles.CityReferentUPS:
-                    role = Roles.CityReferentUPS;
-                    break;
-                case Roles.CityReferentUSP:
-                    role = Roles.CityReferentUSP;
-                    break;
-                case Roles.CityReferentOfActiveMembership:
-                    role = Roles.CityReferentOfActiveMembership;
-                    break;
-                default:
-                    role = Roles.CitySecretary;
-                    break;
-            }
+                Roles.CityHead => Roles.CityHead,
+                Roles.CityHeadDeputy => Roles.CityHeadDeputy,
+                Roles.CityReferentUPS => Roles.CityReferentUPS,
+                Roles.CityReferentUSP => Roles.CityReferentUSP,
+                Roles.CityReferentOfActiveMembership => Roles.CityReferentOfActiveMembership,
+                _ => Roles.CitySecretary,
+            };
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.CityAdministration.Update(admin);
@@ -523,7 +505,11 @@ namespace EPlast.BLL.Services.City
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.CityId == cityId && a.Status);
 
-            newAdmin.Status = false;
+            if ((DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null) == false)
+            {
+                newAdmin.Status = false;
+                return;
+            }
             if (admin != null)
             {
                 if (newAdmin.EndDate == null || admin.EndDate < newAdmin.EndDate)
@@ -536,6 +522,11 @@ namespace EPlast.BLL.Services.City
             {
                 newAdmin.Status = true;
             }
+        }
+
+        private bool CheckCityWasAdmin(CityAdministration newAdmin)
+        {
+            return !(DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null);
         }
 
         private async Task GiveUserSupporterRole(User user)

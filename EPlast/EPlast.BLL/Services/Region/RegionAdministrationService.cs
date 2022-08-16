@@ -51,34 +51,29 @@ namespace EPlast.BLL.Services.Region
                 UserId = regionAdministrationDTO.UserId
             };
 
+            if (CheckCityWasAdmin(newRegionAdmin))
+            {
+                newRegionAdmin.Status = false;
+                await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
+                await _repoWrapper.SaveAsync();
+                newRegionAdmin.ID = regionAdministrationDTO.ID;
+                return regionAdministrationDTO;
+            }
+
             var oldAdmin = await _repoWrapper.RegionAdministration.
                 GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId
                 && d.RegionId == newRegionAdmin.RegionId && d.Status);
 
             var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
-
-            string role;
-            switch (adminType.AdminTypeName)
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.OkrugaHead:
-                    role = Roles.OkrugaHead;
-                    break;
-                case Roles.OkrugaHeadDeputy:
-                    role = Roles.OkrugaHeadDeputy;
-                    break;
-                case Roles.OkrugaReferentUPS:
-                    role = Roles.OkrugaReferentUPS;
-                    break;
-                case Roles.OkrugaReferentUSP:
-                    role = Roles.OkrugaReferentUSP;
-                    break;
-                case Roles.OkrugaReferentOfActiveMembership:
-                    role = Roles.OkrugaReferentOfActiveMembership;
-                    break;
-                default:
-                    role = Roles.OkrugaSecretary;
-                    break;
-            }
+                Roles.OkrugaHead => Roles.OkrugaHead,
+                Roles.OkrugaHeadDeputy => Roles.OkrugaHeadDeputy,
+                Roles.OkrugaReferentUPS => Roles.OkrugaReferentUPS,
+                Roles.OkrugaReferentUSP => Roles.OkrugaReferentUSP,
+                Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
+                _ => Roles.OkrugaSecretary,
+            };
             await _userManager.AddToRoleAsync(newUser, role);
 
             if (adminType.AdminTypeName == headType.AdminTypeName)
@@ -161,28 +156,15 @@ namespace EPlast.BLL.Services.Region
             var Admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(Admin.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.OkrugaHead:
-                    role = Roles.OkrugaHead;
-                    break;
-                case Roles.OkrugaHeadDeputy:
-                    role = Roles.OkrugaHeadDeputy;
-                    break;
-                case Roles.OkrugaReferentUPS:
-                    role = Roles.OkrugaReferentUPS;
-                    break;
-                case Roles.OkrugaReferentUSP:
-                    role = Roles.OkrugaReferentUSP;
-                    break;
-                case Roles.OkrugaReferentOfActiveMembership:
-                    role = Roles.OkrugaReferentOfActiveMembership;
-                    break;
-                default:
-                    role = Roles.OkrugaSecretary;
-                    break;
-            }
+                Roles.OkrugaHead => Roles.OkrugaHead,
+                Roles.OkrugaHeadDeputy => Roles.OkrugaHeadDeputy,
+                Roles.OkrugaReferentUPS => Roles.OkrugaReferentUPS,
+                Roles.OkrugaReferentUSP => Roles.OkrugaReferentUSP,
+                Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
+                _ => Roles.OkrugaSecretary,
+            };
             await _userManager.RemoveFromRoleAsync(user, role);
         }
 
@@ -265,6 +247,10 @@ namespace EPlast.BLL.Services.Region
             {
                 await DeleteAdminByIdAsync(role.ID);
             }
+        }
+        private bool CheckCityWasAdmin(RegionAdministration newAdmin)
+        {
+            return !(DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null);
         }
     }
 }
