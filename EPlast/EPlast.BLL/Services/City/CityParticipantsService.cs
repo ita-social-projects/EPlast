@@ -63,7 +63,7 @@ namespace EPlast.BLL.Services.City
                 EndDate = adminDTO.EndDate,
                 AdminTypeId = adminType.ID,
                 CityId = adminDTO.CityId,
-                UserId = adminDTO.UserId,
+                UserId = adminDTO.User.ID,
                 Status = adminDTO.Status
             };
 
@@ -73,10 +73,11 @@ namespace EPlast.BLL.Services.City
                 await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
                 await _repositoryWrapper.SaveAsync();
                 adminDTO.ID = newAdmin.ID;
+                adminDTO.UserId = newAdmin.UserId;
                 return adminDTO;
             }
 
-            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
+            var user = await _userManager.FindByIdAsync(adminDTO.User.ID);
             string role = adminType.AdminTypeName switch
             {
                 Roles.CityHead => Roles.CityHead,
@@ -102,7 +103,7 @@ namespace EPlast.BLL.Services.City
             await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
             await _repositoryWrapper.SaveAsync();
             adminDTO.ID = newAdmin.ID;
-
+            adminDTO.UserId = newAdmin.UserId;
             return adminDTO;
         }
 
