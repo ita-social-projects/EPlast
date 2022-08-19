@@ -15,16 +15,19 @@ namespace EPlast.BLL.Services.Blank
     public class AchievementDocumentService : IBlankAchievementDocumentService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly IUserCourseService _usercourseService;
         private readonly IMapper _mapper;
         private readonly IBlankAchievementBlobStorageRepository _blobStorageRepo;
 
         public AchievementDocumentService(IRepositoryWrapper repositoryWrapper,
            IMapper mapper,
-           IBlankAchievementBlobStorageRepository blobStorageRepo)
+           IBlankAchievementBlobStorageRepository blobStorageRepo,
+           IUserCourseService usercourseService)
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _blobStorageRepo = blobStorageRepo;
+            _usercourseService = usercourseService;
         }
 
         public async Task<IEnumerable<AchievementDocumentsDto>> AddDocumentAsync(IEnumerable<AchievementDocumentsDto> achievementDocumentsDTO)
@@ -46,15 +49,16 @@ namespace EPlast.BLL.Services.Blank
             return achievementDocumentsDTO;
         }
 
-        public async Task DeleteFileAsync(int documentId)
+        public async Task DeleteFileAsync(int documentId, string userId)
         {
             var document = await _repositoryWrapper.AchievementDocumentsRepository
                 .GetFirstOrDefaultAsync(d => d.ID == documentId);
-
-            await _blobStorageRepo.DeleteBlobAsync(document.BlobName);
-
-            _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
-            await _repositoryWrapper.SaveAsync();
+            if (document != null)
+            {
+                await _blobStorageRepo.DeleteBlobAsync(document.BlobName);
+                _repositoryWrapper.AchievementDocumentsRepository.Delete(document);
+                await _repositoryWrapper.SaveAsync();
+            }
         }
 
         public async Task<string> DownloadFileAsync(string fileName)

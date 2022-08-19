@@ -68,7 +68,9 @@ namespace EPlast.BLL.Services
 
                 var timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
                 var halfOfYear = new TimeSpan(182, 0, 0, 0);
-                if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == user.Id).Any(q => q.isClubAdmin))
+                if (_repoWrapper.ConfirmedUser
+                    .FindByCondition(x => x.UserID == user.Id)
+                    .Any(q => q.ApproveType == ApproveType.Club))
                 {
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }

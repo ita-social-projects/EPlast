@@ -37,10 +37,15 @@ Before sending any pull request, please discuss requirements/changes to be imple
 
 4.4 Install [Node.js v10.19.0](https://nodejs.org/en/blog/release/v10.19.0/)+
 
-4.5 Create local database from EPlast.DataAccess migrations.
+4.5 Setup user secrets (IT Academy students can get it from our Google Drive)
 
-(Open Package Manager Console, change default project to "EPlast.DataAccess"(make sure that Solution Explorer default project EPlast.WebApi) and write "Update-Database"),
-then make sure that the required data is written to the table [AspNetRoles],if no data are repeated again write "Update-Database" 
+(Right click on Eplast.WebApi project, select "Manage User Secrets", copy and paste data from User Secrets file. Don't forget to write your local database connection string into User Secrets file)
+
+4.6 Create local database from EPlast.DataAccess migrations.
+
+(Open Package Manager Console, change default project to "EPlast.DataAccess"(make sure that Solution Explorer default project EPlast.WebApi) and write "Update-Database")
+
+4.7 Run project and make sure that data is written to the table [AspNetRoles]
 
 # 5. How to run the project with docker-compose locally.
 

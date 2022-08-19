@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.Interfaces.City;
+﻿using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.FormerMember;
 using EPlast.BLL.Interfaces.GoverningBodies;
@@ -6,7 +7,6 @@ using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.FormerMember
 {
@@ -47,7 +47,7 @@ namespace EPlast.BLL.Services.FormerMember
             await _clubParticipants.RemoveAdminRolesByUserIdAsync(userId);
             await _cityParticipants.RemoveAdminRolesByUserIdAsync(userId);
             await _regionAdministrationService.RemoveAdminRolesByUserIdAsync(userId);
-            await _governingBodyAdministrationService.RemoveAdminRolesByUserIdAsync(userId);
+            await _governingBodyAdministrationService.RemoveGbAdminRoleAsync(userId);
             await _sectorAdministrationService.RemoveAdminRolesByUserIdAsync(userId);
         }
     }

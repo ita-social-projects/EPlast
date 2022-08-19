@@ -1,4 +1,5 @@
 ﻿using EPlast.DataAccess.Entities.Blank;
+using EPlast.DataAccess.Entities.Course;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using System;
 using System.Collections.Generic;

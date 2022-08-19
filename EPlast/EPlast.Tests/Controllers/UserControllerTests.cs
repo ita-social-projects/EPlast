@@ -6,6 +6,7 @@ using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -35,6 +36,7 @@ namespace EPlast.Tests.Controllers
         private Mock<ILoggerService<UserController>> _loggerService;
         private Mock<IMapper> _mapper;
         private Mock<UserManager<User>> _userManager;
+        private Mock<IUserAccessService> _userAccessService;
 
         private UserController _userController;
 
@@ -49,6 +51,7 @@ namespace EPlast.Tests.Controllers
             _mapper = new Mock<IMapper>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _userAccessService = new Mock<IUserAccessService>();
 
             _userController = new UserController(
                 _userService.Object,
@@ -57,7 +60,8 @@ namespace EPlast.Tests.Controllers
                 _userManagerService.Object,
                 _loggerService.Object,
                 _mapper.Object,
-                _userManager.Object);
+                _userManager.Object,
+                _userAccessService.Object);
         }
 
         [Test]
@@ -260,244 +264,101 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetUserProfile_FocusUserIdIsNull_ReturnsNotFoundResult()
+        public async Task GetUserProfile_UserCanSeeFullProfile_ReturnsFullUserProfile()
         {
-            // Arrange
-            string focusUserId = "";
+            //Arrange
+            var focusUserId = "qwerty123456";
+            var user = CreateFakeUser();
+            var userAccess= new Dictionary<string, bool>()
+            {
+                {"CanViewUserFullProfile", true}  
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
 
-            // Act
-            var result = await _userController.GetUserProfile(It.IsAny<string>(), focusUserId);
-            var resultObject = (result as ObjectResult)?.Value;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsNull(resultObject);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [Test]
-        public async Task GetUserProfile_NullCurrentUserIdString_ReturnsNotFoundResult()
-        {
-            // Arrange
-            string nullString = null;
-            string focusUserId = "1";
-
-            // Act
-            var result = await _userController.GetUserProfile(nullString, focusUserId);
-
-            // Assert
-            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [Test]
-        public async Task GetUserProfile_ShortUser_ReturnsOkObjectResult()
-        {
-            // Arrange
-            string currentUserId = "1";
-            string focusUserId = "2";
-            var currentUser = CreateFakeUserWithoutCity(currentUserId);
-            var focusUser = CreateFakeUserWithoutCity(focusUserId);
-
-
-            _userService
-                .Setup((x) => x.GetUserAsync(currentUserId))
+            var currentUser = new User();
+            var focusUserViewModel = new UserViewModel();
+            _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(currentUser);
+            _userAccessService.Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
+            _mapper.Setup(m => m.Map<UserDto, UserViewModel>(It.IsAny<UserDto>()))
+                .Returns(focusUserViewModel);
 
-            _userService
-                .Setup((x) => x.GetUserAsync(focusUserId))
-                .ReturnsAsync(focusUser);
-
-            _userService
-                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(It.IsAny<TimeSpan>());
-
-            _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
-                .ReturnsAsync(It.IsAny<bool>());
-
-            _userManagerService.Setup((x) => x.IsInRoleAsync(currentUser, Roles.PlastMember)).ReturnsAsync(true);
-
-            // Act
-            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
-
-            // Assert
-            Assert.NotNull((result as ObjectResult).Value);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task GetUserProfile_ShortUser_ReturnsCreatedModel()
-        {
-            // Arrange
-            string currentUserId = "2";
-            string focusUserId = "1";
-            var isPlastun = false;
-            var time = new TimeSpan(1, 1, 1);
-            var timeInDays = 0;
-
-            var currentUser = CreateFakeUserWithoutCity(currentUserId);
-            var focusUser = CreateFakeUserWithoutCity(focusUserId);
-
-
-            _userService
-                .Setup((x) => x.GetUserAsync(currentUserId))
-                .ReturnsAsync(currentUser);
-
-            _userService
-                .Setup((x) => x.GetUserAsync(focusUserId))
-                .ReturnsAsync(focusUser);
-
-            _userService
-                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(time);
-
-            _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
-                .ReturnsAsync(isPlastun);
-
-            _userManagerService.Setup((x) => x.IsInRoleAsync(currentUser, Roles.PlastMember)).ReturnsAsync(true);
-
-            _mapper
-                .Setup((x) => x.Map<UserDto, UserShortViewModel>(It.IsAny<UserDto>()))
-                .Returns(CreateFakeUserShortViewModel());
-
-            var expectedUserId = focusUserId;
-            var expectedTimeToJoinPlast = timeInDays;
-            var expectedIsUserPlastun = !isPlastun;
-
-            // Act
-            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
-
+            //Act
+            var result= await _userController.GetUserProfile(focusUserId);
             var actual = (result as ObjectResult).Value as PersonalDataViewModel;
 
-            // Assert
-            Assert.NotNull(actual);
-            Assert.AreEqual(expectedUserId, actual.ShortUser.ID);
-            Assert.AreEqual(expectedTimeToJoinPlast, actual.TimeToJoinPlast);
-            Assert.AreEqual(expectedIsUserPlastun, actual.IsUserPlastun);
-        }
-
-        [Test]
-        public async Task GetUserProfile_NullUser_ReturnsNotFoundResult()
-        {
-            // Arrange
-            string currentUserId = "1";
-            string focusUserId = "1";
-
-            _userService
-                .Setup((x) => x.GetUserAsync(focusUserId))
-                .ReturnsAsync(It.IsAny<UserDto>);
-
-            // Act
-            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
-
-            // Assert
-            _userService.Verify();
-            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
-            Assert.IsInstanceOf<NotFoundResult>(result);
-        }
-
-        [Test]
-        public async Task GetUserProfile_UserIsAdmin_ReturnsOkObjectResult()
-        {
-            // Arrange
-            string currentUserId = "1";
-            string focusUserId = "1";
-            bool isAdmin = true;
-
-            _userService
-                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(CreateFakeUserWithoutCity(focusUserId));
-
-            _userService
-                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(It.IsAny<TimeSpan>());
-
-            _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
-                .ReturnsAsync(isAdmin);
-
-            // Act
-            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
-
-            // Assert
-            Assert.NotNull((result as ObjectResult).Value);
+            //Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(actual);
+            Assert.IsNull(actual.ShortUser);
+            Assert.IsNotNull(actual.User);
         }
 
         [Test]
-        public async Task GetUserProfile_Forbidden_Returns403Forbidden()
+        public async Task GetUserProfile_UserCanNotSeeFullProfile_ReturnsShortUserProfile()
         {
-            // Arrange
-            string currentUserId = "2";
-            string focusUserId = "1";
-            bool isAdmin = true;
+            //Arrange
+            var focusUserId = "qwerty123456";
+            var user = CreateFakeUser();
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanViewUserFullProfile", false }
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
+            var currentUser = new User();
+            var focusUserViewModel = new UserShortViewModel();
 
-            _userService
-                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(CreateFakeUserWithoutCity(focusUserId));
+            _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(currentUser);
+            _userAccessService.Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
+            _mapper.Setup(m => m.Map<UserDto, UserShortViewModel>(It.IsAny<UserDto>()))
+                .Returns(focusUserViewModel);
 
-            _userService
-                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(It.IsAny<TimeSpan>());
-
-            _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
-                .ReturnsAsync(isAdmin);
-
-            var expected = StatusCodes.Status403Forbidden;
-
-            // Act
-            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
-            var actual = (result as StatusCodeResult).StatusCode;
-
-            // Assert
-            _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
-            _userService.Verify();
-            Assert.AreEqual(expected, actual);
-        }
-
-        [Test]
-        public async Task GetUserProfile_User_ReturnsCreatedModel()
-        {
-            // Arrange
-            string currentUserId = "1";
-            string focusUserId = "1";
-            var isPlastun = true;
-            var time = new TimeSpan(1, 1, 1);
-            var timeInDays = 0;
-
-            _userService
-                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(CreateFakeUserWithoutCity(focusUserId));
-
-            _userService
-                .Setup((x) => x.CheckOrAddPlastunRole(It.IsAny<string>(), It.IsAny<DateTime>()))
-                .Returns(time);
-
-            _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
-                .ReturnsAsync(isPlastun);
-
-            _mapper
-                .Setup((x) => x.Map<UserDto, UserViewModel>(It.IsAny<UserDto>()))
-                .Returns(CreateFakeUserViewModel());
-
-            var expectedUserId = focusUserId;
-            var expectedTimeToJoinPlast = timeInDays;
-            var expectedIsUserPlastun = isPlastun;
-
-            // Act
-            var result = await _userController.GetUserProfile(currentUserId, focusUserId);
-
+            //Act
+            var result = await _userController.GetUserProfile(focusUserId);
             var actual = (result as ObjectResult).Value as PersonalDataViewModel;
 
-            // Assert
-            Assert.NotNull(actual);
-            Assert.AreEqual(expectedUserId, actual.User.ID);
-            Assert.AreEqual(expectedTimeToJoinPlast, actual.TimeToJoinPlast);
-            Assert.AreEqual(expectedIsUserPlastun, actual.IsUserPlastun);
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotNull(actual);
+            Assert.IsNull(actual.User);
+            Assert.IsNotNull(actual.ShortUser);
+        }
+
+        [Test]
+        public async Task GetUserProfile_FocusUserIsNotFound_ReturnsNotFound()
+        {
+            //Arrange
+            string focusUserId = "qwerty123456";
+            UserDto user = null;
+            _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
+                .ReturnsAsync(user);
+
+            //Act
+            var result = await _userController.GetUserProfile(focusUserId);
+
+            //Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -982,7 +843,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _userController.ApproveUser(idString);
+            var result = await _userController.ApproveUser(idString, ApproveType.PlastMember);
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -1003,7 +864,7 @@ namespace EPlast.Tests.Controllers
             var expected = StatusCodes.Status403Forbidden;
 
             // Act
-            var result = await _userController.ApproveUser(idString);
+            var result = await _userController.ApproveUser(idString, ApproveType.PlastMember);
             var actual = (result as StatusCodeResult).StatusCode;
 
             // Assert
@@ -1017,7 +878,7 @@ namespace EPlast.Tests.Controllers
         public async Task ApproveUser_NullUserIdString_ReturnsNotFoundResult()
         {
             // Act
-            var result = await _userController.ApproveUser(It.IsAny<string>());
+            var result = await _userController.ApproveUser(It.IsAny<string>(), It.IsAny<ApproveType>());
 
             // Assert
             _loggerService.Verify((x) => x.LogError(It.IsAny<string>()), Times.Once);
@@ -1031,12 +892,12 @@ namespace EPlast.Tests.Controllers
             var idString = "1";
 
             _confirmedUserService
-                .Setup((x) => x.CreateAsync(It.IsAny<User>(), idString, It.IsAny<bool>(), It.IsAny<bool>()));
+                .Setup((x) => x.CreateAsync(It.IsAny<User>(), idString, It.IsAny<ApproveType>()));
             _userManagerService.Setup(x => x.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(new List<string> {Roles.KurinHead});
 
             // Act
-            var result = await _userController.ApproveUser(idString, It.IsAny<bool>(), It.IsAny<bool>());
+            var result = await _userController.ApproveUser(idString, It.IsAny<ApproveType>());
 
             // Assert
             _confirmedUserService.Verify();

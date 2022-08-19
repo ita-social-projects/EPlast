@@ -2,6 +2,7 @@
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Threading.Tasks;
@@ -26,9 +27,9 @@ namespace EPlast.BLL.Services
             _emailContentService = emailContentService;
         }
 
-        public async Task CreateAsync(User vaucherUser, string vaucheeId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async Task CreateAsync(User vaucherUser, string vaucheeId, ApproveType approveType)
         {
-            var confirmedUser = new ConfirmedUser { UserID = vaucheeId, ConfirmDate = DateTime.Now, isClubAdmin = isClubAdmin, isCityAdmin = isCityAdmin };
+            var confirmedUser = new ConfirmedUser { UserID = vaucheeId, ConfirmDate = DateTime.Now, ApproveType = approveType };
             var approver = new Approver { UserID = await _userManager.GetUserIdAsync(vaucherUser), ConfirmedUser = confirmedUser };
             confirmedUser.Approver = approver;
             await _repoWrapper.ConfirmedUser.CreateAsync(confirmedUser);

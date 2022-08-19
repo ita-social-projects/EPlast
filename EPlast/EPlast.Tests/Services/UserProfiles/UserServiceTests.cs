@@ -84,7 +84,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetCityAdminConfirmedUser_Valid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isCityAdmin = true;
+            _confirmedUserDTO.ApproveType = ApproveType.City;
 
             // Act
             var result = _userService.GetCityAdminConfirmedUser(_userDTO);
@@ -98,7 +98,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetCityAdminConfirmedUser_InValid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isCityAdmin = false;
+            _confirmedUserDTO.ApproveType = ApproveType.PlastMember;
 
             // Act
             var result = _userService.GetCityAdminConfirmedUser(_userDTO);
@@ -111,7 +111,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetClubAdminConfirmedUser_Valid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isClubAdmin = true;
+            _confirmedUserDTO.ApproveType = ApproveType.Club;
 
             //Act
             var result = _userService.GetClubAdminConfirmedUser(_userDTO);
@@ -125,7 +125,7 @@ namespace EPlast.Tests.Services.UserProfiles
         public void GetClubAdminConfirmedUser_InValid_GetConfirmedUserDTO()
         {
             //Arrange
-            _confirmedUserDTO.isCityAdmin = false;
+            _confirmedUserDTO.ApproveType = ApproveType.PlastMember;
 
             //Act
             var result = _userService.GetClubAdminConfirmedUser(_userDTO);
@@ -406,7 +406,7 @@ namespace EPlast.Tests.Services.UserProfiles
             //Arrange
             _mockRepoWrapper
                 .Setup(x => (x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>())))
-                .Returns(new List<ConfirmedUser>() { new ConfirmedUser() { isClubAdmin = false } }.AsQueryable());
+                .Returns(new List<ConfirmedUser>() { new ConfirmedUser() { ApproveType = ApproveType.PlastMember } }.AsQueryable());
 
             var registeredOn = DateTime.Now - new TimeSpan(90, 0, 0, 0);
 
@@ -425,7 +425,7 @@ namespace EPlast.Tests.Services.UserProfiles
             //Arrange
             _mockRepoWrapper
                 .Setup(x => (x.ConfirmedUser.FindByCondition(It.IsAny<Expression<Func<ConfirmedUser, bool>>>())))
-                .Returns(new List<ConfirmedUser>() { new ConfirmedUser() { isClubAdmin = true } }.AsQueryable());
+                .Returns(new List<ConfirmedUser>() { new ConfirmedUser() { ApproveType = ApproveType.Club } }.AsQueryable());
 
             var registeredOn = DateTime.Now - new TimeSpan(160, 0, 0, 0);
 
