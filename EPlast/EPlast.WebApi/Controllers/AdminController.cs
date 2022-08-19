@@ -99,7 +99,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Roles are null</response>
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [AuthorizeAllRolesExcept(Roles.RegisteredUser)]
+        [AuthorizeAllRolesExcept(Roles.RegisteredUser, Roles.FormerPlastMember)]
         [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
