@@ -10,5 +10,6 @@ namespace EPlast.BLL.DTO.Blank
         [Required]
         public string UserId { get; set; }
 
+        public int? CourseId { get; set; }
     }
 }

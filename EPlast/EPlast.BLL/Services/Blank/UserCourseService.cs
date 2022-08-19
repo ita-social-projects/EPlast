@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.Blank;
+using EPlast.BLL.DTO.Course;
 using EPlast.BLL.Interfaces.Blank;
+using EPlast.DataAccess.Entities.Course;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -22,30 +24,20 @@ namespace EPlast.BLL.Services.Blank
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<CourseDTO>> GetCourseByIdAsync(string userid)
-        {
-            var result = (await _repositoryWrapper.UserCourse
-                .GetAllAsync(
-                    predicate: uc => uc.UserId == userid && !uc.StatusPassedCourse ,
-                    include: a => a.Include(uc => uc.Сourse)))
-                .Select(uc => new CourseDTO
-                { 
-                    ID = uc.ID,
-                    Link = uc.Сourse.Link,
-                    Name = uc.Сourse.Name                    
+        public async Task<IEnumerable<CourseDto>> GetCourseByUserIdAsync(string userid)
+        {      
+            var allcourse = (await _repositoryWrapper.Course
+                .GetAllAsync(include: a=> a.Include(a =>a.AchievementDocuments))).Select(c => new CourseDto
+                {
+                    ID = c.ID,
+                    Link = c.Link,
+                    Name = c.Name,
+                    IsFinishedByUser = c.AchievementDocuments.Any(uc => uc.UserId == userid )
                 });
 
-            return result;        
+            return allcourse;
+
         }
 
-
-
-        public  async Task ChangeCourseStatus(string userid)
-        {
-            var result = await _repositoryWrapper.UserCourse.GetFirstOrDefaultAsync(predicate: uc => uc.UserId == userid,null);
-            result.StatusPassedCourse = true;
-            _repositoryWrapper.UserCourse.Update(result);
-            await _repositoryWrapper.SaveAsync();
-        }
     }
 }

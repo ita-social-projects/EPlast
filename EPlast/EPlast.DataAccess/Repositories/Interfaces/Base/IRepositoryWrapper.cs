@@ -102,7 +102,7 @@ namespace EPlast.DataAccess.Repositories
         IUserRenewalRepository UserRenewal { get; }
         ICourseRepository Course { get; }
 
-        IUserCourseRepository UserCourse { get; }
+        
         void Save();
 
         Task SaveAsync();
