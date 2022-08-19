@@ -134,9 +134,9 @@ namespace EPlast.BLL.Services.Region
             }
 
             await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+            await EditStatusAdministration(regionAdministrationDTO.ID, false);
             await AddRegionAdministrator(regionAdministrationDTO);
             return regionAdministrationDTO;
-
         }
 
         public async Task EditStatusAdministration(int adminId, bool status = false)
@@ -153,9 +153,9 @@ namespace EPlast.BLL.Services.Region
 
         public async Task DeleteAdminByIdAsync(int Id)
         {
-            var Admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
-            var user = await _userManager.FindByIdAsync(Admin.UserId);
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
+            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
+            var user = await _userManager.FindByIdAsync(admin.UserId);
             string role = adminType.AdminTypeName switch
             {
                 Roles.OkrugaHead => Roles.OkrugaHead,
@@ -248,6 +248,7 @@ namespace EPlast.BLL.Services.Region
                 await DeleteAdminByIdAsync(role.ID);
             }
         }
+
         private bool CheckCityWasAdmin(RegionAdministration newAdmin)
         {
             return !(DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null);
