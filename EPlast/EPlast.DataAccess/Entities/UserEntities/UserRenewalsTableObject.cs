@@ -15,5 +15,6 @@ namespace EPlast.DataAccess.Entities.UserEntities
         public DateTime RequestDate { get; set; }
         public string Email { get; set; }
         public bool Approved { get; set; }
+        public string Comment { get; set; }
     }
 }

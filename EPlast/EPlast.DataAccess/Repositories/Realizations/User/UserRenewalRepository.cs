@@ -30,13 +30,14 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                     || ur.City.Region.RegionName.ToLower().Contains(searchData)
                     || ur.RequestDate.ToString().Contains(searchData)
                     || ur.User.Email.Contains(searchData)
+                    || ur.User.Comment.ToLower().Contains(searchData)
                 );
 
             var selected = found
                 .Select(ur => new UserRenewalsTableObject
                 {
                     Id = ur.Id,
-                    UserName = ur.User.FirstName + ur.User.LastName,
+                    UserName = ur.User.FirstName + ' ' + ur.User.LastName,
                     UserId = ur.User.Id,
                     Approved = ur.Approved,
                     CityName = ur.City.Name,
@@ -45,7 +46,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                     RegionName = ur.City.Region.RegionName,
                     RequestDate = ur.RequestDate,
                     Subtotal = found.Count(),
-                    Total = EPlastDBContext.Set<UserRenewal>().Count()
+                    Total = EPlastDBContext.Set<UserRenewal>().Count(),
+                    Comment = ur.User.Comment
                 });
 
             var items = selected
