@@ -332,7 +332,7 @@
     "CanSeeUserAccessLevel": true,
     "CanChangeUserActiveMembershipDates": false,
     "CanSeeUserSecretariesPage": true,
-    "CanSeeUserEvents": false,
+    "CanSeeUserEvents": true,
     "CanCreateEvent": false,
     "CanSeeUserVisitedEvents": false,
     "CanApplyForEvent": true,
