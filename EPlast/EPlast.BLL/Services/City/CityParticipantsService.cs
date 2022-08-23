@@ -506,7 +506,7 @@ namespace EPlast.BLL.Services.City
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.CityId == cityId && a.Status);
 
-            if ((DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null) == false)
+            if (!(newAdmin.EndDate == null || DateTime.Today < newAdmin.EndDate))
             {
                 newAdmin.Status = false;
                 return;
@@ -527,7 +527,7 @@ namespace EPlast.BLL.Services.City
 
         private bool CheckCityWasAdmin(CityAdministration newAdmin)
         {
-            return !(DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null);
+            return !(newAdmin.EndDate == null || DateTime.Today < newAdmin.EndDate);
         }
 
         private async Task GiveUserSupporterRole(User user)
