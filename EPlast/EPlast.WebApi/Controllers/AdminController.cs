@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
+using EPlast.WebApi.CustomAttributes;
 using EPlast.WebApi.Models.Admin;
 using EPlast.WebApi.Models.Role;
 using MediatR;
@@ -98,7 +99,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Roles are null</response>
         [Authorize(AuthenticationSchemes = "Bearer")]
-        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastunAndGBHeadAndGBSectorHead)]
+        [AuthorizeAllRolesExcept(Roles.RegisteredUser, Roles.FormerPlastMember)]
         [HttpGet("GetUsersByAllRoles/{roles}/{include}")]
         public async Task<IActionResult> GetUsersByAllRoles([Required(AllowEmptyStrings = false)] string roles, [Required] bool include)
         {
