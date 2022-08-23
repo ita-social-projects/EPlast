@@ -304,7 +304,7 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
-            string host = _context.Request?.Host.Host;
+            string host = _context?.Request?.Host.Host;
             var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
             url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
 
