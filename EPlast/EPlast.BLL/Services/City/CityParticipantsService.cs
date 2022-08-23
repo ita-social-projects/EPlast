@@ -231,7 +231,7 @@ namespace EPlast.BLL.Services.City
                     emailContent.Title);
             }
 
-            if (regionReferentsUPS.Count != 0)
+            if (!regionReferentsUPS.Any())
             {
                 foreach (var referent in regionReferentsUPS)
                 {
