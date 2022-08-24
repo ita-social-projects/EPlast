@@ -125,7 +125,7 @@ namespace EPlast.WebApi.Controllers
             var successful = await eventUserManager.EditEventAsync(createDTO, await _userManager.GetUserAsync(User));
 
             if (!successful) return Forbid();
-            else return NoContent();
+            return NoContent();
         }
 
         /// <summary>

@@ -135,8 +135,9 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.IsType<List<GeneralEventDto>>(methodResult);
             Assert.Equal(GetEvents().Count(), methodResult.Count());
         }
+
         [Fact]
-        public async Task GetEventInfoTestAsync()
+        public async Task GetEventInfoTestNotFoundAsync()
         {
             //Arrange
             string expectedID = "abc-1";
@@ -149,13 +150,39 @@ namespace EPlast.XUnitTest.Services.Events
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
             _mapper.Setup(m => m.Map<Event, EventInfoDto>(It.IsAny<Event>())).Returns(new EventInfoDto());
-            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
-                .ReturnsAsync(GetEvents().First());
+            _repoWrapper.Setup(x => x.Event.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync((Event)null);
+
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
+
             //Assert
-            Assert.NotNull(methodResult);
+            Assert.Null(methodResult);
+        }
+
+        [Fact]
+        public async Task GetEventInfoTestSuccessAsync()
+        {
+            //Arrange
+            string expectedID = "abc-1";
+            int eventId = 3;
+            int fakeId = 3;
+            _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(expectedID);
+            _mapper.Setup(m => m.Map<Event, EventInfoDto>(It.IsAny<Event>())).Returns(new EventInfoDto());
+            _repoWrapper.Setup(x => x.Event.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync(GetEvents().First());
+
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
+            var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
+
+            //Assert
             Assert.IsType<EventDto>(methodResult);
         }
 

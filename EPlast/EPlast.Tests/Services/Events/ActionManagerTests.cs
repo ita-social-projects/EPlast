@@ -380,5 +380,45 @@ namespace EPlast.Tests.Services.Events
             Assert.AreEqual(StatusCodes.Status403Forbidden, result);
         }
 
+        [Test]
+        public async Task GetCategoryById_CategoryExists_ReturnsCategory()
+        {
+            //Arrange
+            int categoryId = 1;
+            _mockRepositoryWrapper.Setup(x => x.EventCategory.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<EventCategory, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventCategory>,
+                        IIncludableQueryable<EventCategory, object>>>()))
+                .ReturnsAsync(new EventCategory() { ID = categoryId });
+
+            _mockMapper.Setup(x => x.Map<EventCategory, EventCategoryDto>(It.IsAny<EventCategory>()))
+                .Returns(new EventCategoryDto() { EventCategoryId = categoryId });
+
+            //Act
+            var result = await _actionManager.GetCategoryByIdAsync(categoryId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<EventCategoryDto>(result);
+        }
+
+        [Test]
+        public async Task GetCategoryById_CategoryDoesntExist_ReturnsNull()
+        {
+            //Arrange
+            int categoryId = 1;
+            var eventToCheck = _mockRepositoryWrapper.Setup(x => x.EventCategory.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<EventCategory, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventCategory>,
+                        IIncludableQueryable<EventCategory, object>>>()))
+                .ReturnsAsync((EventCategory)null);
+
+            //Act
+            var result = await _actionManager.GetCategoryByIdAsync(categoryId);
+
+            //Assert
+            Assert.Null(result);
+        }
+
     }
 }
