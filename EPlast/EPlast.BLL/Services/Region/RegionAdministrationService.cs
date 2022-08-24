@@ -41,7 +41,6 @@ namespace EPlast.BLL.Services.Region
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
 
-
             var newRegionAdmin = new RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
@@ -51,13 +50,20 @@ namespace EPlast.BLL.Services.Region
                 UserId = regionAdministrationDTO.UserId
             };
 
-            var oldAdmin = await _repoWrapper.RegionAdministration.
-                GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId
-                && d.RegionId == newRegionAdmin.RegionId && d.Status);
+            var previousAdminWithThatRole = await _repoWrapper.RegionAdministration
+                .GetFirstOrDefaultAsync(admin => 
+                    admin.AdminTypeId == newRegionAdmin.AdminTypeId && 
+                    admin.RegionId == newRegionAdmin.RegionId && admin.Status
+                );
 
-            var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
+            var adminWhoseRoleToEnd = await _repoWrapper.RegionAdministration
+                .GetFirstOrDefaultAsync(admin =>
+                    admin.UserId == regionAdministrationDTO.UserId &&
+                    admin.EndDate == regionAdministrationDTO.EndDate
+                );
 
-            string role;
+            var userToGiveRole = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
+            string role; 
             switch (adminType.AdminTypeName)
             {
                 case Roles.OkrugaHead:
@@ -79,7 +85,7 @@ namespace EPlast.BLL.Services.Region
                     role = Roles.OkrugaSecretary;
                     break;
             }
-            await _userManager.AddToRoleAsync(newUser, role);
+            await _userManager.AddToRoleAsync(userToGiveRole, role);
 
             if (adminType.AdminTypeName == headType.AdminTypeName)
             {
@@ -91,22 +97,23 @@ namespace EPlast.BLL.Services.Region
                 }
             }
 
-            if (oldAdmin != null)
+            if (previousAdminWithThatRole != null)
             {
                 if (DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null)
                 {
                     newRegionAdmin.Status = true;
-                    oldAdmin.Status = false;
-                    oldAdmin.EndDate = DateTime.Now;
+                    previousAdminWithThatRole.Status = false;
+                    previousAdminWithThatRole.EndDate = DateTime.Now;
                 }
                 else
                 {
                     newRegionAdmin.Status = false;
                 }
-                var oldUser = await _userManager.FindByIdAsync(oldAdmin.UserId);
-                await _userManager.RemoveFromRoleAsync(oldUser, role);
-                _repoWrapper.RegionAdministration.Update(oldAdmin);
-                await _repoWrapper.SaveAsync();
+
+                var previousUserWithThatRole = await _userManager.FindByIdAsync(previousAdminWithThatRole.UserId);
+                await _userManager.RemoveFromRoleAsync(previousUserWithThatRole, role);
+
+                _repoWrapper.RegionAdministration.Update(previousAdminWithThatRole);
                 await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
                 regionAdministrationDTO.ID = newRegionAdmin.ID;
@@ -114,9 +121,18 @@ namespace EPlast.BLL.Services.Region
             }
             else
             {
-                newRegionAdmin.Status = DateTime.Today < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null;
-                await _repoWrapper.SaveAsync();
-                _repoWrapper.RegionAdministration.Update(newRegionAdmin);
+                if (DateTime.Now < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null)
+                {
+                    newRegionAdmin.Status = true;
+                    adminWhoseRoleToEnd.Status = false;
+                    adminWhoseRoleToEnd.EndDate = DateTime.Now;
+                }
+                else
+                {
+                    newRegionAdmin.Status = false;
+                }
+                _repoWrapper.RegionAdministration.Update(adminWhoseRoleToEnd);
+                await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
                 regionAdministrationDTO.ID = newRegionAdmin.ID;
                 return regionAdministrationDTO;
@@ -141,7 +157,6 @@ namespace EPlast.BLL.Services.Region
             await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
             await AddRegionAdministrator(regionAdministrationDTO);
             return regionAdministrationDTO;
-
         }
 
         public async Task EditStatusAdministration(int adminId, bool status = false)
