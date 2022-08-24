@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.Commands.Club;
@@ -58,7 +59,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetClubs()
         {
             var clubs = await _clubService.GetClubs();
-            return Ok(clubs);
+            return Ok(clubs.OrderBy(c => c.Name));   
 
         }
 

@@ -82,7 +82,7 @@ namespace EPlast.WebApi.Controllers
         {
             var query = new GetActiveCitiesQuery();
             var cities = await _mediator.Send(query);
-            return Ok(cities);
+            return Ok(cities.OrderBy(c => c.Name));
         }
 
         /// <summary>

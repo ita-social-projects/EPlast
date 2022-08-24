@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
@@ -594,7 +595,7 @@ namespace EPlast.WebApi.Controllers
         public IActionResult GetActiveRegionsNames()
         {
             var regions = _regionService.GetActiveRegionsNames();
-            return Ok(regions);
+            return Ok(regions.OrderBy(r => r.RegionName));
         }
 
         /// <summary>

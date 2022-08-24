@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -78,7 +79,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("degree")]
         public async Task<IActionResult> GetAllDergees()
         {
-            return Ok(await _plastDegreeService.GetDergeesAsync());
+            var degrees = await _plastDegreeService.GetDergeesAsync();
+            return Ok(degrees.OrderBy(d => d.Name));
         }
 
         [HttpGet("accessLevel/{userId}")]
