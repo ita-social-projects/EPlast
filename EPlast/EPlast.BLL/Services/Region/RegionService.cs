@@ -388,7 +388,8 @@ namespace EPlast.BLL.Services.Region
         public IEnumerable<RegionNamesDto> GetActiveRegionsNames()
         {
             var regions = _repoWrapper.Region
-                .GetActiveRegionsNames();
+                .GetActiveRegionsNames().OrderBy(r => r.RegionName);
+
             return _mapper.Map<IQueryable<DataAccessRegion.RegionNamesObject>, IEnumerable<RegionNamesDto>>(regions);
         }
 
