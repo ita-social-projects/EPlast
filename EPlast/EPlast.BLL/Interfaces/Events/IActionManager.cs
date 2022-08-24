@@ -38,6 +38,13 @@ namespace EPlast.BLL.Interfaces.Events
         Task<IEnumerable<EventCategoryDto>> GetCategoriesByTypeIdAsync(int eventTypeId);
 
         /// <summary>
+        /// Get event category by Id.
+        /// </summary>
+        /// <returns>Event category with the specified ID</returns>
+        /// <param name="categoryId">The Id of category</param>
+        Task<EventCategoryDto> GetCategoryByIdAsync(int categoryId);
+
+        /// <summary>
         /// Get events  by event category Id and event type Id.
         /// </summary>
         /// <returns>List of events of the appropriate event type and event category.</returns>
@@ -91,7 +98,16 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventId">The Id of event</param>
         /// <param name="user">User object</param>
         /// <param name="feedback">Feedback object</param>
-        Task<int> LeaveFeedbackAsync(int eventId, User user, EventFeedbackDto feedback);
+        Task<int> LeaveFeedbackAsync(int eventId, EventFeedbackDto feedback, User user);
+
+        /// <summary>
+        /// Delete a feedback for the participant's event.
+        /// </summary>
+        /// <returns>Status code of the operation.</returns>
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="feedbackId">Feedback Id</param>
+        /// <param name="user">User object</param>
+        Task<int> DeleteFeedbackAsync(int eventId, int feedbackId, User user);
 
         /// <summary>
         /// Change event participant status to approved.
