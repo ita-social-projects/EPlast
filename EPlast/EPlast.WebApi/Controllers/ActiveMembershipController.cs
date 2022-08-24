@@ -80,7 +80,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllDergees()
         {
             var degrees = await _plastDegreeService.GetDergeesAsync();
-            return Ok(degrees.OrderBy(d => d.Name));
+            return Ok(degrees);
         }
 
         [HttpGet("accessLevel/{userId}")]

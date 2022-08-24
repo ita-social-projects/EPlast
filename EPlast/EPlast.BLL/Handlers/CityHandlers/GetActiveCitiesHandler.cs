@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -24,7 +25,9 @@ namespace EPlast.BLL.Handlers.CityHandlers
         {
             var cities = await _repoWrapper.City.GetAllAsync(c => c.IsActive);
 
-            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(cities);
+            var sortedCities = cities.OrderBy(c => c.Name);
+
+            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(sortedCities);
         }
     }
 }
