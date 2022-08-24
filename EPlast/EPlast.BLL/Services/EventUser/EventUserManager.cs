@@ -145,8 +145,20 @@ namespace EPlast.BLL.Services.EventUser
             };
         }
 
-        public async Task EditEventAsync(EventCreateDto model)
+        public async Task<bool> EditEventAsync(EventCreateDto model, User currentUser)
         {
+            var roles = await _userManager.GetRolesAsync(currentUser);
+            bool isAdmin = roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyAdmin) || roles.Contains(Roles.GoverningBodyHead);
+
+            if (!isAdmin)
+            {
+                bool isAdminForCurrentEvent = await repoWrapper.EventAdministration.
+                    GetFirstOrDefaultAsync(a => a.UserID == currentUser.Id && a.EventID == model.Event.ID) != null;
+
+                if (!isAdminForCurrentEvent) return false;
+                if (model.Event.EventStatusID == 3) return false; // 3 = Затверджено
+            }
+
             await GetAdministrationTypeId();
             var eventToEdit = mapper.Map<EventCreationDto, Event>(model.Event);
             List<EventAdministration> newAdmins = new List<EventAdministration> {
@@ -195,6 +207,7 @@ namespace EPlast.BLL.Services.EventUser
             eventToEdit.EventAdministrations = newAdmins;
             repoWrapper.Event.Update(eventToEdit);
             await repoWrapper.SaveAsync();
+            return true;
         }
 
         public async Task<int> ApproveEventAsync(int id)

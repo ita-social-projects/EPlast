@@ -4,5 +4,6 @@
     {
         public int GalleryId { get; set; }
         public string FileName { get; set; }
+        public string BlobName { get; set; }
     }
 }

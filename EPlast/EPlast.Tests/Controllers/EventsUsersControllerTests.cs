@@ -249,7 +249,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             eventUserManager
-                .Setup((x) => x.EditEventAsync(CreateFakeEventCreate()));
+                .Setup((x) => x.EditEventAsync(CreateFakeEventCreate(), It.IsAny<User>()));
 
             // Act
             var result = await eventsUsersController.EventEdit(CreateFakeEventCreate());

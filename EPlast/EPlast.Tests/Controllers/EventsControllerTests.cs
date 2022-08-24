@@ -721,20 +721,134 @@ namespace EPlast.Tests.Controllers
             Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
         }
 
+        [Test]
+        public async Task LeaveFeedback_FeedbackIsPosted_ReturnsOk()
+        {
+            //Arrange
+            int eventId = 1;
+            EventFeedbackDto fakeFeedback = new EventFeedbackDto();
+
+            _actionManager
+                .Setup(x => x.LeaveFeedbackAsync(eventId, fakeFeedback, It.IsAny<User>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
+
+            //Act
+            var result = await _eventsController.LeaveFeedback(eventId, fakeFeedback);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task LeaveFeedback_EventNotFound_ReturnsNotFound()
+        {
+            //Arrange
+            int eventId = 1;
+            EventFeedbackDto fakeFeedback = new EventFeedbackDto();
+
+            _actionManager
+                .Setup(x => x.LeaveFeedbackAsync(eventId, fakeFeedback, It.IsAny<User>()))
+                .ReturnsAsync(StatusCodes.Status404NotFound);
+
+            //Act
+            var result = await _eventsController.LeaveFeedback(eventId, fakeFeedback);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task LeaveFeedback_ParticipantCheckFails_ReturnsForbidden()
+        {
+            //Arrange
+            int eventId = 1;
+            EventFeedbackDto fakeFeedback = new EventFeedbackDto();
+
+            _actionManager
+                .Setup(x => x.LeaveFeedbackAsync(eventId, fakeFeedback, It.IsAny<User>()))
+                .ReturnsAsync(StatusCodes.Status403Forbidden);
+
+            //Act
+            var result = await _eventsController.LeaveFeedback(eventId, fakeFeedback);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ForbidResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteFeedback_ParticipantCheckFails_ReturnsForbidden()
+        {
+            //Arrange
+            int eventId = 1;
+            int feedbackId = 1;
+
+            _actionManager
+                .Setup(x => x.DeleteFeedbackAsync(eventId, feedbackId, It.IsAny<User>()))
+                .ReturnsAsync(StatusCodes.Status403Forbidden);
+
+            //Act
+            var result = await _eventsController.DeleteFeedback(eventId, feedbackId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<ForbidResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteFeedback_EventOrFeedbackNotFound_ReturnsNotFound()
+        {
+            //Arrange
+            int eventId = 1;
+            int feedbackId = 1;
+
+            _actionManager
+                .Setup(x => x.DeleteFeedbackAsync(eventId, feedbackId, It.IsAny<User>()))
+                .ReturnsAsync(StatusCodes.Status404NotFound);
+
+            //Act
+            var result = await _eventsController.DeleteFeedback(eventId, feedbackId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteFeedback_AllChecksPassed_ReturnsOk()
+        {
+            //Arrange
+            int eventId = 1;
+            int feedbackId = 1;
+
+            _actionManager
+                .Setup(x => x.DeleteFeedbackAsync(eventId, feedbackId, It.IsAny<User>()))
+                .ReturnsAsync(StatusCodes.Status200OK);
+
+            //Act
+            var result = await _eventsController.DeleteFeedback(eventId, feedbackId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkResult>(result);
+        }
+
         private List<EventTypeDto> CreateListOfFakeEventTypes()
-            => new List<EventTypeDto>()
+        => new List<EventTypeDto>()
+        {
+            new EventTypeDto()
             {
-                new EventTypeDto()
-                {
-                    ID = 0,
-                    EventTypeName = "SomeEventTypeName",
-                },
-                new EventTypeDto()
-                { 
-                    ID = 1,
-                    EventTypeName = "AnotherEventTypeName",
-                },
-            };
+                ID = 0,
+                EventTypeName = "SomeEventTypeName",
+            },
+            new EventTypeDto()
+            { 
+                ID = 1,
+                EventTypeName = "AnotherEventTypeName",
+            },
+        };
 
         private List<EventCategoryDto> CreateListOfFakeEventCategories()
             => new List<EventCategoryDto>()

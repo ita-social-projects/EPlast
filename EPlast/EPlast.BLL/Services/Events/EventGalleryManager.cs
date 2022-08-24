@@ -94,7 +94,8 @@ namespace EPlast.BLL.Services.Events
                 pictures.Add(new EventGalleryDto
                 {
                     GalleryId = gallery.ID,
-                    FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
+                    FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName),
+                    BlobName = gallery.GalaryFileName
                 });
             }
 

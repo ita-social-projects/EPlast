@@ -12,6 +12,8 @@ namespace EPlast.BLL.Mapping.Events
                 .ForMember(f => f.AuthorName, s => s.MapFrom(d => d.Participant.User.FirstName + ' ' + d.Participant.User.LastName))
                 .ForMember(f => f.AuthorAvatarUrl, s => s.MapFrom(d => d.Participant.User.ImagePath))
                 .ForMember(f => f.AuthorUserId, s => s.MapFrom(d => d.Participant.UserId));
+
+            CreateMap<EventFeedbackDto, EventFeedback>();
         }
     }
 }

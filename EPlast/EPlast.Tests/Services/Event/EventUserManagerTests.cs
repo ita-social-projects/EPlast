@@ -77,7 +77,7 @@ namespace EPlast.Tests.Services.Event
                .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
 
             //Act
-            await _service.EditEventAsync(model);
+            await _service.EditEventAsync(model, It.IsAny<User>());
 
             //Assert
             _repoWrapper.Verify(t => t.EventAdministration.Delete(tempAlternate));
@@ -110,7 +110,7 @@ namespace EPlast.Tests.Services.Event
             inputModel.Pysar = new EventAdministrationDto();
 
             //Act
-            await _service.EditEventAsync(inputModel);
+            await _service.EditEventAsync(inputModel, It.IsAny<User>());
 
             //Assert
             _repoWrapper.Verify(x => x.Event.Update(It.IsAny<DAEvent>()));
@@ -147,7 +147,7 @@ namespace EPlast.Tests.Services.Event
             inputModel.Pysar = new EventAdministrationDto();
 
             //Act
-            await _service.EditEventAsync(inputModel);
+            await _service.EditEventAsync(inputModel, It.IsAny<User>());
 
             //Assert
             _repoWrapper.Verify(x => x.Event.Update(It.IsAny<DAEvent>()));

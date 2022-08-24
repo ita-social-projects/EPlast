@@ -105,6 +105,23 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get event category by ID.
+        /// </summary>
+        /// <returns>List of event categories of the appropriate event type.</returns>
+        /// <param name="id">The Id of event type</param>
+        /// <response code="200">List of event categories</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="404">Events does not exist</response> 
+        [HttpGet("categories/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            var category = await _actionManager.GetCategoryByIdAsync(id);
+            if (category == null) return NotFound();
+            return Ok(category);
+        }
+
+        /// <summary>
         /// Create a new category
         /// </summary>
         /// <returns>A newly created category</returns>
@@ -170,7 +187,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEventDetail(int id)
         {
-            return Ok(await _actionManager.GetEventInfoAsync(id, await _userManager.GetUserAsync(User)));
+            var eventInfo = await _actionManager.GetEventInfoAsync(id, await _userManager.GetUserAsync(User));
+
+            if (eventInfo == null) return NotFound();
+            return Ok(eventInfo);
         }
 
         /// <summary>
@@ -186,24 +206,49 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Set an estimate of the participant's event.
+        /// Add a feedback for an event.
         /// </summary>
-        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>  
+        /// <returns>Status code of sending a feedback of the participant's event operation.</returns>  
         /// <param name="id">The Id of event</param>
         /// <param name="feedback">Feedback DTO</param>
         /// <response code="200">OK</response>
         /// <response code="403">The user was not present at an event</response>
         /// <response code="404">The event was not found</response>
         /// <response code="400">Bad Request</response>  
-        [HttpPut("{id:int}/feedback")]
+        [HttpPut("{id:int}/feedbacks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> LeaveFeedback(int id, EventFeedbackDto feedback)
         {
-            var result = await _actionManager.LeaveFeedbackAsync(id, await _userManager.GetUserAsync(User), feedback);
+            var result = await _actionManager.LeaveFeedbackAsync(id, feedback, await _userManager.GetUserAsync(User));
 
             return result switch
             {
-                StatusCodes.Status200OK => Ok(result),
+                StatusCodes.Status200OK => Ok(),
+                StatusCodes.Status403Forbidden => Forbid(),
+                StatusCodes.Status404NotFound => NotFound(),
+                _ => BadRequest()
+            };
+        }
+
+        /// <summary>
+        /// Add a feedback for an event.
+        /// </summary>
+        /// <returns>Status code of sending a feedback of the participant's event operation.</returns>  
+        /// <param name="id">The Id of event</param>
+        /// <param name="fId">Feedback ID</param>
+        /// <response code="200">OK</response>
+        /// <response code="403">The user was not present at an event</response>
+        /// <response code="404">The event was not found</response>
+        /// <response code="400">Bad Request</response>  
+        [HttpDelete("{id:int}/feedbacks/{fId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteFeedback(int id, int fId)
+        {
+            var result = await _actionManager.DeleteFeedbackAsync(id, fId, await _userManager.GetUserAsync(User));
+
+            return result switch
+            {
+                StatusCodes.Status200OK => Ok(),
                 StatusCodes.Status403Forbidden => Forbid(),
                 StatusCodes.Status404NotFound => NotFound(),
                 _ => BadRequest()
