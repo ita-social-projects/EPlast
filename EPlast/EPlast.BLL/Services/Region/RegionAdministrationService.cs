@@ -116,7 +116,7 @@ namespace EPlast.BLL.Services.Region
             {
                 newRegionAdmin.Status = DateTime.Today < newRegionAdmin.EndDate || newRegionAdmin.EndDate == null;
                 await _repoWrapper.SaveAsync();
-                await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
+                _repoWrapper.RegionAdministration.Update(newRegionAdmin);
                 await _repoWrapper.SaveAsync();
                 regionAdministrationDTO.ID = newRegionAdmin.ID;
                 return regionAdministrationDTO;
