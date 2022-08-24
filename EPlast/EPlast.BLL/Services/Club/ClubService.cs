@@ -374,7 +374,7 @@ namespace EPlast.BLL.Services.Club
         public async Task<IEnumerable<ClubForAdministrationDto>> GetClubs()
         {
             var clubs = await _repoWrapper.Club.GetAllAsync();
-            var filteredClubs = clubs.Where(c => c.IsActive).OrderBy(c => c.Name);
+            var filteredClubs = clubs.Where(c => c.IsActive);
             return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDto>>(filteredClubs);
         }
 

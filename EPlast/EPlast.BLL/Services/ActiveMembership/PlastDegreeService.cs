@@ -29,9 +29,8 @@ namespace EPlast.BLL.Services.ActiveMembership
         public async Task<IEnumerable<PlastDegreeDto>> GetDergeesAsync()
         {
             var degrees = await _repoWrapper.PlastDegrees.GetAllAsync();
-            var sortedDegrees = degrees.OrderBy(d => d.Name);
 
-            return _mapper.Map<IEnumerable<PlastDegreeDto>>(sortedDegrees);
+            return _mapper.Map<IEnumerable<PlastDegreeDto>>(degrees);
         }
 
         /// <inheritdoc />

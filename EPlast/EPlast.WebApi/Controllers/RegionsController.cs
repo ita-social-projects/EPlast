@@ -595,7 +595,7 @@ namespace EPlast.WebApi.Controllers
         public IActionResult GetActiveRegionsNames()
         {
             var regions = _regionService.GetActiveRegionsNames();
-            return Ok(regions);
+            return Ok(regions.OrderBy(r => r.RegionName));
         }
 
         /// <summary>
