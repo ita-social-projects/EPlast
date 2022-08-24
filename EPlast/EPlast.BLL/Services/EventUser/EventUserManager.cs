@@ -6,6 +6,7 @@ using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -25,11 +26,13 @@ namespace EPlast.BLL.Services.EventUser
         private readonly IEventStatusManager eventStatusManager;
         private readonly IEventAdministrationTypeManager eventAdministrationTypeManager;
         private readonly UserManager<User> _userManager;
+        private readonly IUserAccessService _userAccesses;
+
 
 
         public EventUserManager(IRepositoryWrapper repoWrapper, IMapper mapper,
             IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager,
-            IEventAdministrationTypeManager eventAdministrationTypeManager, UserManager<User> _userManager)
+            IEventAdministrationTypeManager eventAdministrationTypeManager, UserManager<User> _userManager, IUserAccessService _userAccesses)
         {
             this.repoWrapper = repoWrapper;
             this.mapper = mapper;
@@ -37,6 +40,7 @@ namespace EPlast.BLL.Services.EventUser
             this.eventStatusManager = eventStatusManager;
             this.eventAdministrationTypeManager = eventAdministrationTypeManager;
             this._userManager = _userManager;
+            this._userAccesses = _userAccesses;
         }
 
         private int commandantTypeId;
@@ -147,17 +151,8 @@ namespace EPlast.BLL.Services.EventUser
 
         public async Task<bool> EditEventAsync(EventCreateDto model, User currentUser)
         {
-            var roles = await _userManager.GetRolesAsync(currentUser);
-            bool isAdmin = roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyAdmin) || roles.Contains(Roles.GoverningBodyHead);
-
-            if (!isAdmin)
-            {
-                bool isAdminForCurrentEvent = await repoWrapper.EventAdministration.
-                    GetFirstOrDefaultAsync(a => a.UserID == currentUser.Id && a.EventID == model.Event.ID) != null;
-
-                if (!isAdminForCurrentEvent) return false;
-                if (model.Event.EventStatusID == 3) return false; // 3 = Затверджено
-            }
+            var userAccesses = await _userAccesses.GetUserEventAccessAsync(currentUser.Id, currentUser, model.Event.ID);
+            if (!userAccesses["EditEvent"]) return false;
 
             await GetAdministrationTypeId();
             var eventToEdit = mapper.Map<EventCreationDto, Event>(model.Event);

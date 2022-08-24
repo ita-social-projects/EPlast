@@ -223,7 +223,7 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetEventDetail_ReturnsOkObjectResult()
+        public async Task GetEventDetail_EventExists_ReturnsOkObjectResult()
         {
             // Arrange
             _actionManager
@@ -239,19 +239,18 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetEventDetail_EventDTO_ReturnsNotNullEventDTO()
+        public async Task GetEventDetail_EventDoesntExist_ReturnsNotFound()
         {
             // Arrange
             _actionManager
                 .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(CreateFakeEvent());
+                .ReturnsAsync((EventDto)null);
 
             // Act
             var result = await _eventsController.GetEventDetail(It.IsAny<int>());
-            var actual = (result as ObjectResult).Value as EventDto;
 
             // Assert
-            Assert.IsNotNull(actual);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -679,6 +678,38 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(categoryList);
             Assert.AreEqual(expectedCount, categoryList.Count);
 
+        }
+
+        [Test]
+        public async Task GetCategoriesById_CategoryExists_ReturnsOkObjectResult()
+        {
+            //Arrange
+            int categoryId = 1;
+            _actionManager
+                .Setup(x => x.GetCategoryByIdAsync(categoryId)).ReturnsAsync(new EventCategoryDto());
+
+            //Act
+            var result = await _eventsController.GetCategoryById(categoryId);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as OkObjectResult).Value);
+        }
+
+        [Test]
+        public async Task GetCategoriesById_CategoryDoesntExist_ReturnsNotFound()
+        {
+            //Arrange
+            int categoryId = 1;
+            _actionManager
+                .Setup(x => x.GetCategoryByIdAsync(categoryId)).ReturnsAsync((EventCategoryDto)null);
+
+            //Act
+            var result = await _eventsController.GetCategoryById(categoryId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
