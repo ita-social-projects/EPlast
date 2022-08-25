@@ -72,19 +72,6 @@ namespace EPlast.Tests.Services.UserProfiles
         public async Task ViewFullProfile_SameUser_ReturnsTrue()
         {
             //Arrange
-            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { });
-
-            //Act
-            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, _fakeUser.Id);
-
-            //Assert
-            Assert.IsTrue(result);
-        }
-
-        [Test]
-        public async Task ViewFullProfile_SameUser_ReturnsTrue()
-        {
-            //Arrange
 
             //Act
             var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, _fakeUser.Id);
