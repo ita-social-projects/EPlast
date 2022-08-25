@@ -180,17 +180,13 @@ namespace EPlast.DataAccess.Repositories
         {
             switch (sortKey)
             {
-                case -1:
-                    items = items
-                        .OrderByDescending(x => x.UserSystemId);
-                    break;
                 case 2:
                     items = items
                        .OrderBy(x => x.FirstName);
                     break;
                 case -2:
                     items = items
-                       .OrderBy(x => x.FirstName);
+                       .OrderByDescending(x => x.FirstName);
                     break;
                 case 3:
                     items = items
