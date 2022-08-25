@@ -585,7 +585,7 @@ namespace EPlast.WebApi.Controllers
 
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDto>(admin);
 
-            await _cityParticipantsService.EditAdministratorAsync(adminDTO);
+            adminDTO = await _cityParticipantsService.EditAdministratorAsync(adminDTO);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
             return Ok(adminDTO);
@@ -693,7 +693,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("GetCheckPlastMember/{userId}")]
-
         public async Task<IActionResult> GetCheckPlastMember(string userId)
         {
             var query = new PlastMemberCheckQuery(userId);
