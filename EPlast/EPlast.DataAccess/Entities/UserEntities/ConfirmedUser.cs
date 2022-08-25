@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EPlast.Resources;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,8 +15,7 @@ namespace EPlast.DataAccess.Entities
         public int? ApproverID { get; set; }
         public Approver Approver { get; set; }
         public DateTime ConfirmDate { get; set; }
-        public bool isClubAdmin { get; set; }
-        public bool isCityAdmin { get; set; }
+        public ApproveType ApproveType { get; set; }
 
     }
 }

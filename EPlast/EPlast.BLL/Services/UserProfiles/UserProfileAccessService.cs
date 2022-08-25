@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;

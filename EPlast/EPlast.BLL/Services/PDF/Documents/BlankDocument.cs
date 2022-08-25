@@ -5,6 +5,7 @@ using PdfSharpCore.Pdf;
 using System.IO;
 using QRCoder;
 using System.Drawing;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.PDF.Documents
 {
@@ -50,13 +51,13 @@ namespace EPlast.BLL.Services.PDF.Documents
             int count = blank.User?.ConfirmedUsers != null ? blank.User.ConfirmedUsers.Count : 0;
             for (int i = 0, countMember = 0, coordinates = 250; i < count; i++)
             {
-                if (blank.User.ConfirmedUsers.ElementAt(i).isCityAdmin)
+                if (blank.User.ConfirmedUsers.ElementAt(i).ApproveType == ApproveType.City)
                 {
                     SetText(gfx, $"{blank.User.ConfirmedUsers.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
                     XFontStyle.Regular, 150, 643);
                     SetText(gfx, $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}", XFontStyle.Italic, 435, 643);
                 }
-                else if (blank.User.ConfirmedUsers.ElementAt(i).isClubAdmin)
+                else if (blank.User.ConfirmedUsers.ElementAt(i).ApproveType == ApproveType.Club)
                 {
                     SetText(gfx, $"{blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.ClubMembers?.FirstOrDefault()?.Club?.Name}, {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
                     XFontStyle.Regular, 180, 543);

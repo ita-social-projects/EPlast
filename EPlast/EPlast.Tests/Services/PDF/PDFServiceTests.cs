@@ -8,6 +8,7 @@ using EPlast.BLL.Services.PDF;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -347,8 +348,7 @@ namespace EPlast.Tests.Services.PDF
                         LastName = "LastName"
                     }
                 },
-                isCityAdmin = true,
-                isClubAdmin = false
+                ApproveType = ApproveType.City
             },
             new ConfirmedUser()
             {
@@ -359,9 +359,7 @@ namespace EPlast.Tests.Services.PDF
                         FirstName = "FirstName"
                     }
                 },
-
-                isCityAdmin = false,
-                isClubAdmin = true
+                ApproveType = ApproveType.Club
             },
             new ConfirmedUser()
             {
@@ -372,8 +370,7 @@ namespace EPlast.Tests.Services.PDF
                         LastName = "LastName"
                     }
                 },
-                isCityAdmin = false,
-                isClubAdmin = false
+                ApproveType = ApproveType.PlastMember
             },
             new ConfirmedUser()
             {
@@ -381,19 +378,16 @@ namespace EPlast.Tests.Services.PDF
                 {
                     User = new User()
                 },
-                isCityAdmin = false,
-                isClubAdmin = false
+                ApproveType = ApproveType.PlastMember            
             },
             new ConfirmedUser()
             {
                 Approver = new Approver(),
-                isCityAdmin = false,
-                isClubAdmin = false
+                ApproveType = ApproveType.PlastMember            
             },
             new ConfirmedUser()
             {
-                isCityAdmin = false,
-                isClubAdmin = false
+                ApproveType = ApproveType.PlastMember
             }
         };
 

@@ -31,4 +31,8 @@
     <ProjectReference Include="..\EPlast.DataAccess\EPlast.DataAccess.csproj" />
     <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Mapping\Course\" />
+  </ItemGroup>
 </Project>

@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 
@@ -13,11 +14,13 @@ namespace EPlast.BLL.Services.EmailSending
     public class EmailContentService : IEmailContentService
     {
         private readonly IUserService _userService;
+        private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly HttpContext _context;
 
-        public EmailContentService(IUserService userService, IHttpContextAccessor contextAccessor)
+        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper, IHttpContextAccessor contextAccessor)
         {
             _userService = userService;
+            _repositoryWrapper = repositoryWrapper;
             _context = contextAccessor.HttpContext;
         }
 
@@ -215,7 +218,7 @@ namespace EPlast.BLL.Services.EmailSending
                 Title = "EPlast",
                 Subject = "Ти отримав Пластове поручення!",
                 Message = "<h3>СКОБ!</h3>"
-                            + $"<p>Вітаємо, Ти {got} поручення у своєму профілі від {friend} {vaucherUser.FirstName} {vaucherUser.LastName}. "
+                            + $"<p>Вітаємо, Ти {got} поручення у своєму профілі від {friend} <a href='{_repositoryWrapper.GetUserPageUrl + vaucherUser.Id}'>{vaucherUser.FirstName} {vaucherUser.LastName}</a>. "
                             + "Виконуй усі завдання Пластового Чек-листа (мобільного додатку Старт Пласт)"
                             + " та отримай ступінь “Дійсного члена організації”!</p>"
                             + "<p>Ми радіємо Твоїм успіхам!</p>"
@@ -301,7 +304,7 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
-            string host = _context.Request?.Host.Host;
+            string host = _context?.Request?.Host.Host;
             var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
             url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
 

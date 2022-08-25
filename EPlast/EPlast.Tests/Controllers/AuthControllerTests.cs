@@ -266,7 +266,7 @@ namespace EPlast.Tests.Controllers
             {
                 GenderId = 1
             };
-            var user = new User();
+            var user = new User { RegistredOn = DateTime.Now.AddHours(6) };
 
             _userManagerMock
                 .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))

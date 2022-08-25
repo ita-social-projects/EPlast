@@ -69,15 +69,13 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         [Test]
-        public async Task ApproveAsCityHead_AsRegionHead_ReturnsTrue()
+        public async Task ViewFullProfile_SameUser_ReturnsTrue()
         {
             //Arrange
-            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.OkrugaHead });
-            _mockUserService.Setup(u => u.IsUserInSameCellAsync(It.IsAny<UserDto>(), It.IsAny<UserDto>(), CellType.Region)).ReturnsAsync(true);
-
+            _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { });
 
             //Act
-            var result = await _userProfileAccessService.CanApproveAsHead(_fakeUser, It.IsAny<string>(), Roles.CityHead);
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, _fakeUser.Id);
 
             //Assert
             Assert.IsTrue(result);

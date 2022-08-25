@@ -109,7 +109,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IRegionDocumentRepository _regionDocs;
         private IBlankBiographyDocumentsRepository _biographyDocumentsRepository;
         private ICourseRepository _courseRepository;
-        private IUserCourseRepository _userCourseRepository;
+        
         private IAchievementDocumentsRepository _achievementDocumentsRepository;
         private IExtractFromUpuDocumentsRepository _extractFromUPUDocumentsRepository;
         private IRegionAnnualReportsRepository _regionAnnualReports;
@@ -1158,17 +1158,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             }
         }
 
-        public IUserCourseRepository UserCourse
-        {
-            get
-            {
-                if (_userCourseRepository == null)
-                {
-                    _userCourseRepository = new UserCourseRepository(_dbContext);
-                }
-                return _userCourseRepository;
-            }
-        }
+       
 
 
         public IUserNotificationRepository UserNotifications
@@ -1239,6 +1229,14 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
             get
             {
                 return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
+            }
+        }
+
+        public string GetUserPageUrl
+        {
+            get
+            {
+                return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["UserPage"];
             }
         }
     }
