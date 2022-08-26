@@ -139,9 +139,9 @@ namespace EPlast.WebApi.Controllers
         {
             if (admin != null)
             {
-                await _regionAdministrationService.EditRegionAdministrator(admin);
+                var updatedAdmin = await _regionAdministrationService.EditRegionAdministrator(admin);
                 _logger.LogInformation($"Successful edit Admin: {admin.UserId}");
-                return Ok(admin);
+                return Ok(updatedAdmin);
             }
             _logger.LogError("Admin is null");
 
