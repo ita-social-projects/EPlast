@@ -295,6 +295,23 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get a picture in Base64 format by its' Id.
+        /// </summary>
+        /// <returns>Picture data in Base64 format.</returns>
+        /// <param name="pictureId">The Id of the picture</param>
+        /// <response code="200">Picture data</response>
+        /// <response code="404">Picture wasn't found</response> 
+        [HttpGet("pictures/{pictureId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetPicture(int pictureId)
+        {
+            var picture = await _actionManager.GetPictureAsync(pictureId);
+
+            if (picture == null) return NotFound();
+            return Ok(picture);
+        }
+
+        /// <summary>
         /// Delete event by Id.
         /// </summary>
         /// <returns>Status code of the event deleting operation.</returns>
@@ -409,9 +426,5 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));
         }
-
-
-
-
     }
 }

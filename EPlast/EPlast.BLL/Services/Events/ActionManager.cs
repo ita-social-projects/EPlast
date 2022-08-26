@@ -119,15 +119,19 @@ namespace EPlast.BLL.Services.Events
                         .ThenInclude(a => a.EventAdministrationType)
                         .Include(e => e.EventType)
                         .Include(e => e.EventCategory)
+                        .Include(e => e.EventGallarys)
                 );
 
             if (targetEvent == null) return null;
+
+            var eventInfo = _mapper.Map<Event, EventInfoDto>(targetEvent);
+            eventInfo.Gallery = targetEvent.EventGallarys.Select(g => g.GallaryID).ToList();
 
             var userId = await _userManager.GetUserIdAsync(user);
 
             var dto = new EventDto()
             {
-                Event = _mapper.Map<Event, EventInfoDto>(targetEvent),
+                Event = eventInfo,
                 IsUserEventAdmin =
                     (targetEvent.EventAdministrations.Any(evAdm =>
                         evAdm.UserID == userId)) || isUserGlobalEventAdmin,
@@ -165,6 +169,11 @@ namespace EPlast.BLL.Services.Events
         public async Task<IEnumerable<EventGalleryDto>> GetPicturesAsync(int id)
         {
             return await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
+        }
+
+        public async Task<EventGalleryDto> GetPictureAsync(int id)
+        {
+            return await _eventWrapper.EventGalleryManager.GetPictureByIdAsync(id);
         }
 
         /// <inheritdoc />
@@ -298,7 +307,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventGalleryDto>> FillEventGalleryAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<int>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
             return await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
         }
