@@ -957,12 +957,12 @@ namespace EPlast.Tests.Controllers
                 new EventGalleryDto()
                 {
                     GalleryId = 1,
-                    FileName = "SomeFilenameID1"
+                    EncodedData = "SomeFilenameID1"
                 },
                 new EventGalleryDto()
                 {
                     GalleryId = 2,
-                    FileName = "SomeFilenameID2"
+                    EncodedData = "SomeFilenameID2"
                 },
 
             };
