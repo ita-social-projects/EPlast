@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -76,12 +76,12 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
             }
             catch (UnauthorizedAccessException)
             {
                 _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даного річного звіту!" });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Р’Рё РЅРµ РјР°С”С‚Рµ РґРѕСЃС‚СѓРїСѓ РґРѕ РґР°РЅРѕРіРѕ СЂС–С‡РЅРѕРіРѕ Р·РІС–С‚Сѓ!" });
             }
         }
 
@@ -121,7 +121,7 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual reports not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт станиці!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚ СЃС‚Р°РЅРёС†С–!" });
             }
         }
         
@@ -163,12 +163,12 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт станиці!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚ СЃС‚Р°РЅРёС†С–!" });
             }
             catch (UnauthorizedAccessException)
             {
                 _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даного річного звіту!" });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Р’Рё РЅРµ РјР°С”С‚Рµ РґРѕСЃС‚СѓРїСѓ РґРѕ РґР°РЅРѕРіРѕ СЂС–С‡РЅРѕРіРѕ Р·РІС–С‚Сѓ!" });
             }
         }
 
@@ -192,22 +192,22 @@ namespace EPlast.WebApi.Controllers
                 {
                     await _annualReportService.CreateAsync(await _userManager.GetUserAsync(User), annualReport);
                     _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) created annual report for city (id: {annualReport.CityId})");
-                    return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт станиці успішно створено!" });
+                    return StatusCode(StatusCodes.Status201Created, new { message = "Р С–С‡РЅРёР№ Р·РІС–С‚ СЃС‚Р°РЅРёС†С– СѓСЃРїС–С€РЅРѕ СЃС‚РІРѕСЂРµРЅРѕ!" });
                 }
                 catch (InvalidOperationException)
                 {
                     _loggerService.LogError($"City (id: {annualReport.CityId}) has created annual report");
-                    return StatusCode(StatusCodes.Status400BadRequest, new { message = "Станиця вже має створений річний звіт!" });
+                    return StatusCode(StatusCodes.Status400BadRequest, new { message = "РЎС‚Р°РЅРёС†СЏ РІР¶Рµ РјР°С” СЃС‚РІРѕСЂРµРЅРёР№ СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
                 }
                 catch (UnauthorizedAccessException)
                 {
                     _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to city (id: {annualReport.CityId})");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даної станиці!" });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Р’Рё РЅРµ РјР°С”С‚Рµ РґРѕСЃС‚СѓРїСѓ РґРѕ РґР°РЅРѕС— СЃС‚Р°РЅРёС†С–!" });
                 }
                 catch (NullReferenceException)
                 {
                     _loggerService.LogError($"City (id: {annualReport.CityId}) not found");
-                    return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти інформацію про станицю!" });
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё С–РЅС„РѕСЂРјР°С†С–СЋ РїСЂРѕ СЃС‚Р°РЅРёС†СЋ!" });
                 }
             }
             else
@@ -236,22 +236,22 @@ namespace EPlast.WebApi.Controllers
                 {
                     await _annualReportService.EditAsync(await _userManager.GetUserAsync(User), annualReport);
                     _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {annualReport.ID})");
-                    return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно відредаговано!" });
+                    return StatusCode(StatusCodes.Status200OK, new { message = "Р С–С‡РЅРёР№ Р·РІС–С‚ СѓСЃРїС–С€РЅРѕ РІС–РґСЂРµРґР°РіРѕРІР°РЅРѕ!" });
                 }
                 catch (InvalidOperationException)
                 {
                     _loggerService.LogError($"Annual report (id: {annualReport.ID}) can not be edited");
-                    return StatusCode(StatusCodes.Status400BadRequest, new { message = "Не вдалося редагувати річний звіт!" });
+                    return StatusCode(StatusCodes.Status400BadRequest, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ СЂРµРґР°РіСѓРІР°С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
                 }
                 catch (NullReferenceException)
                 {
                     _loggerService.LogError($"Annual report (id: {annualReport.ID}) not found");
-                    return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
                 }
                 catch (UnauthorizedAccessException)
                 {
                     _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to edit annual report (id: {annualReport.ID})");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даного річного звіту!" });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Р’Рё РЅРµ РјР°С”С‚Рµ РґРѕСЃС‚СѓРїСѓ РґРѕ РґР°РЅРѕРіРѕ СЂС–С‡РЅРѕРіРѕ Р·РІС–С‚Сѓ!" });
                 }
             }
             return BadRequest(ModelState);
@@ -273,12 +273,12 @@ namespace EPlast.WebApi.Controllers
             {
                 await _annualReportService.ConfirmAsync(await _userManager.GetUserAsync(User), id);
                 _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) confirmed annual report (id: {id})");
-                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно підтверджено!" });
+                return StatusCode(StatusCodes.Status200OK, new { message = "Р С–С‡РЅРёР№ Р·РІС–С‚ СѓСЃРїС–С€РЅРѕ РїС–РґС‚РІРµСЂРґР¶РµРЅРѕ!" });
             }
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
             }
         }
 
@@ -298,12 +298,12 @@ namespace EPlast.WebApi.Controllers
             {
                 await _annualReportService.CancelAsync(await _userManager.GetUserAsync(User), id);
                 _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) canceled annual report (id: {id})");
-                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно скасовано!" });
+                return StatusCode(StatusCodes.Status200OK, new { message = "Р С–С‡РЅРёР№ Р·РІС–С‚ СѓСЃРїС–С€РЅРѕ СЃРєР°СЃРѕРІР°РЅРѕ!" });
             }
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
             }
         }
 
@@ -323,12 +323,12 @@ namespace EPlast.WebApi.Controllers
             {
                 await _annualReportService.DeleteAsync(await _userManager.GetUserAsync(User), id);
                 _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) deleted annual report (id: {id})");
-                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно видалено!" });
+                return StatusCode(StatusCodes.Status200OK, new { message = "Р С–С‡РЅРёР№ Р·РІС–С‚ СѓСЃРїС–С€РЅРѕ РІРёРґР°Р»РµРЅРѕ!" });
             }
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
             }
         }
 
@@ -341,19 +341,19 @@ namespace EPlast.WebApi.Controllers
                     : await _clubAnnualReportService.CheckCreated(await _userManager.GetUserAsync(User), id))
                 {
                     return StatusCode(StatusCodes.Status200OK,
-                        new {hasCreated = true, message = city ? "Станиця вже має створений річний звіт!" : "Курінь вже має створений річний звіт!" });
+                        new {hasCreated = true, message = city ? "РЎС‚Р°РЅРёС†СЏ РІР¶Рµ РјР°С” СЃС‚РІРѕСЂРµРЅРёР№ СЂС–С‡РЅРёР№ Р·РІС–С‚!" : "РљСѓСЂС–РЅСЊ РІР¶Рµ РјР°С” СЃС‚РІРѕСЂРµРЅРёР№ СЂС–С‡РЅРёР№ Р·РІС–С‚!" });
                 }
                 return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
             }
             catch (NullReferenceException)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
-                    new { message = city ? "Не вдалося знайти інформацію про станицю!" : "Не вдалося знайти інформацію про курінь!" });
+                    new { message = city ? "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё С–РЅС„РѕСЂРјР°С†С–СЋ РїСЂРѕ СЃС‚Р°РЅРёС†СЋ!" : "РќРµ РІРґР°Р»РѕСЃСЏ Р·РЅР°Р№С‚Рё С–РЅС„РѕСЂРјР°С†С–СЋ РїСЂРѕ РєСѓСЂС–РЅСЊ!" });
             }
             catch (UnauthorizedAccessException)
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
-                    new {message = city ? "Ви не маєте доступу до даної станиці!" : "Ви не маєте доступу до даного куреня!" });
+                    new {message = city ? "Р’Рё РЅРµ РјР°С”С‚Рµ РґРѕСЃС‚СѓРїСѓ РґРѕ РґР°РЅРѕС— СЃС‚Р°РЅРёС†С–!" : "Р’Рё РЅРµ РјР°С”С‚Рµ РґРѕСЃС‚СѓРїСѓ РґРѕ РґР°РЅРѕРіРѕ РєСѓСЂРµРЅСЏ!" });
             }
         }
 
@@ -437,7 +437,7 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual reports not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Річні звіти куреня не знайдено!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = "Р С–С‡РЅС– Р·РІС–С‚Рё РєСѓСЂРµРЅСЏ РЅРµ Р·РЅР°Р№РґРµРЅРѕ!" });
             }
         }
 
