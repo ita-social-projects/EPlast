@@ -27,19 +27,22 @@ namespace EPlast.WebApi.Controllers
     {
         private readonly IAnnualReportService _annualReportService;
         private readonly ILoggerService<AnnualReportController> _loggerService;
+        private readonly IStringLocalizer<AnnualReportControllerMessage> _localizer;
         private readonly UserManager<User> _userManager;
         private readonly IClubAnnualReportService _clubAnnualReportService;
         private readonly IMapper _mapper;
 
         public AnnualReportController(
             IAnnualReportService annualReportService, 
-            ILoggerService<AnnualReportController> loggerService, 
+            ILoggerService<AnnualReportController> loggerService,
+            IStringLocalizer<AnnualReportControllerMessage> localizer, 
             UserManager<User> userManager,
             IClubAnnualReportService clubAnnualReportService, 
             IMapper mapper)
         {
             _annualReportService = annualReportService;
             _loggerService = loggerService;
+            _localizer = localizer;
             _userManager = userManager;
             _clubAnnualReportService = clubAnnualReportService;
             _mapper = mapper;
@@ -76,12 +79,12 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
             catch (UnauthorizedAccessException)
             {
                 _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даного річного звіту!" });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
 
@@ -121,7 +124,7 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual reports not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт станиці!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
         }
         
@@ -163,12 +166,12 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт станиці!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
             catch (UnauthorizedAccessException)
             {
                 _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to annual report (id: {id})");
-                return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даного річного звіту!" });
+                return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
             }
         }
 
@@ -192,22 +195,22 @@ namespace EPlast.WebApi.Controllers
                 {
                     await _annualReportService.CreateAsync(await _userManager.GetUserAsync(User), annualReport);
                     _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) created annual report for city (id: {annualReport.CityId})");
-                    return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт станиці успішно створено!" });
+                    return StatusCode(StatusCodes.Status201Created, new { message = _localizer["Created"].Value });
                 }
                 catch (InvalidOperationException)
                 {
                     _loggerService.LogError($"City (id: {annualReport.CityId}) has created annual report");
-                    return StatusCode(StatusCodes.Status400BadRequest, new { message = "Станиця вже має створений річний звіт!" });
+                    return StatusCode(StatusCodes.Status400BadRequest, new { message = _localizer["HasReport"].Value });
                 }
                 catch (UnauthorizedAccessException)
                 {
                     _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to city (id: {annualReport.CityId})");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даної станиці!" });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["CityNoAccess"].Value });
                 }
                 catch (NullReferenceException)
                 {
                     _loggerService.LogError($"City (id: {annualReport.CityId}) not found");
-                    return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти інформацію про станицю!" });
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["CityNotFound"].Value });
                 }
             }
             else
@@ -236,22 +239,22 @@ namespace EPlast.WebApi.Controllers
                 {
                     await _annualReportService.EditAsync(await _userManager.GetUserAsync(User), annualReport);
                     _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {annualReport.ID})");
-                    return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно відредаговано!" });
+                    return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Edited"].Value });
                 }
                 catch (InvalidOperationException)
                 {
                     _loggerService.LogError($"Annual report (id: {annualReport.ID}) can not be edited");
-                    return StatusCode(StatusCodes.Status400BadRequest, new { message = "Не вдалося редагувати річний звіт!" });
+                    return StatusCode(StatusCodes.Status400BadRequest, new { message = _localizer["FailedEdit"].Value });
                 }
                 catch (NullReferenceException)
                 {
                     _loggerService.LogError($"Annual report (id: {annualReport.ID}) not found");
-                    return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                    return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
                 }
                 catch (UnauthorizedAccessException)
                 {
                     _loggerService.LogError($"User (id: {(await _userManager.GetUserAsync(User)).Id}) hasn't access to edit annual report (id: {annualReport.ID})");
-                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Ви не маєте доступу до даного річного звіту!" });
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = _localizer["NoAccess"].Value });
                 }
             }
             return BadRequest(ModelState);
@@ -273,12 +276,12 @@ namespace EPlast.WebApi.Controllers
             {
                 await _annualReportService.ConfirmAsync(await _userManager.GetUserAsync(User), id);
                 _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) confirmed annual report (id: {id})");
-                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно підтверджено!" });
+                return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Confirmed"].Value });
             }
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
         }
 
@@ -298,12 +301,12 @@ namespace EPlast.WebApi.Controllers
             {
                 await _annualReportService.CancelAsync(await _userManager.GetUserAsync(User), id);
                 _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) canceled annual report (id: {id})");
-                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно скасовано!" });
+                return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Canceled"].Value });
             }
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
         }
 
@@ -323,12 +326,12 @@ namespace EPlast.WebApi.Controllers
             {
                 await _annualReportService.DeleteAsync(await _userManager.GetUserAsync(User), id);
                 _loggerService.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) deleted annual report (id: {id})");
-                return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт успішно видалено!" });
+                return StatusCode(StatusCodes.Status200OK, new { message = _localizer["Deleted"].Value });
             }
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual report (id: {id}) not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Не вдалося знайти річний звіт!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
         }
 
@@ -341,19 +344,19 @@ namespace EPlast.WebApi.Controllers
                     : await _clubAnnualReportService.CheckCreated(await _userManager.GetUserAsync(User), id))
                 {
                     return StatusCode(StatusCodes.Status200OK,
-                        new {hasCreated = true, message = city ? "Станиця вже має створений річний звіт!" : "Курінь вже має створений річний звіт!" });
+                        new {hasCreated = true, message = _localizer[city ? "HasReport" : "ClubHasReport"].Value});
                 }
                 return StatusCode(StatusCodes.Status200OK, new { hasCreated = false });
             }
             catch (NullReferenceException)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
-                    new { message = city ? "Не вдалося знайти інформацію про станицю!" : "Не вдалося знайти інформацію про курінь!" });
+                    new {message = _localizer[city ? "CityNotFound" : "ClubNotFound"].Value});
             }
             catch (UnauthorizedAccessException)
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
-                    new {message = city ? "Ви не маєте доступу до даної станиці!" : "Ви не маєте доступу до даного куреня!" });
+                    new {message = _localizer[city ? "CityNoAccess" : "ClubNoAccess"].Value});
             }
         }
 
@@ -437,7 +440,7 @@ namespace EPlast.WebApi.Controllers
             catch (NullReferenceException)
             {
                 _loggerService.LogError($"Annual reports not found");
-                return StatusCode(StatusCodes.Status404NotFound, new { message = "Річні звіти куреня не знайдено!" });
+                return StatusCode(StatusCodes.Status404NotFound, new { message = _localizer["NotFound"].Value });
             }
         }
 
