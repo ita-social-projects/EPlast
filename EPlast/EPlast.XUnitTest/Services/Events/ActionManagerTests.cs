@@ -349,7 +349,7 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
             int eventId = 3;
             _eventWrapper.Setup(x => x.EventGalleryManager.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(new List<EventGalleryDto>());
+                .ReturnsAsync(new List<int>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());

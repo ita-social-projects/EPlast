@@ -579,7 +579,7 @@ namespace EPlast.Tests.Controllers
             const int expectedCount = 2;
             _actionManager
                 .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(CreateListOfFakeEventGallery());
+                .ReturnsAsync(new List<int>() { 1, 2 });
 
             // Act
             var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
@@ -601,7 +601,7 @@ namespace EPlast.Tests.Controllers
 
             _actionManager
                 .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(CreateListOfFakeEventGallery());
+                .ReturnsAsync(new List<int>() { 1, 2 });
 
             // Act
             var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
@@ -864,6 +864,43 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task GetPicture_PictureExists_ReturnsOkObject()
+        {
+            //Arrange
+            int pictureId = 1;
+
+            _actionManager
+                .Setup(x => x.GetPictureAsync(pictureId))
+                .ReturnsAsync(new EventGalleryDto());
+
+            //Act
+            var result = await _eventsController.GetPicture(pictureId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as OkObjectResult).Value);
+        }
+
+        [Test]
+        public async Task GetPicture_PictureDoesntExist_ReturnsNotFound()
+        {
+            //Arrange
+            int pictureId = 1;
+
+            _actionManager
+                .Setup(x => x.GetPictureAsync(pictureId))
+                .ReturnsAsync((EventGalleryDto)null);
+
+            //Act
+            var result = await _eventsController.GetPicture(pictureId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         private List<EventTypeDto> CreateListOfFakeEventTypes()

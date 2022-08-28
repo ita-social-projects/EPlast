@@ -33,13 +33,12 @@ namespace EPlast.Tests.Services.Events
         private Mock<IEventWrapper> _mockEventWrapper;
         private Mock<INotificationService> _mockNotificationService;
 
-        private int testEventId = 1;
-        private int testParticipantId = 1;
-        private int testFeedbackId = 1;
-        private int testEstimate = 1;
+        private readonly int testEventId = 1;
+        private readonly int testParticipantId = 1;
+        private readonly int testFeedbackId = 1;
         private readonly string fakeIdString = "1";
-        private int testCategoryId = 1;
-        private int testTypeId = 1;
+        private readonly int testCategoryId = 1;
+        private readonly int testTypeId = 1;
 
         [SetUp]
         public void SetUp()
