@@ -37,7 +37,6 @@ namespace EPlast.BLL.Services.AzureStorage.Base
             blockBlob.DownloadToByteArray(arr, 0);
             var azureBase64 = Convert.ToBase64String(arr);
             var result = $"data:{blockBlob.Properties.ContentType};base64," + azureBase64;
-            // var result = blockBlob.Uri.OriginalString;
             return result;
         }
 

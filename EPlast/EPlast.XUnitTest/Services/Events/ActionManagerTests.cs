@@ -355,7 +355,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDto>>(methodResult);
+            Assert.IsType<List<int>>(methodResult);
         }
         [Fact]
         public async Task DeletePictureTestAsync()
@@ -393,7 +393,8 @@ namespace EPlast.XUnitTest.Services.Events
                     EventAdministrations = new List<EventAdministration>()
                     {
                         new EventAdministration(){EventID = 1,UserID ="abc-1",EventAdministrationTypeID = 1}
-                    }
+                    },
+                    EventGallarys = new List<EventGallary>()
                 },
                  new Event{
                     ID=2,
