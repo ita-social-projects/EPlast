@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Club;
@@ -370,18 +371,19 @@ namespace EPlast.BLL.Services.Club
                 predicate: a => a.Name == name) != null;
         }
 
-        private Func<IQueryable<DataAccessClub.Club>, IQueryable<DataAccessClub.Club>> GetOrder()
-        {
-            Func<IQueryable<DataAccessClub.Club>, IQueryable<DataAccessClub.Club>> expr = x => x.OrderBy(e => e.Name);
-            return expr;
-        }
-
         /// <inheritdoc />
         public async Task<IEnumerable<ClubForAdministrationDto>> GetClubs()
         {
-            var order = GetOrder();
-            var clubs = await _repoWrapper.Club.GetRangeAsync(sorting: order);
-            return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDto>>(clubs.Item1);   
+
+            //var clubs = await _repoWrapper.Club.GetAllAsync();
+            //var filteredClubs = clubs.Where(c => c.IsActive).OrderBy(c => c.Name);
+            //return _mapper.Map<IEnumerable<DataAccessClub.Club>, IEnumerable<ClubForAdministrationDto>>(filteredClubs);
+
+            //var clubs = await _repoWrapper.Club.GetRangeAsync(c => c.IsActive, null, x => x.OrderBy(e => e.Name), null, null, null);
+
+            var clubs = await _repoWrapper.Club.GetRangeAsync(c => c.IsActive, null, x => x.OrderBy(e => e.Name), null, null, null);
+            var filtered = clubs.Item1;
+            return _mapper.Map<IEnumerable<ClubForAdministrationDto>>(filtered);
         }
 
         private DataAccessClub.Club CreateClubFromProfileAsync(ClubProfileDto model)

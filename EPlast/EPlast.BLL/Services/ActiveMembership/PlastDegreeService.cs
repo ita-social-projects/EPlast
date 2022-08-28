@@ -25,19 +25,12 @@ namespace EPlast.BLL.Services.ActiveMembership
             _userManagerService = userManagerService;
         }
 
-        private Func<IQueryable<PlastDegree>, IQueryable<PlastDegree>> GetOrder()
-        {
-            Func<IQueryable<PlastDegree>, IQueryable<PlastDegree>> expr = x => x.OrderBy(e => e.Name);
-            return expr;
-        }
-
         /// <inheritdoc />
         public async Task<IEnumerable<PlastDegreeDto>> GetDergeesAsync()
         {
-            var order = GetOrder();
-            var degrees = await _repoWrapper.PlastDegrees.GetRangeAsync(sorting: order);
-
-            return _mapper.Map<IEnumerable<PlastDegreeDto>>(degrees.Item1);
+            var degrees = await _repoWrapper.PlastDegrees.GetRangeAsync(null, null, x => x.OrderBy(e => e.Name), null, null, null);
+            var sortedDegrees = degrees.Item1;
+            return _mapper.Map<IEnumerable<PlastDegreeDto>>(sortedDegrees);
         }
 
         /// <inheritdoc />
