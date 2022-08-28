@@ -56,9 +56,9 @@ namespace EPlast.Tests.Handlers.City
         {
             return new List<DataAccess.Entities.City>
             {
-                new DataAccess.Entities.City{ID = 1, Name = "Старший пластун прихильник / старша пластунка прихильниця"},
-                new DataAccess.Entities.City{ID = 2, Name = "Старший пластун / старша пластунка"},
-                new DataAccess.Entities.City{ID = 3, Name = "Старший пластун скоб/ старша пластунка скоб"}
+                new DataAccess.Entities.City{ID = 1, Name = "Львів"},
+                new DataAccess.Entities.City{ID = 2, Name = "Харків"},
+                new DataAccess.Entities.City{ID = 3, Name = "Вінниця"}
             }.AsEnumerable();
         }
     }
