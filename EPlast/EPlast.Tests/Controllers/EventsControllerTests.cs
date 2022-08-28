@@ -583,7 +583,7 @@ namespace EPlast.Tests.Controllers
 
             // Act
             var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
-            var resultObject = (result as ObjectResult).Value as IList<EventGalleryDto>;
+            var resultObject = (result as ObjectResult).Value as List<int>;
 
 
             // Assert
@@ -606,7 +606,7 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
 
-            var actual = ((result as ObjectResult).Value as List<EventGalleryDto>).Count;
+            var actual = ((result as ObjectResult).Value as List<int>).Count;
 
             // Assert
             Assert.AreEqual(expectedCount, actual);
