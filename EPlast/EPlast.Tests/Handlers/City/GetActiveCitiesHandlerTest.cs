@@ -36,14 +36,12 @@ namespace EPlast.Tests.Handlers.City
         {
             //Arrange
             _mockRepoWrapper
-                .Setup(r => r.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                .Setup(r => r.City.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(), null,
                     It.IsAny<Func<IQueryable<DataAccess.Entities.City>,
-                        IIncludableQueryable<DataAccess.Entities.City, object>>>()))
-                .ReturnsAsync(new List<DataAccess.Entities.City>());
-            _mockMapper
-                .Setup(m =>
-                    m.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(
-                        It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
+                        IQueryable<DataAccess.Entities.City>>>(), null, null, null))
+                .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.City>, int>(GetTestCitiesForHandler(), 1));
+
+            _mockMapper.Setup(m => m.Map<IEnumerable<CityForAdministrationDto>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
                 .Returns(new List<CityForAdministrationDto>());
 
             //Act
@@ -52,6 +50,16 @@ namespace EPlast.Tests.Handlers.City
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<IEnumerable<CityForAdministrationDto>>(result);
+        }
+
+        private IEnumerable<DataAccess.Entities.City> GetTestCitiesForHandler()
+        {
+            return new List<DataAccess.Entities.City>
+            {
+                new DataAccess.Entities.City{ID = 1, Name = "Старший пластун прихильник / старша пластунка прихильниця"},
+                new DataAccess.Entities.City{ID = 2, Name = "Старший пластун / старша пластунка"},
+                new DataAccess.Entities.City{ID = 3, Name = "Старший пластун скоб/ старша пластунка скоб"}
+            }.AsEnumerable();
         }
     }
 }
