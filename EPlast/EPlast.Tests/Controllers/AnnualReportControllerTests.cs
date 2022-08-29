@@ -28,7 +28,6 @@ namespace EPlast.Tests.Controllers
     {
         private readonly Mock<IAnnualReportService> _annualReportService;
         private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
-        private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<UserManager<User>> _userManager;
