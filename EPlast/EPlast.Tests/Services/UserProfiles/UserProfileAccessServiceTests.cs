@@ -82,6 +82,18 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         [Test]
+        public async Task ViewFullProfile_SameUser_ReturnsTrue()
+        {
+            //Arrange
+
+            //Act
+            var result = await _userProfileAccessService.CanViewFullProfile(_fakeUser, _fakeUser.Id);
+
+            //Assert
+            Assert.IsTrue(result);
+        }
+
+        [Test]
         public async Task ViewFullProfile_AsAdmin_ReturnsTrue()
         {
             //Arrange
