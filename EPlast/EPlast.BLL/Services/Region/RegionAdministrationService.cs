@@ -184,7 +184,6 @@ namespace EPlast.BLL.Services.Region
                     break;
             }
             await _userManager.RemoveFromRoleAsync(user, role);
-            await _repoWrapper.SaveAsync();
         }
 
         public async Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId)
