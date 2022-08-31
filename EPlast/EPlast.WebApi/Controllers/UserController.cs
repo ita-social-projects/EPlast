@@ -205,7 +205,8 @@ namespace EPlast.WebApi.Controllers
             var user = await _userService.GetUserAsync(userId);
             var currentUserId = _userManager.GetUserId(User);
             var currentUser = await _userService.GetUserAsync(currentUserId);
-            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin })))
+            var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, userId, _mapper.Map<UserDto, User>(currentUser));
+            if (!currentUserAccess["CanEditUserProfile"])
             {
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
@@ -249,10 +250,9 @@ namespace EPlast.WebApi.Controllers
                 var currentUserId = _userManager.GetUserId(User);
                 var currentUser = await _userService.GetUserAsync(currentUserId);
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
-                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, userToUpdate.Id, _mapper.Map<UserDto, User>(currentUser));
 
-                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
+                if (currentUserAccess["CanEditUserPhoto"])
                 {
                     await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
                     _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
@@ -284,10 +284,9 @@ namespace EPlast.WebApi.Controllers
             {
                 var currentUserId = _userManager.GetUserId(User);
                 var currentUser = await _userService.GetUserAsync(currentUserId);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
-                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, model.User.ID, _mapper.Map<UserDto, User>(currentUser));
 
-                if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead)
+                if (currentUserAccess["CanEditUserProfile"])
                 {
                     await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDto>(model.User),
                         model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
