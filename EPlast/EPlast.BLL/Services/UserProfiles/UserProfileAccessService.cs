@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.UserProfiles
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
             var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (await IsAdminAsync(user))
+            if (await IsAdminAsync(user) || user.Id == focusUserId)
             {
                 return true;
             }
