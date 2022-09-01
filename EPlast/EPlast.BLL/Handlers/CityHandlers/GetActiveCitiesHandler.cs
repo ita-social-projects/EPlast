@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -22,9 +23,11 @@ namespace EPlast.BLL.Handlers.CityHandlers
 
         public async Task<IEnumerable<CityForAdministrationDto>> Handle(GetActiveCitiesQuery request, CancellationToken cancellationToken)
         {
-            var cities = await _repoWrapper.City.GetAllAsync(c => c.IsActive);
+            var cities = await _repoWrapper.City.GetRangeAsync(null, null, x => x.OrderBy(e => e.Name), null, null, null);
 
-            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(cities);
+            var sortedCities = cities.Item1;
+
+            return _mapper.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityForAdministrationDto>>(sortedCities);
         }
     }
 }
