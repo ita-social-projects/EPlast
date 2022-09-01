@@ -760,11 +760,18 @@ namespace EPlast.Tests.Services.Club
         [Test]
         public async Task GetClubs_ReturnClubForAdministrationDTOs()
         {
-            // Arrange
-            ClubService clubService = CreateClubService();
+            //Arrange
+            _repoWrapper
+             .Setup(x => x.Club.GetRangeAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(),
+             null, It.IsAny<Func<IQueryable<DataAccessClub.Club>, IQueryable<DataAccessClub.Club>>>(),
+             null, null, null))
+             .ReturnsAsync(new Tuple<IEnumerable<DataAccessClub.Club>, int>(GetClubsByPage(), 1));
+
+            _mapper.Setup(_mapper => _mapper.Map<IEnumerable<ClubForAdministrationDto>>(It.IsAny<IEnumerable<ClubForAdministrationDto>>()))
+              .Returns(GetClubForAdministrationDTO());
 
             // Act
-            var result = await clubService.GetClubs();
+            var result = await _clubService.GetClubs();
 
             // Assert
             Assert.NotNull(result);
@@ -1189,7 +1196,7 @@ namespace EPlast.Tests.Services.Club
             return clubs.AsQueryable();
         }
 
-        private List<ClubAdministrationDto> GetClubAdministrationDTO()
+        private IEnumerable<ClubAdministrationDto> GetClubAdministrationDTO()
         {
             return new List<ClubAdministrationDto>
             {
@@ -1281,6 +1288,16 @@ namespace EPlast.Tests.Services.Club
                     Name = "Курінь",
                 }
             };
+        }
+
+        private IEnumerable<ClubForAdministrationDto> GetClubForAdministrationDTO()
+        {
+            return new List<ClubForAdministrationDto>
+            {
+                new ClubForAdministrationDto{ID = 1, Name = "Ім'я", HasReport = true, IsActive = false},
+                new ClubForAdministrationDto{ID = 2, Name = "Назва", HasReport = false, IsActive = false},
+                new ClubForAdministrationDto{ID = 3, Name = "Якась назва", HasReport = true, IsActive = true}
+            }.AsEnumerable();
         }
     }
 }
