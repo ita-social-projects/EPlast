@@ -58,7 +58,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetClubs()
         {
             var clubs = await _clubService.GetClubs();
-            return Ok(clubs);
+            return Ok(clubs);   
 
         }
 
