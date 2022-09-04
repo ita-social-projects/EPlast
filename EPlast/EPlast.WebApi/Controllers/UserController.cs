@@ -252,7 +252,7 @@ namespace EPlast.WebApi.Controllers
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
                 var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, userToUpdate.Id, _mapper.Map<UserDto, User>(currentUser));
 
-                if (currentUserAccess["CanEditUserPhoto"])
+                if (currentUserAccess["CanEditDeleteUserPhoto"])
                 {
                     await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
                     _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
