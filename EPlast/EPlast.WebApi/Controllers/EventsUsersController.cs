@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         private async Task<bool> HasAccessAsync()
         {
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
-            var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(x));
+            var role = roles.FirstOrDefault(x => !x.Contains(Roles.RegisteredUser));
             if (role != null)
             {
                 return true;
