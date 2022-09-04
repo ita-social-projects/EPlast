@@ -5,6 +5,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -21,6 +22,7 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly IRegionAccessService _regionAccessService;
         private readonly IAnnualReportAccessService _annualReportAccessService;
         private readonly IUserProfileAccessService _userProfileAccessService;
+        private readonly IBlankAccessService _blankAccessService;
         private readonly ISecurityModel _securityModel;
 
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
@@ -33,6 +35,7 @@ namespace EPlast.BLL.Services.UserAccess
         private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
         private const string MenuAccessSettingsFile = "MenuAccessSettings.json";
         private const string PrecautionsAccessSettingsFile = "PrecautionsAccessSettings.json";
+        private const string BlankSecuritySettingsFile = "BlankAccessSettings.json";
 
         public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
@@ -42,6 +45,7 @@ namespace EPlast.BLL.Services.UserAccess
             _regionAccessService = userAccessWrapper.RegionAccessService;
             _annualReportAccessService = userAccessWrapper.AnnualReportAccessService;
             _userProfileAccessService = userAccessWrapper.UserProfileAccessService;
+            _blankAccessService = userAccessWrapper.BlankAccessService;
             _securityModel = securityModel;
         }
 
@@ -132,6 +136,24 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(PrecautionsAccessSettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserBlankAccessAsync(string userId, string focusUserId, User user)
+        {
+            _securityModel.SetSettingsFile(BlankSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            userAccess["CanViewBlankTab"] = await _blankAccessService.CanViewBlankTab(user, focusUserId);
+            userAccess["CanAddBiography"] = await _blankAccessService.CanAddBiography(user, focusUserId);
+            userAccess["CanViewBiography"] = await _blankAccessService.CanViewBiography(user, focusUserId);
+            userAccess["CanDownloadBiography"] = await _blankAccessService.CanDownloadBiography(user, focusUserId);
+            userAccess["CanDeleteBiography"] = await _blankAccessService.CanDeleteBiography(user, focusUserId);
+            userAccess["CanViewAddDownloadDeleteExtractUPU"] = await _blankAccessService.CanViewAddDownloadDeleteExtractUPU(user, focusUserId);
+            userAccess["CanAddAchievement"] = await _blankAccessService.CanAddAchievement(user, focusUserId);
+            userAccess["CanViewListOfAchievements"] = await _blankAccessService.CanViewListOfAchievements(user, focusUserId);
+            userAccess["CanViewAchievement"] = await _blankAccessService.CanViewAchievement(user, focusUserId);
+            userAccess["CanDownloadAchievement"] = await _blankAccessService.CanDownloadAchievement(user, focusUserId);
+            userAccess["CanDeleteAchievement"] = await _blankAccessService.CanDeleteAchievement(user, focusUserId);
             return userAccess;
         }
     }
