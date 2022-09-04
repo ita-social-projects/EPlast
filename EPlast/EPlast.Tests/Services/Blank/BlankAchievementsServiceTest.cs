@@ -164,8 +164,8 @@ namespace EPlast.Tests.Services.Blank
             Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDto>>(result);
         }
 
-        [TestCase(1, 1, "someId")]
-        public async Task GetPartOfAchievement_ReturnsObj(int pageNumber, int pageSize, string userId)
+        [TestCase(1, 1, "someId", 1)]
+        public async Task GetPartOfAchievement_ReturnsObj(int pageNumber, int pageSize, string userId, int courseId)
         {
             //Arrange
             _repoWrapper
@@ -174,7 +174,7 @@ namespace EPlast.Tests.Services.Blank
                 .ReturnsAsync(GetTestAchievements());
 
             //Act
-            var result = await _achievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId);
+            var result = await _achievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId, courseId);
 
             //Assert
             Assert.NotNull(result);
