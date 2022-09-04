@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Course;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
@@ -522,7 +523,13 @@ namespace EPlast.DataAccess.ExtensionMethods
 
                 });
 
-
+            modelBuilder.Entity<Course>().HasData(
+                new Course
+                {
+                    ID = 1,
+                    Name = "Vumonline курс",
+                    Link = "https://vumonline.ua/search/?search=%D0%BF%D0%BB%D0%B0%D1%81%D1%82"
+                });
         }
     }
 }
