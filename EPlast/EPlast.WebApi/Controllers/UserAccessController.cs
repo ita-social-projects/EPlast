@@ -90,5 +90,12 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _userAccessService.GetUserPrecautionsAccessAsync(userId));
         }
+
+        [HttpGet("GetUserBlankAccess/{userId}/{focusUserId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetUserBlankAccess(string userId, string focusUserId)
+        {
+            return Ok(await _userAccessService.GetUserBlankAccessAsync(userId, focusUserId, await _userManager.GetUserAsync(User)));
+        }
     }
 }
