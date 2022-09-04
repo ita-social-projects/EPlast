@@ -231,7 +231,7 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         [Test]
-        public async Task EditUserProfile_AsClubHead_ReturnsTrue()
+        public async Task EditUserProfile_AsClubHead_ReturnsFalse()
         {
             //Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.KurinHead });
@@ -241,7 +241,7 @@ namespace EPlast.Tests.Services.UserProfiles
             var result = await _userProfileAccessService.CanEditUserProfile(_fakeUser, It.IsAny<string>());
 
             //Assert
-            Assert.IsTrue(result);
+            Assert.IsFalse(result);
         }
 
         [Test]
