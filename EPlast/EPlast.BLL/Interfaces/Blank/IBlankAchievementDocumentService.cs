@@ -28,6 +28,8 @@ namespace EPlast.BLL.Interfaces.Blank
 
         Task<IEnumerable<AchievementDocumentsDto>> GetDocumentsByUserIdAsync(string userId);
 
-        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userId, int courseId);
+        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAsync(int pageNumber, int pageSize, string userId);
+
+        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAndCourseIdAsync(int pageNumber, int pageSize, string userId, int courseId);
     }
 }

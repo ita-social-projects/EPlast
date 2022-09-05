@@ -273,12 +273,16 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual("Dogovir", result.Value);
         }
 
+        [TestCase(1, 1, "userId", 0)]
         [TestCase(1, 1, "userId", 1)]
-        public async Task GetPartOfAchievement_ReturnsOkObjectResult(int pageNumber, int pageSize, string userId, int courseId)
+        public async Task GetPartOfAchievementByUserId_ReturnsOkObjectResult(int pageNumber, int pageSize, string userId, int courseId)
         {
             //Arrange
             _mockBlankAchievementDocumentService
-               .Setup(x => x.GetPartOfAchievementAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+               .Setup(x => x.GetPartOfAchievementByUserIdAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+               .ReturnsAsync(new List<AchievementDocumentsDto>());
+            _mockBlankAchievementDocumentService
+               .Setup(x => x.GetPartOfAchievementByUserIdAndCourseIdAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
                .ReturnsAsync(new List<AchievementDocumentsDto>());
 
             //Act

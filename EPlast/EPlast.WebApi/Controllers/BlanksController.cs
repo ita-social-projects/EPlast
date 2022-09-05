@@ -132,7 +132,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetPartOfAchievement(int pageNumber, int pageSize, string userId, int courseId)
         {
-            return Ok(await _blankAchievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId, courseId));
+            var partOfAchievements = courseId == 0 ?
+                await _blankAchievementDocumentService.GetPartOfAchievementByUserIdAsync(pageNumber, pageSize, userId) :
+                await _blankAchievementDocumentService.GetPartOfAchievementByUserIdAndCourseIdAsync(pageNumber, pageSize, userId, courseId);
+            return Ok(partOfAchievements);
         }
 
         /// <summary>

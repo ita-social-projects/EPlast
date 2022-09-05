@@ -72,14 +72,17 @@ namespace EPlast.BLL.Services.Blank
                 await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId));
         }
 
-        public async Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userId, int courseId)
+        public async Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAsync(int pageNumber, int pageSize, string userId)
         {
-            var achievements = courseId == 0 ?
-                await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId) :
-                await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId && i.CourseId == courseId);
-
+            var achievements = await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId);
             var partOfAchievements = achievements.Skip(pageSize * pageNumber).Take(pageSize);
+            return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDto>>(partOfAchievements);
+        }
 
+        public async Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAndCourseIdAsync(int pageNumber, int pageSize, string userId, int courseId)
+        {
+            var achievements = await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId && i.CourseId == courseId);
+            var partOfAchievements = achievements.Skip(pageSize * pageNumber).Take(pageSize);
             return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDto>>(partOfAchievements);
         }
     }

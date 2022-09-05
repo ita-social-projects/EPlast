@@ -164,8 +164,8 @@ namespace EPlast.Tests.Services.Blank
             Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDto>>(result);
         }
 
-        [TestCase(1, 1, "someId", 1)]
-        public async Task GetPartOfAchievement_ReturnsObj(int pageNumber, int pageSize, string userId, int courseId)
+        [TestCase(1, 1, "someId")]
+        public async Task GetPartOfAchievementByUserId_ReturnsObj(int pageNumber, int pageSize, string userId)
         {
             //Arrange
             _repoWrapper
@@ -174,7 +174,24 @@ namespace EPlast.Tests.Services.Blank
                 .ReturnsAsync(GetTestAchievements());
 
             //Act
-            var result = await _achievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId, courseId);
+            var result = await _achievementDocumentService.GetPartOfAchievementByUserIdAsync(pageNumber, pageSize, userId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDto>>(result);
+        }
+
+        [TestCase(1, 1, "someId", 1)]
+        public async Task GetPartOfAchievementByUserIdAndCourseId_ReturnsObj(int pageNumber, int pageSize, string userId, int courseId)
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>()))
+                .ReturnsAsync(GetTestAchievements());
+
+            //Act
+            var result = await _achievementDocumentService.GetPartOfAchievementByUserIdAndCourseIdAsync(pageNumber, pageSize, userId, courseId);
 
             //Assert
             Assert.NotNull(result);
