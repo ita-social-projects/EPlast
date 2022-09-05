@@ -56,7 +56,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess
             if (key != null)
             {
                 options = _mapper.Map<IEnumerable<DatabaseEntities.Region>, IEnumerable<RegionForAdministrationDto>>(
-                    await _regionAccessGetters[key].GetRegionAsync(user.Id));
+                    await _regionAccessGetters[key].GetRegionAsync(user.Id)).OrderBy(o => o.RegionName);
             }
             foreach (var item in options)
             {

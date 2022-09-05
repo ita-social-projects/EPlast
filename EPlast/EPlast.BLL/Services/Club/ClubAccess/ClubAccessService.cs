@@ -54,7 +54,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess
             if (key != null)
             {
                 options = _mapper.Map<IEnumerable<DatabaseEntities.Club>, IEnumerable<ClubForAdministrationDto>>(
-                    await _clubAccessGetters[key].GetClubs(user.Id));
+                    await _clubAccessGetters[key].GetClubs(user.Id)).OrderBy(c => c.Name);
             }
             foreach (var item in options)
             {

@@ -52,19 +52,19 @@ namespace EPlast.BLL.Services.City.CityAccess
                 .Select(x => x.CityId).ToList();
             if (roles.Contains(Roles.Admin))
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDto>>(
-                    await _cityAccessGetters[Roles.Admin].GetCities(user.Id));
+                    await _cityAccessGetters[Roles.Admin].GetCities(user.Id)).OrderBy(с => с.Name);
             else if (roles.Contains(Roles.GoverningBodyAdmin))
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDto>>(
-                    await _cityAccessGetters[Roles.GoverningBodyAdmin].GetCities(user.Id));
+                    await _cityAccessGetters[Roles.GoverningBodyAdmin].GetCities(user.Id)).OrderBy(с => с.Name);
             else if ((roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy)) && (roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy)))
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDto>>(
-                    await _cityAccessGetters[Roles.OkrugaHead].GetCities(user.Id));
+                    await _cityAccessGetters[Roles.OkrugaHead].GetCities(user.Id)).OrderBy(с => с.Name);
             else if (roles.Contains(Roles.OkrugaHead) || roles.Contains(Roles.OkrugaHeadDeputy))
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDto>>(
-                    await _cityAccessGetters[Roles.OkrugaHead].GetCities(user.Id));
+                    await _cityAccessGetters[Roles.OkrugaHead].GetCities(user.Id)).OrderBy(с => с.Name);
             else if (roles.Contains(Roles.CityHead) || roles.Contains(Roles.CityHeadDeputy))
                 options = _mapper.Map<IEnumerable<DatabaseEntities.City>, IEnumerable<CityForAdministrationDto>>(
-                    await _cityAccessGetters[Roles.CityHead].GetCities(user.Id));
+                    await _cityAccessGetters[Roles.CityHead].GetCities(user.Id)).OrderBy(с => с.Name);
             foreach (var item in options)
             {
                 item.HasReport = citiesId.Any(x => x == item.ID);
