@@ -52,6 +52,7 @@ namespace EPlast.BLL.Services.Club
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.KurinHeadDeputy);
             adminDTO.Status = DateTime.Today < adminDTO.EndDate || adminDTO.EndDate == null;
+
             var newAdmin = new ClubAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
@@ -62,20 +63,23 @@ namespace EPlast.BLL.Services.Club
                 Status = adminDTO.Status
             };
 
-            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+
+            if (CheckCityWasAdmin(newAdmin))
             {
-                case Roles.KurinHead:
-                    role = Roles.KurinHead;
-                    break;
-                case Roles.KurinHeadDeputy:
-                    role = Roles.KurinHeadDeputy;
-                    break;
-                default:
-                    role = Roles.KurinSecretary;
-                    break;
+                newAdmin.Status = false;
+                await _repositoryWrapper.ClubAdministration.CreateAsync(newAdmin);
+                await _repositoryWrapper.SaveAsync();
+                adminDTO.ID = newAdmin.ID;
+                return adminDTO;
             }
+
+            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
+            string role = adminType.AdminTypeName switch
+            {
+                Roles.KurinHead => Roles.KurinHead,
+                Roles.KurinHeadDeputy => Roles.KurinHeadDeputy,
+                _ => Roles.KurinSecretary,
+            };
             try
             {
                 await _userManager.AddToRoleAsync(user, role);
@@ -117,7 +121,7 @@ namespace EPlast.BLL.Services.Club
         {
             var admin = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
-            
+
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = adminDTO.StartDate ?? DateTime.Now;
@@ -128,7 +132,7 @@ namespace EPlast.BLL.Services.Club
                 await _repositoryWrapper.SaveAsync();
                 return adminDTO;
             }
-         
+
             await RemoveAdministratorAsync(adminDTO.ID);
             adminDTO = await AddAdministratorAsync(adminDTO);
             return adminDTO;
@@ -143,19 +147,12 @@ namespace EPlast.BLL.Services.Club
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.KurinHead:
-                    role = Roles.KurinHead;
-                    break;
-                case Roles.KurinHeadDeputy:
-                    role = Roles.KurinHeadDeputy;
-                    break;
-                default:
-                    role = Roles.KurinSecretary;
-                    break;
-            }
+                Roles.KurinHead => Roles.KurinHead,
+                Roles.KurinHeadDeputy => Roles.KurinHeadDeputy,
+                _ => Roles.KurinSecretary,
+            };
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.ClubAdministration.Update(admin);
@@ -225,7 +222,7 @@ namespace EPlast.BLL.Services.Club
             newAdmin.Status = false;
             if (admin != null)
             {
-                if (newAdmin.EndDate == null  || admin.EndDate == null || admin.EndDate < newAdmin.EndDate)
+                if (newAdmin.EndDate == null || admin.EndDate == null || admin.EndDate < newAdmin.EndDate)
                 {
                     await RemoveAdministratorAsync(admin.ID);
                     newAdmin.Status = true;
@@ -390,17 +387,22 @@ namespace EPlast.BLL.Services.Club
             clubHistoryMembers.IsDeleted = isDeleted;
             clubHistoryMembers.Date = DateTime.Now;
 
-             _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
+            _repositoryWrapper.ClubMemberHistory.Update(clubHistoryMembers);
             await _repositoryWrapper.SaveAsync();
         }
 
         public async Task RemoveAdminRolesByUserIdAsync(string userId)
         {
             var roles = await _repositoryWrapper.ClubAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
-            foreach(var role in roles)
+            foreach (var role in roles)
             {
                 await RemoveAdministratorAsync(role.ID);
             }
+        }
+
+        private bool CheckCityWasAdmin(ClubAdministration newAdmin)
+        {
+            return !(newAdmin.EndDate == null || DateTime.Today < newAdmin.EndDate);
         }
     }
 }
