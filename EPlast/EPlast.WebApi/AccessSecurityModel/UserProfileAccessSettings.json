@@ -198,7 +198,7 @@
     "CanApplyForEvent": true,
     "CanSeeUserBlankPage": true,
     "CanSeeUserApproversPage": true,
-    "CanApproveUser": true,
+    "CanApproveUser": false,
     "CanRejectOwnApprove": true,
     "CanApproveAsClubHead": false,
     "CanApproveAsCityHead": true,

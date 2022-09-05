@@ -29,6 +29,11 @@ namespace EPlast.BLL.Services.UserProfiles
                 return true;
             }
 
+            if (user.Id == focusUserId)
+            {
+                return false;
+            }
+
             return role switch
             {
                 Roles.CityHead =>
