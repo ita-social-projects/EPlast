@@ -19,6 +19,7 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using Microsoft.EntityFrameworkCore;
 using EPlast.Resources;
+using EPlast.BLL.Interfaces.EventUser;
 
 namespace EPlast.Tests.Services.Events
 {
@@ -32,6 +33,7 @@ namespace EPlast.Tests.Services.Events
         private Mock<IParticipantManager> _mockParticipantManager;
         private Mock<IEventWrapper> _mockEventWrapper;
         private Mock<INotificationService> _mockNotificationService;
+        private Mock<IEventUserAccessService> _eventUserAccessService;
 
         private readonly int testEventId = 1;
         private readonly int testParticipantId = 1;
@@ -49,6 +51,7 @@ namespace EPlast.Tests.Services.Events
             _mockParticipantManager = new Mock<IParticipantManager>();
             _mockEventWrapper = new Mock<IEventWrapper>();
             _mockNotificationService = new Mock<INotificationService>();
+            _eventUserAccessService= new Mock<IEventUserAccessService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _actionManager = new ActionManager(
@@ -58,7 +61,8 @@ namespace EPlast.Tests.Services.Events
                 _mockParticipantStatusManager.Object,
                 _mockParticipantManager.Object,
                 _mockEventWrapper.Object,
-                _mockNotificationService.Object
+                _mockNotificationService.Object,
+                _eventUserAccessService.Object
             );
         }
 
@@ -154,6 +158,9 @@ namespace EPlast.Tests.Services.Events
                     IIncludableQueryable<Participant, object>>>()
                     )).ReturnsAsync((Participant)null);
 
+            _eventUserAccessService.Setup(x => x.CanPostFeedback(It.IsAny<Participant>(), testEventId))
+                .ReturnsAsync(false);
+
             //Act
             var result = await _actionManager.LeaveFeedbackAsync(testEventId, new EventFeedbackDto(), new User());
 
@@ -184,6 +191,9 @@ namespace EPlast.Tests.Services.Events
                 It.IsAny<Func<IQueryable<EventFeedback>,
                     IIncludableQueryable<EventFeedback, object>>>()
                     )).ReturnsAsync(new EventFeedback());
+
+            _eventUserAccessService.Setup(x => x.CanPostFeedback(It.IsAny<Participant>(), testEventId))
+                .ReturnsAsync(true);
 
             //Act
             var result = await _actionManager.LeaveFeedbackAsync(testEventId, new EventFeedbackDto(), new User());
@@ -218,6 +228,9 @@ namespace EPlast.Tests.Services.Events
                     )).ReturnsAsync((EventFeedback)null);
 
             _mockMapper.Setup(x => x.Map<EventFeedbackDto, EventFeedback>(It.IsAny<EventFeedbackDto>())).Returns(new EventFeedback());
+
+            _eventUserAccessService.Setup(x => x.CanPostFeedback(It.IsAny<Participant>(), testEventId))
+                .ReturnsAsync(true);
 
             //Act
             var result = await _actionManager.LeaveFeedbackAsync(testEventId, new EventFeedbackDto(), new User());
@@ -280,41 +293,7 @@ namespace EPlast.Tests.Services.Events
         }
 
         [Test]
-        public async Task DeleteFeedback_UserIsAdminAndUserIdDoesntMatch_ReturnsOk()
-        {
-            //Arrange
-            string currentFakeUserId = Guid.Empty.ToString();
-            string otherFakeUserId = Guid.NewGuid().ToString();
-
-            _mockRepositoryWrapper.Setup(x => x.Event.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<DataAccess.Entities.Event.Event, bool>>>(),
-                It.IsAny<Func<IQueryable<DataAccess.Entities.Event.Event>,
-                    IIncludableQueryable<DataAccess.Entities.Event.Event, object>>>()
-                    )).ReturnsAsync(new DataAccess.Entities.Event.Event());
-
-            _mockRepositoryWrapper.Setup(x => x.EventFeedback.GetFirstOrDefaultAsync(
-                It.IsAny<Expression<Func<EventFeedback, bool>>>(),
-                It.IsAny<Func<IQueryable<EventFeedback>,
-                    IIncludableQueryable<EventFeedback, object>>>()
-                    )).ReturnsAsync(new EventFeedback() { Participant = new Participant() { UserId = otherFakeUserId }});
-
-            _mockUserManager.Setup(x => x.GetUserIdAsync(It.IsAny<User>()))
-                .ReturnsAsync(currentFakeUserId);
-
-            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new string[] { Roles.Admin });
-
-            //Act
-            var result = await _actionManager.DeleteFeedbackAsync(testEventId, testFeedbackId, new User());
-
-            //Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<int>(result);
-            Assert.AreEqual(StatusCodes.Status200OK, result);
-            _mockRepositoryWrapper.Verify(x => x.EventFeedback.Delete(It.IsAny<EventFeedback>()), Times.Once);
-        }
-
-        [Test]
-        public async Task DeleteFeedback_UserIsNotAdminAndUserIdMatches_ReturnsForbidden()
+        public async Task DeleteFeedback_CanDelete_ReturnsOk()
         {
             //Arrange
             string currentFakeUserId = Guid.Empty.ToString();
@@ -331,10 +310,8 @@ namespace EPlast.Tests.Services.Events
                     IIncludableQueryable<EventFeedback, object>>>()
                     )).ReturnsAsync(new EventFeedback() { Participant = new Participant() { UserId = currentFakeUserId } });
 
-            _mockUserManager.Setup(x => x.GetUserIdAsync(It.IsAny<User>()))
-                .ReturnsAsync(currentFakeUserId);
-
-            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new string[] { Roles.Supporter });
+            _eventUserAccessService.Setup(x => x.CanDeleteFeedback(It.IsAny<User>(), It.IsAny<EventFeedback>()))
+                .ReturnsAsync(true);
 
             //Act
             var result = await _actionManager.DeleteFeedbackAsync(testEventId, testFeedbackId, new User());
@@ -347,7 +324,7 @@ namespace EPlast.Tests.Services.Events
         }
 
         [Test]
-        public async Task DeleteFeedback_UserIsNotAdminAndUserIdDoesntMatch_ReturnsForbidden()
+        public async Task DeleteFeedback_CantDelete_ReturnsForbidden()
         {
             //Arrange
             string currentFakeUserId = Guid.Empty.ToString();
@@ -365,10 +342,8 @@ namespace EPlast.Tests.Services.Events
                     IIncludableQueryable<EventFeedback, object>>>()
                     )).ReturnsAsync(new EventFeedback() { Participant = new Participant() { UserId = otherFakeUserId } });
 
-            _mockUserManager.Setup(x => x.GetUserIdAsync(It.IsAny<User>()))
-                .ReturnsAsync(currentFakeUserId);
-
-            _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new string[] { Roles.Supporter });
+            _eventUserAccessService.Setup(x => x.CanDeleteFeedback(It.IsAny<User>(), It.IsAny<EventFeedback>()))
+                .ReturnsAsync(false);
 
             //Act
             var result = await _actionManager.DeleteFeedbackAsync(testEventId, testFeedbackId, new User());
