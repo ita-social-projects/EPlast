@@ -7,6 +7,7 @@ using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -27,10 +28,10 @@ namespace EPlast.BLL.Services.Events
         private readonly IParticipantManager _participantManager;
         private readonly IEventWrapper _eventWrapper;
         private readonly INotificationService _notificationService;
-
+        private readonly IEventUserAccessService _eventUserAccessService;
         public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper,
             IParticipantStatusManager participantStatusManager, IParticipantManager participantManager,
-            IEventWrapper eventWrapper, INotificationService notificationService)
+            IEventWrapper eventWrapper, INotificationService notificationService, IEventUserAccessService eventUserAccessService)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
@@ -39,6 +40,7 @@ namespace EPlast.BLL.Services.Events
             _participantManager = participantManager;
             _eventWrapper = eventWrapper;
             _notificationService = notificationService;
+            _eventUserAccessService = eventUserAccessService;
         }
 
         /// <inheritdoc />
@@ -238,11 +240,11 @@ namespace EPlast.BLL.Services.Events
 
             if (eventEntity == null) return StatusCodes.Status404NotFound;
 
-            var userId = await _userManager.GetUserIdAsync(user);
             var participant = 
-                await _repoWrapper.Participant.GetFirstOrDefaultAsync(e => e.EventId == eventId && e.UserId == userId && e.WasPresent);
+                await _repoWrapper.Participant.GetFirstOrDefaultAsync(e => e.EventId == eventId && e.UserId == user.Id);
 
-            if (participant == null) return StatusCodes.Status403Forbidden;
+            var canPostFeedback = await _eventUserAccessService.CanPostFeedback(participant, eventId);
+            if (!canPostFeedback) return StatusCodes.Status403Forbidden;
 
             var existingFeedback = await _repoWrapper.EventFeedback.GetFirstOrDefaultAsync(f => f.ParticipantId == participant.ID);
 
@@ -271,16 +273,14 @@ namespace EPlast.BLL.Services.Events
             var eventEntity = await _repoWrapper.Event.GetFirstOrDefaultAsync(e => e.ID == eventId);
             if (eventEntity == null) return StatusCodes.Status404NotFound;
 
-            var userId = await _userManager.GetUserIdAsync(user);
-            var isAdmin = (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin);
-
             var feedback = await _repoWrapper.EventFeedback
                 .GetFirstOrDefaultAsync(e => e.Id == feedbackId && e.Participant.EventId == eventId,
                 include: e => e.Include(f => f.Participant));
 
             if (feedback == null) return StatusCodes.Status404NotFound;
 
-            if (feedback.Participant.UserId != userId && !isAdmin) return StatusCodes.Status403Forbidden;
+            bool canDelete = await _eventUserAccessService.CanDeleteFeedback(user, feedback);
+            if (!canDelete) return StatusCodes.Status403Forbidden;
 
             _repoWrapper.EventFeedback.Delete(feedback);
             await _repoWrapper.SaveAsync();
