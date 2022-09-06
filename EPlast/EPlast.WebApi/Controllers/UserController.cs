@@ -203,12 +203,11 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
             var user = await _userService.GetUserAsync(userId);
-            var currentUserId = _userManager.GetUserId(User);
-            var currentUser = await _userService.GetUserAsync(currentUserId);
-            var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, userId, _mapper.Map<UserDto, User>(currentUser));
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUser.Id, userId, currentUser);
             if (!currentUserAccess["CanEditUserProfile"])
             {
-                _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
+                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
 
@@ -247,10 +246,9 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var currentUserId = _userManager.GetUserId(User);
-                var currentUser = await _userService.GetUserAsync(currentUserId);
+                var currentUser = await _userManager.GetUserAsync(User);
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
-                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, userToUpdate.Id, _mapper.Map<UserDto, User>(currentUser));
+                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUser.Id, userToUpdate.Id, currentUser);
 
                 if (currentUserAccess["CanEditDeleteUserPhoto"])
                 {
@@ -259,7 +257,7 @@ namespace EPlast.WebApi.Controllers
                     return Ok("Photo successfully updated");
                 }
 
-                _loggerService.LogInformation($"User {currentUserId} cannot update profile photo of user {userid}");
+                _loggerService.LogInformation($"User {currentUser.Id} cannot update profile photo of user {userid}");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             catch (Exception ex)
@@ -282,9 +280,8 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var currentUserId = _userManager.GetUserId(User);
-                var currentUser = await _userService.GetUserAsync(currentUserId);
-                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUserId, model.User.ID, _mapper.Map<UserDto, User>(currentUser));
+                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUser.Id, model.User.ID, currentUser);
 
                 if (currentUserAccess["CanEditUserProfile"])
                 {
@@ -296,7 +293,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    _loggerService.LogInformation($"User {currentUserId} cannot edit user profile of user {model.User.ID}");
+                    _loggerService.LogInformation($"User {currentUser.Id} cannot edit user profile of user {model.User.ID}");
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
             }
