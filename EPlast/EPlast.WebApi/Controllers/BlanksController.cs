@@ -28,12 +28,9 @@ namespace EPlast.WebApi.Controllers
         private readonly IBlankAchievementDocumentService _blankAchievementDocumentService;
         private readonly IBlankExtractFromUpuDocumentService _blankExtractFromUPUDocumentService;
         private readonly IPdfService _pdfService;
-        private readonly IUserManagerService _userManagerService;
-        private readonly IUserService _userService;
         private readonly ILoggerService<BlanksController> _loggerService;
         private readonly UserManager<User> _userManager;
         private readonly IUserAccessService _userAccessService;
-        private readonly IMapper _mapper;
 
         public BlanksController(IBlankBiographyDocumentService blankBiographyDocumentService,
            IBlankAchievementDocumentService blankAchievementDocumentService,
@@ -48,12 +45,9 @@ namespace EPlast.WebApi.Controllers
             _blankAchievementDocumentService = blankAchievementDocumentService;
             _blankExtractFromUPUDocumentService = blankExtractFromUPUDocumentService;
             _pdfService = pdfService;
-            _userManagerService = userManagerService;
-            _userService = userService;
             _loggerService = loggerService;
             _userManager = userManager;
             _userAccessService = userAccessService;
-            _mapper = mapper;
         }
 
         private async Task<bool> HasAccessSupporterAndRegisteredAsync(string userId)
@@ -87,10 +81,8 @@ namespace EPlast.WebApi.Controllers
             }
             try
             {
-                var currentUserId = _userManager.GetUserId(User);
-                var currentUser = await _userService.GetUserAsync(currentUserId);
-                var userToUpdate = await _userManagerService.FindByIdAsync(userId);
-                var currentUserAccess = await _userAccessService.GetUserBlankAccessAsync(currentUserId, userToUpdate.Id, _mapper.Map<UserDto, User>(currentUser));
+                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserAccess = await _userAccessService.GetUserBlankAccessAsync(currentUser.Id, userId, currentUser);
 
                 if (currentUserAccess["CanAddBiography"])
                 {
@@ -98,7 +90,7 @@ namespace EPlast.WebApi.Controllers
                     _loggerService.LogInformation($"Biography blank of user {userId} was successfully added");
                     return Created("", biographyDocument);
                 }
-                _loggerService.LogInformation($"User {currentUserId} cannot add biography blank for user {userId}");
+                _loggerService.LogInformation($"User {currentUser.Id} cannot add biography blank for user {userId}");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             catch (Exception ex)
