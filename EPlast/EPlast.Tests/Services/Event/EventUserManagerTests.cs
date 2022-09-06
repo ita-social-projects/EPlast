@@ -7,6 +7,7 @@ using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Services.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -26,6 +27,7 @@ namespace EPlast.Tests.Services.Event
         private Mock<IEventCategoryManager> _eventCategoryManager;
         private Mock<IEventStatusManager> _eventStatusManager;
         private Mock<IEventAdministrationTypeManager> _eventAdministrationTypeManager;
+        private Mock<IUserAccessService> _userAccesses;
         private Mock<UserManager<User>> _userManager;
         private EventUserManager _service;
 
@@ -39,13 +41,33 @@ namespace EPlast.Tests.Services.Event
             _eventAdministrationTypeManager = new Mock<IEventAdministrationTypeManager>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _userAccesses = new Mock<IUserAccessService>();
 
             _service = new EventUserManager(_repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManager.Object);
+                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManager.Object, _userAccesses.Object);
         }
 
         [Test]
-        public async Task EditEventAsyncTest()
+        public async Task EditEventAsyncTest_UserHasNoAccess_ReturnsFalse()
+        {
+            //Arrange
+            EventCreateDto model = new EventCreateDto()
+            {
+                Event = new EventCreationDto() { ID = 1 }
+            };
+
+            _userAccesses.Setup(x => x.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(new Dictionary<string, bool>() { { "EditEvent", false } });
+
+            //Act
+            var result = await _service.EditEventAsync(model, new User() { Id = Guid.Empty.ToString() });
+
+            //Assert
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public async Task EditEventAsyncTest_UserHasAccess_EventIsEditedAndReturnsTrue()
         {
             //Arrange
             var tempAlternate = new EventAdministration() { UserID = "2" };
@@ -57,6 +79,10 @@ namespace EPlast.Tests.Services.Event
             model.Alternate = new EventAdministrationDto() { UserId = "2" };
             model.Bunchuzhnyi = new EventAdministrationDto() { UserId = "1" };
             model.Pysar = new EventAdministrationDto() { UserId = "3" };
+            model.Event = new EventCreationDto() { ID = 1 };
+
+            _userAccesses.Setup(x => x.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(new Dictionary<string, bool>() { { "EditEvent", true } });
 
             _mapper
                .Setup(x => x.Map<EventCreationDto, DAEvent>(It.IsAny<EventCreationDto>()))
@@ -77,11 +103,12 @@ namespace EPlast.Tests.Services.Event
                .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
 
             //Act
-            await _service.EditEventAsync(model);
+            var result = await _service.EditEventAsync(model, new User() { Id = Guid.Empty.ToString() });
 
             //Assert
             _repoWrapper.Verify(t => t.EventAdministration.Delete(tempAlternate));
             Assert.AreEqual(4, initializedEvent.EventAdministrations.Count);
+            Assert.IsTrue(result);
         }
 
 
@@ -89,6 +116,9 @@ namespace EPlast.Tests.Services.Event
         public async Task EditEventAsyncTest_UpdatesAndSavesRepo_WithoutAlternate()
         {
             //Arrange
+            _userAccesses.Setup(x => x.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(new Dictionary<string, bool>() { { "EditEvent", true } });
+
             _eventStatusManager
                 .Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(1);
@@ -103,24 +133,28 @@ namespace EPlast.Tests.Services.Event
             _repoWrapper
                 .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
             var inputModel = new EventCreateDto();
-            inputModel.Event = new EventCreationDto();
+            inputModel.Event = new EventCreationDto() { ID = 1};
             inputModel.Сommandant = new EventAdministrationDto();
             inputModel.Alternate = new EventAdministrationDto();
             inputModel.Bunchuzhnyi = new EventAdministrationDto();
             inputModel.Pysar = new EventAdministrationDto();
 
             //Act
-            await _service.EditEventAsync(inputModel);
+            var result = await _service.EditEventAsync(inputModel, new User() { Id = Guid.Empty.ToString()});
 
             //Assert
             _repoWrapper.Verify(x => x.Event.Update(It.IsAny<DAEvent>()));
             _repoWrapper.Verify(x => x.SaveAsync());
+            Assert.IsTrue(result);
         }
 
         [Test]
         public async Task EditEventAsyncTest_UpdatesAndSavesRepo()
         {
             //Arrange
+            _userAccesses.Setup(x => x.GetUserEventAccessAsync(It.IsAny<string>(), It.IsAny<User>(), It.IsAny<int>()))
+                .ReturnsAsync(new Dictionary<string, bool>() { { "EditEvent", true } });
+
             _eventStatusManager
                 .Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(1);
@@ -147,11 +181,12 @@ namespace EPlast.Tests.Services.Event
             inputModel.Pysar = new EventAdministrationDto();
 
             //Act
-            await _service.EditEventAsync(inputModel);
+            var result = await _service.EditEventAsync(inputModel, new User() { Id = Guid.Empty.ToString() });
 
             //Assert
             _repoWrapper.Verify(x => x.Event.Update(It.IsAny<DAEvent>()));
             _repoWrapper.Verify(x => x.SaveAsync());
+            Assert.IsTrue(result);
         }
 
         [Test]
