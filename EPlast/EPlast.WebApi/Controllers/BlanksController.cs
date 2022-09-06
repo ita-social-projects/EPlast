@@ -130,11 +130,11 @@ namespace EPlast.WebApi.Controllers
 
         [HttpGet("InfinityScroll")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetPartOfAchievement(int pageNumber, int pageSize, string userId, int courseId)
+        public async Task<IActionResult> GetPartOfAchievement(int pageNumber, int pageSize, string userId, int? courseId)
         {
-            var partOfAchievements = courseId == 0 ?
+            var partOfAchievements = courseId == null ?
                 await _blankAchievementDocumentService.GetPartOfAchievementByUserIdAsync(pageNumber, pageSize, userId) :
-                await _blankAchievementDocumentService.GetPartOfAchievementByUserIdAndCourseIdAsync(pageNumber, pageSize, userId, courseId);
+                await _blankAchievementDocumentService.GetPartOfAchievementByUserIdAndCourseIdAsync(pageNumber, pageSize, userId, courseId.Value);
             return Ok(partOfAchievements);
         }
 
