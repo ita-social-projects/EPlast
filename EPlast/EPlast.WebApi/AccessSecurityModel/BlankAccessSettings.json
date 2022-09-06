@@ -10,7 +10,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": true
+    "CanDeleteAchievement": true,
+    "CanGenerateFile": true
   },
   "Крайовий Адмін": {
     "CanViewBlankTab": true,
@@ -23,7 +24,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": true
+    "CanDeleteAchievement": true,
+    "CanGenerateFile": true
   },
   "Голова Керівного Органу": {
     "CanViewBlankTab": true,
@@ -36,7 +38,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": true
+    "CanDeleteAchievement": true,
+    "CanGenerateFile": true
   },
   "Голова Округи": {
     "CanViewBlankTab": true,
@@ -49,7 +52,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": true
   },
   "Заступник Голови Округи": {
     "CanViewBlankTab": true,
@@ -62,7 +66,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": true
   },
   "Голова Станиці": {
     "CanViewBlankTab": true,
@@ -75,7 +80,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": true
   },
   "Заступник Голови Станиці": {
     "CanViewBlankTab": true,
@@ -88,7 +94,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": true
   },
   "Голова Куреня": {
     "CanViewBlankTab": true,
@@ -101,7 +108,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": true
   },
   "Заступник Голови Куреня": {
     "CanViewBlankTab": true,
@@ -114,7 +122,8 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": true
   },
   "Зареєстрований користувач": {
     "CanViewBlankTab": false,
@@ -127,7 +136,8 @@
     "CanViewListOfAchievements": false,
     "CanViewAchievement": false,
     "CanDownloadAchievement": false,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": false
   },
   "Прихильник": {
     "CanViewBlankTab": false,
@@ -140,7 +150,8 @@
     "CanViewListOfAchievements": false,
     "CanViewAchievement": false,
     "CanDownloadAchievement": false,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": false
   },
   "Дійсний член організації": {
     "CanViewBlankTab": true,
@@ -153,6 +164,7 @@
     "CanViewListOfAchievements": true,
     "CanViewAchievement": true,
     "CanDownloadAchievement": true,
-    "CanDeleteAchievement": false
+    "CanDeleteAchievement": false,
+    "CanGenerateFile": false
   }
 }
