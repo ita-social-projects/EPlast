@@ -16,5 +16,6 @@ namespace EPlast.BLL.Interfaces.Blank
         Task<bool> CanViewAchievement(User user, string focusUserId);
         Task<bool> CanDownloadAchievement(User user, string focusUserId);
         Task<bool> CanDeleteAchievement(User user, string focusUserId);
+        Task<bool> CanGenerateFile(User user, string focusUserId);
     }
 }

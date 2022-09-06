@@ -127,6 +127,16 @@ namespace EPlast.BLL.Services.Blank
             return await IsOkrugaCityKurinHeadOrHisDeputy(user) || roles.Contains(Roles.PlastMember);
         }
 
+        public async Task<bool> CanGenerateFile(User user, string focusUserId)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            if (await IsAdminAsync(user) || user.Id == focusUserId)
+            {
+                return true;
+            }
+            return await IsOkrugaCityKurinHeadOrHisDeputy(user);
+        }
+
         private async Task<bool> IsAdminAsync(User user)
         {
             var roles = await _userManager.GetRolesAsync(user);

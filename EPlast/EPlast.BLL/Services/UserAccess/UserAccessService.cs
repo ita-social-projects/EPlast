@@ -154,6 +154,7 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["CanViewAchievement"] = await _blankAccessService.CanViewAchievement(user, focusUserId);
             userAccess["CanDownloadAchievement"] = await _blankAccessService.CanDownloadAchievement(user, focusUserId);
             userAccess["CanDeleteAchievement"] = await _blankAccessService.CanDeleteAchievement(user, focusUserId);
+            userAccess["CanGenerateFile"] = await _blankAccessService.CanGenerateFile(user, focusUserId);
             return userAccess;
         }
     }
