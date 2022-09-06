@@ -45,7 +45,7 @@ namespace EPlast.BLL.Services.EventUser.EventUserAccess
 
             var evt = await _repository.Event.GetFirstOrDefaultAsync(e => e.ID == eventId);
 
-            bool isAppropriatePeriod = DateTime.Now > evt.EventDateEnd && DateTime.Now < evt.EventDateEnd + TimeSpan.FromDays(3);
+            bool isAppropriatePeriod = DateTime.Now >= evt.EventDateEnd && DateTime.Now < evt.EventDateEnd + TimeSpan.FromDays(3);
             if (!isAppropriatePeriod) return false;
 
             return true;
