@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
@@ -27,6 +28,7 @@ namespace EPlast.Tests.Services.UserAccess
         private Mock<IUserProfileAccessService> _userProfileAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
         private Mock<IUserAccessWrapper> _userAccessWrapper;
+        private Mock<IBlankAccessService> _blankAccessService;
 
         private UserAccessService _userAccessService;
 
@@ -40,6 +42,7 @@ namespace EPlast.Tests.Services.UserAccess
             _regionAccessService = new Mock<IRegionAccessService>();
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
             _userProfileAccessService = new Mock<IUserProfileAccessService>();
+            _blankAccessService = new Mock<IBlankAccessService>();
             _userAccessWrapper = new Mock<IUserAccessWrapper>();
             _userAccessWrapper.Setup(x => x.CityAccessService).Returns(_cityAccessService.Object);
             _userAccessWrapper.Setup(x => x.ClubAccessService).Returns(_clubAccessService.Object);
@@ -47,6 +50,8 @@ namespace EPlast.Tests.Services.UserAccess
             _userAccessWrapper.Setup(x => x.UserProfileAccessService).Returns(_userProfileAccessService.Object);
             _userAccessWrapper.Setup(x => x.EventAccessService).Returns(_eventAccessService.Object);
             _userAccessWrapper.Setup(x => x.RegionAccessService).Returns(_regionAccessService.Object);
+            _userAccessWrapper.Setup(x => x.BlankAccessService).Returns(_blankAccessService.Object);
+
             _userAccessService = new UserAccessService(_userAccessWrapper.Object, _securityModel.Object);
         }
 
@@ -195,6 +200,22 @@ namespace EPlast.Tests.Services.UserAccess
 
             //Act
             var result = await _userAccessService.GetUserMenuAccessAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
+
+        [Test]
+        public async Task GetUserBlankAccesses_ReturnsListOfUserBlankAccesses()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessService.GetUserBlankAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>());
 
             //Assert
             Assert.IsNotEmpty(result);
