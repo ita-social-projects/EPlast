@@ -102,7 +102,7 @@ namespace EPlast.WebApi.Controllers
             var admin = await _userManager.GetUserAsync(User);
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (!ModelState.IsValid || user == null || !await _userManager.IsInRoleAsync(user, Roles.FormerPlastMember))
+            if (!ModelState.IsValid || user == null)
                 return BadRequest("Unable to apply the renewal");
 
             if (!await _userRenewalService.IsValidAdminAsync(admin, cityId))
