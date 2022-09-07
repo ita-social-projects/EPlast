@@ -28,7 +28,6 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddCors();
             services.AddMediatR(typeof(MediatrEntryPoint));
             services.AddSwagger();
-            
             services.AddControllers()
                     .AddNewtonsoftJson();
             services.AddLogging();
@@ -40,7 +39,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddIdentityOptions();
             services.AddRedisOptionExtenshion(Configuration);
             services.AddDependency();
-
+            services.AddSignalR();
             return services;
         }
     }

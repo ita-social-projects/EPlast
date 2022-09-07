@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using EPlast.WebApi.Extensions;
+using EPlast.WebApi.Hubs;
 using EPlast.WebApi.StartupExtensions;
 using EPlast.WebApi.WebSocketHandlers;
 using Hangfire;
@@ -59,13 +60,21 @@ namespace EPlast.WebApi
             app.UseRouting();
             app.UseCors(builder =>
             {
-                builder.AllowAnyMethod()
-                       .AllowAnyHeader()
-                       .AllowAnyOrigin();
+                builder.SetIsOriginAllowed((host) =>
+                {
+                    return true;
+                })
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
             });
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub>("/api/hubs/notifications");
+            });
             app.UseHangfireDashboard();
             app.Run(async (context) =>
             {

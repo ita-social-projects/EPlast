@@ -58,8 +58,8 @@ namespace EPlast.BLL.Services.Jwt
         {
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id),      
                 new Claim(ClaimTypes.Name, user.Email),
-                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
                 new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };

@@ -5,12 +5,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace EPlast.WebApi.StartupExtensions
 {
     public static class AddAuthenticationExtension
     {
-        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration )
+        public static IServiceCollection AddAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAuthentication(options =>
             {
@@ -31,6 +32,21 @@ namespace EPlast.WebApi.StartupExtensions
                  })
                  .AddJwtBearer(config =>
                  {
+                     config.Events = new JwtBearerEvents
+                     {
+                         OnMessageReceived = context =>
+                         {
+                             var accessToken = context.Request.Query["access_token"];
+                             throw new Exception(accessToken);
+                             var path = context.HttpContext.Request.Path;
+                             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/api/hubs"))
+                             {
+                                 context.Token = accessToken;
+                             }
+                             return Task.CompletedTask;
+                         }
+                     };
+
                      config.RequireHttpsMetadata = false;
                      config.SaveToken = true;
 
