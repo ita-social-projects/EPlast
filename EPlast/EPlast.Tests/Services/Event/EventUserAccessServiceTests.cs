@@ -6,6 +6,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Services.EventUser.EventUserAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -19,6 +20,7 @@ namespace EPlast.Tests.Services.Event
         private Mock<IEventAdmininistrationManager> _eventAdministrationManager;
         private Mock<UserManager<User>> _userManager;
         private Mock<IActionManager> _actionManager;
+        private Mock<IRepositoryWrapper> _repositoryWrapper;
 
         [SetUp]
         public void SetUp()
@@ -27,7 +29,8 @@ namespace EPlast.Tests.Services.Event
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _eventAdministrationManager = new Mock<IEventAdmininistrationManager>();
             _actionManager = new Mock<IActionManager>();
-            _eventUserAccessService = new EventUserAccessService(_eventAdministrationManager.Object, _userManager.Object, _actionManager.Object);
+            _repositoryWrapper = new Mock<IRepositoryWrapper>();
+            _eventUserAccessService = new EventUserAccessService(_eventAdministrationManager.Object, _userManager.Object, _actionManager.Object, _repositoryWrapper.Object);
         }
 
         [Test]

@@ -156,7 +156,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User hasn't access to annual report</response>
         /// <response code="404">The annual report does not exist</response>
         [HttpGet("EditCityAnnualReportForm/{id:int}")]
-        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)] 
         public async Task<IActionResult> GetEditForm(int id)
         {
             try
@@ -230,7 +230,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">The annual report does not exist</response>
         /// <response code="404">Annual report model is not valid</response>
         [HttpPut]
-        [Authorize(Roles = Roles.AdminAndCityHeadAndCityHeadDeputy)]
+        [Authorize(Roles = Roles.AdminRegionBoardHeadOkrugaCityHeadAndDeputy)]
         public async Task<IActionResult> Edit(AnnualReportDto annualReport)
         {
             if (ModelState.IsValid)

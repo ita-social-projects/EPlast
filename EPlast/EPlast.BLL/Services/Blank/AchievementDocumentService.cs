@@ -66,18 +66,24 @@ namespace EPlast.BLL.Services.Blank
             return await _blobStorageRepo.GetBlobBase64Async(fileName);
         }
 
-        public async Task<IEnumerable<AchievementDocumentsDto>> GetDocumentsByUserIdAsync(string userid)
+        public async Task<IEnumerable<AchievementDocumentsDto>> GetDocumentsByUserIdAsync(string userId)
         {
             return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDto>>(
-                await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userid));
+                await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId));
         }
 
-        public async Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userid)
+        public async Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAsync(int pageNumber, int pageSize, string userId)
         {
-            var partOfAchievements = (await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userid)).Skip(pageSize * pageNumber).Take(pageSize);
-
+            var achievements = await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId);
+            var partOfAchievements = achievements.Skip(pageSize * pageNumber).Take(pageSize);
             return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDto>>(partOfAchievements);
-            
+        }
+
+        public async Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAndCourseIdAsync(int pageNumber, int pageSize, string userId, int courseId)
+        {
+            var achievements = await _repositoryWrapper.AchievementDocumentsRepository.GetAllAsync(i => i.UserId == userId && i.CourseId == courseId);
+            var partOfAchievements = achievements.Skip(pageSize * pageNumber).Take(pageSize);
+            return _mapper.Map<IEnumerable<AchievementDocuments>, IEnumerable<AchievementDocumentsDto>>(partOfAchievements);
         }
     }
 }
