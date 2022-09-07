@@ -25,7 +25,8 @@ namespace EPlast.BLL.Mapping.Events
                 .ForMember(d => d.ForWhom, s => s.MapFrom(e => e.ForWhom))
                 .ForMember(d => d.Rating, s => s.MapFrom(e => e.Rating))
                 .ForMember(d => d.EventAdmins, s => s.MapFrom(e => e.EventAdministrations.ToList()))
-                .ForMember(d => d.EventParticipants, s => s.MapFrom(e => e.Participants.ToList()));
+                .ForMember(d => d.EventParticipants, s => s.MapFrom(e => e.Participants.ToList()))
+                .ForMember(d => d.EventFeedbacks, s => s.MapFrom(e => e.Participants.Where(p => p.EventFeedback != null).Select(p => p.EventFeedback).ToList()));
         }
     }
 }

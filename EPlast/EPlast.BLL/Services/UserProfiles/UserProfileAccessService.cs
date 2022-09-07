@@ -44,7 +44,7 @@ namespace EPlast.BLL.Services.UserProfiles
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
             var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (await IsAdminAsync(user))
+            if (await IsAdminAsync(user) || user.Id == focusUserId)
             {
                 return true;
             }
@@ -53,13 +53,14 @@ namespace EPlast.BLL.Services.UserProfiles
                 ((roles.Contains(Roles.CityHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.City)) ||
                 ((roles.Contains(Roles.KurinHead)) && await _userService.IsUserInSameCellAsync(currentUser, focusUser, CellType.Club));
         }
-
+        
         public async Task<bool> CanViewFullProfile(User user, string focusUserId)
         {
             var roles = await _userManager.GetRolesAsync(user);
             var currentUser = await _userService.GetUserAsync(user.Id);
             var focusUser = await _userService.GetUserAsync(focusUserId);
-            if (await IsAdminAsync(user) || user.Id == focusUserId)
+
+            if (user.Id == focusUserId || await IsAdminAsync(user))
             {
                 return true;
             }
