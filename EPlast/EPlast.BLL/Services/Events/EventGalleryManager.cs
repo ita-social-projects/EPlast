@@ -28,10 +28,10 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<int>> AddPicturesAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<EventGalleryDto>> AddPicturesAsync(int id, IList<IFormFile> files)
         {
 
-            var uploadedPictures = new List<int>();
+            var uploadedPictures = new List<EventGalleryDto>();
             var createdGalleries = new List<Gallary>();
             foreach (IFormFile file in files)
             {
@@ -49,7 +49,11 @@ namespace EPlast.BLL.Services.Events
             await _repoWrapper.SaveAsync();
             foreach (var gallery in createdGalleries)
             {
-                uploadedPictures.Add(gallery.ID);
+                uploadedPictures.Add(new EventGalleryDto
+                {
+                    GalleryId = gallery.ID,
+                    FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
+                });
             }
 
             return uploadedPictures;
@@ -74,21 +78,6 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
-        public async Task<EventGalleryDto> GetPictureByIdAsync(int pictureId)
-        {
-            var file = await _repoWrapper.Gallary.GetFirstOrDefaultAsync(p => p.ID == pictureId);
-            if (file == null) return null;
-
-            var dto = new EventGalleryDto
-            {
-                GalleryId = file.ID,
-                EncodedData = await _eventBlobStorage.GetBlobBase64Async(file.GalaryFileName),
-                FileName = file.GalaryFileName
-            };
-
-            return dto;
-        }
-
         /// <inheritdoc />
         public async Task<IEnumerable<EventGalleryDto>> GetPicturesInBase64(int eventId)
         {
@@ -105,8 +94,7 @@ namespace EPlast.BLL.Services.Events
                 pictures.Add(new EventGalleryDto
                 {
                     GalleryId = gallery.ID,
-                    EncodedData = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName),
-                    FileName = gallery.GalaryFileName
+                    FileName = await _eventBlobStorage.GetBlobBase64Async(gallery.GalaryFileName)
                 });
             }
 

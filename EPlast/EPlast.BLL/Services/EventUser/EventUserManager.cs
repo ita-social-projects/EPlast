@@ -6,7 +6,6 @@ using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
-using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -26,13 +25,11 @@ namespace EPlast.BLL.Services.EventUser
         private readonly IEventStatusManager eventStatusManager;
         private readonly IEventAdministrationTypeManager eventAdministrationTypeManager;
         private readonly UserManager<User> _userManager;
-        private readonly IUserAccessService _userAccesses;
-
 
 
         public EventUserManager(IRepositoryWrapper repoWrapper, IMapper mapper,
             IEventCategoryManager eventCategoryManager, IEventStatusManager eventStatusManager,
-            IEventAdministrationTypeManager eventAdministrationTypeManager, UserManager<User> _userManager, IUserAccessService _userAccesses)
+            IEventAdministrationTypeManager eventAdministrationTypeManager, UserManager<User> _userManager)
         {
             this.repoWrapper = repoWrapper;
             this.mapper = mapper;
@@ -40,7 +37,6 @@ namespace EPlast.BLL.Services.EventUser
             this.eventStatusManager = eventStatusManager;
             this.eventAdministrationTypeManager = eventAdministrationTypeManager;
             this._userManager = _userManager;
-            this._userAccesses = _userAccesses;
         }
 
         private int commandantTypeId;
@@ -149,11 +145,8 @@ namespace EPlast.BLL.Services.EventUser
             };
         }
 
-        public async Task<bool> EditEventAsync(EventCreateDto model, User currentUser)
+        public async Task EditEventAsync(EventCreateDto model)
         {
-            var userAccesses = await _userAccesses.GetUserEventAccessAsync(currentUser.Id, currentUser, model.Event.ID);
-            if (!userAccesses["EditEvent"]) return false;
-
             await GetAdministrationTypeId();
             var eventToEdit = mapper.Map<EventCreationDto, Event>(model.Event);
             List<EventAdministration> newAdmins = new List<EventAdministration> {
@@ -202,7 +195,6 @@ namespace EPlast.BLL.Services.EventUser
             eventToEdit.EventAdministrations = newAdmins;
             repoWrapper.Event.Update(eventToEdit);
             await repoWrapper.SaveAsync();
-            return true;
         }
 
         public async Task<int> ApproveEventAsync(int id)

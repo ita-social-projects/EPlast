@@ -306,5 +306,28 @@ namespace EPlast.XUnitTest.Services.Events
             //Assert
             Assert.Equal(collection, methodResult);
         }
+
+        [Fact]
+        public async Task EstimateEventByParticipantAsyncSuccessTest()
+        {
+            //Arrange
+            var estimate = 1.0;
+            var collection = new List<Participant>();
+            var participant = new Participant { UserId = "1", EventId = 1};
+            _repoWrapper.Setup(x => x.Participant.GetFirstAsync(It.IsAny<Expression<Func<Participant, bool>>>(),null))
+                .ReturnsAsync(participant);
+            participant.Estimate = estimate;
+            _repoWrapper.Setup(x => x.Participant.Update(participant));
+            _repoWrapper.Setup(x => x.SaveAsync());
+            _repoWrapper.Setup(x => x.Participant.GetAllAsync(a => a.UserId == participant.UserId, null))
+                .ReturnsAsync(collection);
+            var eventRating = Math.Round(collection.Sum(p => p.Estimate) / collection.Count(), 2, MidpointRounding.AwayFromZero);
+
+            //Act
+            var participantManager = new ParticipantManager(_repoWrapper.Object, _eventStatusManager.Object, _participantStatusManager.Object);
+            var methodResult = await participantManager.EstimateEventByParticipantAsync(participant.EventId,participant.UserId,estimate);
+            //Assert
+            Assert.Equal(eventRating, methodResult);
+        }
     }
 }
