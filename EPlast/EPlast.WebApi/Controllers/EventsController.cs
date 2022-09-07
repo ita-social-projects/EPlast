@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Authorization;
@@ -25,13 +27,17 @@ namespace EPlast.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IEventStatusManager _eventStatusManager;
         private readonly IEventCategoryManager _eventCategoryManager;
+        private readonly IEventUserAccessService _eventUserAccessService;
+        private readonly IParticipantManager _participantManager;
 
-        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventStatusManager eventStatusManager, IEventCategoryManager eventCategoryManager)
+        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventStatusManager eventStatusManager, IEventCategoryManager eventCategoryManager, IEventUserAccessService eventUserAccessService, IParticipantManager participantManager)
         {
             _actionManager = actionManager;
             _userManager = userManager;
             _eventStatusManager = eventStatusManager;
             _eventCategoryManager = eventCategoryManager;
+            _eventUserAccessService = eventUserAccessService;
+            _participantManager = participantManager;
         }
 
         /// <summary>
@@ -209,50 +215,66 @@ namespace EPlast.WebApi.Controllers
         /// Add a feedback for an event.
         /// </summary>
         /// <returns>Status code of sending a feedback of the participant's event operation.</returns>  
-        /// <param name="id">The Id of event</param>
+        /// <param name="eventId">The Id of event</param>
         /// <param name="feedback">Feedback DTO</param>
         /// <response code="200">OK</response>
         /// <response code="403">The user was not present at an event</response>
         /// <response code="404">The event was not found</response>
-        /// <response code="400">Bad Request</response>  
-        [HttpPut("{id:int}/feedbacks")]
+        [HttpPut("{eventId:int}/feedbacks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> LeaveFeedback(int id, EventFeedbackDto feedback)
+        public async Task<IActionResult> LeaveFeedback(int eventId, EventFeedbackDto feedback)
         {
-            var result = await _actionManager.LeaveFeedbackAsync(id, feedback, await _userManager.GetUserAsync(User));
+          
+            var eventEntity = await _actionManager.GetEventAsync(eventId);
 
-            return result switch
+            if (eventEntity == null)
             {
-                StatusCodes.Status200OK => Ok(),
-                StatusCodes.Status403Forbidden => Forbid(),
-                StatusCodes.Status404NotFound => NotFound(),
-                _ => BadRequest()
-            };
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            var participant = await _participantManager.GetParticipantByEventIdAndUserIdAsync(eventId, user.Id);
+
+            var canPostFeedback = await _eventUserAccessService.CanPostFeedback(participant, eventId);
+            if (!canPostFeedback)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+
+            await _actionManager.LeaveFeedbackAsync(feedback, participant);
+            return Ok();
         }
 
         /// <summary>
         /// Add a feedback for an event.
         /// </summary>
         /// <returns>Status code of sending a feedback of the participant's event operation.</returns>  
-        /// <param name="id">The Id of event</param>
-        /// <param name="fId">Feedback ID</param>
-        /// <response code="200">OK</response>
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="feedbackId">Feedback ID</param>
+        /// <response code="203">No Content</response>
         /// <response code="403">The user was not present at an event</response>
         /// <response code="404">The event was not found</response>
         /// <response code="400">Bad Request</response>  
-        [HttpDelete("{id:int}/feedbacks/{fId:int}")]
+        [HttpDelete("{eventId:int}/feedbacks/{feedbackId:int}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> DeleteFeedback(int id, int fId)
+        public async Task<IActionResult> DeleteFeedback(int eventId, int feedbackId)
         {
-            var result = await _actionManager.DeleteFeedbackAsync(id, fId, await _userManager.GetUserAsync(User));
-
-            return result switch
+            var eventEntity = await _actionManager.GetEventAsync(eventId);
+            var feedback = await _participantManager.GetEventFeedbackByIdAsync(feedbackId);
+            if (eventEntity == null ||feedback == null)
             {
-                StatusCodes.Status200OK => Ok(),
-                StatusCodes.Status403Forbidden => Forbid(),
-                StatusCodes.Status404NotFound => NotFound(),
-                _ => BadRequest()
-            };
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            bool canDelete = await _eventUserAccessService.CanDeleteFeedback(user, feedback);
+            if (!canDelete)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+
+           await _actionManager.DeleteFeedbackAsync(feedback.Id);
+           return NoContent();
         }
 
         /// <summary>

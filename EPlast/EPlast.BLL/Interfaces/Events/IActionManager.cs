@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BLL.Interfaces.Events
@@ -52,6 +53,8 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="categoryId">The Id of event category</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
         Task<IEnumerable<GeneralEventDto>> GetEventsAsync(int categoryId, int eventTypeId, User user);
+
+        Task<Event> GetEventAsync(int eventId);
 
         /// <summary>
         /// Get detailed information about event by event Id.
@@ -105,7 +108,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventId">The Id of event</param>
         /// <param name="user">User object</param>
         /// <param name="feedback">Feedback object</param>
-        Task<int> LeaveFeedbackAsync(int eventId, EventFeedbackDto feedback, User user);
+        Task LeaveFeedbackAsync( EventFeedbackDto feedback, Participant participant);
 
         /// <summary>
         /// Delete a feedback for the participant's event.
@@ -114,7 +117,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventId">The Id of event</param>
         /// <param name="feedbackId">Feedback Id</param>
         /// <param name="user">User object</param>
-        Task<int> DeleteFeedbackAsync(int eventId, int feedbackId, User user);
+        Task DeleteFeedbackAsync(int feedbackId);
 
         /// <summary>
         /// Change event participant status to approved.

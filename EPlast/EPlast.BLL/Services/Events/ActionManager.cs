@@ -28,10 +28,10 @@ namespace EPlast.BLL.Services.Events
         private readonly IParticipantManager _participantManager;
         private readonly IEventWrapper _eventWrapper;
         private readonly INotificationService _notificationService;
-        private readonly IEventUserAccessService _eventUserAccessService;
+
         public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper,
             IParticipantStatusManager participantStatusManager, IParticipantManager participantManager,
-            IEventWrapper eventWrapper, INotificationService notificationService, IEventUserAccessService eventUserAccessService)
+            IEventWrapper eventWrapper, INotificationService notificationService)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
@@ -40,7 +40,6 @@ namespace EPlast.BLL.Services.Events
             _participantManager = participantManager;
             _eventWrapper = eventWrapper;
             _notificationService = notificationService;
-            _eventUserAccessService = eventUserAccessService;
         }
 
         /// <inheritdoc />
@@ -92,6 +91,12 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.Participants)
                 );
             return await GetEventDtosAsync(events, user);
+        }
+
+        public async Task<Event> GetEventAsync(int eventId)
+        {
+            var eventEntity = await _repoWrapper.Event.GetFirstOrDefaultAsync(e => e.ID == eventId);
+            return eventEntity;
         }
 
         /// <inheritdoc />
@@ -234,18 +239,8 @@ namespace EPlast.BLL.Services.Events
             await _participantManager.ChangeUserPresentStatusAsync(participantId);
         }
 
-        public async Task<int> LeaveFeedbackAsync(int eventId, EventFeedbackDto feedback, User user)
+        public async Task LeaveFeedbackAsync(EventFeedbackDto feedback, Participant participant)
         {
-            var eventEntity = await _repoWrapper.Event.GetFirstOrDefaultAsync(e => e.ID == eventId);
-
-            if (eventEntity == null) return StatusCodes.Status404NotFound;
-
-            var participant = 
-                await _repoWrapper.Participant.GetFirstOrDefaultAsync(e => e.EventId == eventId && e.UserId == user.Id);
-
-            var canPostFeedback = await _eventUserAccessService.CanPostFeedback(participant, eventId);
-            if (!canPostFeedback) return StatusCodes.Status403Forbidden;
-
             var existingFeedback = await _repoWrapper.EventFeedback.GetFirstOrDefaultAsync(f => f.ParticipantId == participant.ID);
 
             if (existingFeedback != null)
@@ -255,7 +250,7 @@ namespace EPlast.BLL.Services.Events
 
                 _repoWrapper.EventFeedback.Update(existingFeedback);
                 await _repoWrapper.SaveAsync();
-                return StatusCodes.Status200OK;
+                return;
             }
 
             var createdFeedback = _mapper.Map<EventFeedbackDto, EventFeedback>(feedback);
@@ -264,28 +259,17 @@ namespace EPlast.BLL.Services.Events
 
             await _repoWrapper.EventFeedback.CreateAsync(createdFeedback);
             await _repoWrapper.SaveAsync();
-
-            return StatusCodes.Status200OK;
         }
 
-        public async Task<int> DeleteFeedbackAsync(int eventId, int feedbackId, User user)
+        public async Task DeleteFeedbackAsync(int feedbackId)
         {
-            var eventEntity = await _repoWrapper.Event.GetFirstOrDefaultAsync(e => e.ID == eventId);
-            if (eventEntity == null) return StatusCodes.Status404NotFound;
+            var eventFeedback = await _repoWrapper.EventFeedback.GetFirstOrDefaultAsync(f => f.Id == feedbackId);
+            if (eventFeedback != null)
+            {
+                _repoWrapper.EventFeedback.Delete(eventFeedback);
+                await _repoWrapper.SaveAsync();
 
-            var feedback = await _repoWrapper.EventFeedback
-                .GetFirstOrDefaultAsync(e => e.Id == feedbackId && e.Participant.EventId == eventId,
-                include: e => e.Include(f => f.Participant));
-
-            if (feedback == null) return StatusCodes.Status404NotFound;
-
-            bool canDelete = await _eventUserAccessService.CanDeleteFeedback(user, feedback);
-            if (!canDelete) return StatusCodes.Status403Forbidden;
-
-            _repoWrapper.EventFeedback.Delete(feedback);
-            await _repoWrapper.SaveAsync();
-
-            return StatusCodes.Status200OK;
+            }
         }
 
         /// <inheritdoc />

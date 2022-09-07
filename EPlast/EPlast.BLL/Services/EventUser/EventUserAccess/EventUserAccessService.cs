@@ -61,11 +61,6 @@ namespace EPlast.BLL.Services.EventUser.EventUserAccess
             return true;
         }
 
-        public async Task<string> GetEventStatusAsync(User user, int eventId)
-        {
-            var eventDetails = await _actionManager.GetEventInfoAsync(eventId, user);
-            return eventDetails.Event.EventStatus;
-        }
 
         public async Task<Dictionary<string, bool>> RedefineAccessesAsync(Dictionary<string, bool> userAccesses, User user, int? eventId = null)
         {
@@ -73,7 +68,7 @@ namespace EPlast.BLL.Services.EventUser.EventUserAccess
             
             bool access = await IsUserAdminOfEvent(user, (int)eventId);
             var roles = await _userManager.GetRolesAsync(user);
-            var eventStatus = await GetEventStatusAsync(user, (int)eventId);
+            var eventStatus = (await _actionManager.GetEventInfoAsync( (int)eventId, user)).Event.EventStatus;
 
             userAccesses["SubscribeOnEvent"] = !access;
 
