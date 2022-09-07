@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace EPlast.DataAccess.Entities.Event
 {
@@ -38,6 +37,7 @@ namespace EPlast.DataAccess.Entities.Event
         [Required]
         [MaxLength(6, ErrorMessage = "Приблизна кількість учасників не може перевищувати 6 символів")]
         public int NumberOfPartisipants { get; set; }
+        public double Rating { get; set; }
         public EventType EventType { get; set; }
         public EventCategory EventCategory { get; set; }
         public EventStatus EventStatus { get; set; }
@@ -45,14 +45,5 @@ namespace EPlast.DataAccess.Entities.Event
         public ICollection<EventGallary> EventGallarys { get; set; }
         public ICollection<EventAdmin> EventAdmins { get; set; }
         public ICollection<EventAdministration> EventAdministrations { get; set; }
-        public double Rating
-        {
-            get
-            {
-                var allFeedbacks = Participants.Where(p => p.EventFeedback != null).Select(s => s.EventFeedback);
-                if (allFeedbacks.Count() == 0) return 0;
-                return allFeedbacks.Average(f => f.Rating);
-            }
-        }
     }
 }

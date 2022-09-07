@@ -110,6 +110,21 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
+        public async Task<double> EstimateEventByParticipantAsync(int eventId, string userId, double estimate)
+        {
+            var participant = await _repoWrapper.Participant
+                .GetFirstAsync(predicate: p => p.EventId == eventId && p.UserId == userId);
+            participant.Estimate = estimate;
+            _repoWrapper.Participant.Update(participant);
+            await _repoWrapper.SaveAsync();
+            var eventParticipants = await _repoWrapper.Participant
+                .GetAllAsync(predicate: p => p.EventId == eventId && p.Estimate > 0);
+            var eventRating = Math.Round(eventParticipants.Sum(p => p.Estimate) / eventParticipants.Count(), 2, MidpointRounding.AwayFromZero);
+
+            return eventRating;
+        }
+
+        /// <inheritdoc />
         public async Task<int> ChangeStatusToRejectedAsync(int id)
         {
             try
