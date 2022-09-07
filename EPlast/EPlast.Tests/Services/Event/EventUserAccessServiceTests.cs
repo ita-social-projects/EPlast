@@ -50,22 +50,6 @@ namespace EPlast.Tests.Services.Event
         }
 
         [Test]
-        public async Task GetEventStatusAsync_ReturnsString()
-        {
-            //Arrange
-            _actionManager
-                .Setup(x => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(CreateFakeApprovedEvent());
-
-            //Act
-            var result = await _eventUserAccessService.GetEventStatusAsync(It.IsAny<User>(), It.IsAny<int>());
-
-            //Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<string>(result);
-        }
-
-        [Test]
         public async Task RedefineAccessesAsync_EventIdNull_ReturnsListOfEventAccesses()
         {
             //Arrange

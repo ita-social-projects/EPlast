@@ -54,6 +54,10 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="userId">The Id of logged in user</param>
         Task<IEnumerable<Participant>> GetParticipantsByUserIdAsync(string userId);
 
+        Task<Participant> GetParticipantByEventIdAndUserIdAsync(int eventId, string userId);
+
+        Task<EventFeedback> GetEventFeedbackByIdAsync(int feedbackId);
+
         /// <summary>
         /// Change present status of the participant's event.
         /// </summary>

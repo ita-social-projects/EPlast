@@ -152,6 +152,20 @@ namespace EPlast.BLL.Services.Events
             return participants;
         }
 
+        public async Task<Participant> GetParticipantByEventIdAndUserIdAsync(int eventId, string userId)
+        {
+            var participant = 
+                await _repoWrapper.Participant.GetFirstOrDefaultAsync(e => e.EventId == eventId && e.UserId == userId);
+            return participant;
+        }
+
+        public async Task<EventFeedback> GetEventFeedbackByIdAsync(int feedbackId)
+        {
+            var feedback = 
+                await _repoWrapper.EventFeedback.GetFirstOrDefaultAsync(f=>f.Id==feedbackId);
+            return feedback;
+        }
+
         public async Task ChangeUserPresentStatusAsync(int perticipantId)
         {
             var participant = await _repoWrapper.Participant

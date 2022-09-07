@@ -10,8 +10,6 @@ namespace EPlast.BLL.Interfaces.EventUser
     {
         Task<bool> IsUserAdminOfEvent(User user, int eventId);
 
-        Task<string> GetEventStatusAsync(User user, int eventId);
-
         Task<bool> CanPostFeedback(Participant user, int eventId);
 
         Task<bool> CanDeleteFeedback(User user, EventFeedback feedback);
