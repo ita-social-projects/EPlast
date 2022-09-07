@@ -192,7 +192,8 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDto> GetHead(int regionId)
         {
-            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHead && (d.EndDate > DateTime.Now || d.EndDate == null),
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHead 
+                                                                                        && (d.EndDate > DateTime.Now || d.EndDate == null) && d.Status,
                 include: source => source
                 .Include(
                 d => d.User));
@@ -202,7 +203,8 @@ namespace EPlast.BLL.Services.Region
 
         public async Task<RegionAdministrationDto> GetHeadDeputy(int regionId)
         {
-            var headDeputy = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy && (d.EndDate > DateTime.Now || d.EndDate == null),
+            var headDeputy = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy 
+                                                                                             && (d.EndDate > DateTime.Now || d.EndDate == null) && d.Status,
                 include: source => source
                 .Include(
                 d => d.User));

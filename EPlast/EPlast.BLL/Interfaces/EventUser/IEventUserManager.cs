@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EPlast.BLL.DTO.EventUser;
+using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Interfaces.EventUser
 {
@@ -18,7 +19,7 @@ namespace EPlast.BLL.Interfaces.EventUser
         /// Create a event
         /// </summary>
         /// <returns>A newly created event</returns>
-        /// <param name="createDTO"></param>
+        /// <param name="model">Event DTO</param>
         Task<int> CreateEventAsync(EventCreateDto model);
 
         /// <summary>
@@ -32,8 +33,8 @@ namespace EPlast.BLL.Interfaces.EventUser
         /// Put edited event
         /// </summary>
         /// <returns>A newly edited event</returns>
-        /// <param name="createDTO"></param>
-        Task EditEventAsync(EventCreateDto model);
+        /// <param name="model">Event DTO</param>
+        Task<bool> EditEventAsync(EventCreateDto model, User currentUser);
 
 
         /// <summary>
