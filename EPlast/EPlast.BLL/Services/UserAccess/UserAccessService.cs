@@ -109,11 +109,10 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["CanApproveAsClubHead"] = canApproveAsHead;
             userAccess["CanApproveAsCityHead"] = canApproveAsHead;
             userAccess["CanEditUserProfile"] = canEditUserProfile;
-            userAccess["CanSeeAddDeleteUserExtractUPU"] = canEditUserProfile;
+            userAccess["CanEditDeleteUserPhoto"] = canEditUserProfile;
             userAccess["CanAddUserDistionction"] = canEditUserProfile;
             userAccess["CanDeleteUserDistinction"] = canEditUserProfile;
             userAccess["CanDownloadUserDistinction"] = canEditUserProfile;
-            userAccess["CanViewDownloadUserBiography"] = canEditUserProfile;
 
             return userAccess;
         }
