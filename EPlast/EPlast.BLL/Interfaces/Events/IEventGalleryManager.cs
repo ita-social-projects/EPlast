@@ -13,10 +13,10 @@ namespace EPlast.BLL.Interfaces.Events
         /// <summary>
         /// Add pictures to gallery of specific event by event Id.
         /// </summary>
-        /// <returns>List of added pictures IDs.</returns>
+        /// <returns>List of added pictures.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="files">List of uploaded pictures</param>
-        Task<IEnumerable<int>> AddPicturesAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<EventGalleryDto>> AddPicturesAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.
@@ -31,12 +31,5 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of pictures in Base64 format.</returns>
         /// <param name="eventId">The Id of event</param>
         Task<IEnumerable<EventGalleryDto>> GetPicturesInBase64(int eventId);
-
-        /// <summary>
-        /// Get a picture in Base64 format by its Id.
-        /// </summary>
-        /// <returns>Pictures in Base64 format.</returns>
-        /// <param name="pictureId">The Id of event</param>
-        Task<EventGalleryDto> GetPictureByIdAsync(int pictureId);
     }
 }

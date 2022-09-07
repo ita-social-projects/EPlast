@@ -9,7 +9,6 @@ using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
-using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Services.EventUser;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
@@ -27,7 +26,6 @@ namespace EPlast.XUnitTest.Services.EventUser
         private readonly Mock<IEventCategoryManager> _eventCategoryManager;
         private readonly Mock<IEventStatusManager> _eventStatusManager;
         private readonly Mock<IEventAdministrationTypeManager> _eventAdministrationTypeManager;
-        private readonly Mock<IUserAccessService> _userAccessService;
         private readonly Mock<UserManager<User>> _userManager;
         private EventUserManager eventUserManager;
         private class DateTimeData : IEnumerable<object[]>
@@ -47,12 +45,11 @@ namespace EPlast.XUnitTest.Services.EventUser
             _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventStatusManager = new Mock<IEventStatusManager>();
             _eventAdministrationTypeManager = new Mock<IEventAdministrationTypeManager>();
-            _userAccessService = new Mock<IUserAccessService>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
             eventUserManager = new EventUserManager(_repoWrapper.Object, _mapper.Object, _eventCategoryManager.Object,
-                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManager.Object, _userAccessService.Object);
+                _eventStatusManager.Object, _eventAdministrationTypeManager.Object, _userManager.Object);
         }
 
         [Fact]
