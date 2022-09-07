@@ -11,8 +11,7 @@ namespace EPlast.BLL.Mapping.Events
             CreateMap<EventAdministration, EventAdminDto>()
                 .ForMember(d => d.UserId, s => s.MapFrom(f => f.UserID))
                 .ForMember(d => d.AdminType, s => s.MapFrom(f => f.EventAdministrationType.EventAdministrationTypeName))
-                .ForMember(d => d.FullName, s => s.MapFrom(f => $"{f.User.FirstName} {f.User.LastName}"))
-                .ForMember(d => d.AvatarUrl, s => s.MapFrom(f => f.User.ImagePath));
+                .ForMember(d => d.FullName, s => s.MapFrom(f => $"{f.User.FirstName} {f.User.LastName}"));
         }
     }
 }
