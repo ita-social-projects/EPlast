@@ -20,7 +20,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
         public async Task<IEnumerable<DatabaseEntities.Club>> GetClubs(string userId)
         {
 
-            var regionRange = await _repositoryWrapper.Club.GetRangeAsync(null, null, ñ => ñ.OrderBy(x => x.Name), null, null, null);
+            var regionRange = await _repositoryWrapper.Club.GetRangeAsync(null, null, c => c.OrderBy(x => x.Name), null, null, null);
 
             return regionRange.Item1;
         }
