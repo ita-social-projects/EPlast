@@ -10,7 +10,7 @@ namespace EPlast.BLL.Mapping.Events
         {
             CreateMap<EventGallary, EventGalleryDto>()
                 .ForMember(d => d.GalleryId, s => s.MapFrom(f => f.GallaryID))
-                .ForMember(d => d.EncodedData, s => s.MapFrom(f => f.Gallary.GalaryFileName));
+                .ForMember(d => d.FileName, s => s.MapFrom(f => f.Gallary.GalaryFileName));
         }
     }
 }
