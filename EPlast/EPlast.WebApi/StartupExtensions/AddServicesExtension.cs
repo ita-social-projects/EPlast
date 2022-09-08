@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL;
+using EPlast.BLL.Services.HostURL;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
@@ -34,6 +35,7 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddLogging();
             services.Configure<EmailServiceSettings>(Configuration.GetSection("EmailServiceSettings"));
             services.Configure<JwtOptions>(Configuration.GetSection("Jwt"));
+            services.Configure<HostURLOptions>(Configuration.GetSection("URLs"));
             services.AddAuthorization();
             services.AddLocalization();
             services.AddRequestLocalizationOptions();
