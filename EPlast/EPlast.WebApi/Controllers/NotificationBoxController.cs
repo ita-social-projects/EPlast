@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces.Notifications;
-using EPlast.WebApi.WebSocketHandlers;
+using EPlast.WebApi.Hubs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -14,15 +14,15 @@ namespace EPlast.WebApi.Controllers
     [ApiController]
     public class NotificationBoxController : ControllerBase
     {
-        private readonly UserNotificationHandler _userNotificationHandler;
         private readonly INotificationService _notificationService;
+        private readonly IHubContext<NotificationHub, INotificationHub> _hubContext;
 
         public NotificationBoxController(
             INotificationService notificationService,
-            UserNotificationHandler userNotificationHandler)
+            IHubContext<NotificationHub, INotificationHub> hubContext)
         {
             _notificationService = notificationService;
-            _userNotificationHandler = userNotificationHandler;
+            _hubContext = hubContext;
         }
 
         [HttpGet("getTypes")]
@@ -72,31 +72,21 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("addNotifications")]
         public async Task<IActionResult> AddNotificationList(IEnumerable<UserNotificationDto> userNotifications)
         {
-            IEnumerable<UserNotificationDto> AddedUserNotifications;
+            IEnumerable<UserNotificationDto> addedUserNotifications;
             try
             {
-                AddedUserNotifications = await _notificationService.AddListUserNotificationAsync(userNotifications);
+                addedUserNotifications = await _notificationService.AddListUserNotificationAsync(userNotifications);
             }
             catch (InvalidOperationException)
             {
                 return BadRequest();
             }
 
-            var tasks = GetOnlineUserFromList(AddedUserNotifications).Select(un => SendPrivateNotification(un));
-            await Task.WhenAll(tasks);
+            foreach (UserNotificationDto notification in addedUserNotifications)
+            {
+                await _hubContext.Clients.User(notification.OwnerUserId).AddNotification(notification);
+            }
             return NoContent();
         }
-
-        private IEnumerable<UserNotificationDto> GetOnlineUserFromList(IEnumerable<UserNotificationDto> userNotificationDTOs)
-        {
-            List<string> onlineUsers = _userNotificationHandler.GetOnlineUsers().ToList();
-            return userNotificationDTOs.Where(un => onlineUsers.Contains(un.OwnerUserId));
-        }
-
-
-        private async Task SendPrivateNotification(UserNotificationDto userNotificationDTO)
-        {
-           await _userNotificationHandler.SendUserNotificationAsync(userNotificationDTO);
-        }
     }
-}       
+}

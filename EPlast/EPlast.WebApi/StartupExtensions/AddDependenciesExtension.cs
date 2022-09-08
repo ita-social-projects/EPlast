@@ -67,7 +67,6 @@ using EPlast.BLL.Services.UserProfiles;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess.Repositories;
 using EPlast.DataAccess.Repositories.Realizations.Base;
-using EPlast.WebApi.WebSocketHandlers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -195,12 +194,9 @@ namespace EPlast.WebApi.StartupExtensions
             services.AddTransient<IUserRenewalService, UserRenewalService>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
-            services.AddSingleton<INotificationConnectionManager, NotificationConnectionManager>();
-            services.AddSingleton<UserNotificationHandler>();
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IJwtService, JwtService>();
-            services.AddSingleton<IUserMapService, UserMapService>();
             services.AddSingleton<ICacheService, RedisCacheService>();
             return services;
         }

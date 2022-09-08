@@ -3,7 +3,6 @@ using System.Globalization;
 using EPlast.WebApi.Extensions;
 using EPlast.WebApi.Hubs;
 using EPlast.WebApi.StartupExtensions;
-using EPlast.WebApi.WebSocketHandlers;
 using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -53,8 +52,7 @@ namespace EPlast.WebApi
                 app.ConfigureCustomExceptionMiddleware();
                 app.UseHsts();
             }
-            app.UseWebSockets();
-            app.MapWebSocketManager("/notifications", serviceProvider.GetService<UserNotificationHandler>());
+ 
             app.UseStatusCodePages();
             app.UseHttpsRedirection();
             app.UseRouting();
@@ -73,7 +71,7 @@ namespace EPlast.WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<NotificationHub>("/api/hubs/notifications");
+                endpoints.MapHub<NotificationHub>("/hubs/notification");
             });
             app.UseHangfireDashboard();
             app.Run(async (context) =>
