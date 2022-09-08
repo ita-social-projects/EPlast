@@ -130,7 +130,7 @@ namespace EPlast.Tests.Services.Jwt
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Email),
-                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(JwtRegisteredClaimNames.FamilyName, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimsIdentity.DefaultRoleClaimType, roles[0]),
