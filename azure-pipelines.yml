@@ -135,7 +135,9 @@ stages:
             displayName: test config
             inputs:
               script: |
-                kubectl version --short 
+                echo "kube version"
+                kubectl version --short
+                echo "get credentials" 
                 az aks get-credentials --resource-group EPlast --name EPlast
 
           - task: KubernetesManifest@0
