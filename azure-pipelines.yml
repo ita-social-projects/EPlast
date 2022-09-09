@@ -138,7 +138,7 @@ stages:
               secretType: generic
               secretName: some-test-secret
               secretArguments: --from-literal=key1=value1
-              kubernetesServiceConnection: "12e23b29-59a3-4d6d-b301-1b28eae0dae7"
+              kubernetesServiceConnection: 
               namespace: default
 
           - task: KubernetesManifest@0
