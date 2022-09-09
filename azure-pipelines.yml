@@ -138,7 +138,7 @@ stages:
               secretType: generic
               secretName: some-test-secret
               secretArguments: --from-literal=key1=value1
-              kubernetesServiceConnection: 
+              kubernetesServiceConnection: "EPlast-test-deploy"
               namespace: default
 
           - task: KubernetesManifest@0
