@@ -130,6 +130,14 @@ stages:
               keepToken: true
               tokenPrefix: ___
               tokenSuffix: ___ 
+
+          - task: KubernetesManifest@0
+            displayName: test config
+            inputs:
+              script: |
+                kubectl version --short 
+                az aks get-credentials --resource-group EPlast --name EPlast
+
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
