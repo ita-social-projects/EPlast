@@ -132,10 +132,18 @@ stages:
               tokenSuffix: ___ 
 
           - task: KubernetesManifest@0
+            displayName: TEST Create secret
+            inputs: 
+              action: createSecret
+              secretType: generic
+              secretName: some-test-secret
+              secretArguments: --from-literal=key1=value1
+              kubernetesServiceConnection: "EPlast-test-deploy"
+              namespace: default
+
+          - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
-              script: |  
-                az aks get-credentials --resource-group EPlast --name EPlast
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
