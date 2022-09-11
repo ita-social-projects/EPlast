@@ -132,15 +132,15 @@ stages:
               tokenPrefix: ___
               tokenSuffix: ___ 
 
-          - task: KubernetesManifest@0
-            displayName: TEST Create secret
-            inputs: 
-              action: createSecret
-              secretType: generic
-              secretName: some-test-secret-1
-              secretArguments: --from-literal=key1=value1
-              kubernetesServiceConnection: "EPlast-test-deploy"
-              namespace: default
+#          - task: KubernetesManifest@0
+#            displayName: TEST Create secret
+#            inputs: 
+#              action: createSecret
+#              secretType: generic
+#              secretName: some-test-secret-1
+#              secretArguments: --from-literal=key1=value1
+#              kubernetesServiceConnection: "EPlast-test-deploy"
+#              namespace: default
 
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
