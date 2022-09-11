@@ -4,10 +4,10 @@
     {
         string BackEndURL { get; }
         string FrontEndURL { get; }
-        string GetFrontEndURL(string tail);
         string GetSignInURL();
-        string GetSignInURL(string tail);
         string GetSignInURL(int error);
         string GetResetPasswordURL(string token);
+        public string GetUserTableURL(string search);
+        public string GetUserTableURL((string firstName, string lastName) user);
     }
 }

@@ -25,20 +25,30 @@ namespace EPlast.BLL.Services.HostURL
         {
             return GetFrontEndURL("/signin");
         }
-
-        public string GetSignInURL(string tail)
-        {
-            return GetSignInURL() + tail;
-        }
         
         public string GetSignInURL(int error)
         {
-            return GetSignInURL($"?error={error}");
+            return $"{GetSignInURL()}?error={error}";
         }
 
         public string GetResetPasswordURL(string token)
         {
             return GetFrontEndURL($"/resetPassword?token={HttpUtility.UrlEncode(token)}");
+        }
+        
+        public string GetUserTableURL()
+        {
+            return GetFrontEndURL("/user/table");
+        }   
+        
+        public string GetUserTableURL(string search)
+        {
+            return $"{GetUserTableURL()}?search={HttpUtility.UrlEncode(search)}";
+        }        
+        
+        public string GetUserTableURL((string firstName, string lastName) user)
+        {
+            return GetUserTableURL($"{user.firstName} {user.lastName}");
         }
     }
 }

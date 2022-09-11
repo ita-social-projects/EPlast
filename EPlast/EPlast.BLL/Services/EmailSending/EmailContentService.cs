@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
@@ -15,13 +16,13 @@ namespace EPlast.BLL.Services.EmailSending
     {
         private readonly IUserService _userService;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly HttpContext _context;
+        private readonly IHostURLService _hostURLService;
 
-        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper, IHttpContextAccessor contextAccessor)
+        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper, IHostURLService hostURLService)
         {
             _userService = userService;
             _repositoryWrapper = repositoryWrapper;
-            _context = contextAccessor.HttpContext;
+            _hostURLService = hostURLService;
         }
 
         /// <inheritdoc />
@@ -304,10 +305,8 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
-            string host = _context?.Request?.Host.Host;
-            var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
-            url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
-
+            string userTableUrl = _hostURLService.GetUserTableURL((firstName: userFirstName, lastName: userLastName));
+         
             return new EmailModel
             {
                 Title = "EPlast",
@@ -317,7 +316,7 @@ namespace EPlast.BLL.Services.EmailSending
                         + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
                         + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
                         + $"'{follower}'. Або аргументовано його не підтвердити."
-                        + $"<p>Посилання на профіль користувача: <a href=\"{url}\">посилання</a></p>"
+                        + $"<p>Посилання на профіль користувача: <a href=\"{userTableUrl}\">посилання</a></p>"
                         + "Дякуємо Тобі за роботу.</p>"
                         + "<p>Гарного дня.</p>"
                         + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
@@ -346,9 +345,7 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
-            string host = _context.Request?.Host.Host;
-            var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
-            url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
+            string userTableUrl = _hostURLService.GetUserTableURL((firstName: userFirstName, lastName: userLastName));
 
             return new EmailModel
             {
@@ -359,7 +356,7 @@ namespace EPlast.BLL.Services.EmailSending
                           + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
                           + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
                           + $"'{follower}'. Або аргументовано його не підтвердити."
-                          + $"<p>Посилання на профіль користувача: <a href=\"{url}\">посилання</a></p>"
+                          + $"<p>Посилання на профіль користувача: <a href=\"{userTableUrl}\">посилання</a></p>"
                           + "Дякуємо Тобі за роботу.</p>"
                           + "<p>Гарного дня.</p>"
                           + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
