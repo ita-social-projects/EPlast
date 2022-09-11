@@ -59,14 +59,6 @@ stages:
       runOnce:
         deploy:
           steps:
-          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
-            displayName: Replace tokens in **/*
-            inputs:
-              rootDirectory: $(Pipeline.Workspace)/manifests
-              targetFiles: '**/*.yml'
-              keepToken: true
-              tokenPrefix: ___
-              tokenSuffix: ___ 
 
           - task: KubernetesManifest@0
             displayName: TEST Create secret
