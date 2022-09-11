@@ -45,9 +45,20 @@ namespace EPlast.BLL.Services.HostURL
         {
             return GetUserTableURL($"{user.firstName} {user.lastName}");
         }
+
         public string GetConfirmEmailApiURL(string userId, string token)
         {
             return $"{BackEndApiURL}/Auth/confirmEmail?userId={userId}&token={HttpUtility.UrlEncode(token)}";
+        }
+
+        public string GetUserPageMainURL(string userId)
+        {
+            return $"{UserPageMainURL}/{userId}";
+        }       
+        
+        public string GetCitiesURL(int cityId)
+        {
+            return $"{CitiesURL}/{cityId}";
         }
     }
 }

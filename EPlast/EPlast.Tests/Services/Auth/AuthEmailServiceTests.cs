@@ -20,7 +20,6 @@ namespace EPlast.Tests.Services
 {
     internal class AuthEmailServiceTests
     {
-        private Mock<IActionContextAccessor> _mockActionContextAccessor;
         private Mock<IAuthService> _mockAuthService;
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IEmailContentService> _mockEmailContentService;
@@ -41,8 +40,10 @@ namespace EPlast.Tests.Services
                     It.IsAny<string>()))
                 .ReturnsAsync(true);
 
-            var memoryConfig = new Dictionary<string, string>();
-            memoryConfig["Mode"] = "Test";
+            var memoryConfig = new Dictionary<string, string>
+            {
+                ["Mode"] = "Test"
+            };
             ConfigSettingLayoutRenderer.DefaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(memoryConfig).Build();
             var layoutRenderer = new ConfigSettingLayoutRenderer { Item = "Mode" };
 

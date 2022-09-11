@@ -256,7 +256,7 @@ namespace EPlast.Tests.Services.EmailSending
 
             _mockHostUrlService = new Mock<IHostURLService>();
 
-            _emailContentService = new EmailContentService(_mockUserService.Object, _mockRepositoryWrapper.Object, _mockHostUrlService.Object);
+            _emailContentService = new EmailContentService(_mockUserService.Object, _mockHostUrlService.Object);
         }
     }
 }
