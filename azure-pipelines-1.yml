@@ -49,7 +49,6 @@ stages:
   displayName: Deploy stage
   dependsOn:
   - Build
-  - Test
   jobs:
   - deployment: Deploy
     displayName: Deploy
