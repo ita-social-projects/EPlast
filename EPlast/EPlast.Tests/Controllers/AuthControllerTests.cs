@@ -154,7 +154,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(value: null!);
             _hostURLService.Setup(h => h.GetSignInURL(It.IsAny<int>())).Returns(GetURL(It.IsAny<int>()));
-            _hostURLService.Setup(h => h.GetSignInURL()).Returns(GetURL());
+            _hostURLService.Setup(h => h.SignInURL).Returns(GetURL());
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -193,7 +193,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(value: null!);
             _hostURLService.Setup(h => h.GetSignInURL(It.IsAny<int>())).Returns(GetURL(It.IsAny<int>()));
-            _hostURLService.Setup(h => h.GetSignInURL()).Returns(GetURL());
+            _hostURLService.Setup(h => h.SignInURL).Returns(GetURL());
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;

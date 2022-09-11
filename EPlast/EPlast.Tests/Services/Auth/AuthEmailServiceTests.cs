@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.Auth;
 using EPlast.DataAccess.Entities;
@@ -23,10 +24,8 @@ namespace EPlast.Tests.Services
         private Mock<IAuthService> _mockAuthService;
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IEmailContentService> _mockEmailContentService;
-        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
-        private Mock<IUrlHelperFactory> _mockUrlHelperFactory;
+        private Mock<IHostURLService> _mockHostUrlService;
         private Mock<UserManager<User>> _mockUserManager;
-        private Mock<IUrlHelper> _Url;
         private AuthEmailService _authEmailService;
 
         [TestCase("email")]
@@ -133,31 +132,16 @@ namespace EPlast.Tests.Services
             _mockEmailSendingService = new Mock<IEmailSendingService>();
             _mockEmailContentService = new Mock<IEmailContentService>();
             _mockAuthService = new Mock<IAuthService>();
+            _mockHostUrlService = new Mock<IHostURLService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            _mockUrlHelperFactory = new Mock<IUrlHelperFactory>();
-            _mockActionContextAccessor = new Mock<IActionContextAccessor>();
-            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
-            _Url = new Mock<IUrlHelper>();
-
-            _Url.Setup(x => x.Action(It.IsAny<UrlActionContext>()))
-                .Returns("callbackUrl")
-                .Verifiable();
-            _mockUrlHelperFactory
-                .Setup(s => s.GetUrlHelper(It.IsAny<ActionContext>()))
-                .Returns(_Url.Object);
-            _mockHttpContextAccessor
-                .Setup(x => x.HttpContext.Request.Scheme)
-                .Returns("http");
 
             _authEmailService = new AuthEmailService(
                 _mockEmailSendingService.Object,
                 _mockEmailContentService.Object,
                 _mockAuthService.Object,
                 _mockUserManager.Object,
-                _mockUrlHelperFactory.Object,
-                _mockActionContextAccessor.Object,
-                _mockHttpContextAccessor.Object);
+                _mockHostUrlService.Object);
         }
     }
 }

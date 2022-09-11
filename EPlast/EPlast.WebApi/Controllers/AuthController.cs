@@ -117,7 +117,7 @@ namespace EPlast.WebApi.Controllers
                 throw new ArgumentException("User had both RegionId and CityId set to null, which is an anomaly", nameof(user));
             }
 
-            return Redirect(_hostURLService.GetSignInURL());
+            return Redirect(_hostURLService.SignInURL);
         }
 
         /// <summary>

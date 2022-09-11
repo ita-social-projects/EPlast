@@ -2,12 +2,15 @@
 {
     public interface IHostURLService
     {
-        string BackEndURL { get; }
+        string BackEndApiURL { get; }
         string FrontEndURL { get; }
-        string GetSignInURL();
+        string SignInURL { get; }
+        string CitiesURL { get; }
+        string UserPageMainURL { get; }
         string GetSignInURL(int error);
         string GetResetPasswordURL(string token);
-        public string GetUserTableURL(string search);
-        public string GetUserTableURL((string firstName, string lastName) user);
+        string GetUserTableURL(string search);
+        string GetUserTableURL((string firstName, string lastName) user);
+        string GetConfirmEmailApiURL(string userId, string token);
     }
 }
