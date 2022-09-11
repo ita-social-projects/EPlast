@@ -13,7 +13,8 @@ variables:
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
   # value: '5aab2e73-307d-46b2-8421-8ac50de15018'
-  value: '88435167-4a39-4ca0-9290-a2ef27d3ff17'
+#  value: '88435167-4a39-4ca0-9290-a2ef27d3ff17'
+  value: 'a4044132-4df5-4427-8b71-97bb4e8a3dda'
 - name: imageRepository
   value: 'eplastapi'
 - name: containerRegistry
@@ -136,7 +137,7 @@ stages:
             inputs: 
               action: createSecret
               secretType: generic
-              secretName: some-test-secret
+              secretName: some-test-secret-1
               secretArguments: --from-literal=key1=value1
               kubernetesServiceConnection: "EPlast-test-deploy"
               namespace: default
@@ -146,6 +147,7 @@ stages:
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
+              kubernetesServiceConnection: 'EPlast-test-deploy'
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               
           - task: KubernetesManifest@0
