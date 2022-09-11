@@ -130,9 +130,21 @@ stages:
               keepToken: true
               tokenPrefix: ___
               tokenSuffix: ___ 
+
+          - task: KubernetesManifest@0
+            displayName: test config
+            inputs:
+              script: |
+                echo "kube version"
+                kubectl version --short
+                echo "get credentials" 
+                az aks get-credentials --resource-group EPlast --name EPlast
+
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
+#              script: |  
+#                az aks get-credentials --resource-group EPlast --name EPlast
               action: createSecret
               secretName: $(imagePullSecret)
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
