@@ -1,0 +1,87 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- master
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'a4044132-4df5-4427-8b71-97bb4e8a3dda'
+  imageRepository: 'itasocialprojectseplast'
+  containerRegistry: 'eplast.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+
+#- name: imageRepository
+#  value: 'eplastapi'
+ # containerRegistry: 'eplast.azurecr.io'
+#  dockerfilePath: '**/Dockerfile'
+
+  imagePullSecret: 'azdev-sa-3a5f0b-token-rqwl2'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn:
+  - Build
+  - Test
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'EPlast.eplast'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/manifests
+              targetFiles: '**/*.yml'
+              keepToken: true
+              tokenPrefix: ___
+              tokenSuffix: ___ 
+
+          - task: KubernetesManifest@0
+            displayName: TEST Create secret
+            inputs: 
+              action: createSecret
+              secretType: generic
+              secretName: some-test-secret-1
+              secretArguments: --from-literal=key1=value1
+              kubernetesServiceConnection: "EPlast-test-deploy"
+              namespace: default
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
