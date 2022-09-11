@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
@@ -8,9 +6,9 @@ using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
-using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +42,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserDatesService _userDatesService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly UserManager<User> _userManager;
+        private readonly IHostURLService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
 
@@ -52,7 +51,8 @@ namespace EPlast.WebApi.Controllers
             IEmailSendingService emailSendingService,
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
-            UserManager<User> userManager
+            UserManager<User> userManager,
+            IHostURLService hostURLService
         )
         {
             _userDatesService = userDatesService;
@@ -60,6 +60,7 @@ namespace EPlast.WebApi.Controllers
             _mapper = mapper;
             _cityParticipantsService = cityParticipantsService;
             _userManager = userManager;
+            _hostURLService = hostURLService;
         }
 
         /// <summary>
@@ -74,31 +75,28 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
-            var frontendUrl = Request.GetFrontEndSignInURL();
-
             if (!ModelState.IsValid)
             {
-                return Redirect(frontendUrl + "?error=400");
+                return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
-
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return Redirect(frontendUrl + "?error=404");
+                return Redirect(_hostURLService.GetSignInURL(error: 404));
             }
-
             TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
             if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
             {
                 // 410 GONE - User should be deleted, because 12hrs elapsed from registration and email is still is not confirmed
                 await _userManager.DeleteAsync(user);
-                return Redirect(frontendUrl + "?error=410");
+                return Redirect(_hostURLService.GetSignInURL(error: 410));
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
-                return Redirect(frontendUrl + "?error=400");
+                return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
 
             await _userDatesService.AddDateEntryAsync(user.Id);
@@ -119,7 +117,7 @@ namespace EPlast.WebApi.Controllers
                 throw new ArgumentException("User had both RegionId and CityId set to null, which is an anomaly", nameof(user));
             }
 
-            return Redirect(frontendUrl);
+            return Redirect(_hostURLService.GetSignInURL());
         }
 
         /// <summary>
@@ -144,7 +142,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            User? user = await _userManager.FindByEmailAsync(registerDto.Email);
+            User user = await _userManager.FindByEmailAsync(registerDto.Email);
             if (user != null)
             {
                 // Check if user's email is confirmed
@@ -201,7 +199,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            User? user = await _userManager.FindByEmailAsync(userEmail);
+            User user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return NotFound();
