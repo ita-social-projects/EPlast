@@ -154,6 +154,7 @@ stages:
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
+              kubernetesServiceConnection: 'EPlast-test-deploy'
               manifests: |
                 $(Pipeline.Workspace)/manifests/test/deployment.yml
                 $(Pipeline.Workspace)/manifests/test/service.yml
