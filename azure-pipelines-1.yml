@@ -69,8 +69,9 @@ stages:
               secretArguments: --from-literal=key1=value1
               kubernetesServiceConnection: "EPlast-test-deploy"
               namespace: default
+              
           - task: KubernetesManifest@0
-            displayName: Create secret
+            displayName: Create the test secret
             inputs: 
               action: createSecret
               secretType: dockerRegistry
