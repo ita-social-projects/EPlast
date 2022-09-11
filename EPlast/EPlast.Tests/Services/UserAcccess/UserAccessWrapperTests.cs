@@ -106,5 +106,15 @@ namespace EPlast.Tests.Services.UserAcccess
             // Assert
             Assert.IsInstanceOf<IRegionAccessService>(result);
         }
+
+        [Test]
+        public void GetRegionAdministrationAccessService_Valid()
+        {
+            // Act 
+            var result = _userAcccessWrapper.RegionAdministrationAccessService;
+
+            // Assert
+            Assert.IsInstanceOf<IRegionAdministrationAccessService>(result);
+        }
     }
 }

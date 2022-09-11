@@ -562,7 +562,7 @@ namespace EPlast.Tests.Controllers
             _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
                 .ReturnsAsync(new RegionFollowerDto());
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userAccessServiceMock
+            _userAccessService
                 .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(userAccess);
             // Act
@@ -584,7 +584,7 @@ namespace EPlast.Tests.Controllers
             _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
                 .ReturnsAsync(new RegionFollowerDto());
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userAccessServiceMock
+            _userAccessService
                 .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(userAccess);
             // Act
@@ -640,7 +640,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new RegionFollowerDto());
             _regionService.Setup(x => x.RemoveFollowerAsync(It.IsAny<int>()));
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userAccessServiceMock
+            _userAccessService
                 .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(userAccess);
             // Act
@@ -663,7 +663,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new RegionFollowerDto());
             _regionService.Setup(x => x.RemoveFollowerAsync(It.IsAny<int>()));
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _userAccessServiceMock
+            _userAccessService
                 .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(userAccess);
             // Act

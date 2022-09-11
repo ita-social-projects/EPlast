@@ -13,6 +13,8 @@ using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Region;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 
 namespace EPlast.Tests.Services.UserAccess
 {
@@ -26,6 +28,7 @@ namespace EPlast.Tests.Services.UserAccess
         private Mock<IRegionAccessService> _regionAccessService;
         private Mock<IUserProfileAccessService> _userProfileAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
+        private Mock<IRegionAdministrationAccessService> _regionAdministrationAccessService;
         private Mock<IUserAccessWrapper> _userAccessWrapper;
 
         private UserAccessService _userAccessService;
@@ -38,6 +41,7 @@ namespace EPlast.Tests.Services.UserAccess
             _eventAccessService = new Mock<IEventUserAccessService>();
             _cityAccessService = new Mock<ICityAccessService>();
             _regionAccessService = new Mock<IRegionAccessService>();
+            _regionAdministrationAccessService = new Mock<IRegionAdministrationAccessService>();
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
             _userProfileAccessService = new Mock<IUserProfileAccessService>();
             _userAccessWrapper = new Mock<IUserAccessWrapper>();
@@ -47,6 +51,8 @@ namespace EPlast.Tests.Services.UserAccess
             _userAccessWrapper.Setup(x => x.UserProfileAccessService).Returns(_userProfileAccessService.Object);
             _userAccessWrapper.Setup(x => x.EventAccessService).Returns(_eventAccessService.Object);
             _userAccessWrapper.Setup(x => x.RegionAccessService).Returns(_regionAccessService.Object);
+            _userAccessWrapper.Setup(x => x.RegionAdministrationAccessService)
+                .Returns(_regionAdministrationAccessService.Object);
             _userAccessService = new UserAccessService(_userAccessWrapper.Object, _securityModel.Object);
         }
 
@@ -112,6 +118,40 @@ namespace EPlast.Tests.Services.UserAccess
 
             //Act
             var result = await _userAccessService.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
+
+        [Test]
+        public async Task GetUserRegionAdministrationAccessAsync_ReturnsListOfRegionAdministrationAccesses()
+        {
+            //Arrange
+            RegionAdministrationDto regionAdministration = new RegionAdministrationDto
+            {
+                RegionId = 1,
+            };
+            User user = new User
+            {
+                Id="1"
+            };
+            Dictionary<string, bool> dict = new Dictionary<string, bool>
+            {
+                {"RemoveRegionHead", It.IsAny<bool>()},
+                {"EditRegionHead", It.IsAny<bool>()}
+            };
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>())).ReturnsAsync(dict);
+            _userAccessWrapper.Setup(w =>
+                w.RegionAdministrationAccessService.CanRemoveRegionAdmin(It.IsAny<Dictionary<string, bool>>(), It.IsAny<RegionAdministrationDto>(),
+                    It.IsAny<User>())).Returns(true);
+            _userAccessWrapper.Setup(w =>
+                w.RegionAdministrationAccessService.CanEditRegionAdmin(It.IsAny<Dictionary<string, bool>>(), It.IsAny<RegionAdministrationDto>(),
+                    It.IsAny<User>())).Returns(true);
+            
+
+            //Act
+            var result = await _userAccessService.GetUserRegionAdministrationAccessAsync(regionAdministration, user);
 
             //Assert
             Assert.IsNotEmpty(result);
@@ -195,6 +235,23 @@ namespace EPlast.Tests.Services.UserAccess
 
             //Act
             var result = await _userAccessService.GetUserMenuAccessAsync(It.IsAny<string>());
+
+            //Assert
+            Assert.IsNotEmpty(result);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(result);
+        }
+
+        [Test]
+        public async Task GetUserMenuAccesses_ReturnsListOfPrecautionAccesses()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _securityModel.Setup(x => x.GetUserAccessAsync(It.IsAny<string>(), It.IsAny<IEnumerable<string>>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessService.GetUserPrecautionsAccessAsync(It.IsAny<string>());
 
             //Assert
             Assert.IsNotEmpty(result);

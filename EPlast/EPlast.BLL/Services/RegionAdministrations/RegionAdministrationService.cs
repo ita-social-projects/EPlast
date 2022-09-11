@@ -6,7 +6,6 @@ using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
