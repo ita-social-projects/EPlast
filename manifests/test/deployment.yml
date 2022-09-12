@@ -54,5 +54,6 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: eplastapi
+  targetCPUUtilizationPercentage: 70
   minReplicas: 1
   maxReplicas: 3
