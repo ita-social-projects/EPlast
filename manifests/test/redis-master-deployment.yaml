@@ -31,7 +31,7 @@ spec:
         - containerPort: 6379
 
 ---
-apiVersion: autoscaling/v2
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: redis-autoscaler

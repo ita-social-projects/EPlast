@@ -45,7 +45,7 @@ spec:
             value: ___FacebookAuthentication__FacebookAppSecret___
             
 ---
-apiVersion: autoscaling/v2
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: eplastapi-autoscaler
