@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public class UserPlastDegreePutDTO
+    public class UserPlastDegreePutDto
     {
         public string UserId { get; set; }
         public int PlastDegreeId { get; set; }

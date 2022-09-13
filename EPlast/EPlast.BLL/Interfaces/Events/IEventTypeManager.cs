@@ -21,7 +21,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// Get all event types.
         /// </summary>
         /// <returns>List of all event types.</returns>
-        Task<IEnumerable<EventTypeDTO>> GetEventTypesDTOAsync();
+        Task<IEnumerable<EventTypeDto>> GetEventTypesDTOAsync();
 
         /// <summary>
         /// Get an information about specific event type.

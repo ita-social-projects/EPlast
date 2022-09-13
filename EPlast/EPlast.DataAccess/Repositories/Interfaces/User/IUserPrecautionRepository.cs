@@ -5,6 +5,6 @@ namespace EPlast.DataAccess.Repositories
 {
     public interface IUserPrecautionRepository : IRepositoryBase<UserPrecaution>
     {
-        IEnumerable<UserPrecautionsTableObject> GetUsersPrecautions(string searchData, int page, int pageSize);
+        
     }
 }

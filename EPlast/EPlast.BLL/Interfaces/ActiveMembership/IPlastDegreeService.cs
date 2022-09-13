@@ -1,7 +1,7 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
 
 namespace EPlast.BLL.Interfaces.ActiveMembership
 {
@@ -14,7 +14,7 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// Returns all plast degrees
         /// </summary>
         /// <returns>All plast degrees</returns>
-        public Task<IEnumerable<PlastDegreeDTO>> GetDergeesAsync();
+        public Task<IEnumerable<PlastDegreeDto>> GetDergeesAsync();
         /// <summary>
         /// Check allowed degrees
         /// </summary>
@@ -32,13 +32,13 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// </summary>
         /// <param name="userId">User id</param>
         /// <returns>All degrees of current user</returns>
-        public Task<UserPlastDegreeDTO> GetUserPlastDegreeAsync(string userId);
+        public Task<UserPlastDegreeDto> GetUserPlastDegreeAsync(string userId);
         /// <summary>
         /// Adds plast degree for user
         /// </summary>
         /// <param name="userPlastDegreePostDTO"></param>
         /// <returns>A bool value that says that degree was added</returns>
-        public Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO);
+        public Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDto userPlastDegreePostDTO);
         /// <summary>
         /// Removes user degree
         /// </summary>

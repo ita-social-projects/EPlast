@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
@@ -10,10 +14,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Services
@@ -26,15 +26,14 @@ namespace EPlast.BLL.Services
         private readonly ICityBlobStorageRepository _cityBlobStorage;
         private readonly ICityAccessService _cityAccessService;
         private readonly UserManager<DataAccessCity.User> _userManager;
-        private readonly IUniqueIdService _uniqueId;
 
         public CityService(IRepositoryWrapper repoWrapper,
             IMapper mapper,
             IWebHostEnvironment env,
             ICityBlobStorageRepository cityBlobStorage,
             ICityAccessService cityAccessService,
-            UserManager<DataAccessCity.User> userManager,
-            IUniqueIdService uniqueId)
+            UserManager<DataAccessCity.User> userManager
+        )
         {
             _repoWrapper = repoWrapper;
             _mapper = mapper;
@@ -42,7 +41,6 @@ namespace EPlast.BLL.Services
             _cityBlobStorage = cityBlobStorage;
             _cityAccessService = cityAccessService;
             _userManager = userManager;
-            _uniqueId = uniqueId;
         }
 
         /// <inheritdoc />
@@ -56,13 +54,13 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetAllCitiesAsync(string cityName = null)
+        public async Task<IEnumerable<CityDto>> GetAllCitiesAsync(string cityName = null)
         {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllAsync(cityName));
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(await GetAllAsync(cityName));
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDTO>> GetCitiesByRegionAsync(int regionId)
+        public async Task<IEnumerable<CityDto>> GetCitiesByRegionAsync(int regionId)
         {
             var cities = await _repoWrapper.City.GetAllAsync(c => c.RegionId == regionId && c.IsActive);
             foreach (var city in cities)
@@ -72,11 +70,11 @@ namespace EPlast.BLL.Services
                 city.CityMembers = cityMembers.ToList();
             }
 
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(cities);
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(cities);
         }
 
         /// <inheritdoc />
-        public async Task<CityDTO> GetByIdAsync(int cityId)
+        public async Task<CityDto> GetByIdAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
                 predicate: c => c.ID == cityId,
@@ -90,11 +88,11 @@ namespace EPlast.BLL.Services
                         .ThenInclude(a => a.User)
                     .Include(m => m.CityMembers)
                         .ThenInclude(u => u.User));
-            return _mapper.Map<DataAccessCity.City, CityDTO>(city);
+            return _mapper.Map<DataAccessCity.City, CityDto>(city);
         }
 
         /// <inheritdoc />
-        public async Task<CityDTO> GetCityByIdAsync(int cityId)
+        public async Task<CityDto> GetCityByIdAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(
                 predicate: c => c.ID == cityId,
@@ -103,17 +101,17 @@ namespace EPlast.BLL.Services
                     .ThenInclude(t => t.AdminType)
                     .Include(k => k.CityAdministration)
                     .ThenInclude(a => a.User));
-            return _mapper.Map<DataAccessCity.City, CityDTO>(city);
+            return _mapper.Map<DataAccessCity.City, CityDto>(city);
         }
 
-        public CityAdministrationDTO GetCityHead(CityDTO city)
+        public CityAdministrationDto GetCityHead(CityDto city)
         {
             var cityHead = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead && a.Status);
             return cityHead;
         }
 
-        public CityAdministrationDTO GetCityHeadDeputy(CityDTO city)
+        public CityAdministrationDto GetCityHeadDeputy(CityDto city)
         {
             var cityHeadDeputy = city.CityAdministration?
                 .FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
@@ -121,7 +119,7 @@ namespace EPlast.BLL.Services
             return cityHeadDeputy;
         }
 
-        public List<CityAdministrationDTO> GetCityAdmins(CityDTO city)
+        public List<CityAdministrationDto> GetCityAdmins(CityDto city)
         {
             var cityAdmins = city.CityAdministration
                 .Where(a => a.Status)
@@ -130,17 +128,17 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityUserDTO>> GetCityUsersAsync(int cityId)
+        public async Task<IEnumerable<CityUserDto>> GetCityUsersAsync(int cityId)
         {
             var cityMembers = await _repoWrapper.CityMembers.GetAllAsync(d => d.CityId == cityId && d.IsApproved,
                 include: source => source
                     .Include(t => t.User));
             var users = cityMembers.Select(x => x.User);
-            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDTO>>(users);
+            return _mapper.Map<IEnumerable<DataAccessCity.User>, IEnumerable<CityUserDto>>(users);
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId)
+        public async Task<CityProfileDto> GetCityProfileAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -175,7 +173,7 @@ namespace EPlast.BLL.Services
             var cityDoc = city.CityDocuments.Take(documentToShow).ToList();
             city.DocumentsCount = city.CityDocuments.Count();
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Head = cityHead,
@@ -190,7 +188,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityProfileAsync(int cityId, DataAccessCity.User user)
+        public async Task<CityProfileDto> GetCityProfileAsync(int cityId, DataAccessCity.User user)
         {
             var cityProfileDto = await GetCityProfileAsync(cityId);
             var userId = await _userManager.GetUserIdAsync(user);
@@ -204,7 +202,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityMembersAsync(int cityId)
+        public async Task<CityProfileDto> GetCityMembersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -216,7 +214,7 @@ namespace EPlast.BLL.Services
                 .Where(m => m.IsApproved)
                 .ToList();
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Members = members
@@ -237,7 +235,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityFollowersAsync(int cityId)
+        public async Task<CityProfileDto> GetCityFollowersAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -249,7 +247,7 @@ namespace EPlast.BLL.Services
                 .Where(m => !m.IsApproved)
                 .ToList();
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Followers = followers
@@ -259,7 +257,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityAdminsAsync(int cityId)
+        public async Task<CityProfileDto> GetCityAdminsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -271,7 +269,7 @@ namespace EPlast.BLL.Services
             var cityHeadDeputy = GetCityHeadDeputy(city);
             var cityAdmins = GetCityAdmins(city);
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Admins = cityAdmins,
@@ -301,19 +299,19 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityAdministrationGetDTO>> GetAdministrationAsync(int cityId)
+        public async Task<IEnumerable<CityAdministrationGetDto>> GetAdministrationAsync(int cityId)
         {
             var admins = await _repoWrapper.CityAdministration.GetAllAsync(d => d.CityId == cityId && d.Status,
                 include: source => source
                     .Include(t => t.User)
                     .Include(t => t.City)
                     .Include(t => t.AdminType));
-            var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>, IEnumerable<CityAdministrationGetDTO>>(admins);
+            var admin = _mapper.Map<IEnumerable<DataAccessCity.CityAdministration>, IEnumerable<CityAdministrationGetDto>>(admins);
             return admin;
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> GetCityDocumentsAsync(int cityId)
+        public async Task<CityProfileDto> GetCityDocumentsAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -321,9 +319,9 @@ namespace EPlast.BLL.Services
                 return null;
             }
 
-            var cityDoc = DocumentsSorter<CityDocumentsDTO>.SortDocumentsBySubmitDate(city.CityDocuments);
+            var cityDoc = DocumentsSorter<CityDocumentsDto>.SortDocumentsBySubmitDate(city.CityDocuments);
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Documents = cityDoc.ToList()
@@ -356,7 +354,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<CityProfileDTO> EditAsync(int cityId)
+        public async Task<CityProfileDto> EditAsync(int cityId)
         {
             var city = await GetByIdAsync(cityId);
             if (city == null)
@@ -374,7 +372,7 @@ namespace EPlast.BLL.Services
                 .Where(m => !m.IsApproved)
                 .ToList();
 
-            var cityProfileDto = new CityProfileDTO
+            var cityProfileDto = new CityProfileDto
             {
                 City = city,
                 Admins = cityAdmins,
@@ -386,7 +384,8 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task EditAsync(CityProfileDTO model, IFormFile file)
+        /// Method is redundant
+        public async Task EditAsync(CityProfileDto model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
             var city = await CreateCityAndRegionAsync(model);
@@ -397,7 +396,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task EditAsync(CityDTO model)
+        public async Task EditAsync(CityDto model)
         {
             await UploadPhotoAsync(model);
             var city = await CreateCityAsync(model);
@@ -408,7 +407,8 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<int> CreateAsync(CityProfileDTO model, IFormFile file)
+        /// Method is redundant
+        public async Task<int> CreateAsync(CityProfileDto model, IFormFile file)
         {
             await UploadPhotoAsync(model.City, file);
             var city = await CreateCityAndRegionAsync(model);
@@ -421,7 +421,7 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<int> CreateAsync(CityDTO model)
+        public async Task<int> CreateAsync(CityDto model)
         {
             await UploadPhotoAsync(model);
             var city = await CreateCityAsync(model);
@@ -434,18 +434,19 @@ namespace EPlast.BLL.Services
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityForAdministrationDTO>> GetCities()
+        public async Task<IEnumerable<CityForAdministrationDto>> GetCities()
         {
             var cities = await _repoWrapper.City.GetAllAsync();
             var filteredCities = cities.Where(c => c.IsActive);
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDTO>>(filteredCities);
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityForAdministrationDto>>(filteredCities);
         }
 
-        private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDTO model)
+        // Method is redundant
+        private async Task<DataAccessCity.City> CreateCityAndRegionAsync(CityProfileDto model)
         {
             var cityDto = model.City;
 
-            var city = _mapper.Map<CityDTO, DataAccessCity.City>(cityDto);
+            var city = _mapper.Map<CityDto, DataAccessCity.City>(cityDto);
             var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
 
             if (region == null)
@@ -465,9 +466,10 @@ namespace EPlast.BLL.Services
             return city;
         }
 
-        private async Task<DataAccessCity.City> CreateCityAsync(CityDTO model)
+        // Method moved to be used with command/handler CreateCity
+        private async Task<DataAccessCity.City> CreateCityAsync(CityDto model)
         {
-            var city = _mapper.Map<CityDTO, DataAccessCity.City>(model);
+            var city = _mapper.Map<CityDto, DataAccessCity.City>(model);
             var region = await _repoWrapper.Region.GetFirstOrDefaultAsync(r => r.RegionName == city.Region.RegionName);
 
             city.RegionId = region.ID;
@@ -476,17 +478,25 @@ namespace EPlast.BLL.Services
             return city;
         }
 
-        private async Task UploadPhotoAsync(CityDTO city, IFormFile file)
+        // Method is redundant
+        private async Task UploadPhotoAsync(CityDto city, IFormFile file)
         {
             var cityId = city.ID;
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(
                 predicate: i => i.ID == cityId))
                 ?.Logo;
 
-            city.Logo = GetChangedPhoto("images\\Cities", file, oldImageName, _env.WebRootPath, _uniqueId.GetUniqueId().ToString());
+            city.Logo = GetChangedPhoto(
+                "images\\Cities",
+                file,
+                oldImageName,
+                _env.WebRootPath,
+                Guid.NewGuid().ToString()
+            );
         }
 
-        private async Task UploadPhotoAsync(CityDTO city)
+        // Method moved to be used with command/handler UploadCityPhoto
+        private async Task UploadPhotoAsync(CityDto city)
         {
             var oldImageName = (await _repoWrapper.City.GetFirstOrDefaultAsync(i => i.ID == city.ID))?.Logo;
             var logoBase64 = city.Logo;
@@ -501,7 +511,7 @@ namespace EPlast.BLL.Services
                     extension = (extension[0] == '.' ? "" : ".") + extension;
                 }
 
-                var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+                var fileName = $"{Guid.NewGuid()}{extension}";
 
                 await _cityBlobStorage.UploadBlobForBase64Async(logoBase64Parts[1], fileName);
                 city.Logo = fileName;
@@ -528,6 +538,8 @@ namespace EPlast.BLL.Services
             }
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<DataAccessCity.City>> GetAllActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -537,6 +549,8 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
+        /// <inheritdoc />
+        /// Method is redundant
         public async Task<IEnumerable<DataAccessCity.City>> GetAllNotActiveAsync(string cityName = null)
         {
             var cities = await _repoWrapper.City.GetAllAsync();
@@ -546,13 +560,15 @@ namespace EPlast.BLL.Services
                 : filteredCities.Where(c => c.Name.ToLower().Contains(cityName.ToLower()));
         }
 
-        public async Task<IEnumerable<CityDTO>> GetAllActiveCitiesAsync(string cityName = null)
+        /// <inheritdoc />
+        /// Method is redundant
+        public async Task<IEnumerable<CityDto>> GetAllActiveCitiesAsync(string cityName = null)
         {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllActiveAsync(cityName));
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(await GetAllActiveAsync(cityName));
         }
 
         /// <inheritdoc />
-        public async Task<Tuple<IEnumerable<CityObjectDTO>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize, string name, bool isArchive)
+        public async Task<Tuple<IEnumerable<CityObjectDto>, int>> GetAllCitiesByPageAndIsArchiveAsync(int page, int pageSize, string name, bool isArchive)
         {
             var tuple = await _repoWrapper.City.GetCitiesObjects(page, pageSize, name, isArchive);
             var cities = tuple.Item1;
@@ -573,14 +589,17 @@ namespace EPlast.BLL.Services
                 }
             }
             var rows = tuple.Item2;
-            return new Tuple<IEnumerable<CityObjectDTO>, int>(_mapper.Map<IEnumerable<DataAccessCity.CityObject>, IEnumerable<CityObjectDTO>>(cities), rows);
+            return new Tuple<IEnumerable<CityObjectDto>, int>(_mapper.Map<IEnumerable<DataAccessCity.CityObject>, IEnumerable<CityObjectDto>>(cities), rows);
         }
 
-        public async Task<IEnumerable<CityDTO>> GetAllNotActiveCitiesAsync(string cityName = null)
+        /// <inheritdoc />
+        /// Method is redundant
+        public async Task<IEnumerable<CityDto>> GetAllNotActiveCitiesAsync(string cityName = null)
         {
-            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDTO>>(await GetAllNotActiveAsync(cityName));
+            return _mapper.Map<IEnumerable<DataAccessCity.City>, IEnumerable<CityDto>>(await GetAllNotActiveAsync(cityName));
         }
 
+        /// <inheritdoc />
         public async Task UnArchiveAsync(int cityId)
         {
             var city = await _repoWrapper.City.GetFirstOrDefaultAsync(c => c.ID == cityId && !c.IsActive);
@@ -592,7 +611,7 @@ namespace EPlast.BLL.Services
         public async Task<int> GetCityIdByUserIdAsync(string userId)
         {
             var city = await _repoWrapper.CityMembers.GetFirstAsync(user=>user.UserId == userId);
-            return city.ID;
+            return city.CityId;
         }
     }
 }

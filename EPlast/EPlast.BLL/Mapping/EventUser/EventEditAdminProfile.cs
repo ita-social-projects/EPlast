@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.EventUser
     {
         public EventEditAdminProfile()
         {
-            CreateMap<EventAdmin, CreateEventAdminDTO>().ReverseMap();
+            CreateMap<EventAdmin, CreateEventAdminDto>().ReverseMap();
         }
     }
 }

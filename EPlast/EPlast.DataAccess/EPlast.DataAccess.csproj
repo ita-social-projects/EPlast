@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <ProjectGuid>{3DBC3BB8-D220-4B4A-81F5-4646F6802007}</ProjectGuid>
   </PropertyGroup>
 
@@ -39,6 +39,12 @@
     <Compile Remove="Migrations\20210910085423_IncreaseMaxLenghtPlaceOfStudy.Designer.cs" />
     <Compile Remove="Migrations\20210818105200_cityReport.cs" />
     <Compile Remove="Migrations\20210818105200_cityReport.Designer.cs" />
+    <Compile Remove="Migrations\20220606134526_DropTableUserPrecautionsTableObject.cs" />
+    <Compile Remove="Migrations\20220606134526_DropTableUserPrecautionsTableObject.Designer.cs" />
+    <Compile Remove="Migrations\20220627152859_addcoursetables.cs" />
+    <Compile Remove="Migrations\20220627152859_addcoursetables.Designer.cs" />
+    <Compile Remove="Migrations\20220627164310_Add_User_Courses.cs" />
+    <Compile Remove="Migrations\20220627164310_Add_User_Courses.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,4 +69,9 @@
     </PackageReference>
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EPlast.Resources\EPlast.Resources.csproj" />
+  </ItemGroup>
+
 </Project>

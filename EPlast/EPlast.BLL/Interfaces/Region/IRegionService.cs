@@ -1,12 +1,10 @@
-﻿using EPlast.BLL.DTO.Admin;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.DataAccess.Entities;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Interfaces.Region
 {
@@ -14,21 +12,21 @@ namespace EPlast.BLL.Interfaces.Region
     {
         Task ArchiveRegionAsync(int regionId);
         Task UnArchiveRegionAsync(int regionId);
-        Task<IEnumerable<RegionDTO>> GetAllRegionsAsync();
-        Task<IEnumerable<RegionDTO>> GetAllActiveRegionsAsync();
-        Task<IEnumerable<RegionDTO>> GetAllNotActiveRegionsAsync();
-        Task<RegionDTO> GetRegionByIdAsync(int regionId);
-        Task<RegionProfileDTO> GetRegionProfileByIdAsync(int regionId, User user);
+        Task<IEnumerable<RegionDto>> GetAllRegionsAsync();
+        Task<IEnumerable<RegionDto>> GetAllActiveRegionsAsync();
+        Task<IEnumerable<RegionDto>> GetAllNotActiveRegionsAsync();
+        Task<RegionDto> GetRegionByIdAsync(int regionId);
+        Task<RegionProfileDto> GetRegionProfileByIdAsync(int regionId, User user);
         Task DeleteRegionByIdAsync(int regionId);
         Task AddFollowerAsync(int regionId, int cityId);
-        Task<IEnumerable<CityDTO>> GetMembersAsync(int regionId);
-        Task AddRegionAsync(RegionDTO region);
-        Task EditRegionAsync(int regId, RegionDTO region);
-        Task<Tuple<IEnumerable<RegionObjectsDTO>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive);
-        Task<RegionDTO> GetRegionByNameAsync(string Name);
-        Task<RegionProfileDTO> GetRegionByNameAsync(string Name, User user);
-        Task<RegionDocumentDTO> AddDocumentAsync(RegionDocumentDTO documentDTO);
-        Task<IEnumerable<RegionDocumentDTO>> GetRegionDocsAsync(int regionId);
+        Task<IEnumerable<CityDto>> GetMembersAsync(int regionId);
+        Task AddRegionAsync(RegionDto region);
+        Task EditRegionAsync(int regId, RegionDto region);
+        Task<Tuple<IEnumerable<RegionObjectsDto>, int>> GetAllRegionsByPageAndIsArchiveAsync(int page, int pageSize, string regionName, bool isArchive);
+        Task<RegionDto> GetRegionByNameAsync(string Name);
+        Task<RegionProfileDto> GetRegionByNameAsync(string Name, User user);
+        Task<RegionDocumentDto> AddDocumentAsync(RegionDocumentDto documentDTO);
+        Task<IEnumerable<RegionDocumentDto>> GetRegionDocsAsync(int regionId);
         Task<string> DownloadFileAsync(string fileName);
         Task DeleteFileAsync(int documentId);
         Task ContinueAdminsDueToDate();
@@ -39,32 +37,32 @@ namespace EPlast.BLL.Interfaces.Region
         /// Gets all Regions
         /// </summary>
         /// <returns>All Regions</returns>
-        Task<IEnumerable<RegionForAdministrationDTO>> GetRegions();
+        Task<IEnumerable<RegionForAdministrationDto>> GetRegions(UkraineOblasts oblast = UkraineOblasts.NotSpecified);
 
         /// <summary>
         /// >Gets Region Users 
         /// </summary>
         /// <returns> All users of cities included in this region</returns>
-        Task<IEnumerable<RegionUserDTO>> GetRegionUsersAsync(int regionId);
+        Task<IEnumerable<RegionUserDto>> GetRegionUsersAsync(int regionId);
 
         /// <summary>
         /// Gets a list of followers of a specific region
         /// </summary>
         /// <param name="regionId">The id of the region</param>
         /// <returns>A list of followers of a specific region</returns>
-        Task<IEnumerable<RegionFollowerDTO>> GetFollowersAsync(int regionId);
+        Task<IEnumerable<RegionFollowerDto>> GetFollowersAsync(int regionId);
 
         /// <summary>
         /// Gets a specific follower of the region
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
-        Task<RegionFollowerDTO> GetFollowerAsync(int followerId);
+        Task<RegionFollowerDto> GetFollowerAsync(int followerId);
 
         /// <summary>
         /// Creates a new follower
         /// </summary>
         /// <param name="model">An information about a new follower</param>
-        Task CreateFollowerAsync(RegionFollowerDTO model);
+        Task<int> CreateFollowerAsync(RegionFollowerDto model);
 
         /// <summary>
         /// Removes a specific follower from the region
@@ -75,7 +73,7 @@ namespace EPlast.BLL.Interfaces.Region
         /// <summary>
         /// Get Active Regions Names
         /// </summary>
-        IEnumerable<RegionNamesDTO> GetActiveRegionsNames();
+        IEnumerable<RegionNamesDto> GetActiveRegionsNames();
 
         /// <summary>
         /// Get true if region name is exist

@@ -1,21 +1,18 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -52,9 +49,16 @@ namespace EPlast.WebApi.Controllers
             return Ok(await _governingBodiesService.GetGoverningBodiesListAsync());
         }
 
+        [HttpGet("GetSectors/{governingBodyId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetSectors(int governingBodyId)
+        {
+            return Ok(await _governingBodiesService.GetSectorsListAsync(governingBodyId));
+        }
+
         [HttpPost("CreateGoverningBody")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> Create(GoverningBodyDTO governingBodyDTO)
+        public async Task<IActionResult> Create(GoverningBodyDto governingBodyDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -76,7 +80,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditGoverningBody/{governingBodyId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> Edit(GoverningBodyDTO governingBody)
+        public async Task<IActionResult> Edit(GoverningBodyDto governingBody)
         {
             if (!ModelState.IsValid)
             {
@@ -111,9 +115,9 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDto, GoverningBodyViewModel>(governingBodyProfileDto);
 
-            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count() });
+            return Ok(new { governingBodyViewModel, documentsCount = governingBodyProfileDto.GoverningBody.GoverningBodyDocuments.Count(), announcementsCount = governingBodyProfileDto.GoverningBody.GoverningBodyAnnouncements?.Count() });
         }
 
         [HttpDelete("RemoveGoverningBody/{governingBodyId}")]
@@ -143,9 +147,59 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+            var governingBodyViewModel = _mapper.Map<GoverningBodyProfileDto, GoverningBodyViewModel>(governingBodyProfileDto);
 
             return Ok(new { Admins = governingBodyViewModel.Administration, governingBodyViewModel.Head, governingBodyViewModel.GoverningBodyName });
+        }
+
+        [HttpGet("GoverningBodyAdminsByPage/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGoverningBodyAdminsByPage(int pageNumber, [Required] int pageSize)
+        {
+            var governingBodyAdministrators =
+                await _governingBodyAdministrationService.GetGoverningBodyAdministratorsByPageAsync(pageNumber, pageSize);
+            if (governingBodyAdministrators == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(governingBodyAdministrators);
+        }
+
+        [HttpGet("GoverningBodyAdmins")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetGoverningBodyAdmins()
+        {
+            var governingBodyAdmins = await _governingBodyAdministrationService.GetGoverningBodyAdministratorsAsync();
+
+            if (governingBodyAdmins == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(governingBodyAdmins);
+        }
+
+        /// <summary>
+        /// Add a new GoverningBodyAdmin 
+        /// </summary>
+        /// <param name="newAdmin">An information about a new administrator</param>
+        /// <returns>An information about a new administrator</returns>
+        [HttpPost("AddMainAdmin")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> AddMainAdmin(GoverningBodyAdministrationDto newAdmin)
+        {
+            try
+            {
+                await _governingBodyAdministrationService.AddGoverningBodyMainAdminAsync(newAdmin);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+            _logger.LogInformation($"User {{{newAdmin.UserId}}} became GoverningBodyAdmin");
+
+            return Ok(newAdmin);
         }
 
         /// <summary>
@@ -155,7 +209,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>An information about a new administrator</returns>
         [HttpPost("AddAdmin/{governingBodyId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDTO newAdmin)
+        public async Task<IActionResult> AddAdmin(GoverningBodyAdministrationDto newAdmin)
         {
             try
             {
@@ -178,11 +232,17 @@ namespace EPlast.WebApi.Controllers
         /// <returns>An information about a specific administrator</returns>
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDTO adminDto)
+        public async Task<IActionResult> EditAdmin(GoverningBodyAdministrationDto adminDto)
         {
-            await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
+            try
+            {
+                await _governingBodyAdministrationService.EditGoverningBodyAdministratorAsync(adminDto);
+            }
+            catch
+            {
+                return BadRequest();
+            }
             _logger.LogInformation($"Admin with User-ID {{{adminDto.UserId}}} was edited.");
-
             return Ok(adminDto);
         }
 
@@ -196,6 +256,20 @@ namespace EPlast.WebApi.Controllers
         {
             await _governingBodyAdministrationService.RemoveAdministratorAsync(adminId);
             _logger.LogInformation($"Admin with ID {{{adminId}}} was removed.");
+
+            return Ok();
+        }
+
+        /// <summary>
+        /// Remove a GoverningBodyAdmin
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        [HttpPut("RemoveMainAdmin/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> RemoveMainAdmin(string userId)
+        {
+            await _governingBodyAdministrationService.RemoveMainAdministratorAsync(userId);
+            _logger.LogInformation($"Admin with ID {{{userId}}} was removed.");
 
             return Ok();
         }
@@ -217,7 +291,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var governingBodyProfile = _mapper.Map<GoverningBodyProfileDTO, GoverningBodyViewModel>(governingBodyProfileDto);
+            var governingBodyProfile = _mapper.Map<GoverningBodyProfileDto, GoverningBodyViewModel>(governingBodyProfileDto);
 
             return Ok(new { governingBodyProfile.Documents });
         }
@@ -229,7 +303,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>A newly created document</returns>
         [HttpPost("AddDocument/{governingBodyId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddDocument(GoverningBodyDocumentsDTO document)
+        public async Task<IActionResult> AddDocument(GoverningBodyDocumentsDto document)
         {
             await _governingBodyDocumentsService.AddGoverningBodyDocumentAsync(document);
             _logger.LogInformation($"Document with id {{{document.Id}}} was added.");
@@ -300,14 +374,15 @@ namespace EPlast.WebApi.Controllers
             return Ok(userAdmins);
         }
 
-        [HttpPost("AddAnnouncement/{text}")]
+        [HttpPost("AddAnnouncement")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> AddAnnouncement(string text)
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDto announcement)
         {
             if (ModelState.IsValid)
             {
-                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(text);
-
+                var id = await _governingBodyAnnouncementService.AddAnnouncementAsync(announcement);
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
                 return Ok(id);
             }
             return BadRequest(ModelState);
@@ -315,14 +390,16 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditAnnouncement/{id:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
-        public async Task<IActionResult> EditAnnouncement(GoverningBodyAnnouncementUserDTO announcement)
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDto announcement)
         {
             if (ModelState.IsValid)
             {
-                await _governingBodyAnnouncementService.EditAnnouncement(announcement);
-                return Ok();
+                var id = await _governingBodyAnnouncementService.EditAnnouncementAsync(announcement);
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
+                return Ok(id);
             }
-            return BadRequest();
+            return BadRequest(ModelState);
         }
 
         [HttpDelete("DeleteAnnouncement/{id:int}")]
@@ -337,7 +414,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetAnnouncement/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            GoverningBodyAnnouncementUserDTO governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
+            GoverningBodyAnnouncementUserWithImagesDto governingBodyAnnouncementUserDTO = await _governingBodyAnnouncementService.GetAnnouncementByIdAsync(id);
 
             if (governingBodyAnnouncementUserDTO == null)
             {
@@ -346,11 +423,20 @@ namespace EPlast.WebApi.Controllers
             return Ok(governingBodyAnnouncementUserDTO);
         }
 
-        [HttpGet("GetAllAnnouncements")]
+        /// <summary>
+        /// Get specified by page number and page size list of announcements
+        /// </summary>
+        /// <param name="pageNumber">Number of the page</param>
+        /// <param name="pageSize">Size of one page</param>
+        /// <param name="governingBodyId">Id of governing body</param>
+        /// <returns>Specified by page number and page size list of announcements</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Could not get requested announcements</response>
+        [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
-        public async Task<IActionResult> GetAllAnnouncement()
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize, int governingBodyId)
         {
-            var announcements = await _governingBodyAnnouncementService.GetAllAnnouncementAsync();
+            var announcements = await _governingBodyAnnouncementService.GetAnnouncementsByPageAsync(pageNumber, pageSize, governingBodyId);
 
             return Ok(announcements);
         }
@@ -374,7 +460,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Bad request</response>
         [HttpGet("GetUserAdminsForTable")]
-        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive, 
+        public async Task<IActionResult> GetUserAdministrationsForTable([Required] string userId, [Required] bool isActive,
             [Required] int pageNumber, [Required] int pageSize)
         {
             try
@@ -385,7 +471,7 @@ namespace EPlast.WebApi.Controllers
                 return Ok(new
                 {
                     admins = _mapper
-                        .Map<IEnumerable<GoverningBodyAdministrationDTO>, IEnumerable<GoverningBodyTableViewModel>>(item1),
+                        .Map<IEnumerable<GoverningBodyAdministrationDto>, IEnumerable<GoverningBodyTableViewModel>>(item1),
                     rowCount = item2
                 });
             }
@@ -393,6 +479,25 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Error getting UserAdministration");
             }
+        }
+
+        [HttpGet("GetUsersForGoverningBodyAdminForm")]
+        public async Task<IActionResult> GetUsersForGoverningBodyAdminForm()
+        {
+            var result = await _governingBodyAdministrationService.GetUsersForGoverningBodyAdminFormAsync();
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet("CheckRoleNameExists/{roleName}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> CheckRoleNameExists(string roleName)
+        {
+            return Ok(await _governingBodyAdministrationService.CheckRoleNameExistsAsync(roleName));
         }
     }
 }

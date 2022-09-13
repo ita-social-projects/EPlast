@@ -1,18 +1,19 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.AboutBase;
 using EPlast.BLL.Services.AboutBase;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.AboutBase;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.AboutBase
 {
@@ -42,8 +43,8 @@ namespace EPlast.Tests.Services.AboutBase
                 .Setup(x => x.AboutBaseSection.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Section, bool>>>(),
                     It.IsAny<Func<IQueryable<Section>, IIncludableQueryable<Section, object>>>()))
                 .ReturnsAsync(new Section());
-            mockMapper.Setup(m => m.Map<SectionDTO>(It.IsAny<Section>()))
-                .Returns(new SectionDTO());
+            mockMapper.Setup(m => m.Map<SectionDto>(It.IsAny<Section>()))
+                .Returns(new SectionDto());
 
             //Act
             var result = await AboutBaseSectionService.GetSection(It.IsAny<int>());
@@ -61,14 +62,14 @@ namespace EPlast.Tests.Services.AboutBase
                 .Setup(x => x.AboutBaseSection.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Section, bool>>>(),
                     It.IsAny<Func<IQueryable<Section>, IIncludableQueryable<Section, object>>>()))
                 .ReturnsAsync(new Section());
-            mockMapper.Setup(m => m.Map<SectionDTO>(It.IsAny<Section>()))
-                .Returns(new SectionDTO());
+            mockMapper.Setup(m => m.Map<SectionDto>(It.IsAny<Section>()))
+                .Returns(new SectionDto());
 
             //Act
             var result = await AboutBaseSectionService.GetSection(It.IsAny<int>());
 
             //Assert
-            Assert.IsInstanceOf<SectionDTO>(result);
+            Assert.IsInstanceOf<SectionDto>(result);
         }
 
         [Test]
@@ -79,7 +80,7 @@ namespace EPlast.Tests.Services.AboutBase
                 .Setup(x => x.AboutBaseSection.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Section, bool>>>(),
                     It.IsAny<Func<IQueryable<Section>, IIncludableQueryable<Section, object>>>()))
                 .ReturnsAsync(nullSection);
-            mockMapper.Setup(m => m.Map<SectionDTO>(It.IsAny<Section>()))
+            mockMapper.Setup(m => m.Map<SectionDto>(It.IsAny<Section>()))
                 .Returns(nullSectionDTO);
 
             //Act
@@ -97,7 +98,7 @@ namespace EPlast.Tests.Services.AboutBase
                 .Setup(x => x.AboutBaseSection.GetAllAsync(It.IsAny<Expression<Func<Section, bool>>>(),
                     It.IsAny<Func<IQueryable<Section>, IIncludableQueryable<Section, object>>>()))
                 .ReturnsAsync(GetTestAboutBaseSection());
-            mockMapper.Setup(m => m.Map<IEnumerable<SectionDTO>>(It.IsAny<IEnumerable<Section>>()))
+            mockMapper.Setup(m => m.Map<IEnumerable<SectionDto>>(It.IsAny<IEnumerable<Section>>()))
                 .Returns(GetTestAboutBaseSectionDTO());
             //Act
             var result = await AboutBaseSectionService.GetAllSectionAsync();
@@ -113,12 +114,12 @@ namespace EPlast.Tests.Services.AboutBase
                 .Setup(x => x.AboutBaseSection.GetAllAsync(It.IsAny<Expression<Func<Section, bool>>>(),
                     It.IsAny<Func<IQueryable<Section>, IIncludableQueryable<Section, object>>>()))
                 .ReturnsAsync(GetTestAboutBaseSection());
-            mockMapper.Setup(m => m.Map<IEnumerable<SectionDTO>>(It.IsAny<IEnumerable<Section>>()))
+            mockMapper.Setup(m => m.Map<IEnumerable<SectionDto>>(It.IsAny<IEnumerable<Section>>()))
                 .Returns(GetTestAboutBaseSectionDTO());
             //Act
             var result = await AboutBaseSectionService.GetAllSectionAsync();
             //Assert
-            Assert.IsInstanceOf<IEnumerable<SectionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<SectionDto>>(result);
         }
 
         [Test]
@@ -129,7 +130,7 @@ namespace EPlast.Tests.Services.AboutBase
                 .Setup(x => x.AboutBaseSection.GetAllAsync(It.IsAny<Expression<Func<Section, bool>>>(),
                     It.IsAny<Func<IQueryable<Section>, IIncludableQueryable<Section, object>>>()))
                 .ReturnsAsync(nullListSection);
-            mockMapper.Setup(m => m.Map<IEnumerable<SectionDTO>>(It.IsAny<IEnumerable<Section>>()))
+            mockMapper.Setup(m => m.Map<IEnumerable<SectionDto>>(It.IsAny<IEnumerable<Section>>()))
                 .Returns(nullListSectionDTO);
             //Act
 
@@ -210,7 +211,7 @@ namespace EPlast.Tests.Services.AboutBase
 
             //Assert
             Exception exception = Assert.ThrowsAsync(typeof(UnauthorizedAccessException),
-                async () => { await AboutBaseSectionService.AddSection(It.IsAny<SectionDTO>(), It.IsAny<User>()); });
+                async () => { await AboutBaseSectionService.AddSection(It.IsAny<SectionDto>(), It.IsAny<User>()); });
             Assert.AreEqual("Attempted to perform an unauthorized operation.", exception.Message);
         }
 
@@ -220,20 +221,20 @@ namespace EPlast.Tests.Services.AboutBase
             mockRepoWrapper
                .Setup(x => x.AboutBaseSection.CreateAsync(It.IsAny<Section>()));
 
-            Assert.DoesNotThrowAsync(async () => { await AboutBaseSectionService.AddSection(new SectionDTO(), new User()); });
+            Assert.DoesNotThrowAsync(async () => { await AboutBaseSectionService.AddSection(new SectionDto(), new User()); });
         }
 
         Section nullSection = null;
-        SectionDTO nullSectionDTO = null;
-        List<SectionDTO> nullListSectionDTO = null;
+        SectionDto nullSectionDTO = null;
+        List<SectionDto> nullListSectionDTO = null;
         List<Section> nullListSection = null;
         Section Section = new Section
         {
             Id = 1,
             Title = "Title"
         };
-        SectionDTO SectionDTO = new SectionDTO 
-        { 
+        SectionDto SectionDTO = new SectionDto
+        {
             Id = 1,
             Title = "Title"
         };
@@ -247,13 +248,13 @@ namespace EPlast.Tests.Services.AboutBase
                 new Section{ Id = 3, Title = "Title3"}
             }.AsEnumerable();
         }
-        private IEnumerable<SectionDTO> GetTestAboutBaseSectionDTO()
+        private IEnumerable<SectionDto> GetTestAboutBaseSectionDTO()
         {
-            return new List<SectionDTO>
+            return new List<SectionDto>
             {
-                new SectionDTO{ Id = 1, Title = "Title1"},
-                new SectionDTO{ Id = 2, Title = "Title2"},
-                new SectionDTO{ Id = 3, Title = "Title3"}
+                new SectionDto{ Id = 1, Title = "Title1"},
+                new SectionDto{ Id = 2, Title = "Title2"},
+                new SectionDto{ Id = 3, Title = "Title3"}
             }.AsEnumerable();
         }
 

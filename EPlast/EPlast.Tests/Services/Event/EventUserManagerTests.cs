@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
@@ -10,11 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using DAEvent = EPlast.DataAccess.Entities.Event.Event;
 
 namespace EPlast.Tests.Services.Event
@@ -45,14 +45,55 @@ namespace EPlast.Tests.Services.Event
         }
 
         [Test]
-        public async Task EditEventAsyncTest_UpdatesAndSavesRepo()
+        public async Task EditEventAsyncTest()
+        {
+            //Arrange
+            var tempAlternate = new EventAdministration() { UserID = "2" };
+            List<EventAdministration> tempList = new List<EventAdministration>();
+            var initializedEvent = new DAEvent() { EventAdministrations = tempList, ID = 0 };
+
+            EventCreateDto model = new EventCreateDto();
+            model.Сommandant = new EventAdministrationDto() { UserId = "4" };
+            model.Alternate = new EventAdministrationDto() { UserId = "2" };
+            model.Bunchuzhnyi = new EventAdministrationDto() { UserId = "1" };
+            model.Pysar = new EventAdministrationDto() { UserId = "3" };
+
+            _mapper
+               .Setup(x => x.Map<EventCreationDto, DAEvent>(It.IsAny<EventCreationDto>()))
+               .Returns(initializedEvent);
+            _repoWrapper
+               .Setup(x => x.EventAdministration.GetFirstAsync(
+                   It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                   It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+               .ReturnsAsync(new EventAdministration() { ID = 1 });
+            _repoWrapper.Setup(x => x.EventAdministration.GetFirstAsync(It.IsAny<Expression<Func<EventAdministration, bool>>>(), null))
+                .ReturnsAsync(new EventAdministration() { UserID = "1" });
+            _repoWrapper
+                .Setup(x => x.EventAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+                .ReturnsAsync(tempAlternate);
+            _repoWrapper
+               .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
+
+            //Act
+            await _service.EditEventAsync(model);
+
+            //Assert
+            _repoWrapper.Verify(t => t.EventAdministration.Delete(tempAlternate));
+            Assert.AreEqual(4, initializedEvent.EventAdministrations.Count);
+        }
+
+
+        [Test]
+        public async Task EditEventAsyncTest_UpdatesAndSavesRepo_WithoutAlternate()
         {
             //Arrange
             _eventStatusManager
                 .Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(1);
             _mapper
-                .Setup(x => x.Map<EventCreationDTO, DAEvent>(It.IsAny<EventCreationDTO>()))
+                .Setup(x => x.Map<EventCreationDto, DAEvent>(It.IsAny<EventCreationDto>()))
                 .Returns(new DAEvent() { EventAdministrations = new List<EventAdministration>(), ID = 0 });
             _repoWrapper
                 .Setup(x => x.EventAdministration.GetFirstAsync(
@@ -61,12 +102,49 @@ namespace EPlast.Tests.Services.Event
                 .ReturnsAsync(new EventAdministration() { ID = 1 });
             _repoWrapper
                 .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
-            var inputModel = new EventCreateDTO();
-            inputModel.Event = new EventCreationDTO();
-            inputModel.Сommandant = new EventAdministrationDTO();
-            inputModel.Alternate = new EventAdministrationDTO();
-            inputModel.Bunchuzhnyi = new EventAdministrationDTO();
-            inputModel.Pysar = new EventAdministrationDTO();
+            var inputModel = new EventCreateDto();
+            inputModel.Event = new EventCreationDto();
+            inputModel.Сommandant = new EventAdministrationDto();
+            inputModel.Alternate = new EventAdministrationDto();
+            inputModel.Bunchuzhnyi = new EventAdministrationDto();
+            inputModel.Pysar = new EventAdministrationDto();
+
+            //Act
+            await _service.EditEventAsync(inputModel);
+
+            //Assert
+            _repoWrapper.Verify(x => x.Event.Update(It.IsAny<DAEvent>()));
+            _repoWrapper.Verify(x => x.SaveAsync());
+        }
+
+        [Test]
+        public async Task EditEventAsyncTest_UpdatesAndSavesRepo()
+        {
+            //Arrange
+            _eventStatusManager
+                .Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(1);
+            _mapper
+                .Setup(x => x.Map<EventCreationDto, DAEvent>(It.IsAny<EventCreationDto>()))
+                .Returns(new DAEvent() { EventAdministrations = new List<EventAdministration>(), ID = 0 });
+            _repoWrapper
+                .Setup(x => x.EventAdministration.GetFirstAsync(
+                    It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+                .ReturnsAsync(new EventAdministration() { ID = 1 });
+            _repoWrapper
+                .Setup(x => x.EventAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<EventAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<EventAdministration>, IIncludableQueryable<EventAdministration, object>>>()))
+                .ReturnsAsync(new EventAdministration() { ID = 1 });
+            _repoWrapper
+                .Setup(x => x.Event.Update(It.IsAny<DAEvent>()));
+            var inputModel = new EventCreateDto();
+            inputModel.Event = new EventCreationDto();
+            inputModel.Сommandant = new EventAdministrationDto();
+            inputModel.Alternate = new EventAdministrationDto() { UserId = "Nazario Nazario" };
+            inputModel.Bunchuzhnyi = new EventAdministrationDto();
+            inputModel.Pysar = new EventAdministrationDto();
 
             //Act
             await _service.EditEventAsync(inputModel);

@@ -3,7 +3,7 @@ using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.Region
 {
-    public class RegionAnnualReportDTO
+    public class RegionAnnualReportDto
     {
         public int ID { get; set; }
         public DateTime Date { get; set; }

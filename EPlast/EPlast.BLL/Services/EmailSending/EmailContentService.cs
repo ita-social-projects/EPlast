@@ -1,20 +1,27 @@
-﻿using EPlast.BLL.Interfaces;
+﻿using System;
+using System.Threading.Tasks;
+using System.Web;
+using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BLL.Services.EmailSending
 {
     public class EmailContentService : IEmailContentService
     {
         private readonly IUserService _userService;
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly HttpContext _context;
 
-        public EmailContentService(IUserService userService)
+        public EmailContentService(IUserService userService, IRepositoryWrapper repositoryWrapper, IHttpContextAccessor contextAccessor)
         {
             _userService = userService;
+            _repositoryWrapper = repositoryWrapper;
+            _context = contextAccessor.HttpContext;
         }
 
         /// <inheritdoc />
@@ -211,7 +218,7 @@ namespace EPlast.BLL.Services.EmailSending
                 Title = "EPlast",
                 Subject = "Ти отримав Пластове поручення!",
                 Message = "<h3>СКОБ!</h3>"
-                            + $"<p>Вітаємо, Ти {got} поручення у своєму профілі від {friend} {vaucherUser.FirstName} {vaucherUser.LastName}. "
+                            + $"<p>Вітаємо, Ти {got} поручення у своєму профілі від {friend} <a href='{_repositoryWrapper.GetUserPageUrl + vaucherUser.Id}'>{vaucherUser.FirstName} {vaucherUser.LastName}</a>. "
                             + "Виконуй усі завдання Пластового Чек-листа (мобільного додатку Старт Пласт)"
                             + " та отримай ступінь “Дійсного члена організації”!</p>"
                             + "<p>Ми радіємо Твоїм успіхам!</p>"
@@ -253,13 +260,15 @@ namespace EPlast.BLL.Services.EmailSending
         }
 
         /// <inheritdoc />
-        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName)
+        public EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName, string comment)
         {
+            var commentText = string.IsNullOrEmpty(comment) ? ".</p>" : $" з наступним коментарем: </p><p>\"{comment}\"</p>";
+
             return new EmailModel
             {
                 Title = "EPlast",
                 Subject = "Зміна статусу заявки у станицю",
-                Message = $"<p>На жаль, Тебе було виключено з прихильників станиці: <a href='{cityUrl}'>{cityName}</a>."
+                Message = $"<p>На жаль, Твоє зголошення до станиці <a href='{cityUrl}'>{cityName}</a> було відхилено{commentText}"
             };
         }
 
@@ -295,15 +304,62 @@ namespace EPlast.BLL.Services.EmailSending
                 ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
                 : "Підтвердіть профіль нового волонтера в системі ePlast";
 
+            string host = _context?.Request?.Host.Host;
+            var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
+            url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
+
             return new EmailModel
             {
                 Title = "EPlast",
                 Subject = $"{title}",
                 Message = "<h3>СКОБ!</h3>"
-                          + $"<p>До Твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
+                        + $"<p>До Твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
+                        + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
+                        + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
+                        + $"'{follower}'. Або аргументовано його не підтвердити."
+                        + $"<p>Посилання на профіль користувача: <a href=\"{url}\">посилання</a></p>"
+                        + "Дякуємо Тобі за роботу.</p>"
+                        + "<p>Гарного дня.</p>"
+                        + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"
+            };
+        }
+
+        public async Task<EmailModel> GetRegionAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder)
+        {
+            var userGender = await _userService.GetUserGenderAsync(userId);
+
+            var volunteered = userGender switch
+            {
+                UserGenders.Male => "зголосився",
+                UserGenders.Female => "зголосилась",
+                _ => "зголосився/зголосилась"
+            };
+
+            var follower = userGender switch
+            {
+                UserGenders.Male => "прихильника",
+                UserGenders.Female => "прихильниці",
+                _ => "прихильника/прихильниці"
+            };
+
+            var title = isReminder
+                ? "Нагадування підтвердити профіль нового волонтера в системі ePlast"
+                : "Підтвердіть профіль нового волонтера в системі ePlast";
+
+            string host = _context.Request?.Host.Host;
+            var url = host != null && host != "localhost" ? "https://" + _context.Request.Host.ToString() : "http://localhost:3000";
+            url += "/user/table?search=" + HttpUtility.UrlEncode($"{userFirstName} {userLastName}");
+
+            return new EmailModel
+            {
+                Title = "EPlast",
+                Subject = $"{title}",
+                Message = "<h3>СКОБ!</h3>"
+                          + $"<p>До Твоєї округи {volunteered} волонтер {userFirstName} {userLastName}."
                           + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
                           + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
                           + $"'{follower}'. Або аргументовано його не підтвердити."
+                          + $"<p>Посилання на профіль користувача: <a href=\"{url}\">посилання</a></p>"
                           + "Дякуємо Тобі за роботу.</p>"
                           + "<p>Гарного дня.</p>"
                           + "<p>При виникненні питань просимо звертатись на електронну адресу volunteering@plast.org.ua</p>"

@@ -69,9 +69,17 @@ namespace EPlast.BLL.Services.Statistics
                     include: source => source
                         .Include(m => m.AnnualReport));
             var yearStatistics = new List<YearStatistics>();
+
             foreach (var year in years)
             {
-                yearStatistics.Add(GetYearStatistics(year, membersStatistics.FirstOrDefault(m => m.AnnualReport.Date.Year == year)));
+                var cityYearStats = membersStatistics.FirstOrDefault(m =>
+                    m.AnnualReport.Date.Year == year &&
+                    m.AnnualReport.Status != AnnualReportStatus.Unconfirmed);
+
+                if (cityYearStats == null) continue;
+
+                var cityYearMemberStats = GetYearStatistics(year, cityYearStats);
+                yearStatistics.Add(cityYearMemberStats);
             }
             return new CityStatistics
             {
@@ -87,9 +95,17 @@ namespace EPlast.BLL.Services.Statistics
             var regionsAnnualReports = await _repositoryWrapper.RegionAnnualReports.GetAllAsync(
                     predicate: m => m.RegionId == regionId && years.Contains(m.Date.Year));
             var yearStatistics = new List<YearStatistics>();
+
             foreach (var year in years)
             {
-                yearStatistics.Add(GetYearStatistics(year, GetMembersStatisticAsync(regionsAnnualReports.FirstOrDefault(report => report.Date.Year == year))));
+                var annualReport = regionsAnnualReports.FirstOrDefault(report =>
+                    report.Date.Year == year &&
+                    report.Status != AnnualReportStatus.Unconfirmed);
+
+                if (annualReport == null) continue;
+
+                var yearMemberStats = GetYearStatistics(year, GetMembersStatisticAsync(annualReport));
+                yearStatistics.Add(yearMemberStats);
             }
             return new RegionStatistics
             {

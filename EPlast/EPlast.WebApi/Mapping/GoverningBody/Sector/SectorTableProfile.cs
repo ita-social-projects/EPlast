@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.GoverningBody.Sector
     {
         public SectorTableProfile()
         {
-            CreateMap<SectorAdministrationDTO, SectorTableViewModel>()
+            CreateMap<SectorAdministrationDto, SectorTableViewModel>()
                 .ForPath(x => x.Id, y => y.MapFrom(z => z.Id))
                 .ForPath(x => x.UserId, y => y.MapFrom(z => z.UserId))
                 .ForPath(x => x.UserName, y => y.MapFrom(z => z.User.FirstName + " " + z.User.LastName))

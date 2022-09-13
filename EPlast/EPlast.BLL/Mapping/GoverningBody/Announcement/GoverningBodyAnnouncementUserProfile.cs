@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Announcement;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Announcement;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EPlast.BLL.Mapping.GoverningBody.Announcement
 {
@@ -11,7 +9,7 @@ namespace EPlast.BLL.Mapping.GoverningBody.Announcement
     {
         public GoverningBodyAnnouncementUserProfile()
         {
-            CreateMap<GoverningBodyAnnouncement, GoverningBodyAnnouncementUserDTO>().ReverseMap();
+            CreateMap<GoverningBodyAnnouncement, GoverningBodyAnnouncementUserDto>().ReverseMap();
         }
     }
 }

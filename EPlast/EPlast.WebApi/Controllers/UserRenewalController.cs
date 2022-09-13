@@ -71,7 +71,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">NotFound</response>
         [HttpPost("CreateRenewal")]
         [AllowAnonymous]
-        public async Task<IActionResult> AddUserRenewalAsync(UserRenewalDTO userRenewal)
+        public async Task<IActionResult> AddUserRenewalAsync(UserRenewalDto userRenewal)
         {
             if (!ModelState.IsValid || !await _userRenewalService.IsValidUserRenewalAsync(userRenewal))
                 return BadRequest("Cannot create renewal");
@@ -95,7 +95,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="401">Unauthorized</response>
         [HttpPut("RenewUser")]
-        public async Task<IActionResult> RenewUser(UserRenewalDTO userRenewal)
+        public async Task<IActionResult> RenewUser(UserRenewalDto userRenewal)
         {
             var userId = userRenewal.UserId;
             var cityId = userRenewal.CityId;

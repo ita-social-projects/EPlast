@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class EducationDTO
+    public class EducationDto
     {
         public int ID { get; set; }
 
@@ -19,6 +19,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Спеціальність повинна складати від 3 до 50 символів")]
         public string Speciality { get; set; }
 
-        public IEnumerable<UserProfileDTO> UsersProfiles { get; set; }
+        public IEnumerable<UserProfileDto> UsersProfiles { get; set; }
     }
 }

@@ -188,5 +188,25 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
             Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
         }
+
+        [Test]
+        public async Task GetUserMenuAccesses_ReturnsAccessList()
+        {
+            //Arrange
+            Dictionary<string, bool> dict = new Dictionary<string, bool>();
+            dict.Add("action", It.IsAny<bool>());
+            _userAccessService
+                .Setup(x => x.GetUserMenuAccessAsync(It.IsAny<string>()))
+                .ReturnsAsync(dict);
+
+            //Act
+            var result = await _userAccessController.GetUserMenuAccess(It.IsAny<string>());
+            var resultValue = (result as ObjectResult)?.Value;
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.IsNotEmpty(resultValue as Dictionary<string, bool>);
+            Assert.IsInstanceOf<Dictionary<string, bool>>(resultValue);
+        }
     }
 }

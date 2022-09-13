@@ -4,6 +4,7 @@ using EPlast.BLL.Models;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using System;
@@ -56,7 +57,7 @@ namespace EPlast.XUnitTest.Services.UserArea
             var service = new ConfirmedUsersService(_repoWrapper.Object, _userManager.Object, _emailSendingService.Object, _emailContentService.Object);
 
             // Act
-            await service.CreateAsync(new User(), "vaucheeId");
+            await service.CreateAsync(new User(), "vaucheeId", ApproveType.PlastMember);
 
             // Assert
             _repoWrapper.Verify(r => r.ConfirmedUser.CreateAsync(It.IsAny<ConfirmedUser>()), Times.Once());

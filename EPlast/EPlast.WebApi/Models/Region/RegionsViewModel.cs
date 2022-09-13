@@ -1,12 +1,12 @@
-﻿using EPlast.BLL.DTO.Region;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using EPlast.BLL.DTO.Region;
 
 namespace EPlast.WebApi.Models.Region
 {
     public class RegionsViewModel
     {
-        public RegionsViewModel(int page, int pageSize, IEnumerable<RegionDTO> regions, string regionName, bool isAdmin)
+        public RegionsViewModel(int page, int pageSize, IEnumerable<RegionDto> regions, string regionName, bool isAdmin)
         {
             if (regionName == null)
             {
@@ -20,10 +20,10 @@ namespace EPlast.WebApi.Models.Region
                 Total = Regions.Count();
                 CanCreate = isAdmin;
             }
-            
+
         }
 
-        public IEnumerable<RegionDTO> Regions { get; set; }
+        public IEnumerable<RegionDto> Regions { get; set; }
         public int Total { get; set; }
         public bool CanCreate { get; set; }
     }

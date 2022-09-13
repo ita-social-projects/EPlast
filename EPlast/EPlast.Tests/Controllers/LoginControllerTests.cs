@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
@@ -13,8 +15,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
 using BadRequestResult = Microsoft.AspNetCore.Mvc.BadRequestResult;
 
 namespace EPlast.Tests.Controllers
@@ -135,7 +135,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(new LocalizedString(userInfo.Gender, userInfo.Gender));
             mockAuthService
                 .Setup(s => s.FacebookLoginAsync(userInfo))
-                .ReturnsAsync(new UserDTO());
+                .ReturnsAsync(new UserDto());
             mockUserDataServices
                 .Setup(s => s.AddDateEntryAsync(It.IsAny<string>()))
                 .ReturnsAsync(true);
@@ -196,7 +196,7 @@ namespace EPlast.Tests.Controllers
 
 
             mockUserManagerService
-                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             mockResources
@@ -209,7 +209,7 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             mockAuthService.Verify(x => x.GetGoogleUserAsync(It.IsAny<string>()));
-            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()));
+            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()));
             mockResources.Verify(x => x.ResourceForErrors["User-FormerMember"]);
             Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -325,7 +325,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(true);
 
             mockAuthService
@@ -364,7 +364,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(false);
 
             mockResources
@@ -399,11 +399,11 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(true);
 
             mockUserManagerService
-                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()))
+                .Setup(s => s.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
                 .ReturnsAsync(true);
 
             mockResources
@@ -415,8 +415,8 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             mockAuthService.Verify(x => x.FindByEmailAsync(It.IsAny<string>()));
-            mockAuthService.Verify(x => x.IsEmailConfirmedAsync(It.IsAny<UserDTO>()));
-            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDTO>(), It.IsAny<string>()));
+            mockAuthService.Verify(x => x.IsEmailConfirmedAsync(It.IsAny<UserDto>()));
+            mockUserManagerService.Verify(x => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()));
             mockResources.Verify(x => x.ResourceForErrors["User-FormerMember"]);
             Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
@@ -440,7 +440,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(true);
 
             mockAuthService
@@ -475,17 +475,12 @@ namespace EPlast.Tests.Controllers
                 loginController) = CreateLoginController();
             loginController.ModelState.AddModelError("NameError", "Required");
 
-            mockResources
-                .Setup(s => s.ResourceForErrors["ModelIsNotValid"])
-                .Returns(GetModelIsNotValid());
-
             //Act
             var result = await loginController.Login(GetTestLoginDto()) as ObjectResult;
 
             //Assert
             mockResources.Verify();
             Assert.IsInstanceOf<ObjectResult>(result);
-            Assert.AreEqual(GetModelIsNotValid().ToString(), result.Value.ToString());
             Assert.NotNull(result);
         }
 
@@ -506,7 +501,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(true);
 
             mockAuthService
@@ -544,7 +539,7 @@ namespace EPlast.Tests.Controllers
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((UserDTO)null);
+                .ReturnsAsync((UserDto)null);
 
             mockResources
                 .Setup(s => s.ResourceForErrors["Login-NotRegistered"])
@@ -569,9 +564,9 @@ namespace EPlast.Tests.Controllers
             };
         }
 
-        private UserDTO GetTestUserDtoWithAllFields()
+        private UserDto GetTestUserDtoWithAllFields()
         {
-            return new UserDTO()
+            return new UserDto()
             {
                 UserName = "andriishainoha@gmail.com",
                 FirstName = "Andrii",
@@ -617,13 +612,6 @@ namespace EPlast.Tests.Controllers
         {
             var localizedString = new LocalizedString("Login-InCorrectPassword",
                 "Невірний пароль. Спробуйте, будь ласка, ще раз");
-            return localizedString;
-        }
-
-        private LocalizedString GetModelIsNotValid()
-        {
-            var localizedString = new LocalizedString("ModelIsNotValid",
-                "Введені дані є неправильними");
             return localizedString;
         }
 

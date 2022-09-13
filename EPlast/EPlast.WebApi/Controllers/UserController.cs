@@ -1,7 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -14,10 +20,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -32,13 +34,14 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<UserController> _loggerService;
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
+        private readonly IUserAccessService _userAccessService;
 
         public UserController(IUserService userService,
             IUserPersonalDataService userPersonalDataService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
             ILoggerService<UserController> loggerService,
-            IMapper mapper, UserManager<User> userManager)
+            IMapper mapper, UserManager<User> userManager, IUserAccessService userAccessService)
         {
             _userService = userService;
             _userPersonalDataService = userPersonalDataService;
@@ -47,6 +50,7 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _mapper = mapper;
             _userManager = userManager;
+            _userAccessService = userAccessService;
         }
 
 
@@ -87,7 +91,7 @@ namespace EPlast.WebApi.Controllers
 
                 var model = new PersonalDataViewModel
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
+                    User = _mapper.Map<UserDto, UserViewModel>(user),
                     TimeToJoinPlast = (int)time.TotalDays,
                     IsUserPlastun = isUserPlastun,
                 };
@@ -100,67 +104,72 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Adds or updates a comment for the specified user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <param name="comment">The text of the comment</param>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">User not found</response>
+        /// <response code="400">The incoming userId is not valid</response>
+        [HttpPut("{userId}/comment")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = Roles.AdminAndAdminsOfOkrugaAndKrayuAndCityAndKurin)]
+        public async Task<IActionResult> PutComment(string userId, [FromBody] string comment)
+        {
+            if (string.IsNullOrEmpty(userId)) return BadRequest();
+
+            var user = await _userManagerService.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            await _userService.UpdateUserComment(user, comment);
+            return Ok();
+        }
+
+        /// <summary>
         /// Get a specify user profile
         /// </summary>
         /// <param name="focusUserId">The id of the focus user</param>
-        /// <param name="currentUserId">The id of the current user</param>
         /// <returns>A focus user profile</returns>
         /// <response code="200">Successful operation</response>
         /// <response code="404">Focus user not found</response>
-        [HttpGet("{currentUserId}/{focusUserId}")]
+        [HttpGet("UserProfile/{focusUserId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetUserProfile(string currentUserId, string focusUserId)
+        public async Task<IActionResult> GetUserProfile([Required]string focusUserId)
         {
-            if (string.IsNullOrEmpty(focusUserId))
-            {
-                _loggerService.LogError("User id is null");
-                return NotFound();
-            }
-            var currentUser = await _userService.GetUserAsync(currentUserId);
             var focusUser = await _userService.GetUserAsync(focusUserId);
-
             if (focusUser == null)
             {
-                _loggerService.LogError($"User not found. UserId:{focusUserId}");
                 return NotFound();
             }
-            var time = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
-            var isThisUser = currentUserId == focusUserId;
-            var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
-            var isFocusUserSupporter = await _userManagerService.IsInRoleAsync(focusUser, Roles.Supporter);
-            var isFocusUserPlastun = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember)
-                || !(isFocusUserSupporter && (await _userService.IsApprovedCityMember(focusUserId) || await _userService.IsApprovedCLubMember(focusUserId)));
-            if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
-            {
-                _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {focusUserId})");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
 
-            PersonalDataViewModel model;
-            if (isThisUser ||
-                     isUserAdmin ||
-                     await _userService.IsUserInClubAsync(currentUser, focusUser) ||
-                     await _userService.IsUserInCityAsync(currentUser, focusUser) ||
-                     await _userService.IsUserInRegionAsync(currentUser, focusUser)
-            )
+            var currentUser = await _userManager.GetUserAsync(User);
+
+            var currentUserAccess = await 
+                _userAccessService.GetUserProfileAccessAsync(currentUser.Id, focusUserId, currentUser);
+
+            var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
+            var isFocusUserPlastMember = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember);
+
+            if (currentUserAccess["CanViewUserFullProfile"])
             {
-                model = new PersonalDataViewModel
+                var viewModel = new PersonalDataViewModel
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(focusUser),
-                    TimeToJoinPlast = (int)time.TotalDays,
-                    IsUserPlastun = isFocusUserPlastun,
+                    User = _mapper.Map<UserDto, UserViewModel>(focusUser),
+                    TimeToJoinPlast = (int)timeToJoinPlast.TotalDays,
+                    IsUserPlastun = isFocusUserPlastMember
                 };
-
-                return Ok(model);
+                return Ok(viewModel);
             }
-
-            model = new PersonalDataViewModel
+            else
             {
-                ShortUser = _mapper.Map<UserDTO, UserShortViewModel>(focusUser),
-                TimeToJoinPlast = (int)time.TotalDays,
-                IsUserPlastun = isFocusUserPlastun,
-            };
-            return Ok(model);
+                var viewModel = new PersonalDataViewModel
+                {
+                    ShortUser = _mapper.Map<UserDto, UserShortViewModel>(focusUser),
+                    TimeToJoinPlast = (int)timeToJoinPlast.TotalDays,
+                    IsUserPlastun = isFocusUserPlastMember
+                };
+                return Ok(viewModel);
+            }
         }
 
         /// <summary>
@@ -196,7 +205,7 @@ namespace EPlast.WebApi.Controllers
             var user = await _userService.GetUserAsync(userId);
             var currentUserId = _userManager.GetUserId(User);
             var currentUser = await _userService.GetUserAsync(currentUserId);
-            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin)))
+            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin })))
             {
                 _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
@@ -204,23 +213,23 @@ namespace EPlast.WebApi.Controllers
 
             if (user != null)
             {
-                var genders = _mapper.Map<IEnumerable<GenderDTO>, IEnumerable<GenderViewModel>>(await _userPersonalDataService.GetAllGendersAsync());
-                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupByPlaceAsync());
-                var specialityUnique = _mapper.Map<IEnumerable<EducationDTO>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupBySpecialityAsync());
-                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPlaceAsync());
-                var positionUnique = _mapper.Map<IEnumerable<WorkDTO>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPositionAsync());
-                var upuDegrees = _mapper.Map<IEnumerable<UpuDegreeDTO>, IEnumerable<UpuDegreeViewModel>>(await _userPersonalDataService.GetAllUpuDegreesAsync());
+                var genders = _mapper.Map<IEnumerable<GenderDto>, IEnumerable<GenderViewModel>>(await _userPersonalDataService.GetAllGendersAsync());
+                var placeOfStudyUnique = _mapper.Map<IEnumerable<EducationDto>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupByPlaceAsync());
+                var specialityUnique = _mapper.Map<IEnumerable<EducationDto>, IEnumerable<EducationViewModel>>(await _userPersonalDataService.GetAllEducationsGroupBySpecialityAsync());
+                var placeOfWorkUnique = _mapper.Map<IEnumerable<WorkDto>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPlaceAsync());
+                var positionUnique = _mapper.Map<IEnumerable<WorkDto>, IEnumerable<WorkViewModel>>(await _userPersonalDataService.GetAllWorkGroupByPositionAsync());
+                var upuDegrees = _mapper.Map<IEnumerable<UpuDegreeDto>, IEnumerable<UpuDegreeViewModel>>(await _userPersonalDataService.GetAllUpuDegreesAsync());
 
                 var educView = new UserEducationViewModel { PlaceOfStudyID = user.UserProfile.EducationId, SpecialityID = user.UserProfile.EducationId, PlaceOfStudyList = placeOfStudyUnique, SpecialityList = specialityUnique };
                 var workView = new UserWorkViewModel { PlaceOfWorkID = user.UserProfile.WorkId, PositionID = user.UserProfile.WorkId, PlaceOfWorkList = placeOfWorkUnique, PositionList = positionUnique };
                 var model = new EditUserViewModel()
                 {
-                    User = _mapper.Map<UserDTO, UserViewModel>(user),
-                    Nationalities = _mapper.Map<IEnumerable<NationalityDTO>, IEnumerable<NationalityViewModel>>(await _userPersonalDataService.GetAllNationalityAsync()),
-                    Religions = _mapper.Map<IEnumerable<ReligionDTO>, IEnumerable<ReligionViewModel>>(await _userPersonalDataService.GetAllReligionsAsync()),
+                    User = _mapper.Map<UserDto, UserViewModel>(user),
+                    Nationalities = _mapper.Map<IEnumerable<NationalityDto>, IEnumerable<NationalityViewModel>>(await _userPersonalDataService.GetAllNationalityAsync()),
+                    Religions = _mapper.Map<IEnumerable<ReligionDto>, IEnumerable<ReligionViewModel>>(await _userPersonalDataService.GetAllReligionsAsync()),
                     EducationView = educView,
                     WorkView = workView,
-                    Degrees = _mapper.Map<IEnumerable<DegreeDTO>, IEnumerable<DegreeViewModel>>(await _userPersonalDataService.GetAllDegreesAsync()),
+                    Degrees = _mapper.Map<IEnumerable<DegreeDto>, IEnumerable<DegreeViewModel>>(await _userPersonalDataService.GetAllDegreesAsync()),
                     Genders = genders,
                     UpuDegrees = upuDegrees,
                 };
@@ -240,7 +249,7 @@ namespace EPlast.WebApi.Controllers
                 var currentUserId = _userManager.GetUserId(User);
                 var currentUser = await _userService.GetUserAsync(currentUserId);
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
                 var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
 
                 if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
@@ -275,12 +284,12 @@ namespace EPlast.WebApi.Controllers
             {
                 var currentUserId = _userManager.GetUserId(User);
                 var currentUser = await _userService.GetUserAsync(currentUserId);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
                 var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
 
                 if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead)
                 {
-                    await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDTO>(model.User),
+                    await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDto>(model.User),
                         model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
                         model.WorkView.PlaceOfWorkID, model.WorkView.PositionID);
                     _loggerService.LogInformation($"User profile {model.User.ID} was edited  and saved in the database");
@@ -317,7 +326,7 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            UserDTO user;
+            UserDto user;
 
             try
             {
@@ -334,23 +343,23 @@ namespace EPlast.WebApi.Controllers
             var confirmedUsers = _userService.GetConfirmedUsers(user);
             var canApprove = !userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember);
             var canApprovePlastMember = canApprove && _userService.CanApprove(confirmedUsers, userId, currentUserId,
-                    await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin));
+                    await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin }));
             var time = _userService.CheckOrAddPlastunRole(user.Id, user.RegistredOn);
             var clubApprover = _userService.GetClubAdminConfirmedUser(user);
             var cityApprover = _userService.GetCityAdminConfirmedUser(user);
-            var userViewModel = _mapper.Map<UserDTO, UserInfoViewModel>(user);
-            var userApproverViewModel = _mapper.Map<UserDTO, UserInfoViewModel>(currentUser);
+            var userViewModel = _mapper.Map<UserDto, UserInfoViewModel>(user);
+            var userApproverViewModel = _mapper.Map<UserDto, UserInfoViewModel>(currentUser);
             var isUserHeadOfClub =
                 await _userManagerService.IsInRoleAsync(
-                    _mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHead);
+                    _mapper.Map<User, UserDto>(await _userManager.GetUserAsync(User)), Roles.KurinHead);
             var isUserHeadDeputyOfClub =
                 await _userManagerService.IsInRoleAsync(
-                    _mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy);
+                    _mapper.Map<User, UserDto>(await _userManager.GetUserAsync(User)), Roles.KurinHeadDeputy);
             var canApproveClubMember = ((clubApprover == null) && (userViewModel.ClubId == userApproverViewModel.ClubId
                                                                    && canApprove && userId != currentUserId
                                                                    && (isUserHeadOfClub ||
                                                                        isUserHeadDeputyOfClub))) ||
-                                       await _userManagerService.IsInRoleAsync(currentUser, Roles.Admin);
+                                       await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
             var model = new UserApproversViewModel
             {
                 User = userViewModel,
@@ -358,15 +367,15 @@ namespace EPlast.WebApi.Controllers
                 CanApprove = canApprove,
                 CanApprovePlastMember = canApprovePlastMember,
                 TimeToJoinPlast = ((int)time.TotalDays),
-                ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDTO>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
-                ClubApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(clubApprover),
-                CityApprover = _mapper.Map<ConfirmedUserDTO, ConfirmedUserViewModel>(cityApprover),
-                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHead),
-                IsUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.CityHeadDeputy),
+                ConfirmedUsers = _mapper.Map<IEnumerable<ConfirmedUserDto>, IEnumerable<ConfirmedUserViewModel>>(confirmedUsers),
+                ClubApprover = _mapper.Map<ConfirmedUserDto, ConfirmedUserViewModel>(clubApprover),
+                CityApprover = _mapper.Map<ConfirmedUserDto, ConfirmedUserViewModel>(cityApprover),
+                IsUserHeadOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDto>(await _userManager.GetUserAsync(User)), Roles.CityHead),
+                IsUserHeadDeputyOfCity = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDto>(await _userManager.GetUserAsync(User)), Roles.CityHeadDeputy),
                 IsUserHeadOfClub = isUserHeadOfClub,
                 IsUserHeadDeputyOfClub = isUserHeadDeputyOfClub,
-                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
-                IsUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDTO>(await _userManager.GetUserAsync(User)), Roles.OkrugaHeadDeputy),
+                IsUserHeadOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDto>(await _userManager.GetUserAsync(User)), Roles.OkrugaHead),
+                IsUserHeadDeputyOfRegion = await _userManagerService.IsInRoleAsync(_mapper.Map<User, UserDto>(await _userManager.GetUserAsync(User)), Roles.OkrugaHeadDeputy),
                 IsUserPlastun = await _userManagerService.IsInRoleAsync(user, Roles.PlastMember)
                     || user.UserProfile.UpuDegreeID != 1
                     || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
@@ -393,21 +402,20 @@ namespace EPlast.WebApi.Controllers
         /// Approving user
         /// </summary>
         /// <param name="userId">The user ID which is confirmed</param>
-        /// <param name="isClubAdmin">Confirm as an club Admin</param>
-        /// <param name="isCityAdmin">Confirm as an city Admin</param>
+        /// <param name="approveType">Approve type</param>
         /// <response code="200">Successful operation</response>
         /// <responce code="403">Access denied</responce>
         /// <response code="404">User not found</response>
-        [HttpPost("approveUser/{userId}/{isClubAdmin}/{isCityAdmin}")]
+        [HttpPost("approveUser/{userId}/{approveType}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
-        public async Task<IActionResult> ApproveUser(string userId, bool isClubAdmin = false, bool isCityAdmin = false)
+        public async Task<IActionResult> ApproveUser(string userId, ApproveType approveType)
         {
             if (userId != null)
             {
                 var userRoles = await _userManagerService.GetRolesAsync(await _userService.GetUserAsync(userId));
                 if (!userRoles.Any(r => r == Roles.RegisteredUser || r == Roles.FormerPlastMember))
                 {
-                    await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, isClubAdmin, isCityAdmin);
+                    await _confirmedUserService.CreateAsync(await _userManager.GetUserAsync(User), userId, approveType);
                     return Ok();
                 }
                 _loggerService.LogError("Forbidden");

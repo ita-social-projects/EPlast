@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Region
     {
         public RegionAnnualReportProfile()
         {
-            CreateMap<DatabaseEntities.RegionAnnualReport, RegionAnnualReportDTO>().ReverseMap();
+            CreateMap<DatabaseEntities.RegionAnnualReport, RegionAnnualReportDto>().ReverseMap();
         }
     }
 }

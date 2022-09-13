@@ -8,7 +8,7 @@ namespace EPlast.BLL.Mapping.Events
     {
         public EventCategoryProfile()
         {
-            CreateMap<EventCategory, EventCategoryDTO>().ReverseMap();
+            CreateMap<EventCategory, EventCategoryDto>().ReverseMap();
         }
     }
 }

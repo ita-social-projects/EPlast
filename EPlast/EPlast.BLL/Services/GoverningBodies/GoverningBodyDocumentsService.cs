@@ -1,13 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Repositories;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies
 {
@@ -16,17 +16,15 @@ namespace EPlast.BLL.Services.GoverningBodies
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly IGoverningBodyFilesBlobStorageRepository _governingBodyFilesBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
         public GoverningBodyDocumentsService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            IGoverningBodyFilesBlobStorageRepository governingBodyFilesBlobStorage,
-            IUniqueIdService uniqueId)
+            IGoverningBodyFilesBlobStorageRepository governingBodyFilesBlobStorage
+        )
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _governingBodyFilesBlobStorage = governingBodyFilesBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         private async Task<IEnumerable<GoverningBodyDocumentType>> GetAllGoverningBodyDocumentTypeEntities()
@@ -37,19 +35,19 @@ namespace EPlast.BLL.Services.GoverningBodies
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<GoverningBodyDocumentTypeDTO>> GetAllGoverningBodyDocumentTypesAsync()
+        public async Task<IEnumerable<GoverningBodyDocumentTypeDto>> GetAllGoverningBodyDocumentTypesAsync()
         {
             var documentTypes = await GetAllGoverningBodyDocumentTypeEntities();
 
-            return _mapper.Map<IEnumerable<GoverningBodyDocumentType>, IEnumerable<GoverningBodyDocumentTypeDTO>>(documentTypes);
+            return _mapper.Map<IEnumerable<GoverningBodyDocumentType>, IEnumerable<GoverningBodyDocumentTypeDto>>(documentTypes);
         }
 
         /// <inheritdoc />
-        public async Task<GoverningBodyDocumentsDTO> AddGoverningBodyDocumentAsync(GoverningBodyDocumentsDTO documentDto)
+        public async Task<GoverningBodyDocumentsDto> AddGoverningBodyDocumentAsync(GoverningBodyDocumentsDto documentDto)
         {
             var fileBase64 = documentDto.BlobName.Split(',')[1];
             var extension = $".{documentDto.FileName.Split('.').LastOrDefault()}";
-            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+            var fileName = $"{Guid.NewGuid()}{extension}";
 
             await _governingBodyFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentDto.BlobName = fileName;
@@ -59,7 +57,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 .FirstOrDefault(dt => dt.Name == documentDto.GoverningBodyDocumentType.Name);
             documentDto.GoverningBodyDocumentTypeId = documentDto.GoverningBodyDocumentType.Id;
 
-            var document = _mapper.Map<GoverningBodyDocumentsDTO, GoverningBodyDocuments>(documentDto);
+            var document = _mapper.Map<GoverningBodyDocumentsDto, GoverningBodyDocuments>(documentDto);
             _repositoryWrapper.GoverningBodyDocuments.Attach(document);
             await _repositoryWrapper.GoverningBodyDocuments.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();

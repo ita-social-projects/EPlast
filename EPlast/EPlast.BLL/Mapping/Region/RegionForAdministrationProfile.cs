@@ -1,9 +1,9 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.Region;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.Region;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.Mapping.Region
@@ -12,7 +12,7 @@ namespace EPlast.BLL.Mapping.Region
     {
         public RegionForAdministrationProfile()
         {
-                CreateMap<DataAccessCity.Region, RegionForAdministrationDTO>().ReverseMap();
+            CreateMap<DataAccessCity.Region, RegionForAdministrationDto>().ReverseMap();
         }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.BLL.DTO.UserProfiles
 {
-    public class NationalityDTO
+    public class NationalityDto
     {
         public int ID { get; set; }
 
@@ -13,6 +13,6 @@ namespace EPlast.BLL.DTO.UserProfiles
         [StringLength(25, MinimumLength = 3, ErrorMessage = "Національність повинна складати від 3 до 25 символів")]
         public string Name { get; set; }
 
-        public IEnumerable<UserProfileDTO> UserProfiles { get; set; }
+        public IEnumerable<UserProfileDto> UserProfiles { get; set; }
     }
 }

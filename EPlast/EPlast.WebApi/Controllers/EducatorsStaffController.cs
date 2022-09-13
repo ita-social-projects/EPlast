@@ -1,11 +1,12 @@
-﻿using EPlast.BLL.DTO.EducatorsStaff;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.BLL.Interfaces.EducatorsStaff;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -33,7 +34,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         [HttpPost("CreateKadra")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> CreateKadra(EducatorsStaffDTO kvDTO)
+        public async Task<IActionResult> CreateKadra(EducatorsStaffDto kvDTO)
         {
             var newKadra = await _kvService.CreateKadra(kvDTO);
 
@@ -63,7 +64,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="403">User is not Admin</response>
         [HttpPut("EditKadra")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Update(EducatorsStaffDTO kadrasDTO)
+        public async Task<IActionResult> Update(EducatorsStaffDto kadrasDTO)
         {
             await _kvService.UpdateKadra(kadrasDTO);
             return StatusCode(StatusCodes.Status200OK);
@@ -207,17 +208,16 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get all EducatorsStaff
         /// </summary>
-        /// <param name="kadraType">Type of Kadra</param>
-        /// <param name="searchedData">Searched Data</param>
-        /// <param name="page">Current page on pagination</param>
-        /// <param name="pageSize">Number of records per page</param>
+        /// <param name="tableSettings">tableSettings</param>
         /// <returns>List of EducatorsStaffTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("EducatorsStaffForTable")]
-        public IActionResult GetEducatorsStaffForTable(int kadraType, string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetEducatorsStaffForTable([FromQuery] EducatorsStaffTableSettingsDto tableSettings)
         {
-            var educatorsStaff = _kvService.GetEducatorsStaffTableObject(kadraType, searchedData, page, pageSize);
-            return Ok(educatorsStaff);
+            var educatorsStaff = await _kvService.GetEducatorsStaffTableAsync(tableSettings.KadraTypeId, tableSettings.SortByOrder, tableSettings.SearchedData, tableSettings.Page, tableSettings.PageSize);
+            var info = educatorsStaff.Item1.ToList();
+            info.ForEach(x => x.Total = educatorsStaff.Item2);
+            return Ok(info);
         }
     }
 }

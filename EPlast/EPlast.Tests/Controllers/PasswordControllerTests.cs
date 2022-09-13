@@ -1,4 +1,5 @@
-﻿using EPlast.BLL.DTO.Account;
+﻿using System.Threading.Tasks;
+using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Resources;
@@ -11,7 +12,6 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Localization;
 using Moq;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
@@ -29,7 +29,7 @@ namespace EPlast.Tests.Controllers
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
             mockAuthService
                 .Setup(s => s.GetUser(It.IsAny<User>()))
-                .Returns(new UserDTO());
+                .Returns(new UserDto());
             mockAuthService
                 .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
                 .ReturnsAsync(IdentityResult.Failed(null));
@@ -106,16 +106,16 @@ namespace EPlast.Tests.Controllers
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
             mockAuthService
                 .Setup(s => s.GetUser(It.IsAny<User>()))
-                .Returns(new UserDTO());
+                .Returns(new UserDto());
             mockAuthService
                 .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
                 .ReturnsAsync(IdentityResult.Success);
             mockAuthService
-                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDTO>()));
+                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDto>()));
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
             mockAuthService
-                .Setup(x => x.RefreshSignInAsync(It.IsAny<UserDTO>()))
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(true);
 
             //Act
@@ -142,26 +142,26 @@ namespace EPlast.Tests.Controllers
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
             mockAuthService
                 .Setup(s => s.GetUser(It.IsAny<User>()))
-                .Returns(new UserDTO());
+                .Returns(new UserDto());
             mockAuthService
                 .Setup(s => s.ChangePasswordAsync(It.IsAny<string>(), It.IsAny<ChangePasswordDto>()))
                 .ReturnsAsync(IdentityResult.Success);
             mockAuthService
-                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDTO>()));
+                .Setup(s => s.RefreshSignInAsync(It.IsAny<UserDto>()));
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()]);
             mockAuthService
-                .Setup(x => x.RefreshSignInAsync(It.IsAny<UserDTO>()))
+                .Setup(x => x.RefreshSignInAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(false);
 
             //Act
             var result = await passwordController.ChangePassword(changePasswordDto);
-          
+
 
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<BadRequestResult>(result);
-            Assert.AreEqual(400,((BadRequestResult)result).StatusCode);
+            Assert.AreEqual(400, ((BadRequestResult)result).StatusCode);
         }
 
         public (
@@ -232,7 +232,7 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
             mockAuthService
-                .Setup(s => s.GetTimeAfterReset(It.IsAny<UserDTO>()))
+                .Setup(s => s.GetTimeAfterReset(It.IsAny<UserDto>()))
                 .Returns(180);
 
             mockResources
@@ -288,10 +288,10 @@ namespace EPlast.Tests.Controllers
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((UserDTO)null);
+                .ReturnsAsync((UserDto)null);
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetTestUserDtoWithAllFields().EmailConfirmed);
 
             mockResources
@@ -322,11 +322,11 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(GetTestUserDtoWithAllFields());
 
             mockAuthService
-                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDTO>()))
+                .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetTestUserWithEmailConfirmed().EmailConfirmed);
 
             mockAuthService
-                .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDTO>()))
+                .Setup(i => i.GenerateResetTokenAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetTestCodeForResetPasswordAndConfirmEmail());
 
             var mockUrlHelper = new Mock<IUrlHelper>(MockBehavior.Strict);
@@ -411,7 +411,7 @@ namespace EPlast.Tests.Controllers
 
             mockAuthService
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync((UserDTO)null);
+                .ReturnsAsync((UserDto)null);
 
             mockResources
                 .Setup(s => s.ResourceForErrors[It.IsAny<string>()])
@@ -445,7 +445,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(Task.FromResult(IdentityResult.Success));
 
             mockAuthService
-                .Setup(s => s.CheckingForLocking(It.IsAny<UserDTO>()))
+                .Setup(s => s.CheckingForLocking(It.IsAny<UserDto>()))
                 .Verifiable();
 
             mockResources
@@ -560,9 +560,9 @@ namespace EPlast.Tests.Controllers
             return resetPasswordDto;
         }
 
-        private UserDTO GetTestUserDtoWithAllFields()
+        private UserDto GetTestUserDtoWithAllFields()
         {
-            return new UserDTO()
+            return new UserDto()
             {
                 UserName = "andriishainoha@gmail.com",
                 FirstName = "Andrii",
@@ -572,9 +572,9 @@ namespace EPlast.Tests.Controllers
             };
         }
 
-        private UserDTO GetTestUserWithEmailConfirmed()
+        private UserDto GetTestUserWithEmailConfirmed()
         {
-            return new UserDTO()
+            return new UserDto()
             {
                 EmailConfirmed = true
             };

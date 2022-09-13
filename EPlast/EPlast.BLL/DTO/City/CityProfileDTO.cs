@@ -2,14 +2,14 @@
 
 namespace EPlast.BLL.DTO.City
 {
-    public class CityProfileDTO
+    public class CityProfileDto
     {
-        public CityDTO City { get; set; }
-        public CityAdministrationDTO Head { get; set; }
-        public CityAdministrationDTO HeadDeputy { get; set; }
-        public List<CityAdministrationDTO> Admins { get; set; }
-        public List<CityMembersDTO> Members { get; set; }
-        public List<CityMembersDTO> Followers { get; set; }
-        public List<CityDocumentsDTO> Documents { get; set; }
+        public CityDto City { get; set; }
+        public CityAdministrationDto Head { get; set; }
+        public CityAdministrationDto HeadDeputy { get; set; }
+        public List<CityAdministrationDto> Admins { get; set; }
+        public List<CityMembersDto> Members { get; set; }
+        public List<CityMembersDto> Followers { get; set; }
+        public List<CityDocumentsDto> Documents { get; set; }
     }
 }

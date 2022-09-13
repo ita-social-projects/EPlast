@@ -1,7 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
+using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.Notifications;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Repositories;
@@ -9,10 +15,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.Events
 {
@@ -24,10 +26,11 @@ namespace EPlast.BLL.Services.Events
         private readonly IParticipantStatusManager _participantStatusManager;
         private readonly IParticipantManager _participantManager;
         private readonly IEventWrapper _eventWrapper;
+        private readonly INotificationService _notificationService;
 
         public ActionManager(UserManager<User> userManager, IRepositoryWrapper repoWrapper, IMapper mapper,
             IParticipantStatusManager participantStatusManager, IParticipantManager participantManager,
-            IEventWrapper eventWrapper)
+            IEventWrapper eventWrapper, INotificationService notificationService)
         {
             _userManager = userManager;
             _repoWrapper = repoWrapper;
@@ -35,40 +38,41 @@ namespace EPlast.BLL.Services.Events
             _participantStatusManager = participantStatusManager;
             _participantManager = participantManager;
             _eventWrapper = eventWrapper;
+            _notificationService = notificationService;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync()
+        public async Task<IEnumerable<EventTypeDto>> GetEventTypesAsync()
         {
             return await _eventWrapper.EventTypeManager.GetEventTypesDTOAsync();
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync()
+        public async Task<IEnumerable<EventCategoryDto>> GetActionCategoriesAsync()
         {
             return await _eventWrapper.EventCategoryManager.GetDTOAsync();
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync()
+        public async Task<IEnumerable<EventSectionDto>> GetEventSectionsAsync()
         {
             return await _eventWrapper.EventSectionManager.GetEventSectionsDTOAsync();
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId)
+        public async Task<IEnumerable<EventCategoryDto>> GetCategoriesByTypeIdAsync(int eventTypeId)
         {
             return await _eventWrapper.EventCategoryManager.GetDTOByEventTypeIdAsync(eventTypeId);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventCategoryDTO>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
+        public async Task<IEnumerable<EventCategoryDto>> GetCategoriesByPageAsync(int eventTypeId, int page, int pageSize, string CategoryName = null)
         {
             return await _eventWrapper.EventCategoryManager.GetDTOByEventPageAsync(eventTypeId, page, pageSize);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user)
+        public async Task<IEnumerable<GeneralEventDto>> GetEventsAsync(int categoryId, int eventTypeId, User user)
         {
             var events = await _repoWrapper.Event
                 .GetAllAsync(
@@ -77,12 +81,11 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventAdministrations)
                         .Include(e => e.Participants)
                 );
-            
             return await GetEventDtosAsync(events, user);
         }
 
         /// <inheritdoc />
-        public async Task<EventDTO> GetEventInfoAsync(int id, User user)
+        public async Task<EventDto> GetEventInfoAsync(int id, User user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
@@ -108,9 +111,9 @@ namespace EPlast.BLL.Services.Events
                         .Include(e => e.EventCategory)
                 );
 
-            var dto = new EventDTO()
+            var dto = new EventDto()
             {
-                Event = _mapper.Map<Event, EventInfoDTO>(targetEvent),
+                Event = _mapper.Map<Event, EventInfoDto>(targetEvent),
                 IsUserEventAdmin =
                     (targetEvent.EventAdministrations.Any(evAdm =>
                         evAdm.UserID == _userManager.GetUserIdAsync(user).Result)) || isUserGlobalEventAdmin,
@@ -144,7 +147,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id)
+        public async Task<IEnumerable<EventGalleryDto>> GetPicturesAsync(int id)
         {
             return await _eventWrapper.EventGalleryManager.GetPicturesInBase64(id);
         }
@@ -200,6 +203,11 @@ namespace EPlast.BLL.Services.Events
             }
         }
 
+        public async Task ChangeUsersPresentStatusAsync(int participantId)
+        {
+            await _participantManager.ChangeUserPresentStatusAsync(participantId);
+        }
+
         public async Task<int> EstimateEventAsync(int eventId, User user, double estimate)
         {
             try
@@ -238,7 +246,7 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files)
+        public async Task<IEnumerable<EventGalleryDto>> FillEventGalleryAsync(int id, IList<IFormFile> files)
         {
             return await _eventWrapper.EventGalleryManager.AddPicturesAsync(id, files);
         }
@@ -253,17 +261,33 @@ namespace EPlast.BLL.Services.Events
         {
             int finishedEventStatus = 1;
             var eventsToCheck = await _repoWrapper.Event
-                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && (DateTime.Compare(e.EventDateEnd, DateTime.Now) < 0));
-
-            foreach (var eventToCheck in eventsToCheck)
+                .GetAllAsync(e => e.EventStatusID != finishedEventStatus && DateTime.Compare(e.EventDateEnd, DateTime.Now) < 0, include: users =>
+              users.Include(d => d.Participants));
+            if (eventsToCheck.Any())
             {
-                eventToCheck.EventStatusID = finishedEventStatus;
-                _repoWrapper.Event.Update(eventToCheck);
+                foreach (var eventToCheck in eventsToCheck)
+                {
+                    eventToCheck.EventStatusID = finishedEventStatus;
+                    _repoWrapper.Event.Update(eventToCheck);
+                    List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
+                    foreach (var user in eventToCheck.Participants)
+                    {
+                        userNotificationsDTO.Add(new UserNotificationDto
+                        {
+                            Message = "Оцінювання події є доступним протягом 3 днів після її завершення! ",
+                            NotificationTypeId = 1,
+                            OwnerUserId = user.UserId,
+                            SenderLink = $"/events/details/{eventToCheck.ID}",
+                            SenderName = eventToCheck.EventName
+                        });
+                    }
+                    await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
+                }
+                await _repoWrapper.SaveAsync();
             }
-            await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user)
+        public async Task<IEnumerable<GeneralEventDto>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user)
         {
             IEnumerable<Event> events;
             if (status == 1)
@@ -293,7 +317,7 @@ namespace EPlast.BLL.Services.Events
             return dto;
         }
 
-        private async Task<List<GeneralEventDTO>> GetEventDtosAsync(IEnumerable<Event> events, User user)
+        private async Task<List<GeneralEventDto>> GetEventDtosAsync(IEnumerable<Event> events, User user)
         {
             int approvedStatus = await _participantStatusManager.GetStatusIdAsync("Учасник");
             int undeterminedStatus = await _participantStatusManager.GetStatusIdAsync("Розглядається");
@@ -306,11 +330,11 @@ namespace EPlast.BLL.Services.Events
             var eventAdmins = await _repoWrapper.EventAdministration.GetAllAsync();
 
             return events
-                .Select(ev => new GeneralEventDTO
+                .Select(ev => new GeneralEventDto
                 {
                     EventId = ev.ID,
                     EventName = ev.EventName,
-                    IsUserEventAdmin = ev.EventAdministrations.Any( e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
+                    IsUserEventAdmin = ev.EventAdministrations.Any(e => e.UserID == _userManager.GetUserIdAsync(user).Result) || userRoles != null && userRoles.Contains(Roles.EventAdministrator),
                     IsUserParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result),
                     IsUserApprovedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == approvedStatus),
                     IsUserUndeterminedParticipant = ev.Participants.Any(p => p.UserId == _userManager.GetUserIdAsync(user).Result && p.ParticipantStatusId == undeterminedStatus),

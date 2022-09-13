@@ -1,24 +1,23 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Club;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
-using EPlast.Resources;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using DataAccessClub = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Services.Club
@@ -32,10 +31,8 @@ namespace EPlast.Tests.Services.Club
         private Mock<IWebHostEnvironment> _env;
         private Mock<IMapper> _mapper;
         private Mock<IRepositoryWrapper> _repoWrapper;
-        private Mock<IUniqueIdService> _uniqueId;
         private Mock<IUserStore<User>> _user;
         private Mock<UserManager<User>> _userManager;
-        private string ClubName => "Club";
 
         private int Count => 2;
 
@@ -50,7 +47,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0
             };
@@ -66,7 +63,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0
             };
@@ -87,9 +84,9 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubProfileDTO clubProfileDto = new ClubProfileDTO
+            ClubProfileDto clubProfileDto = new ClubProfileDto
             {
-                Club = new ClubDTO
+                Club = new ClubDto
                 {
                     ID = 0
                 }
@@ -107,7 +104,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0,
                 Logo = "data:application/.jpeg;base64,/9j/"
@@ -130,7 +127,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0,
                 Logo = "data:application/,/9j/"
@@ -152,7 +149,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0,
                 Logo = "data:application/base64,/9j/"
@@ -174,7 +171,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0,
                 Logo = "data:application/.jpeg;base64,/9j/"
@@ -196,9 +193,9 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubProfileDTO clubProfileDto = new ClubProfileDTO
+            ClubProfileDto clubProfileDto = new ClubProfileDto
             {
-                Club = new ClubDTO
+                Club = new ClubDto
                 {
                     ID = 0
                 }
@@ -218,8 +215,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(new List<ClubDTO>().FirstOrDefault());
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(new List<ClubDto>().FirstOrDefault());
 
             // Act
             var result = await clubService.EditAsync(Id);
@@ -239,7 +236,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -247,7 +244,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(Count).FirstOrDefault());
 
             // Act
@@ -255,8 +252,8 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
-            Assert.AreEqual(new List<ClubMembersDTO>(), result.Members);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
+            Assert.AreEqual(new List<ClubMembersDto>(), result.Members);
         }
 
         [Test]
@@ -264,7 +261,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubDTO clubDto = new ClubDTO
+            ClubDto clubDto = new ClubDto
             {
                 ID = 0
             };
@@ -286,9 +283,9 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            ClubProfileDTO clubProfileDto = new ClubProfileDTO
+            ClubProfileDto clubProfileDto = new ClubProfileDto
             {
-                Club = new ClubDTO
+                Club = new ClubDto
                 {
                     ID = 0
                 }
@@ -314,15 +311,15 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(new ClubDTO());
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(new ClubDto());
 
             // Act
             var result = await _clubService.GetByIdAsync(Id);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubDTO>(result);
+            Assert.IsInstanceOf<ClubDto>(result);
         }
 
         [Test]
@@ -337,7 +334,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubUserDTO[]>(result);
+            Assert.IsInstanceOf<ClubUserDto[]>(result);
         }
 
         [Test]
@@ -368,11 +365,11 @@ namespace EPlast.Tests.Services.Club
                     {new UserPlastDegree() { UserId = "12345", PlastDegree = new PlastDegree() {Id = 1, Name = ""}}});
 
             // Act
-            var result = await clubService.GetClubProfileAsync(Id, new User(){Id = "1"});
+            var result = await clubService.GetClubProfileAsync(Id, new User() { Id = "1" });
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -407,7 +404,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -421,7 +418,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -429,7 +426,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(Count).FirstOrDefault());
 
             // Act
@@ -447,7 +444,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
 
             // Act
@@ -456,7 +453,7 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
-            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDto>());
         }
 
         [Test]
@@ -464,7 +461,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
 
             // Act
@@ -473,7 +470,7 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.HeadDeputy);
-            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDto>());
         }
 
         [Test]
@@ -481,8 +478,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns((ClubDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDto)null);
 
             // Act
             var result = await clubService.GetClubAdminsAsync(Id);
@@ -502,7 +499,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -510,8 +507,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns((ClubDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDto)null);
 
             // Act
             var result = await clubService.GetClubDocumentsAsync(Id);
@@ -531,7 +528,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -539,8 +536,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns((ClubDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDto)null);
 
             // Act
             var result = await clubService.GetClubFollowersAsync(Id);
@@ -560,7 +557,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -568,8 +565,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns((ClubDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDto)null);
 
             // Act
             var result = await clubService.GetClubMembersAsync(Id);
@@ -589,7 +586,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -597,7 +594,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(Count).FirstOrDefault());
 
             // Act
@@ -615,8 +612,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns((ClubDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDto)null);
 
             // Act
             var result = await clubService.GetClubProfileAsync(Id);
@@ -630,7 +627,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
 
             // Act
@@ -639,7 +636,7 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
-            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDto>());
         }
 
         [Test]
@@ -647,7 +644,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
 
             // Act
@@ -656,7 +653,7 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.HeadDeputy);
-            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDto>());
         }
 
         [Test]
@@ -670,7 +667,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubProfileDTO>(result);
+            Assert.IsInstanceOf<ClubProfileDto>(result);
         }
 
         [Test]
@@ -678,7 +675,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(Count).FirstOrDefault());
 
             // Act
@@ -696,8 +693,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns((ClubDTO)null);
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns((ClubDto)null);
 
             // Act
             var result = await clubService.GetClubMembersInfoAsync(Id);
@@ -711,7 +708,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
 
             // Act
@@ -720,7 +717,7 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.Head);
-            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDto>());
         }
 
         [Test]
@@ -728,7 +725,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDtoWithExAdmin(Count).FirstOrDefault());
 
             // Act
@@ -737,7 +734,7 @@ namespace EPlast.Tests.Services.Club
             // Assert
             Assert.NotNull(result);
             Assert.Null(result.HeadDeputy);
-            Assert.AreEqual(result.Admins, new List<ClubAdministrationDTO>());
+            Assert.AreEqual(result.Admins, new List<ClubAdministrationDto>());
         }
 
         [Test]
@@ -747,7 +744,7 @@ namespace EPlast.Tests.Services.Club
             var fakeClubDTO = CreateFakeClubDto(1).FirstOrDefault();
             fakeClubDTO.ClubAdministration = null;
             ClubService clubService = CreateClubService();
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(fakeClubDTO);
 
             // Act
@@ -763,15 +760,22 @@ namespace EPlast.Tests.Services.Club
         [Test]
         public async Task GetClubs_ReturnClubForAdministrationDTOs()
         {
-            // Arrange
-            ClubService clubService = CreateClubService();
+            //Arrange
+            _repoWrapper
+             .Setup(x => x.Club.GetRangeAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(),
+             null, It.IsAny<Func<IQueryable<DataAccessClub.Club>, IQueryable<DataAccessClub.Club>>>(),
+             null, null, null))
+             .ReturnsAsync(new Tuple<IEnumerable<DataAccessClub.Club>, int>(GetClubsByPage(), 1));
+
+            _mapper.Setup(_mapper => _mapper.Map<IEnumerable<ClubForAdministrationDto>>(It.IsAny<IEnumerable<ClubForAdministrationDto>>()))
+              .Returns(GetClubForAdministrationDTO());
 
             // Act
-            var result = await clubService.GetClubs();
+            var result = await _clubService.GetClubs();
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<ClubForAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ClubForAdministrationDto>>(result);
         }
 
         [Test]
@@ -793,8 +797,8 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             _repoWrapper
-                .Setup(u=>u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
-                    .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>(){new ClubMemberHistory(){}});
+                .Setup(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null))
+                    .ReturnsAsync(new List<DataAccessClub.ClubMemberHistory>() { new ClubMemberHistory() { } });
             _repoWrapper
                 .Setup(u => u.SaveAsync());
             _repoWrapper
@@ -802,7 +806,7 @@ namespace EPlast.Tests.Services.Club
             // Act
             await _clubService.DeleteClubMemberHistory(It.IsAny<int>());
             // Assert
-            _repoWrapper.Verify(u=>u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
+            _repoWrapper.Verify(u => u.ClubMemberHistory.GetAllAsync(It.IsAny<Expression<Func<DataAccessClub.ClubMemberHistory, bool>>>(), null), Times.Once);
             _repoWrapper.Verify(u => u.ClubMemberHistory.Delete(It.IsAny<ClubMemberHistory>()), Times.Once);
             _repoWrapper.Verify(r => r.SaveAsync(), Times.Once);
         }
@@ -886,7 +890,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubWithRole(Roles.KurinHead));
 
             // Act
@@ -894,7 +898,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubAdministrationDTO>(result);
+            Assert.IsInstanceOf<ClubAdministrationDto>(result);
         }
 
         [Test]
@@ -905,8 +909,8 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(new ClubDTO());
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(new ClubDto());
 
             // Act
             var result = await _clubService.GetClubHeadAsync(Id);
@@ -923,7 +927,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubWithRole(Roles.KurinHeadDeputy));
 
             // Act
@@ -931,7 +935,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubAdministrationDTO>(result);
+            Assert.IsInstanceOf<ClubAdministrationDto>(result);
         }
 
         [Test]
@@ -942,8 +946,8 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(new ClubDTO());
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(new ClubDto());
 
             // Act
             var result = await _clubService.GetClubHeadDeputyAsync(Id);
@@ -960,7 +964,7 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubWithRole(Roles.KurinHeadDeputy));
 
             // Act
@@ -968,7 +972,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<List<ClubAdministrationDTO>>(result);
+            Assert.IsInstanceOf<List<ClubAdministrationDto>>(result);
         }
 
         [Test]
@@ -979,8 +983,8 @@ namespace EPlast.Tests.Services.Club
                 .Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(new DataAccessClub.Club());
             _mapper
-                .Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
-                .Returns(new ClubDTO());
+                .Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
+                .Returns(new ClubDto());
 
             // Act
             var result = await _clubService.GetAdminsAsync(Id);
@@ -998,20 +1002,24 @@ namespace EPlast.Tests.Services.Club
             _clubBlobStorage = new Mock<IClubBlobStorageRepository>();
             _clubAccessService = new Mock<IClubAccessService>();
             _user = new Mock<IUserStore<User>>();
-            _uniqueId = new Mock<IUniqueIdService>();
             _userManager = new Mock<UserManager<User>>(_user.Object, null, null, null, null, null, null, null, null);
-            _clubService = new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object,
-                   _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+            _clubService = new ClubService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _clubBlobStorage.Object,
+                _userManager.Object
+            );
         }
 
         private ClubService CreateClubService()
         {
             _mapper.Setup(m => m.Map<IEnumerable<DataAccessClub.Club>,
-                    IEnumerable<ClubDTO>>(It.IsAny<IEnumerable<DataAccessClub.Club>>()))
+                    IEnumerable<ClubDto>>(It.IsAny<IEnumerable<DataAccessClub.Club>>()))
                 .Returns(CreateFakeClubDto(10));
-            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDTO>(It.IsAny<DataAccessClub.Club>()))
+            _mapper.Setup(m => m.Map<DataAccessClub.Club, ClubDto>(It.IsAny<DataAccessClub.Club>()))
                 .Returns(CreateFakeClubDto(10).FirstOrDefault());
-            _mapper.Setup(m => m.Map<ClubDTO, DataAccessClub.Club>(It.IsAny<ClubDTO>()))
+            _mapper.Setup(m => m.Map<ClubDto, DataAccessClub.Club>(It.IsAny<ClubDto>()))
                 .Returns(() => new DataAccessClub.Club());
             _repoWrapper.Setup(r => r.Club.FindAll())
                 .Returns(CreateFakeCities(10));
@@ -1020,7 +1028,7 @@ namespace EPlast.Tests.Services.Club
                     CreateFakeCities(10).Where(condition));
             _repoWrapper.Setup(r => r.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
                .ReturnsAsync(GetTestRegion());
-            _mapper.Setup(m => m.Map<ClubDTO, DataAccessClub.Club>(It.IsAny<ClubDTO>()))
+            _mapper.Setup(m => m.Map<ClubDto, DataAccessClub.Club>(It.IsAny<ClubDto>()))
                 .Returns(() => new DataAccessClub.Club());
             _repoWrapper.Setup(m => m.CityMembers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<CityMembers, bool>>>(), null))
                 .ReturnsAsync(new CityMembers() { });
@@ -1039,7 +1047,13 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper.Setup(r => r.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccessClub.Club, bool>>>(), null))
                 .ReturnsAsync(GetTestNewClub());
 
-            return new ClubService(_repoWrapper.Object, _mapper.Object, _env.Object, _clubBlobStorage.Object, _clubAccessService.Object, _userManager.Object, _uniqueId.Object);
+            return new ClubService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _env.Object,
+                _clubBlobStorage.Object,
+                _userManager.Object
+            );
         }
 
         private IQueryable<DataAccessClub.Club> CreateFakeCities(int count)
@@ -1052,69 +1066,69 @@ namespace EPlast.Tests.Services.Club
             return cities.AsQueryable();
         }
 
-        private IQueryable<ClubDTO> CreateFakeClubDto(int count)
+        private IQueryable<ClubDto> CreateFakeClubDto(int count)
         {
-            List<ClubDTO> clubs = new List<ClubDTO>();
+            List<ClubDto> clubs = new List<ClubDto>();
 
             for (int i = 0; i < count; i++)
             {
-                clubs.Add(new ClubDTO
+                clubs.Add(new ClubDto
                 {
                     ClubAdministration = GetClubAdministrationDTO(),
-                    ClubMembers = new List<ClubMembersDTO>
+                    ClubMembers = new List<ClubMembersDto>
                     {
-                        new ClubMembersDTO
+                        new ClubMembersDto
                         {
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
                             IsApproved = true,
                             UserId = "12345",
-                            User=new ClubUserDTO()
+                            User=new ClubUserDto()
                         },
-                        new ClubMembersDTO
+                        new ClubMembersDto
                         {
                             StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null,
                             IsApproved = false,
                             UserId = "12345",
-                            User=new ClubUserDTO()
+                            User=new ClubUserDto()
                         }
                     },
-                    ClubDocuments = new List<ClubDocumentsDTO>
+                    ClubDocuments = new List<ClubDocumentsDto>
                     {
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO()
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto()
                     },
                 });
             }
             return clubs.AsQueryable();
         }
 
-        private IQueryable<ClubDTO> CreateFakeClubDtoWithExAdmin(int count)
+        private IQueryable<ClubDto> CreateFakeClubDtoWithExAdmin(int count)
         {
-            List<ClubDTO> clubs = new List<ClubDTO>();
+            List<ClubDto> clubs = new List<ClubDto>();
 
             for (int i = 0; i < count; i++)
             {
                 var clubDto = GetClubDto();
-                clubDto.ClubAdministration = new List<ClubAdministrationDTO>
+                clubDto.ClubAdministration = new List<ClubAdministrationDto>
                 {
-                    new ClubAdministrationDTO
+                    new ClubAdministrationDto
                     {
                         UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                        User = new ClubUserDTO(),
-                        AdminType = new AdminTypeDTO
+                        User = new ClubUserDto(),
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = Roles.KurinHead
                         },
                         EndDate = DateTime.Now.AddMonths(-3)
                     },
-                    new ClubAdministrationDTO
+                    new ClubAdministrationDto
                     {
                        UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                        User = new ClubUserDTO(),
-                        AdminType = new AdminTypeDTO
+                        User = new ClubUserDto(),
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = "----------",
                         },
@@ -1127,16 +1141,16 @@ namespace EPlast.Tests.Services.Club
             return clubs.AsQueryable();
         }
 
-        private ClubDTO CreateFakeClubWithRole(string role)
+        private ClubDto CreateFakeClubWithRole(string role)
         {
-            return new ClubDTO()
+            return new ClubDto()
             {
                 ID = Id,
-                ClubAdministration = new List<ClubAdministrationDTO>
+                ClubAdministration = new List<ClubAdministrationDto>
                     {
-                        new ClubAdministrationDTO
+                        new ClubAdministrationDto
                         {
-                            AdminType = new AdminTypeDTO
+                            AdminType = new AdminTypeDto
                             {
                                 AdminTypeName = role
                             },
@@ -1146,31 +1160,31 @@ namespace EPlast.Tests.Services.Club
             };
         }
 
-        private IQueryable<ClubDTO> CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(int count)
+        private IQueryable<ClubDto> CreateFakeClubDtoWithoutMembersWithoutAdminEndDate(int count)
         {
-            List<ClubDTO> clubs = new List<ClubDTO>();
+            List<ClubDto> clubs = new List<ClubDto>();
 
             for (int i = 0; i < count; i++)
             {
                 var clubDto = GetClubDtoWithoutMembers();
-                clubDto.ClubMembers = new List<ClubMembersDTO>();
-                clubDto.ClubAdministration = new List<ClubAdministrationDTO>
+                clubDto.ClubMembers = new List<ClubMembersDto>();
+                clubDto.ClubAdministration = new List<ClubAdministrationDto>
                 {
-                    new ClubAdministrationDTO
+                    new ClubAdministrationDto
                     {
                         UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                        User = new ClubUserDTO(),
-                        AdminType = new AdminTypeDTO
+                        User = new ClubUserDto(),
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = Roles.KurinHead
                         },
                         Status=true
                     },
-                    new ClubAdministrationDTO
+                    new ClubAdministrationDto
                     {
                         UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                        User = new ClubUserDTO(),
-                        AdminType = new AdminTypeDTO
+                        User = new ClubUserDto(),
+                        AdminType = new AdminTypeDto
                         {
                             AdminTypeName = "----------",
                         },
@@ -1182,24 +1196,24 @@ namespace EPlast.Tests.Services.Club
             return clubs.AsQueryable();
         }
 
-        private List<ClubAdministrationDTO> GetClubAdministrationDTO()
+        private IEnumerable<ClubAdministrationDto> GetClubAdministrationDTO()
         {
-            return new List<ClubAdministrationDTO>
+            return new List<ClubAdministrationDto>
             {
-                 new ClubAdministrationDTO
+                 new ClubAdministrationDto
                  {
                       UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                      User = new ClubUserDTO(),
-                      AdminType = new AdminTypeDTO
+                      User = new ClubUserDto(),
+                      AdminType = new AdminTypeDto
                       {
                            AdminTypeName = Roles.KurinHead
                       }
                  },
-                 new ClubAdministrationDTO
+                 new ClubAdministrationDto
                  {
                       UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                      User = new ClubUserDTO(),
-                      AdminType = new AdminTypeDTO
+                      User = new ClubUserDto(),
+                      AdminType = new AdminTypeDto
                       {
                            AdminTypeName = "----------"
                       }
@@ -1207,33 +1221,33 @@ namespace EPlast.Tests.Services.Club
             };
         }
 
-        private ClubDTO GetClubDto()
+        private ClubDto GetClubDto()
         {
             var club = GetClubDtoWithoutMembers();
-            club.ClubMembers = new List<ClubMembersDTO>
+            club.ClubMembers = new List<ClubMembersDto>
                 {
-                    new ClubMembersDTO
+                    new ClubMembersDto
                     {
                         UserId = "a124e48a - e83a - 4e1c - a222 - a3e654ac09ad",
-                        User = new ClubUserDTO(),
+                        User = new ClubUserDto(),
                         StartDate = new Random().Next(0,1) ==1 ? DateTime.Today : (DateTime?) null
                     }
                 };
             return club;
         }
 
-        private ClubDTO GetClubDtoWithoutMembers()
+        private ClubDto GetClubDtoWithoutMembers()
         {
-            return new ClubDTO
+            return new ClubDto
             {
                 ClubAdministration = GetClubAdministrationDTO(),
-                ClubDocuments = new List<ClubDocumentsDTO>
+                ClubDocuments = new List<ClubDocumentsDto>
                     {
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO(),
-                        new ClubDocumentsDTO()
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto(),
+                        new ClubDocumentsDto()
                     }
             };
         }
@@ -1274,6 +1288,16 @@ namespace EPlast.Tests.Services.Club
                     Name = "Курінь",
                 }
             };
+        }
+
+        private IEnumerable<ClubForAdministrationDto> GetClubForAdministrationDTO()
+        {
+            return new List<ClubForAdministrationDto>
+            {
+                new ClubForAdministrationDto{ID = 1, Name = "Ім'я", HasReport = true, IsActive = false},
+                new ClubForAdministrationDto{ID = 2, Name = "Назва", HasReport = false, IsActive = false},
+                new ClubForAdministrationDto{ID = 3, Name = "Якась назва", HasReport = true, IsActive = true}
+            }.AsEnumerable();
         }
     }
 }

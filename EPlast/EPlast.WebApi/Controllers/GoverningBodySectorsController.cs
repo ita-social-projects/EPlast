@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
 using AutoMapper;
-using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.Resources;
 using EPlast.WebApi.Models.GoverningBody.Sector;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -21,6 +22,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ISectorService _sectorService;
         private readonly ISectorAdministrationService _sectorAdministrationService;
         private readonly ISectorDocumentsService _sectorDocumentsService;
+        private readonly ISectorAnnouncementsService _sectorAnnouncementsService;
         private readonly ILoggerService<GoverningBodiesController> _logger;
         private readonly IMapper _mapper;
 
@@ -28,13 +30,15 @@ namespace EPlast.WebApi.Controllers
                                                 ILoggerService<GoverningBodiesController> logger,
                                                 ISectorAdministrationService governingBodyAdministrationService,
                                                 IMapper mapper,
-                                                ISectorDocumentsService governingBodyDocumentsService)
+                                                ISectorDocumentsService governingBodyDocumentsService,
+                                                ISectorAnnouncementsService sectorAnnouncementsService)
         {
             _sectorService = service;
             _logger = logger;
             _sectorAdministrationService = governingBodyAdministrationService;
             _mapper = mapper;
             _sectorDocumentsService = governingBodyDocumentsService;
+            _sectorAnnouncementsService = sectorAnnouncementsService;
         }
 
         [HttpGet("{governingBodyId}")]
@@ -46,7 +50,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("CreateSector")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
-        public async Task<IActionResult> Create(SectorDTO sectorDTO)
+        public async Task<IActionResult> Create(SectorDto sectorDTO)
         {
             if (!ModelState.IsValid)
             {
@@ -67,7 +71,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditSector/{sectorId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
-        public async Task<IActionResult> Edit(SectorDTO sector)
+        public async Task<IActionResult> Edit(SectorDto sector)
         {
             if (!ModelState.IsValid)
             {
@@ -102,8 +106,8 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var sectorViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
-            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents.Count() });
+            var sectorViewModel = _mapper.Map<SectorProfileDto, SectorViewModel>(sectorProfileDto);
+            return Ok(new { sectorViewModel, documentsCount = sectorProfileDto.Sector.Documents?.Count(), announcementsCount = sectorProfileDto.Sector.Announcements?.Count() });
         }
 
         [HttpDelete("RemoveSector/{sectorId}")]
@@ -126,14 +130,14 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var sectorBodyViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
+            var sectorBodyViewModel = _mapper.Map<SectorProfileDto, SectorViewModel>(sectorProfileDto);
 
             return Ok(new { Admins = sectorBodyViewModel.Administration, sectorBodyViewModel.Head, sectorBodyViewModel.Name });
         }
 
         [HttpPost("AddAdmin/{sectorId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
-        public async Task<IActionResult> AddAdmin(SectorAdministrationDTO newAdmin)
+        public async Task<IActionResult> AddAdmin(SectorAdministrationDto newAdmin)
         {
             try
             {
@@ -151,7 +155,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditAdmin/{adminId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
-        public async Task<IActionResult> EditAdmin(SectorAdministrationDTO adminDto)
+        public async Task<IActionResult> EditAdmin(SectorAdministrationDto adminDto)
         {
             await _sectorAdministrationService.EditSectorAdministratorAsync(adminDto);
             _logger.LogInformation($"Admin with User-ID {{{adminDto.UserId}}} was edited.");
@@ -179,14 +183,14 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
 
-            var sectorViewModel = _mapper.Map<SectorProfileDTO, SectorViewModel>(sectorProfileDto);
+            var sectorViewModel = _mapper.Map<SectorProfileDto, SectorViewModel>(sectorProfileDto);
 
             return Ok(new { sectorViewModel.Documents });
         }
 
         [HttpPost("AddDocument/{sectorId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
-        public async Task<IActionResult> AddDocument(SectorDocumentsDTO document)
+        public async Task<IActionResult> AddDocument(SectorDocumentsDto document)
         {
             await _sectorDocumentsService.AddSectorDocumentAsync(document);
             _logger.LogInformation($"Document with id {{{document.Id}}} was added.");
@@ -265,7 +269,7 @@ namespace EPlast.WebApi.Controllers
                 return Ok(new
                 {
                     admins = _mapper
-                        .Map<IEnumerable<SectorAdministrationDTO>, IEnumerable<SectorTableViewModel>>(item1),
+                        .Map<IEnumerable<SectorAdministrationDto>, IEnumerable<SectorTableViewModel>>(item1),
                     rowCount = item2
                 });
             }
@@ -273,6 +277,73 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest("Error getting UserAdministration");
             }
+        }
+
+        [HttpPost("AddAnnouncement")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHeadAndGBSectorHead)]
+        public async Task<IActionResult> AddAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDto announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = await _sectorAnnouncementsService.AddAnnouncementAsync(announcement);
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
+                return Ok(id);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpPut("EditAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> EditAnnouncement([FromBody] GoverningBodyAnnouncementWithImagesDto announcement)
+        {
+            if (ModelState.IsValid)
+            {
+                var id = await _sectorAnnouncementsService.EditAnnouncementAsync(announcement);
+                if (id == null)
+                    return BadRequest("Title and Text fields are required");
+                return Ok(id);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpDelete("DeleteAnnouncement/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBHead)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _sectorAnnouncementsService.DeleteAnnouncementAsync(id);
+
+            return NoContent();
+        }
+
+        [HttpGet("GetAnnouncement/{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            GoverningBodyAnnouncementUserWithImagesDto sectorAnnouncementUserDTO = await _sectorAnnouncementsService.GetAnnouncementByIdAsync(id);
+
+            if (sectorAnnouncementUserDTO == null)
+            {
+                return NotFound();
+            }
+            return Ok(sectorAnnouncementUserDTO);
+        }
+
+        /// <summary>
+        /// Get specified by page number and page size list of announcements
+        /// </summary>
+        /// <param name="pageNumber">Number of the page</param>
+        /// <param name="pageSize">Size of one page</param>
+        /// <param name="sectorId">Id of governing body</param>
+        /// <returns>Specified by page number and page size list of announcements</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="400">Could not get requested announcements</response>
+        [HttpGet("GetAnnouncementsByPage/{pageNumber:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminPlastMemberAndSupporter)]
+        public async Task<IActionResult> GetAnnouncementsByPage(int pageNumber, [Required] int pageSize, int sectorId)
+        {
+            var announcements = await _sectorAnnouncementsService.GetAnnouncementsByPageAsync(pageNumber, pageSize, sectorId);
+
+            return Ok(announcements);
         }
     }
 }

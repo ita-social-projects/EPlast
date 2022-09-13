@@ -1,13 +1,13 @@
-﻿using AutoMapper;
-using EPlast.DataAccess.Entities.UserEntities;
-using EPlast.DataAccess.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.DataAccess.Entities;
-using Microsoft.AspNetCore.Identity;
+using EPlast.DataAccess.Entities.UserEntities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.Distinctions
 {
@@ -23,7 +23,7 @@ namespace EPlast.BLL.Services.Distinctions
             _repoWrapper = repoWrapper;
             _userManager = userManager;
         }
-        public async Task AddUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, User user)
+        public async Task AddUserDistinctionAsync(UserDistinctionDto userDistinctionDTO, User user)
         {
             await CheckIfAdminAsync(user);
             var userDistinction = new UserDistinction()
@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task ChangeUserDistinctionAsync(UserDistinctionDTO userDistinctionDTO, User user)
+        public async Task ChangeUserDistinctionAsync(UserDistinctionDto userDistinctionDTO, User user)
         {
             await CheckIfAdminAsync(user);
             var userDistinction = new UserDistinction()
@@ -66,32 +66,32 @@ namespace EPlast.BLL.Services.Distinctions
             await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<UserDistinctionDTO>> GetAllUsersDistinctionAsync()
+        public async Task<IEnumerable<UserDistinctionDto>> GetAllUsersDistinctionAsync()
         {
             var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(include:
                 source => source
                 .Include(c => c.User)
                 .Include(d => d.Distinction)
                 );
-            return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
+            return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDto>>(userDistinctions);
         }
 
-        public async Task<UserDistinctionDTO> GetUserDistinctionAsync(int id)
+        public async Task<UserDistinctionDto> GetUserDistinctionAsync(int id)
         {
             var userDistinction = await _repoWrapper.UserDistinction.GetFirstOrDefaultAsync(d => d.Id == id, include:
                 source => source
                 .Include(c => c.User)
                 .Include(d => d.Distinction));
-            return _mapper.Map<UserDistinction, UserDistinctionDTO>(userDistinction);
+            return _mapper.Map<UserDistinction, UserDistinctionDto>(userDistinction);
         }
 
-        public async Task<IEnumerable<UserDistinctionDTO>> GetUserDistinctionsOfUserAsync(string UserId)
+        public async Task<IEnumerable<UserDistinctionDto>> GetUserDistinctionsOfUserAsync(string UserId)
         {
-            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(u => u.UserId == UserId, 
+            var userDistinctions = await _repoWrapper.UserDistinction.GetAllAsync(u => u.UserId == UserId,
                 include: source => source
                 .Include(c => c.User)
                 .Include(d => d.Distinction));
-            return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDTO>>(userDistinctions);
+            return _mapper.Map<IEnumerable<UserDistinction>, IEnumerable<UserDistinctionDto>>(userDistinctions);
         }
         public async Task<bool> IsNumberExistAsync(int number) 
         {
@@ -101,7 +101,8 @@ namespace EPlast.BLL.Services.Distinctions
 
         public async Task CheckIfAdminAsync(User user)
         {
-            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin))
+            if (!(await _userManager.GetRolesAsync(user)).Contains(Roles.Admin) &&
+                !(await _userManager.GetRolesAsync(user)).Contains(Roles.GoverningBodyAdmin))
                 throw new UnauthorizedAccessException();
         }
 

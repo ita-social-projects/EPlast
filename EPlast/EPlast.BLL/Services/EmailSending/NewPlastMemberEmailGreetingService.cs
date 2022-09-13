@@ -2,9 +2,11 @@
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -17,18 +19,18 @@ namespace EPlast.BLL.Services
     {
         private readonly IEmailSendingService _emailSendingService;
         private readonly IEmailContentService _emailContentService;
-        private readonly ICityService _cityService;
         private readonly IUserService _userService;
         private readonly INotificationService _notificationService;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
         public NewPlastMemberEmailGreetingService(IRepositoryWrapper repoWrapper,
                                            UserManager<User> userManager,
                                            IEmailSendingService emailSendingService,
                                            IEmailContentService emailContentService,
                                            INotificationService notificationService,
-                                           ICityService cityService,
+                                           IMediator mediator,
                                            IUserService userService)
         {
             _repoWrapper = repoWrapper;
@@ -36,7 +38,7 @@ namespace EPlast.BLL.Services
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
             _notificationService = notificationService;
-            _cityService = cityService;
+            _mediator = mediator;
             _userService = userService;
         }
 
@@ -66,7 +68,9 @@ namespace EPlast.BLL.Services
 
                 var timeToJoinPlast = user.RegistredOn.AddYears(1) - DateTime.Now;
                 var halfOfYear = new TimeSpan(182, 0, 0, 0);
-                if (_repoWrapper.ConfirmedUser.FindByCondition(x => x.UserID == user.Id).Any(q => q.isClubAdmin))
+                if (_repoWrapper.ConfirmedUser
+                    .FindByCondition(x => x.UserID == user.Id)
+                    .Any(q => q.ApproveType == ApproveType.Club))
                 {
                     timeToJoinPlast = timeToJoinPlast.Subtract(halfOfYear);
                 }
@@ -84,9 +88,10 @@ namespace EPlast.BLL.Services
         public async Task NotifyCityAdminsAsync(string newPlastMemberId)
         {
             var newPlastMember = await _userService.GetUserAsync(newPlastMemberId);
-            var cityProfile = await _cityService.GetCityAdminsAsync(newPlastMember.CityMembers.First().CityId);
+            var query = new GetCityAdminsQuery(newPlastMember.CityMembers.First().CityId);
+            var cityAdmins = await _mediator.Send(query);
 
-            var cityHead = cityProfile.Head.User;
+            var cityHead = cityAdmins.Head.User;
             await SendEmailCityAdminAboutNewPlastMemberAsync(cityHead.Email, newPlastMember.FirstName,
                 newPlastMember.LastName, newPlastMember.UserProfile.Birthday);
         }
@@ -115,7 +120,8 @@ namespace EPlast.BLL.Services
 
         private async Task SendMessageGreetingForNewPlastMemberAsync(string userId, string cityName)
         {
-            var cityId = await _cityService.GetCityIdByUserIdAsync(userId);
+            var query = new GetCityIdByUserIdQuery(userId);
+            var cityId = await _mediator.Send(query);
             var notificationType = (await _notificationService.GetAllNotificationTypesAsync()).First().Id;
             var messageContent = _emailContentService.GetGreetingForNewPlastMemberMessageAsync(userId, cityName, notificationType, cityId);
             await _repoWrapper.UserNotifications.CreateAsync(messageContent);

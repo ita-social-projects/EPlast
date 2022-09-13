@@ -1,9 +1,9 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Interfaces.Events
 {
@@ -16,26 +16,26 @@ namespace EPlast.BLL.Interfaces.Events
         /// Get all event types.
         /// </summary>
         /// <returns>List of all event types.</returns>
-        Task<IEnumerable<EventTypeDTO>> GetEventTypesAsync();
+        Task<IEnumerable<EventTypeDto>> GetEventTypesAsync();
 
         /// <summary>
         /// Get all event categories.
         /// </summary>
         /// <returns>List of all event categories.</returns>
-        Task<IEnumerable<EventCategoryDTO>> GetActionCategoriesAsync();
+        Task<IEnumerable<EventCategoryDto>> GetActionCategoriesAsync();
 
         /// <summary>
         /// Get all events sections.
         /// </summary>
         /// <returns>List of event sections.</returns>
-        Task<IEnumerable<EventSectionDTO>> GetEventSectionsAsync();
+        Task<IEnumerable<EventSectionDto>> GetEventSectionsAsync();
 
         /// <summary>
         /// Get list of event categories by event type Id.
         /// </summary>
         /// <returns>List of event categories of the appropriate event type.</returns>
         /// <param name="eventTypeId">The Id of event type</param>
-        Task<IEnumerable<EventCategoryDTO>> GetCategoriesByTypeIdAsync(int eventTypeId);
+        Task<IEnumerable<EventCategoryDto>> GetCategoriesByTypeIdAsync(int eventTypeId);
 
         /// <summary>
         /// Get events  by event category Id and event type Id.
@@ -44,7 +44,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="eventTypeId">The Id of event type</param>
         /// <param name="categoryId">The Id of event category</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<IEnumerable<GeneralEventDTO>> GetEventsAsync(int categoryId, int eventTypeId, User user);
+        Task<IEnumerable<GeneralEventDto>> GetEventsAsync(int categoryId, int eventTypeId, User user);
 
         /// <summary>
         /// Get detailed information about event by event Id.
@@ -52,14 +52,14 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>A detailed information about specific event.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
-        Task<EventDTO> GetEventInfoAsync(int id, User user);
+        Task<EventDto> GetEventInfoAsync(int id, User user);
 
         /// <summary>
         /// Get pictures in Base64 format by event Id.
         /// </summary>
         /// <returns>List of pictures in Base64 format.</returns>
         /// <param name="id">The Id of event</param>
-        Task<IEnumerable<EventGalleryDTO>> GetPicturesAsync(int id);
+        Task<IEnumerable<EventGalleryDto>> GetPicturesAsync(int id);
 
         /// <summary>
         /// Delete event by Id.
@@ -120,7 +120,7 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of added pictures.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="files">List of uploaded pictures</param>
-        Task<IEnumerable<EventGalleryDTO>> FillEventGalleryAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<EventGalleryDto>> FillEventGalleryAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.
@@ -129,8 +129,14 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="id">The Id of picture</param>
         Task<int> DeletePictureAsync(int id);
 
+        /// <summary>
+        /// Change participant's present status.
+        /// </summary>
+        /// <param name="participantId">The Id of participant</param>
+        Task ChangeUsersPresentStatusAsync(int participantId);
+
         Task CheckEventsStatusesAsync();
 
-        Task<IEnumerable<GeneralEventDTO>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user);
+        Task<IEnumerable<GeneralEventDto>> GetEventsByStatusAsync(int categoryId, int typeId, int status, User user);
     }
 }

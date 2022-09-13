@@ -1,9 +1,9 @@
-﻿using EPlast.DataAccess.Entities.Event;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using EPlast.DataAccess.Entities.Event;
 
 namespace EPlast.BLL.DTO.Events
 {
-    public class GeneralEventDTO
+    public class GeneralEventDto
     {
         public int EventId { get; set; }
         public string EventName { get; set; }

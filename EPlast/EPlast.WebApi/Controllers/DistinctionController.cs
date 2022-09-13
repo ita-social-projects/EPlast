@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EPlast.BLL;
+using EPlast.BLL.Commands.Distinction;
+using EPlast.BLL.DTO.Distinction;
+using EPlast.BLL.Queries.Distinction;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,19 +22,18 @@ namespace EPlast.WebApi.Controllers
 
     public class DistinctionController : ControllerBase
     {
-        private readonly IDistinctionService _distinctionService;
         private readonly IUserDistinctionService _userDistinctionService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
-
-        public DistinctionController(
-            IDistinctionService distinctionService, 
+        public DistinctionController( 
             IUserDistinctionService userDistinctionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
-            _distinctionService = distinctionService;
             _userDistinctionService = userDistinctionService;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -40,10 +44,10 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">An instance of user distinction</response>
         /// <response code="404">The user distinction does not exist</response>
         [HttpGet("UserDistinction/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUserDistinction(int id)
         {
-            UserDistinctionDTO userDistinction = await _userDistinctionService.GetUserDistinctionAsync(id);
+            UserDistinctionDto userDistinction = await _userDistinctionService.GetUserDistinctionAsync(id);
             if (userDistinction == null)
                 return NotFound();
             return Ok(userDistinction);
@@ -57,7 +61,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminPlastunAndSupporter)]
         public async Task<IActionResult> GetUserDistinction()
         {
-            IEnumerable<UserDistinctionDTO> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
+            IEnumerable<UserDistinctionDto> userDistinctions = await _userDistinctionService.GetAllUsersDistinctionAsync();
             return Ok(userDistinctions);
         }
         /// <summary>
@@ -70,7 +74,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDistinction(int id)
         {
-            DistinctionDTO distinction = await _distinctionService.GetDistinctionAsync(id);
+            var query = new GetDistinctionQuery(id);
+            var distinction = await _mediator.Send(query);
             if (distinction == null)
                 return NotFound();
             return Ok(distinction);
@@ -80,10 +85,11 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>All distinction types</returns>
         /// <response code="200">Array of all distinction types</response>
-        [HttpGet("Distinctions")] 
+        [HttpGet("Distinctions")]
         public async Task<IActionResult> GetDistinction()
         {
-            IEnumerable<DistinctionDTO> distinctions = await _distinctionService.GetAllDistinctionAsync();
+            var query = new GetAllDistinctionQuery();
+            var distinctions = await _mediator.Send(query);
             return Ok(distinctions);
         }
 
@@ -106,16 +112,16 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Get all Users Distinctions
         /// </summary>
-        /// <param name="searchedData">Searched Data</param>
-        /// <param name="page">Current page on pagination</param>
-        /// <param name="pageSize">Number of records per page</param>
         /// <returns>List of UserDistinctionsTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UsersDistinctionsForTable")]
-        public IActionResult GetUsersDistinctionsForTable(string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetUsersDistinctionsForTable([FromQuery] DistictionTableSettings tableSettings)
         {
-            var distinctions = _distinctionService.GetUsersDistinctionsForTable(searchedData, page, pageSize);
-            return Ok(distinctions);
+            var query = new GetUsersDistinctionsForTableQuery(tableSettings);
+            var distinctionsTuple = await _mediator.Send(query);
+            var allInfoDistinctions = distinctionsTuple.Item1.ToList();
+            allInfoDistinctions.ForEach(u => u.Total = distinctionsTuple.Item2);
+            return Ok(allInfoDistinctions);
         }
 
         /// <summary>
@@ -126,15 +132,16 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Distinction type was successfully deleted</response>
         /// <response code="404">Distinction type does not exist</response>
         [HttpDelete("Delete/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteDistinction(int id)
         {
             try
             {
-                await _distinctionService.DeleteDistinctionAsync(id, await _userManager.GetUserAsync(User));
+                var query = new DeleteDistinctionCommand(id, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);
                 return NoContent();
             }
-            catch (NullReferenceException) 
+            catch (NullReferenceException)
             {
                 return NotFound();
             }
@@ -147,7 +154,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">User distinction was successfully deleted</response>
         /// <response code="404">User distinction does not exist</response>
         [HttpDelete("UserDistinction/Delete/{id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteUserDistinction(int id)
         {
             try
@@ -169,8 +176,8 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("UserDistinction/Create/{userId}")]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AddUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
+        public async Task<IActionResult> AddUserDistinction(UserDistinctionDto userDistinctionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -194,12 +201,13 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">Distinction type was successfully created</response>
         /// <response code="400">Model is not valid</response>
         [HttpPost("Create")]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AddDistinction(DistinctionDTO distinctionDTO)
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
+        public async Task<IActionResult> AddDistinction(DistinctionDto distinctionDTO)
         {
             if (ModelState.IsValid)
             {
-                await _distinctionService.AddDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                var query = new AddDistinctionCommand(distinctionDTO, await _userManager.GetUserAsync(User));
+                await _mediator.Send(query);
                 return NoContent();
             }
             return BadRequest(ModelState);
@@ -213,8 +221,8 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">User distinction does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("UserDistinction/Edit/{userDistinctionId}")]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> EditUserDistinction(UserDistinctionDTO userDistinctionDTO)
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
+        public async Task<IActionResult> EditUserDistinction(UserDistinctionDto userDistinctionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -239,14 +247,15 @@ namespace EPlast.WebApi.Controllers
         /// <response code="404">Distinction type does not exist</response>
         /// <response code="400">Model is not valid</response>
         [HttpPut("Edit/{distinctionId}")]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> EditDistinction(DistinctionDTO distinctionDTO)
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
+        public async Task<IActionResult> EditDistinction(DistinctionDto distinctionDTO)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    await _distinctionService.ChangeDistinctionAsync(distinctionDTO, await _userManager.GetUserAsync(User));
+                    var query = new ChangeDistinctionCommand(distinctionDTO, await _userManager.GetUserAsync(User));
+                    await _mediator.Send(query);
                     return NoContent();
                 }
                 catch (NullReferenceException)
@@ -264,7 +273,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("numberExist/{number}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CheckNumberExisting(int number)
         {
             bool distNumber = await _userDistinctionService.IsNumberExistAsync(number);

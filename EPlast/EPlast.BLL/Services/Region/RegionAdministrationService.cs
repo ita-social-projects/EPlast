@@ -1,17 +1,17 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using EPlast.Resources;
-using System.Linq;
 
 namespace EPlast.BLL.Services.Region
 {
@@ -35,11 +35,13 @@ namespace EPlast.BLL.Services.Region
 
         }
 
-        public async Task<RegionAdministrationDTO> AddRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        public async Task<RegionAdministrationDto> AddRegionAdministrator(RegionAdministrationDto regionAdministrationDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
+
+
             var newRegionAdmin = new RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
@@ -49,25 +51,29 @@ namespace EPlast.BLL.Services.Region
                 UserId = regionAdministrationDTO.UserId
             };
 
+            if (CheckCityWasAdmin(newRegionAdmin))
+            {
+                newRegionAdmin.Status = false;
+                await _repoWrapper.RegionAdministration.CreateAsync(newRegionAdmin);
+                await _repoWrapper.SaveAsync();
+                newRegionAdmin.ID = regionAdministrationDTO.ID;
+                return regionAdministrationDTO;
+            }
+
             var oldAdmin = await _repoWrapper.RegionAdministration.
                 GetFirstOrDefaultAsync(d => d.AdminTypeId == newRegionAdmin.AdminTypeId
                 && d.RegionId == newRegionAdmin.RegionId && d.Status);
 
             var newUser = await _userManager.FindByIdAsync(newRegionAdmin.UserId);
-
-            string role;
-            switch (adminType.AdminTypeName)
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.OkrugaHead:
-                    role = Roles.OkrugaHead;
-                    break;
-                case Roles.OkrugaHeadDeputy:
-                    role = Roles.OkrugaHeadDeputy;
-                    break;
-                default:
-                    role = Roles.OkrugaSecretary;
-                    break;
-            }
+                Roles.OkrugaHead => Roles.OkrugaHead,
+                Roles.OkrugaHeadDeputy => Roles.OkrugaHeadDeputy,
+                Roles.OkrugaReferentUPS => Roles.OkrugaReferentUPS,
+                Roles.OkrugaReferentUSP => Roles.OkrugaReferentUSP,
+                Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
+                _ => Roles.OkrugaSecretary,
+            };
             await _userManager.AddToRoleAsync(newUser, role);
 
             if (adminType.AdminTypeName == headType.AdminTypeName)
@@ -112,10 +118,10 @@ namespace EPlast.BLL.Services.Region
             }
         }
 
-        public async Task<RegionAdministrationDTO> EditRegionAdministrator(RegionAdministrationDTO regionAdministrationDTO)
+        public async Task<RegionAdministrationDto> EditRegionAdministrator(RegionAdministrationDto regionAdministrationDTO)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == regionAdministrationDTO.ID);
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);           
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(regionAdministrationDTO.AdminType.AdminTypeName);
             if (adminType.ID == admin.AdminTypeId)
             {
                 admin.StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now;
@@ -128,37 +134,41 @@ namespace EPlast.BLL.Services.Region
             }
 
             await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
+            await EditStatusAdministration(regionAdministrationDTO.ID, false);
             await AddRegionAdministrator(regionAdministrationDTO);
             return regionAdministrationDTO;
+        }
 
+        public async Task EditStatusAdministration(int adminId, bool status = false)
+        {
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == adminId);
+            if (admin != null)
+            {
+                admin.Status = status;
+                admin.EndDate = DateTime.Now;
+                _repoWrapper.RegionAdministration.Update(admin);
+                await _repoWrapper.SaveAsync();
+            }
         }
 
         public async Task DeleteAdminByIdAsync(int Id)
         {
-            var Admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
-            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(Admin.AdminTypeId);
-
-            var user = await _userManager.FindByIdAsync(Admin.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
+            var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
+            var user = await _userManager.FindByIdAsync(admin.UserId);
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.OkrugaHead:
-                    role = Roles.OkrugaHead;
-                    break;
-                case Roles.OkrugaHeadDeputy:
-                    role = Roles.OkrugaHeadDeputy;
-                    break;
-                default:
-                    role = Roles.OkrugaSecretary;
-                    break;
-            }
+                Roles.OkrugaHead => Roles.OkrugaHead,
+                Roles.OkrugaHeadDeputy => Roles.OkrugaHeadDeputy,
+                Roles.OkrugaReferentUPS => Roles.OkrugaReferentUPS,
+                Roles.OkrugaReferentUSP => Roles.OkrugaReferentUSP,
+                Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
+                _ => Roles.OkrugaSecretary,
+            };
             await _userManager.RemoveFromRoleAsync(user, role);
-
-            _repoWrapper.RegionAdministration.Delete(Admin);
-            await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersAdministrations(string userId)
+        public async Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId)
         {
 
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
@@ -167,60 +177,69 @@ namespace EPlast.BLL.Services.Region
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
 
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries);
+            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries);
         }
 
-
-        public async Task<IEnumerable<RegionAdministrationDTO>> GetUsersPreviousAdministrations(string userId)
+        public async Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId)
         {
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                 include: source => source
                  .Include(r => r.User)
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(secretaries).Reverse();
+            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries).Reverse();
         }
 
-        public async Task<RegionAdministrationDTO> GetHead(int regionId)
+        public async Task<RegionAdministrationDto> GetHead(int regionId)
         {
-            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHead && (d.EndDate > DateTime.Now || d.EndDate == null),
+            var head = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHead 
+                                                                                        && (d.EndDate > DateTime.Now || d.EndDate == null) && d.Status,
                 include: source => source
                 .Include(
                 d => d.User));
 
-            return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(head);
+            return _mapper.Map<RegionAdministration, RegionAdministrationDto>(head);
         }
 
-        public async Task<RegionAdministrationDTO> GetHeadDeputy(int regionId)
+        public async Task<RegionAdministrationDto> GetHeadDeputy(int regionId)
         {
-            var headDeputy = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy && (d.EndDate > DateTime.Now || d.EndDate == null),
+            var headDeputy = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(d => d.RegionId == regionId && d.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy 
+                                                                                             && (d.EndDate > DateTime.Now || d.EndDate == null) && d.Status,
                 include: source => source
                 .Include(
                 d => d.User));
 
-            return _mapper.Map<RegionAdministration, RegionAdministrationDTO>(headDeputy);
+            return _mapper.Map<RegionAdministration, RegionAdministrationDto>(headDeputy);
         }
 
         public async Task<int> GetAdminType(string name)
         {
-            var type = await _repoWrapper.AdminType.GetFirstAsync(a => a.AdminTypeName == name);
+            var type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
+            if (type == null)
+            {
+                var newAdminType = new AdminType();
+                newAdminType.AdminTypeName = name;
+                _repoWrapper.AdminType.Create(newAdminType);
+                await _repoWrapper.SaveAsync();
+                type = await _repoWrapper.AdminType.GetFirstOrDefaultAsync(a => a.AdminTypeName == name);
+            }
             return type.ID;
         }
 
-        public async Task<IEnumerable<RegionAdministrationDTO>> GetAdministrationAsync(int regionId)
+        public async Task<IEnumerable<RegionAdministrationDto>> GetAdministrationAsync(int regionId)
         {
             var admins = await _repoWrapper.RegionAdministration.GetAllAsync(d => d.RegionId == regionId && d.Status,
                 include: source => source
                     .Include(t => t.User)
                         .Include(t => t.Region)
                         .Include(t => t.AdminType));
-            
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(admins);
+
+            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(admins);
         }
 
-        public async Task<IEnumerable<AdminTypeDTO>> GetAllAdminTypes()
+        public async Task<IEnumerable<AdminTypeDto>> GetAllAdminTypes()
         {
-            return _mapper.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDTO>>(await _repoWrapper.AdminType.GetAllAsync());
+            return _mapper.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDto>>(await _repoWrapper.AdminType.GetAllAsync());
         }
 
         public async Task RemoveAdminRolesByUserIdAsync(string userId)
@@ -230,6 +249,11 @@ namespace EPlast.BLL.Services.Region
             {
                 await DeleteAdminByIdAsync(role.ID);
             }
+        }
+
+        private bool CheckCityWasAdmin(RegionAdministration newAdmin)
+        {
+            return !(DateTime.Today < newAdmin.EndDate || newAdmin.EndDate == null);
         }
     }
 }

@@ -1,32 +1,34 @@
 ﻿using System;
-using EPlast.BLL.DTO;
-using EPlast.BLL.DTO.GoverningBody;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.GoverningBody;
 
 namespace EPlast.BLL.Interfaces.GoverningBodies
 {
     public interface IGoverningBodiesService
     {
-        Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodiesListAsync();
+        Task<IEnumerable<GoverningBodyDto>> GetGoverningBodiesListAsync();
 
-        Task<int> CreateAsync(GoverningBodyDTO governingBodyDto);
+        Task<IEnumerable<GoverningBodyDto>> GetSectorsListAsync(int governingBodyId);
+
+        Task<int> CreateAsync(GoverningBodyDto governingBodyDto);
 
         Task<string> GetLogoBase64Async(string logoName);
 
-        Task<GoverningBodyProfileDTO> GetGoverningBodyProfileAsync(int governingBodyId);
+        Task<GoverningBodyProfileDto> GetGoverningBodyProfileAsync(int governingBodyId);
 
         Task<int> RemoveAsync(int governingBodyId);
 
-        Task<int> EditAsync(GoverningBodyDTO governingBody);
+        Task<int> EditAsync(GoverningBodyDto governingBody);
 
-        Task<GoverningBodyProfileDTO> GetGoverningBodyDocumentsAsync(int governingBodyId);
+        Task<GoverningBodyProfileDto> GetGoverningBodyDocumentsAsync(int governingBodyId);
 
         Task<Dictionary<string, bool>> GetUserAccessAsync(string userId);
 
-        Task<IEnumerable<GoverningBodyAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId);
+        Task<IEnumerable<GoverningBodyAdministrationDto>> GetAdministrationsOfUserAsync(string UserId);
 
-        Task<IEnumerable<GoverningBodyAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId);
+        Task<IEnumerable<GoverningBodyAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId);
 
         /// <summary>
         /// Gets GoverningBodyAdministration history for a specific user
@@ -36,7 +38,7 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// <param name="pageNumber">Page number</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>GoverningBodyAdministration history</returns>
-        Task<Tuple<IEnumerable<GoverningBodyAdministrationDTO>, int>> GetAdministrationForTableAsync(
+        Task<Tuple<IEnumerable<GoverningBodyAdministrationDto>, int>> GetAdministrationForTableAsync(
             string userId, bool isActive, int pageNumber, int pageSize);
 
         /// <summary>

@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
@@ -10,12 +16,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using DataAccessCity = EPlast.DataAccess.Entities;
 
 
@@ -27,7 +27,6 @@ namespace EPlast.Tests.Services.City
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<ICityFilesBlobStorageRepository> _cityFilesBlobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -35,10 +34,9 @@ namespace EPlast.Tests.Services.City
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _cityFilesBlobStorage = new Mock<ICityFilesBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
         }
 
-        [Test] 
+        [Test]
         public async Task GetAllCityDocumentTypesAsync_ReturnsDocumentTypes()
         {
             // Arrange
@@ -49,7 +47,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<List<CityDocumentTypeDTO>>(result);
+            Assert.IsAssignableFrom<List<CityDocumentTypeDto>>(result);
         }
 
         [Test]
@@ -63,7 +61,7 @@ namespace EPlast.Tests.Services.City
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<CityDocumentsDTO>(result);
+            Assert.IsAssignableFrom<CityDocumentsDto>(result);
         }
 
         [Test]
@@ -113,10 +111,10 @@ namespace EPlast.Tests.Services.City
                     It.IsAny<Func<IQueryable<DataAccessCity.CityDocumentType>, IIncludableQueryable<DataAccessCity.CityDocumentType, object>>>()))
                 .ReturnsAsync(new List<DataAccessCity.CityDocumentType> { new DataAccessCity.CityDocumentType() { ID = 1 } });
             _mapper
-                .Setup(m => m.Map<CityDocumentsDTO, DataAccessCity.CityDocuments>(It.IsAny<CityDocumentsDTO>()))
+                .Setup(m => m.Map<CityDocumentsDto, DataAccessCity.CityDocuments>(It.IsAny<CityDocumentsDto>()))
                 .Returns(new DataAccessCity.CityDocuments());
             _mapper
-                .Setup(m => m.Map<IEnumerable<CityDocumentType>, IEnumerable<CityDocumentTypeDTO>>(It.IsAny<IEnumerable<CityDocumentType>>()))
+                .Setup(m => m.Map<IEnumerable<CityDocumentType>, IEnumerable<CityDocumentTypeDto>>(It.IsAny<IEnumerable<CityDocumentType>>()))
                 .Returns(GetCityDocumentTypeDTOs());
             _cityFilesBlobStorage
                 .Setup(c => c.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
@@ -125,19 +123,20 @@ namespace EPlast.Tests.Services.City
             _cityFilesBlobStorage
                 .Setup(c => c.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(fakeFile);
-            _uniqueId
-                .Setup(u => u.GetUniqueId())
-                .Returns(Guid.NewGuid());
 
-            return new CityDocumentsService(_repoWrapper.Object, _mapper.Object, _cityFilesBlobStorage.Object, _uniqueId.Object);
+            return new CityDocumentsService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _cityFilesBlobStorage.Object
+            );
         }
 
-        private CityDocumentsDTO cityDocumentsDTO => new CityDocumentsDTO
+        private CityDocumentsDto cityDocumentsDTO => new CityDocumentsDto
         {
             ID = 1,
             BlobName = "newBlob,LastBlob",
             FileName = "FileName",
-            CityDocumentType = new CityDocumentTypeDTO() 
+            CityDocumentType = new CityDocumentTypeDto()
             { 
                 ID = 1, 
                 Name = "DocumentTypeName"
@@ -147,11 +146,11 @@ namespace EPlast.Tests.Services.City
             SubmitDate = DateTime.Now
         };
 
-        private IEnumerable<CityDocumentTypeDTO> GetCityDocumentTypeDTOs()
+        private IEnumerable<CityDocumentTypeDto> GetCityDocumentTypeDTOs()
         {
-            return new List<CityDocumentTypeDTO>
+            return new List<CityDocumentTypeDto>
             {
-                new CityDocumentTypeDTO
+                new CityDocumentTypeDto
                 {
                     ID = 1,
                     Name = "DocumentTypeName"

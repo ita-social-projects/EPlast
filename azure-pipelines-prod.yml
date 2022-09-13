@@ -1,0 +1,132 @@
+# Deploy to Azure Kubernetes Service
+# Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+
+variables:
+- group: EPlast-PROD
+  # Container registry service connection established during pipeline creation
+- name: dockerRegistryServiceConnection
+  value: '6ed81c59-e17e-4f6e-b772-e7a2b4d0d06f'
+- name: imageRepository
+  value: 'eplastbackend'
+- name: containerRegistry
+  value: 'eplastregistry.azurecr.io'
+- name: dockerfilePath
+  value: '**/Dockerfile'
+- name: tag
+  value: '$(Build.BuildId)'
+- name: imagePullSecret
+  value: 'eplastregistryd27e-auth'
+- name: k8sNamespaceForPR
+  value: 'review-app-$(System.PullRequest.PullRequestId)'
+- name: vmImageName
+  value: 'ubuntu-latest'
+
+- name: vmImageName
+  value: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+
+    - upload: manifests
+      artifact: manifests
+- stage: Test
+  displayName: Test stage
+  dependsOn: []
+  jobs:
+  - job: Test
+    displayName: Test
+    pool:
+      vmImage: 'windows-2022'
+    steps:
+    - task: DotNetCoreCLI@2
+      displayName: Restore
+      inputs:
+        command: restore
+        projects: 'EPlast/EPlast.sln'
+    - task: DotNetCoreCLI@2
+      displayName: Build
+      inputs:
+        projects: 'EPlast/EPlast.sln'
+        arguments: '--configuration $(BuildConfiguration)'
+    - task: DotNetCoreCLI@2
+      displayName: 'Add package coverlet.msbuild'
+      inputs:
+        command: custom
+        projects: |
+         EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
+         EPlast/EPlast.Tests/EPlast.Tests.csproj
+        custom: add
+        arguments: 'package coverlet.msbuild'
+    - task: DotNetCoreCLI@2
+      displayName: Test
+      inputs:
+        command: test
+        projects: |
+         EPlast/EPlast.XUnitTest/EPlast.XUnitTest.csproj
+         EPlast/EPlast.Tests/EPlast.Tests.csproj
+        arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:Include="[EPlast.WebApi]*Controllers*%2c[EPlast.BLL]*Services*%2c[EPlast.BLL]*Handlers*" /p:Exclude="[EPlast.XUnitTest]*%2c[EPlast.Tests]*" --logger trx'
+        publishTestResults: false     
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn:
+  - Build
+  - Test
+
+  jobs:
+  - deployment: Deploy
+    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'EPlast.eplast'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: qetza.replacetokens.replacetokens-task.replacetokens@3
+            displayName: Replace tokens in **/*
+            inputs:
+              rootDirectory: $(Pipeline.Workspace)/manifests
+              targetFiles: '**/*.yml'
+              keepToken: true
+              tokenPrefix: ___
+              tokenSuffix: ___
+
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: 'createSecret'
+              kubernetesServiceConnection: 'Eplast-PROD-Kubernetes'
+              secretType: 'dockerRegistry'
+              secretName: '$(imagePullSecret)'
+              dockerRegistryEndpoint: '$(dockerRegistryServiceConnection)'
+
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: 'Eplast-PROD-Kubernetes'
+              manifests: |
+                $(Pipeline.Workspace)/manifests/prod/deployment.yml
+                $(Pipeline.Workspace)/manifests/prod/ingress-prod.yml
+              containers: '$(containerRegistry)/$(imageRepository):$(tag)'
+              imagePullSecrets: '$(imagePullSecret)'

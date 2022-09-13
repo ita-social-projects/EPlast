@@ -1,0 +1,134 @@
+{
+  "Admin": {
+    "AddPrecautionToGoverningBodyAdmin": true,
+    "AddPrecaution": true,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": true,
+    "EditInactivePrecaution": true,
+    "DeleteActivePrecaution": true,
+    "DeleteInactivePrecaution": true
+  },
+
+  "Крайовий Адмін": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": true,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": true,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": true,
+    "DeleteInactivePrecaution": false
+  },
+
+  "Голова Округи": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+  "Заступник Голови Округи": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+  "Діловод Округи": {
+  },
+
+  "Голова Станиці": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+  "Заступник Голови Станиці": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+  "Діловод Станиці": {
+  },
+
+  "Голова Куреня": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+  "Заступник Голови Куреня": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+  "Діловод Куреня": {
+  },
+
+  "Зареєстрований користувач": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": false,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+
+  "Прихильник": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+
+  "Дійсний член організації": {
+    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecaution": false,
+    "OpenUserProfile": true,
+    "EditActivePrecaution": false,
+    "EditInactivePrecaution": false,
+    "DeleteActivePrecaution": false,
+    "DeleteInactivePrecaution": false
+  },
+
+  "Голова Пласту": {
+  },
+  "Адміністратор подій": {
+  },
+  "Колишній член Пласту": {
+  },
+  "Зацікавлений": {
+  },
+  "Голова Краю": {
+  },
+  "Голова Керівного Органу": {
+  },
+  "Діловод Керівного Органу": {
+  },
+  "Голова Напряму Керівного Органу": {
+  },
+  "Діловод Напряму Керівного Органу": {
+  }
+}
+

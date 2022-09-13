@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody.Sector;
-using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
@@ -16,17 +16,15 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly IGoverningBodySectorFilesBlobStorageRepository _sectorFilesBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
         public SectorDocumentsService(IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            IGoverningBodySectorFilesBlobStorageRepository sectorFilesBlobStorage,
-            IUniqueIdService uniqueId)
+            IGoverningBodySectorFilesBlobStorageRepository sectorFilesBlobStorage
+        )
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _sectorFilesBlobStorage = sectorFilesBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         private async Task<IEnumerable<SectorDocumentType>> GetAllSectorDocumentTypeEntities()
@@ -35,17 +33,17 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return documentTypes;
         }
 
-        public async Task<IEnumerable<SectorDocumentTypeDTO>> GetAllSectorDocumentTypesAsync()
+        public async Task<IEnumerable<SectorDocumentTypeDto>> GetAllSectorDocumentTypesAsync()
         {
             var documentTypes = await GetAllSectorDocumentTypeEntities();
-            return _mapper.Map<IEnumerable<SectorDocumentType>, IEnumerable<SectorDocumentTypeDTO>>(documentTypes);
+            return _mapper.Map<IEnumerable<SectorDocumentType>, IEnumerable<SectorDocumentTypeDto>>(documentTypes);
         }
 
-        public async Task<SectorDocumentsDTO> AddSectorDocumentAsync(SectorDocumentsDTO documentDto)
+        public async Task<SectorDocumentsDto> AddSectorDocumentAsync(SectorDocumentsDto documentDto)
         {
             var fileBase64 = documentDto.BlobName.Split(',')[1];
             var extension = $".{documentDto.FileName.Split('.').LastOrDefault()}";
-            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+            var fileName = $"{Guid.NewGuid()}{extension}";
 
             await _sectorFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentDto.BlobName = fileName;
@@ -55,7 +53,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 .FirstOrDefault(dt => dt.Name == documentDto.SectorDocumentType.Name);
             documentDto.SectorDocumentTypeId = documentDto.SectorDocumentType.Id;
 
-            var document = _mapper.Map<SectorDocumentsDTO, SectorDocuments>(documentDto);
+            var document = _mapper.Map<SectorDocumentsDto, SectorDocuments>(documentDto);
             _repositoryWrapper.GoverningBodySectorDocuments.Attach(document);
             await _repositoryWrapper.GoverningBodySectorDocuments.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();

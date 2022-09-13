@@ -1,21 +1,21 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.UserProfiles;
+ using EPlast.Resources;
 
 namespace EPlast.BLL.DTO
 {
-    public class ConfirmedUserDTO
+    public class ConfirmedUserDto
     {
         public int ID { get; set; }
 
         [Required]
-        public UserDTO User { get; set; }
+        public UserDto User { get; set; }
 
         public string UserID { get; set; }
         public int? ApproverID { get; set; }
-        public ApproverDTO Approver { get; set; }
+        public ApproverDto Approver { get; set; }
         public DateTime ConfirmDate { get; set; }
-        public bool isClubAdmin { get; set; }
-        public bool isCityAdmin { get; set; }
+        public ApproveType ApproveType { get; set; }
     }
 }

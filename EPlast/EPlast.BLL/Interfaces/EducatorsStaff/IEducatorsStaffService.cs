@@ -1,44 +1,42 @@
-﻿using EPlast.BLL.DTO.EducatorsStaff;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.EducatorsStaff;
 using EPlast.DataAccess.Entities.EducatorsStaff;
 
 namespace EPlast.BLL.Interfaces.EducatorsStaff
 {
     public interface IEducatorsStaffService
     {
-        Task<IEnumerable<EducatorsStaffDTO>> GetAllKVsAsync();
+        Task<IEnumerable<EducatorsStaffDto>> GetAllKVsAsync();
 
-        Task<IEnumerable<EducatorsStaffDTO>> GetKVsWithKVType(int kvTypeId);
+        Task<IEnumerable<EducatorsStaffDto>> GetKVsWithKVType(int kvTypeId);
 
-        Task<IEnumerable<EducatorsStaffDTO>> GetKVsOfGivenUser(string UserId);
+        Task<IEnumerable<EducatorsStaffDto>> GetKVsOfGivenUser(string UserId);
 
-        Task<EducatorsStaffDTO> CreateKadra(EducatorsStaffDTO kadrasDTO);
+        Task<EducatorsStaffDto> CreateKadra(EducatorsStaffDto kadrasDTO);
 
-        Task<EducatorsStaffDTO> GetKadraById(int KadraID);
+        Task<EducatorsStaffDto> GetKadraById(int KadraID);
 
-        Task<EducatorsStaffDTO> GetKadraByRegisterNumber(int KadrasRegisterNumber);
+        Task<EducatorsStaffDto> GetKadraByRegisterNumber(int KadrasRegisterNumber);
 
         Task<bool> StaffWithRegisternumberExists(int registerNumber);
-        Task<bool> DoesUserHaveSuchStaff(string UserId , int kadraId);
+        Task<bool> DoesUserHaveSuchStaff(string UserId, int kadraId);
 
 
         Task<bool> StaffWithRegisternumberExistsEdit(int kadraId, int numberInRegister);
         Task<bool> UserHasSuchStaffEdit(string UserId, int kadraId);
 
-        Task UpdateKadra( EducatorsStaffDTO kadrasDTO);
+        Task UpdateKadra(EducatorsStaffDto kadrasDTO);
 
         Task<string> GetUserByEduStaff(int EduStaffId);
         Task DeleteKadra(int kadra_id);
 
-        /// <summary>
-        /// Returns EducatorsStaff with params
-        /// </summary>
-        /// <param name="kadraType">Type of Kadra</param>
-        /// <param name="searchedData">Search string</param>
-        /// <param name="page">Current page</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>EducatorsStaff</returns>
-        IEnumerable<EducatorsStaffTableObject> GetEducatorsStaffTableObject(int kadraType, string searchedData, int page, int pageSize);
+        Task<Tuple<IEnumerable<EducatorsStaffTableObject>, int>> GetEducatorsStaffTableAsync(int kadraType, IEnumerable<string> sortByOrder, string searchedData, int page, int pageSize);
+        Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByUserName();
+        Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByNumberInRegister();
+        Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByDateOfGranting();
+        Expression<Func<DataAccess.Entities.EducatorsStaff.EducatorsStaff, object>> GetOrderByID();
     }
 }

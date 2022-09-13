@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.City;
@@ -9,16 +10,17 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Models;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.UserProfiles;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-
 
 namespace EPlast.Tests.Services.UserProfiles
 {
@@ -26,7 +28,7 @@ namespace EPlast.Tests.Services.UserProfiles
     {
         private Mock<IRepositoryWrapper> _mockRepoWrapper;
         private Mock<IMapper> _mockMapper;
-        private Mock<ICityService> _mockCityService;
+        private Mock<IMediator> _mockMediator;
         private Mock<ICityParticipantsService> _mockCityParticipantsService;
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IEmailContentService> _mockEmailContentService;
@@ -39,13 +41,13 @@ namespace EPlast.Tests.Services.UserProfiles
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
-            _mockCityService = new Mock<ICityService>();
+            _mockMediator = new Mock<IMediator>();
             _mockCityParticipantsService = new Mock<ICityParticipantsService>();
             _mockEmailSendingService = new Mock<IEmailSendingService>();
             _mockEmailContentService = new Mock<IEmailContentService>();
             _mockUser = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(_mockUser.Object, null, null, null, null, null, null, null, null);
-            _userRenewalService = new UserRenewalService(_mockRepoWrapper.Object, _mockMapper.Object, _mockCityService.Object,
+            _userRenewalService = new UserRenewalService(_mockRepoWrapper.Object, _mockMapper.Object, _mockMediator.Object,
                 _mockCityParticipantsService.Object, _mockEmailSendingService.Object, _mockEmailContentService.Object, _mockUserManager.Object);
         }
 
@@ -173,9 +175,7 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserManager
                 .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetRoles());
-            _mockCityService
-                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
-                .ReturnsAsync("Admin1,Admin2");
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsIdsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync("Admin1,Admin2");
 
             //Act
             var result = await _userRenewalService.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>());
@@ -191,9 +191,8 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserManager
                 .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetNoAdminRoles);
-            _mockCityService
-                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
-                .ReturnsAsync("Admin1,Admin2");
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsIdsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync("Admin1,Admin2");
+
 
             //Act
             var result = await _userRenewalService.IsValidAdminAsync(notCityAdmin, It.IsAny<int>());
@@ -209,9 +208,7 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserManager
                 .Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetNoAdminRoles);
-            _mockCityService
-                .Setup(c => c.GetCityAdminsIdsAsync(It.IsAny<int>()))
-                .ReturnsAsync("Admin1,Admin2");
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityAdminsIdsQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync("Admin1,Admin2");
 
             //Act
             var result = await _userRenewalService.IsValidAdminAsync(cityAdmin, It.IsAny<int>());
@@ -227,9 +224,8 @@ namespace EPlast.Tests.Services.UserProfiles
             _mockUserManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());
-            _mockCityService
-                .Setup(c => c.GetCityByIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(new CityDTO());
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetCityByIdQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new CityDto());
+
             _mockEmailContentService
                 .Setup(e => e.GetUserRenewalConfirmationEmail(It.IsAny<string>()))
                 .Returns(new EmailModel());
@@ -241,7 +237,7 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             _mockUserManager.Verify();
-            _mockCityService.Verify();
+            _mockMediator.Verify();
             _mockEmailContentService.Verify();
             _mockEmailSendingService.Verify();
         }
@@ -270,7 +266,7 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(u => u.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
             _mockCityParticipantsService
                 .Setup(c => c.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>()))
-                .ReturnsAsync(new CityMembersDTO());
+                .ReturnsAsync(new CityMembersDto());
 
             //Act
             await _userRenewalService.ResolveUserMembershipDatesAsync(It.IsAny<string>());
@@ -279,7 +275,7 @@ namespace EPlast.Tests.Services.UserProfiles
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<CityMembersDTO>(result);
+            Assert.IsInstanceOf<CityMembersDto>(result);
         }
 
         [Test]
@@ -315,7 +311,7 @@ namespace EPlast.Tests.Services.UserProfiles
             
         }
 
-        private readonly UserRenewalDTO invalidUserRenewalDTO = new UserRenewalDTO
+        private readonly UserRenewalDto invalidUserRenewalDTO = new UserRenewalDto
         {
             Id = 5,
             CityId = 13,
@@ -324,7 +320,7 @@ namespace EPlast.Tests.Services.UserProfiles
             RequestDate = DateTime.Now
         };
 
-        private readonly UserRenewalDTO userRenewalDTO = new UserRenewalDTO
+        private readonly UserRenewalDto userRenewalDTO = new UserRenewalDto
         {
             Id = 1,
             CityId = 13,

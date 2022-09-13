@@ -1,18 +1,19 @@
-﻿using AutoMapper;
-using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.WebApi.Models.AboutBase;
-using Microsoft.AspNetCore.Authorization;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.AboutBase;
-using Microsoft.AspNetCore.Identity;
-using EPlast.DataAccess.Entities;
+using AutoMapper;
+using EPlast.BLL;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.AboutBase;
+using EPlast.BLL.Interfaces.AboutBase;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using EPlast.WebApi.Models.AboutBase;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -24,21 +25,24 @@ namespace EPlast.WebApi.Controllers
         private readonly IAboutBaseSectionService _aboutBaseSectionService;
         private readonly IAboutBaseSubsectionService _aboutBaseSubsectionService;
         private readonly UserManager<User> _userManager;
+        private readonly IPicturesManager _picturesManager;
 
         public AboutBaseController(
             IAboutBaseSectionService aboutBaseSectionService,
             IAboutBaseSubsectionService aboutBaseSubsectionService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IPicturesManager picturesManager)
         {
             _aboutBaseSectionService = aboutBaseSectionService;
             _aboutBaseSubsectionService = aboutBaseSubsectionService;
             _userManager = userManager;
+            _picturesManager = picturesManager;
         }
 
         [HttpGet("AboutBaseSection/{id}")]
         public async Task<IActionResult> GetAboutBaseSection(int id)
         {
-            SectionDTO sectionDTO = await _aboutBaseSectionService.GetSection(id);
+            SectionDto sectionDTO = await _aboutBaseSectionService.GetSection(id);
             if (sectionDTO == null)
                 return NotFound();
             return Ok(sectionDTO);
@@ -47,14 +51,14 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("AboutBaseSections")]
         public async Task<IActionResult> GetAboutBaseSections()
         {
-            IEnumerable<SectionDTO> sectionDTOs = await _aboutBaseSectionService.GetAllSectionAsync();
+            IEnumerable<SectionDto> sectionDTOs = await _aboutBaseSectionService.GetAllSectionAsync();
             return Ok(sectionDTOs);
         }
 
         [HttpGet("AboutBaseSubsection/{id}")]
         public async Task<IActionResult> GetAboutBaseSubsection(int id)
         {
-            SubsectionDTO subsectionDTO = await _aboutBaseSubsectionService.GetSubsection(id);
+            SubsectionDto subsectionDTO = await _aboutBaseSubsectionService.GetSubsection(id);
             if (subsectionDTO == null)
                 return NotFound();
             return Ok(subsectionDTO);
@@ -63,8 +67,23 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("AboutBaseSubsections")]
         public async Task<IActionResult> GetAboutBaseSubsections()
         {
-            IEnumerable<SubsectionDTO> subsectionDTOs = await _aboutBaseSubsectionService.GetAllSubsectionAsync();
+            IEnumerable<SubsectionDto> subsectionDTOs = await _aboutBaseSubsectionService.GetAllSubsectionAsync();
             return Ok(subsectionDTOs);
+        }
+
+        /// <summary>
+        /// Get pictures in Base64 format by subsection Id.
+        /// </summary>
+        /// <returns>List of pictures in Base64 format.</returns>
+        /// <param name="subsectionId">The Id of subsection</param>
+        /// <response code="200">List of pictures</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        [HttpGet("{subsectionId:int}/pictures")]
+        public async Task<IActionResult> GetPictures(int subsectionId)
+        {
+            var pictures = await _picturesManager.GetPicturesAsync(subsectionId);
+
+            return Ok(pictures);
         }
 
         [HttpDelete("DeleteSection/{id}")]
@@ -95,9 +114,24 @@ namespace EPlast.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Delete picture by Id.
+        /// </summary>
+        /// <returns>Status code of the picture deleting operation.</returns>
+        /// <param name="pictureId">The Id of picture</param>
+        /// <response code="200">OK</response>
+        /// <response code="400">Bad Request</response> 
+        /// <response code="404">Not Found</response> 
+        [HttpDelete("pictures/{pictureId:int}")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> DeletePicture(int pictureId)
+        {
+            return StatusCode(await _picturesManager.DeletePictureAsync(pictureId));
+        }
+
         [HttpPost("AboutBaseSection/Create")]
         [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> AddAboutBaseSection(SectionDTO sectionDTO)
+        public async Task<IActionResult> AddAboutBaseSection(SectionDto sectionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -115,7 +149,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AboutBaseSubsection/Create")]
-        public async Task<IActionResult> AddAboutBaseSubsection(SubsectionDTO subsectionDTO)
+        public async Task<IActionResult> AddAboutBaseSubsection(SubsectionDto subsectionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -132,8 +166,23 @@ namespace EPlast.WebApi.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Add pictures to gallery of specific subsection by subsection Id.
+        /// </summary>
+        /// <returns>List of added pictures.</returns>
+        /// <param name="subsectionId">The Id of subsection</param>
+        /// <param name="files">List of uploaded pictures</param>
+        /// <response code="200">List of added pictures</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        [HttpPost("{subsectionId:int}/subsectionPictures")]
+        [Authorize(Roles = Roles.Admin)]
+        public async Task<IActionResult> FillSubsectionPictures(int subsectionId, [FromForm] IList<IFormFile> files)
+        {
+            return Ok(await _picturesManager.FillSubsectionPicturesAsync(subsectionId, files));
+        }
+
         [HttpPut("EditSection/{id}")]
-        public async Task<IActionResult> EditAboutBaseSection(SectionDTO sectionDTO)
+        public async Task<IActionResult> EditAboutBaseSection(SectionDto sectionDTO)
         {
             if (ModelState.IsValid)
             {
@@ -151,7 +200,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("EditSubsection/{id}")]
-        public async Task<IActionResult> EditAboutBaseSubsection(SubsectionDTO subsectionDTO)
+        public async Task<IActionResult> EditAboutBaseSubsection(SubsectionDto subsectionDTO)
         {
             if (ModelState.IsValid)
             {

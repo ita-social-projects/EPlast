@@ -1,8 +1,8 @@
-﻿using EPlast.BLL.DTO;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO;
 using EPlast.DataAccess.Entities.Decision;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EPlast.BLL
 {   /// <summary>
@@ -15,7 +15,7 @@ namespace EPlast.BLL
         /// </summary>
         /// <param name="decisionId"> Decision id </param>
         /// <returns>decision dto</returns>
-        Task<DecisionDTO> GetDecisionAsync(int decisionId);
+        Task<DecisionDto> GetDecisionAsync(int decisionId);
 
         /// <summary>
         /// Returns all searched Decisions
@@ -31,7 +31,7 @@ namespace EPlast.BLL
         /// </summary>
         /// <param name="decisionDto">Decision dto</param>
         /// <returns>The bool value that says whether the changes were successful</returns>
-        Task ChangeDecisionAsync(DecisionDTO decisionDto);
+        Task ChangeDecisionAsync(DecisionDto decisionDto);
 
         /// <summary>
         /// Deletes the decision
@@ -45,38 +45,44 @@ namespace EPlast.BLL
         /// </summary>
         /// <param name="decision">The wrapper which contains decision dto and file as base64</param>
         /// <returns>An id of created decision</returns>
-        Task<int> SaveDecisionAsync(DecisionWrapperDTO decision);
+        Task<int> SaveDecisionAsync(DecisionWrapperDto decision);
 
         /// <summary>
         /// Creates new decisions wrapper dto
         /// </summary>
         /// <returns> New decisions wrapper dto</returns>
-        DecisionWrapperDTO CreateDecision();
+        DecisionWrapperDto CreateDecision();
 
         /// <summary>
         /// Returns the organizations dto
         /// </summary>
         /// <param name="governingBody"></param>
         /// <returns>The organizations dto and  null if organization does now exist</returns>
-        Task<GoverningBodyDTO> GetDecisionOrganizationAsync(GoverningBodyDTO governingBody);
+        Task<GoverningBodyDto> GetDecisionOrganizationAsync(GoverningBodyDto governingBody);
 
         /// <summary>
         /// Returns the IEnumerable of the organizations dto
         /// </summary>
         /// <returns>The IEnumerable of the organizations dto</returns>
-        Task<IEnumerable<GoverningBodyDTO>> GetGoverningBodyListAsync();
+        Task<IEnumerable<GoverningBodyDto>> GetGoverningBodyListAsync();
 
         /// <summary>
         /// Returns the IEnumerable of the decision targets dto
         /// </summary>
         /// <returns>The IEnumerable of the decision targets dto</returns>
-        Task<IEnumerable<DecisionTargetDTO>> GetDecisionTargetListAsync();
+        Task<IEnumerable<DecisionTargetDto>> GetDecisionTargetListAsync();
+
+        /// <summary>
+        /// Returns the IEnumerable of the decision targets dto 
+        /// </summary>
+        /// <returns>The IEnumerable of the decision targets dto</returns>
+        Task<IEnumerable<DecisionTargetDto>> GetDecisionTargetSearchListAsync(string search);
 
         /// <summary>
         /// Returns the IEnumerable of the decision wrappers dto
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<DecisionWrapperDTO>> GetDecisionListAsync();
+        Task<IEnumerable<DecisionWrapperDto>> GetDecisionListAsync();
 
         /// <summary>
         /// Returns the SelectListItem of the decisions status types

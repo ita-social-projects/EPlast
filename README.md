@@ -1,7 +1,7 @@
 ![ASP.NET Core CI](https://github.com/ITA-Social-Projects/EPlast/workflows/ASP.NET%20Core%20CI/badge.svg)[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=alert_status)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=coverage)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=bugs)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=code_smells)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ita-social-projects-eplast&metric=security_rating)](https://sonarcloud.io/dashboard?id=ita-social-projects-eplast)
 
 # EPlast
-<img src="https://github.com/ITA-Social-Projects/EPlast/blob/master/EPlast/EPlast/wwwroot/images/homepage/ePlastLogotype.png"  width="150" height="150" />
+<img src="https://github.com/ITA-Social-Projects/EPlast/blob/master/ePlastLogotype.png"  width="150" height="150" />
 
 # 1. About the project
 **EPlast** is project to provide web-based multi-user system solution for digitize and automate Plast organization. The system makes it easy to access Plast's internal data, such as events, reports and document, etc. Information and location of their affiliates and clubs throughout Ukraine. Any interested person can join this system or become a full member of Plast.
@@ -37,17 +37,22 @@ Before sending any pull request, please discuss requirements/changes to be imple
 
 4.4 Install [Node.js v10.19.0](https://nodejs.org/en/blog/release/v10.19.0/)+
 
-4.5 Create local database from EPlast.DataAccess migrations.
+4.5 Setup user secrets (IT Academy students can get it from our Google Drive)
 
-(Open Package Manager Console, change default project to "EPlast.DataAccess"(make sure that Solution Explorer default project EPlast.WebApi) and write "Update-Database"),
-then make sure that the required data is written to the table [AspNetRoles],if no data are repeated again write "Update-Database" 
+(Right click on Eplast.WebApi project, select "Manage User Secrets", copy and paste data from User Secrets file. Don't forget to write your local database connection string into User Secrets file)
+
+4.6 Create local database from EPlast.DataAccess migrations.
+
+(Open Package Manager Console, change default project to "EPlast.DataAccess"(make sure that Solution Explorer default project EPlast.WebApi) and write "Update-Database")
+
+4.7 Run project and make sure that data is written to the table [AspNetRoles]
 
 # 5. How to run the project with docker-compose locally.
 
 The instructions below will allow you to run application locally in the containers for developing and testing purpose. 
 
 5.1. Installation Prerequisites:<br/>
-     -  [Docker](https://www.docker.com) version 17.05 or higher, [Docker Compose] (https://docs.docker.com/compose). If you are running Microsoft Windows family OS, it is better to use [docker-desktop](https://www.docker.com/products/docker-desktop).     
+     -  [Docker](https://www.docker.com) version 17.05 or higher, [Docker Compose] (https://docs.docker.com/compose). If you are running Microsoft Windows family OS, it is better to use [docker-desktop](https://www.docker.com/products/docker-desktop). How to [set up](https://drive.google.com/file/d/1K55JtMZ_--rkW1Xk9easkz8RUW3AZCUp/view) a docker.
      - [Microsoft SQL Server 2017+](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) or access to cloud MSSQL server with deployed database.     
      - Access to the Azure Storage.
      

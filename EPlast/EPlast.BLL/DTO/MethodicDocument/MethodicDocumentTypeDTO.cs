@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO
 {
-    public enum MethodicDocumentTypeDTO
+    public enum MethodicDocumentTypeDto
     {
         [Description("Нормативний акт")]
         legislation,

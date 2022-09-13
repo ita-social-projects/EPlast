@@ -1,0 +1,32 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: eplast
+  name: routing-for-eplast
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "20m"
+spec:
+  tls:
+  - hosts:
+      - ___SiteDnsName___
+    secretName: tls-secret
+  rules:
+  - host: ___SiteDnsName___
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: eplastbackend
+            port:
+              number: 5000
+      - path: /swagger
+        pathType: Prefix
+        backend:
+         service:
+           name: eplastbackend
+           port:
+             number: 5000

@@ -11,11 +11,5 @@ namespace EPlast.DataAccess.Repositories
         {
         }
 
-        public IEnumerable<UserDistinctionsTableObject> GetUsersDistinctions(string searchData, int page, int pageSize)
-        {
-            return EPlastDBContext.Set<UserDistinctionsTableObject>().FromSqlRaw(
-                "dbo.getDistinctionsInfo  @searchData = {0}, @PageIndex ={1}, @PageSize={2}", searchData, page,
-                pageSize);
-        }
     }
 }

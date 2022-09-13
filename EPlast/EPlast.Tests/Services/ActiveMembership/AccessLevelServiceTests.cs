@@ -1,18 +1,16 @@
-﻿using EPlast.BLL.DTO.ActiveMembership;
-using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.ExtensionMethods;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.ActiveMembership;
-using EPlast.BLL.Services;
-using EPlast.BLL.Services.ActiveMembership;
-using EPlast.BLL.Services.Interfaces;
-using Moq;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Services.ActiveMembership;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.Resources;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.ActiveMembership
 {
@@ -22,7 +20,6 @@ namespace EPlast.Tests.Services.ActiveMembership
         private IAccessLevelService _accessLevelService;
         private Mock<IUserManagerService> _userManagerService;
         private Mock<IPlastDegreeService> _plastDegreeService;
-        private IUniqueIdService _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +27,6 @@ namespace EPlast.Tests.Services.ActiveMembership
             _userManagerService = new Mock<IUserManagerService>();
             _plastDegreeService = new Mock<IPlastDegreeService>();
             _accessLevelService = new AccessLevelService(_plastDegreeService.Object, _userManagerService.Object);
-            _uniqueId = new UniqueIdService();
         }
 
         [Test]
@@ -39,7 +35,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetUserRolesAsRegisteredUser());
 
             // Act
@@ -50,29 +46,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsRegisteredUser().Count(), listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.RegisteredUser.GetDescription(), listResult[0]);
-        }
-
-        [Test]
-        public async Task GetUserAccessLevelsAsync_SupporterDegree_ReturnsIEnumerableOfStringsWithSupporterRolesForActiveMembership()
-        {
-            // Arrange
-            _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
-                .ReturnsAsync(GetUserRolesWithNoRoles());
-            _plastDegreeService.Setup(pds => pds.GetUserPlastDegreeAsync(It.IsAny<string>()))
-                .ReturnsAsync(getUserPlastDegreeDtos());
-
-            // Act
-            var result = await _accessLevelService.GetUserAccessLevelsAsync(UserId);
-            var listResult = result.ToList();
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<IEnumerable<string>>(result);
-            Assert.AreEqual(GetUserRolesAsRegisteredUser().Count(), listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Supporter.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDto.RegisteredUser.GetDescription(), listResult[0]);
         }
 
         [Test]
@@ -81,7 +55,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetUserRolesAsFormer());
 
             // Act
@@ -92,7 +66,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsFormer().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.FormerPlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDto.FormerPlastMember.GetDescription(), listResult[0]);
         }
 
         [Test]
@@ -101,7 +75,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetUserRolesAsPlastun());
 
             // Act
@@ -112,7 +86,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsPlastun().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDto.PlastMember.GetDescription(), listResult[0]);
         }
 
         [Test]
@@ -121,7 +95,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetUserRolesAsSupporter());
 
             // Act
@@ -132,7 +106,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsSupporter().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.Supporter.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDto.Supporter.GetDescription(), listResult[0]);
         }
 
         [Test]
@@ -141,7 +115,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(GetUserRolesAsLeadershipMember());
 
             // Act
@@ -152,8 +126,8 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(GetUserRolesAsLeadershipMember().ToList().Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.PlastMember.GetDescription(), listResult[0]);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForOkrugaHead.GetDescription(), listResult[1]);
+            Assert.AreEqual(AccessLevelTypeDto.PlastMember.GetDescription(), listResult[0]);
+            Assert.AreEqual(AccessLevelTypeDto.LeadershipMemberForOkrugaHead.GetDescription(), listResult[1]);
         }
 
         [Test]
@@ -162,7 +136,7 @@ namespace EPlast.Tests.Services.ActiveMembership
             // Arrange
             _userManagerService.Setup(ums => ums.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(UserDTO);
-            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDTO>()))
+            _userManagerService.Setup(ums => ums.GetRolesAsync(It.IsAny<UserDto>()))
                 .ReturnsAsync(Roles.ListOfRoles);
 
             // Act
@@ -173,26 +147,26 @@ namespace EPlast.Tests.Services.ActiveMembership
             Assert.NotNull(result);
             Assert.IsInstanceOf<IEnumerable<string>>(result);
             Assert.AreEqual(Roles.ListOfRoles.Count, listResult.Count);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodyHead.GetDescription(), listResult[0]);
-            Assert.AreEqual(AccessLevelTypeDTO.LeadershipMemberForGoverningBodySectorHead.GetDescription(), listResult[1]);
+            Assert.AreEqual(AccessLevelTypeDto.Supporter.GetDescription(), listResult[1]);
+            Assert.AreEqual(AccessLevelTypeDto.PlastMember.GetDescription(), listResult[2]);
         }
 
-        private string UserId => _uniqueId.GetUniqueId().ToString();
+        private string UserId => Guid.NewGuid().ToString();
         private DateTime UserDateOfEntry => DateTime.Today;
 
-        private UserDTO UserDTO => new UserDTO
+        private UserDto UserDTO => new UserDto
         {
             Id = UserId,
             RegistredOn = UserDateOfEntry,
-            UserPlastDegrees = new UserPlastDegreeDTO()
+            UserPlastDegrees = new UserPlastDegreeDto()
         };
 
-        private UserPlastDegreeDTO getUserPlastDegreeDtos()
+        private UserPlastDegreeDto GetUserPlastDegreeDtos()
         {
 
-            return new UserPlastDegreeDTO
+            return new UserPlastDegreeDto
             {
-                PlastDegree = new PlastDegreeDTO { Name = "Пластприят" }
+                PlastDegree = new PlastDegreeDto { Name = "Пластприят" }
             };
             
         }
@@ -201,7 +175,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-                RolesForActiveMembershipTypeDTO.RegisteredUser.GetDescription()
+                RolesForActiveMembershipTypeDto.RegisteredUser.GetDescription()
             };
         }
 
@@ -209,7 +183,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-                RolesForActiveMembershipTypeDTO.FormerPlastMember.GetDescription()
+                RolesForActiveMembershipTypeDto.FormerPlastMember.GetDescription()
             };
         }
 
@@ -217,7 +191,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-                RolesForActiveMembershipTypeDTO.PlastMember.GetDescription()
+                RolesForActiveMembershipTypeDto.PlastMember.GetDescription()
             };
         }
 
@@ -225,7 +199,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-               RolesForActiveMembershipTypeDTO.Supporter.GetDescription()
+               RolesForActiveMembershipTypeDto.Supporter.GetDescription()
             };
         }
 
@@ -233,7 +207,7 @@ namespace EPlast.Tests.Services.ActiveMembership
         {
             return new List<string>
             {
-                 RolesForActiveMembershipTypeDTO.PlastMember.GetDescription(),
+                 RolesForActiveMembershipTypeDto.PlastMember.GetDescription(),
                  Roles.OkrugaHead
 
             };

@@ -8,6 +8,15 @@
     "AddRegionHead": true,
     "DownloadDocument": true
   },
+  "Крайовий Адмін": {
+    "IsAdmin": true,
+    "CreateRegion": true,
+    "EditRegion": true,
+    "DeleteRegion": true,
+    "AddRegionSecretary": true,
+    "AddRegionHead": true,
+    "DownloadDocument": true
+  },
   "Голова Округи": {
     "IsAdmin": true,
     "EditRegion": true,
@@ -88,5 +97,32 @@
     "AddRegionSecretary": false,
     "AddRegionHead": false,
     "DownloadDocument": false
+  },
+  "Референт/-ка УПС Округи": {
+    "IsAdmin": false,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Референт/-ка УСП Округи": {
+    "IsAdmin": false,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
+  },
+  "Референт дійсного членства Округи": {
+    "IsAdmin": false,
+    "EditRegion": true,
+    "CreateRegion": false,
+    "DeleteRegion": false,
+    "AddRegionSecretary": false,
+    "AddRegionHead": false,
+    "DownloadDocument": true
   }
 }

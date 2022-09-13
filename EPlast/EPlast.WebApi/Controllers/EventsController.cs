@@ -1,4 +1,7 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -7,8 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -88,7 +90,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetCategoriesByTypeAndPageAsync(int typeId, int page, int pageSize)
         {
-            IEnumerable<BLL.DTO.Events.EventCategoryDTO> categories;
+            IEnumerable<BLL.DTO.Events.EventCategoryDto> categories;
             if (typeId == 1)
             {
                 categories = await _actionManager.GetActionCategoriesAsync();
@@ -111,7 +113,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
         [HttpPost("newCategory")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDTO createDTO)
+        public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
 
@@ -200,6 +202,29 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Change present status of the participant's event.
+        /// </summary>
+        /// <returns>Status code of the changing a present  status of the participant's event operation.</returns>  
+        /// <param name="id">The Id of participant</param>
+        /// <response code="204">No content</response>
+        /// <response code="404">Not found a participant</response>
+        [HttpGet("participant/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> ChangeUserPresentStatus(int id)
+        {
+            try
+            {
+                await _actionManager.ChangeUsersPresentStatusAsync(id);
+                return NoContent();
+            }
+            catch(KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            
+        }
+
+        /// <summary>
         /// Get pictures in Base64 format by event Id.
         /// </summary>
         /// <returns>List of pictures in Base64 format.</returns>
@@ -282,7 +307,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpPut("participants/{participantId:int}/status/approved")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> ApproveParticipant(int participantId)
         {
             return StatusCode(await _actionManager.ApproveParticipantAsync(participantId));
@@ -296,7 +321,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpPut("participants/{participantId:int}/status/underReviewed")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> UnderReviewParticipant(int participantId)
         {
             return StatusCode(await _actionManager.UnderReviewParticipantAsync(participantId));
@@ -310,7 +335,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">OK</response>
         /// <response code="400">Bad Request</response> 
         [HttpPut("participants/{participantId:int}/status/rejected")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> RejectParticipant(int participantId)
         {
             return StatusCode(await _actionManager.RejectParticipantAsync(participantId));

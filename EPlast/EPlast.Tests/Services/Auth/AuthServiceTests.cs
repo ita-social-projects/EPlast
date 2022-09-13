@@ -1,6 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Models;
 using EPlast.BLL.Services;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -8,17 +15,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
-using Moq;
-using NUnit.Framework;
-using System;
-using System.Globalization;
-using System.Linq.Expressions;
-using EPlast.BLL.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using NLog.Extensions.Logging;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.Auth
 {
@@ -26,8 +26,6 @@ namespace EPlast.Tests.Services.Auth
     {
         private AuthService _authService;
         private Mock<IHttpContextAccessor> _contextAccessor;
-        private Mock<IEmailSendingService> _emailSendingService;
-        private Mock<IEmailContentService> _mockEmailContentService;
         private Mock<IMapper> _mapper;
         private Mock<IUserClaimsPrincipalFactory<User>> _principalFactory;
         private Mock<IRepositoryWrapper> _repoWrapper;
@@ -46,7 +44,7 @@ namespace EPlast.Tests.Services.Auth
                 .Setup(x => x.SetLockoutEndDateAsync(It.IsAny<User>(), It.IsNotNull<DateTimeOffset>()));
 
             //Act
-            var result = _authService.CheckingForLocking(new UserDTO());
+            var result = _authService.CheckingForLocking(new UserDto());
 
             //Assert
             _userManager.Verify();
@@ -58,7 +56,7 @@ namespace EPlast.Tests.Services.Auth
         {
             //Arrange
             var user = new User();
-            var userDto = new UserDTO();
+            var userDto = new UserDto();
             var userId = Guid.NewGuid().ToString();
             var facebookUser = new FacebookUserInfo()
             {
@@ -69,7 +67,7 @@ namespace EPlast.Tests.Services.Auth
             };
             _userManager.Setup(x => x.FindByEmailAsync(facebookUser.Email))
                 .ReturnsAsync(user);
-            _mapper.Setup(x => x.Map<User, UserDTO>(user)).Returns(userDto);
+            _mapper.Setup(x => x.Map<User, UserDto>(user)).Returns(userDto);
             //Act
             var result = await _authService.FacebookLoginAsync(facebookUser);
             //Assert
@@ -81,7 +79,7 @@ namespace EPlast.Tests.Services.Auth
         {
             //Arrange
             var user = new User();
-            var userDto = new UserDTO();
+            var userDto = new UserDto();
             var userId = Guid.NewGuid().ToString();
             var facebookUser = new FacebookUserInfo()
             {
@@ -123,11 +121,11 @@ namespace EPlast.Tests.Services.Auth
             _userManager.Setup(x => x.CreateAsync(It.IsAny<User>()))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError { Code = "500", Description = "456" }));
 
-            _mapper.Setup(x => x.Map<User, UserDTO>(user)).Returns(userDto);
+            _mapper.Setup(x => x.Map<User, UserDto>(user)).Returns(userDto);
             //Act
             var result = await _authService.FacebookLoginAsync(facebookUser);
             //Assert
-            Assert.IsNotNull(result);
+            Assert.IsNull(result);
         }
 
         [Test]
@@ -144,7 +142,7 @@ namespace EPlast.Tests.Services.Auth
             //Assert
             _userManager.Verify();
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(UserDTO), result);
+            Assert.IsInstanceOf(typeof(UserDto), result);
         }
 
         [Test]
@@ -191,7 +189,7 @@ namespace EPlast.Tests.Services.Auth
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf(typeof(UserDTO), result);
+            Assert.IsInstanceOf(typeof(UserDto), result);
         }
 
         [Test]
@@ -203,7 +201,7 @@ namespace EPlast.Tests.Services.Auth
                 .Throws(new Exception());
 
             //Act
-            var result = await _authService.RefreshSignInAsync(new UserDTO());
+            var result = await _authService.RefreshSignInAsync(new UserDto());
 
             //Assert
             Assert.IsNotNull(result);
@@ -218,7 +216,7 @@ namespace EPlast.Tests.Services.Auth
                 .Setup(x => x.RefreshSignInAsync(It.IsAny<User>()));
 
             //Act
-            var result = await _authService.RefreshSignInAsync(new UserDTO());
+            var result = await _authService.RefreshSignInAsync(new UserDto());
 
             //Assert
             Assert.IsNotNull(result);
@@ -229,10 +227,11 @@ namespace EPlast.Tests.Services.Auth
         public void GetGoogleUserAsync_Valid()
         {
             //Arrange
-            var memoryConfig = new Dictionary<string, string>();
-            memoryConfig["Mode"] = "Test";
+            var memoryConfig = new Dictionary<string, string>
+            {
+                ["Mode"] = "Test"
+            };
             ConfigSettingLayoutRenderer.DefaultConfiguration = new ConfigurationBuilder().AddInMemoryCollection(memoryConfig).Build();
-            var layoutRenderer = new ConfigSettingLayoutRenderer { Item = "Mode" };
 
             //Act
             var result =  _authService.GetGoogleUserAsync("providerToken");
@@ -265,23 +264,21 @@ namespace EPlast.Tests.Services.Auth
             _principalFactory = new Mock<IUserClaimsPrincipalFactory<User>>();
             _signInManager = new Mock<SignInManager<User>>(_userManager.Object,
                            _contextAccessor.Object, _principalFactory.Object, null, null, null, null);
-            _emailSendingService = new Mock<IEmailSendingService>();
-            _mockEmailContentService = new Mock<IEmailContentService>();
             _mapper = new Mock<IMapper>();
             _mapper
-                .Setup(s => s.Map<User, UserDTO>(It.IsAny<User>()))
+                .Setup(s => s.Map<User, UserDto>(It.IsAny<User>()))
                 .Returns(GetTestUserDtoWithAllFields());
             _mapper
-                .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
+                .Setup(s => s.Map<UserDto, User>(It.IsAny<UserDto>()))
                 .Returns(GetTestUserWithEmailsSendedTime());
             _repoWrapper = new Mock<IRepositoryWrapper>();
 
-            _authService = new AuthService(_userManager.Object,
-                                          _signInManager.Object,
-                                          _emailSendingService.Object,
-                                          _mockEmailContentService.Object,
-                                          _mapper.Object,
-                                          _repoWrapper.Object);
+            _authService = new AuthService(
+                _userManager.Object,
+                _signInManager.Object,
+                _mapper.Object,
+                _repoWrapper.Object
+            );
             _gender = new Mock<IGenderRepository>();
         }
 
@@ -289,9 +286,9 @@ namespace EPlast.Tests.Services.Auth
         {
             return 360;
         }
-        private UserDTO GetTestUserDtoWithAllFields()
+        private UserDto GetTestUserDtoWithAllFields()
         {
-            return new UserDTO()
+            return new UserDto()
             {
                 UserName = "andriishainoha@gmail.com",
                 FirstName = "Andrii",
@@ -314,9 +311,7 @@ namespace EPlast.Tests.Services.Auth
         }
         private User GetTestUserWithEmailsSendedTime()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                .GetCurrentTime()
+            var timeEmailSended = DateTime.Now
                 .AddMinutes(-GetTestDifferenceInTime());
 
             return new User()

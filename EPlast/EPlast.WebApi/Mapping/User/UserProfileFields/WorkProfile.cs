@@ -8,7 +8,7 @@ namespace EPlast.WebApi.Mapping.User.UserProfileFields
     {
         public WorkProfile()
         {
-            CreateMap<WorkDTO, WorkViewModel>().ReverseMap();
+            CreateMap<WorkDto, WorkViewModel>().ReverseMap();
         }
     }
 }

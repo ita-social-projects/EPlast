@@ -31,6 +31,8 @@ namespace EPlast.BLL.Services.UserAccess
         private const string AnnualReportSecuritySettingsFile = "AnnualReportAccessSettings.json";
         private const string StatisticsSecuritySettingsFile = "StatisticsAccessSettings.json";
         private const string UserProfileAccessSettings = "UserProfileAccessSettings.json";
+        private const string MenuAccessSettingsFile = "MenuAccessSettings.json";
+        private const string PrecautionsAccessSettingsFile = "PrecautionsAccessSettings.json";
 
         public UserAccessService(IUserAccessWrapper userAccessWrapper, ISecurityModel securityModel)
         {
@@ -95,16 +97,40 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(UserProfileAccessSettings);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            userAccess["CanViewUserFullProfile"] = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
-            userAccess["CanApproveAsClubHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
-            userAccess["CanApproveAsCityHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
-            userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            var canViewUserFullProfile = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
+            var canApproveAsHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            var canEditUserProfile = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+
+            userAccess["CanViewUserFullProfile"] = canViewUserFullProfile;
+            userAccess["CanApproveAsClubHead"] = canApproveAsHead;
+            userAccess["CanApproveAsCityHead"] = canApproveAsHead;
+            userAccess["CanEditUserProfile"] = canEditUserProfile;
+            userAccess["CanSeeAddDeleteUserExtractUPU"] = canEditUserProfile;
+            userAccess["CanAddUserDistionction"] = canEditUserProfile;
+            userAccess["CanDeleteUserDistinction"] = canEditUserProfile;
+            userAccess["CanDownloadUserDistinction"] = canEditUserProfile;
+            userAccess["CanViewDownloadUserBiography"] = canEditUserProfile;
+
             return userAccess;
         }
 
         public async Task<Dictionary<string, bool>> GetUserStatisticsAccessAsync(string userId)
         {
             _securityModel.SetSettingsFile(StatisticsSecuritySettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserMenuAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(MenuAccessSettingsFile);
+            var userAccess = await _securityModel.GetUserAccessAsync(userId);
+            return userAccess;
+        }
+
+        public async Task<Dictionary<string, bool>> GetUserPrecautionsAccessAsync(string userId)
+        {
+            _securityModel.SetSettingsFile(PrecautionsAccessSettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             return userAccess;
         }

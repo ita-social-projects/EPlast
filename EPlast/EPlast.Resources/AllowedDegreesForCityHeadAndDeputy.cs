@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace EPlast.Resources
 {
     public static class AllowedDegreesForCityHeadAndDeputy
     {
-        public static List<string> degrees = new List<string>(){ "Старший пластун прихильник / Старша пластунка прихильниця",
+        public static List<string> Degrees => new List<string>(){ "Старший пластун прихильник / Старша пластунка прихильниця",
                     "Пластун сеніор прихильник / Пластунка сеніорка прихильниця"};
     }
 }

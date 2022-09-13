@@ -1,22 +1,17 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Services.Club;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using DataAccessCity = EPlast.DataAccess.Entities;
 
 namespace EPlast.Tests.Services.Club
 {
@@ -27,7 +22,6 @@ namespace EPlast.Tests.Services.Club
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IClubFilesBlobStorageRepository> _clubFilesBlobStorage;
-        private Mock<IUniqueIdService> _uniqueId;
 
         [SetUp]
         public void SetUp()
@@ -35,8 +29,11 @@ namespace EPlast.Tests.Services.Club
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
             _clubFilesBlobStorage = new Mock<IClubFilesBlobStorageRepository>();
-            _uniqueId = new Mock<IUniqueIdService>();
-            _clubDocumentsService = new ClubDocumentsService(_repoWrapper.Object, _mapper.Object, _clubFilesBlobStorage.Object, _uniqueId.Object);
+            _clubDocumentsService = new ClubDocumentsService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _clubFilesBlobStorage.Object
+            );
         }
 
         [Test]
@@ -50,7 +47,7 @@ namespace EPlast.Tests.Services.Club
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<List<ClubDocumentTypeDTO>>(result);
+            Assert.IsAssignableFrom<List<ClubDocumentTypeDto>>(result);
         }
 
         [Test]
@@ -60,11 +57,11 @@ namespace EPlast.Tests.Services.Club
             ClubDocumentsService clubDocumentsService = CreateClubDocumentsService();
 
             // Act
-            var result = await clubDocumentsService.AddDocumentAsync(clubDocumentsDTO);
+            var result = await clubDocumentsService.AddDocumentAsync(ClubDocumentsDTO);
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsAssignableFrom<ClubDocumentsDTO>(result);
+            Assert.IsAssignableFrom<ClubDocumentsDto>(result);
         }
 
         [Test]
@@ -114,10 +111,10 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<ClubDocumentType>, IIncludableQueryable<ClubDocumentType, object>>>()))
                 .ReturnsAsync(new List<ClubDocumentType> { new ClubDocumentType() { ID = 1 } });
             _mapper
-                .Setup(m => m.Map<ClubDocumentsDTO, ClubDocuments>(It.IsAny<ClubDocumentsDTO>()))
+                .Setup(m => m.Map<ClubDocumentsDto, ClubDocuments>(It.IsAny<ClubDocumentsDto>()))
                 .Returns(new ClubDocuments());
             _mapper
-                .Setup(m => m.Map<IEnumerable<ClubDocumentType>, IEnumerable<ClubDocumentTypeDTO>>(It.IsAny<IEnumerable<ClubDocumentType>>()))
+                .Setup(m => m.Map<IEnumerable<ClubDocumentType>, IEnumerable<ClubDocumentTypeDto>>(It.IsAny<IEnumerable<ClubDocumentType>>()))
                 .Returns(GetClubDocumentTypeDTOs());
             _clubFilesBlobStorage
                 .Setup(c => c.UploadBlobForBase64Async(It.IsAny<string>(), It.IsAny<string>()));
@@ -126,19 +123,20 @@ namespace EPlast.Tests.Services.Club
             _clubFilesBlobStorage
                 .Setup(c => c.GetBlobBase64Async(It.IsAny<string>()))
                 .ReturnsAsync(fakeFile);
-            _uniqueId
-                .Setup(u => u.GetUniqueId())
-                .Returns(Guid.NewGuid());
 
-            return new ClubDocumentsService(_repoWrapper.Object, _mapper.Object, _clubFilesBlobStorage.Object, _uniqueId.Object);
+            return new ClubDocumentsService(
+                _repoWrapper.Object,
+                _mapper.Object,
+                _clubFilesBlobStorage.Object
+            );
         }
 
-        private ClubDocumentsDTO clubDocumentsDTO => new ClubDocumentsDTO
+        private ClubDocumentsDto ClubDocumentsDTO => new ClubDocumentsDto
         {
             ID = 1,
             BlobName = "newBlob,LastBlob",
             FileName = "FileName",
-            ClubDocumentType = new ClubDocumentTypeDTO()
+            ClubDocumentType = new ClubDocumentTypeDto()
             {
                 ID = 1,
                 Name = "DocumentTypeName"
@@ -148,11 +146,11 @@ namespace EPlast.Tests.Services.Club
             SubmitDate = DateTime.Now
         };
 
-        private IEnumerable<ClubDocumentTypeDTO> GetClubDocumentTypeDTOs()
+        private IEnumerable<ClubDocumentTypeDto> GetClubDocumentTypeDTOs()
         {
-            return new List<ClubDocumentTypeDTO>
+            return new List<ClubDocumentTypeDto>
             {
-                new ClubDocumentTypeDTO
+                new ClubDocumentTypeDto
                 {
                     ID = 1,
                     Name = "DocumentTypeName"

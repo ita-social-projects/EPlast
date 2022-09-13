@@ -1,39 +1,39 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using EPlast.BLL.Commands.TermsOfUse;
+using EPlast.BLL.DTO.Terms;
+using EPlast.BLL.Queries.TermsOfUse;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
+using EPlast.WebApi.Controllers;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using Microsoft.AspNetCore.Identity;
-using EPlast.BLL.Interfaces.Terms;
-using EPlast.DataAccess.Entities;
-using EPlast.BLL.DTO.Terms;
-using EPlast.WebApi.Controllers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using System;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
     internal class TermsControllerTest
     {
-        private Mock<ITermsService> _termsService;
+        private Mock<IMediator> _mockMediator;
         private Mock<UserManager<User>> _userManager;
         private TermsController _termsController;
 
         [SetUp]
         public void SetUp()
         {
-            _termsService = new Mock<ITermsService>();
+            _mockMediator = new Mock<IMediator>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-
-            _termsController = new TermsController(
-                _termsService.Object,
-                _userManager.Object);
+            _termsController = new TermsController(_userManager.Object, _mockMediator.Object);
             var httpContext = new Mock<HttpContext>();
             httpContext
                 .Setup(u => u.User.IsInRole(Roles.Admin))
@@ -49,43 +49,45 @@ namespace EPlast.Tests.Controllers
         public async Task GetTerms_ById_ReturnsOkOdjectResult()
         {
             //Arrange
-            _termsService
-                .Setup(x => x.GetFirstRecordAsync())
-                .ReturnsAsync(new TermsDTO());
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<GetFirstRecordQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new TermsDto());
             //Act
             var result = await _termsController.GetFirstTermsOfUse();
             var resultValue = (result as OkObjectResult).Value;
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
-            Assert.IsInstanceOf<TermsDTO>(resultValue);
+            Assert.IsInstanceOf<TermsDto>(resultValue);
         }
 
         [Test]
         public async Task GetTerms_ById_ReturnsNotFoundResult()
         {
             //Arrange
-            _termsService
-                .Setup(x => x.GetFirstRecordAsync())
-                .ReturnsAsync((TermsDTO)null);
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<GetFirstRecordQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync((TermsDto)null);
+
             //Act
             var result = await _termsController.GetFirstTermsOfUse();
             var resultValue = (result as ObjectResult)?.Value;
+
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsNull(resultValue);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
-        public async Task GetAllUsersId_ReturnsOkObjectResult()
+        public async Task GetAllUsersIdWithoutSender_ReturnsOkObjectResult()
         {
             //Arrange
-            _termsService
-                .Setup(x => x.GetAllUsersIdAsync(new User()))
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<GetAllUsersIdWithoutSenderQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((new List<string>()).AsEnumerable());
 
             //Act
@@ -93,24 +95,24 @@ namespace EPlast.Tests.Controllers
             var resultValue = (result as OkObjectResult).Value;
 
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            //Assert.IsInstanceOf<List<string>>(resultValue);
+            Assert.IsInstanceOf<List<string>>(resultValue);
         }
 
         [Test]
         public async Task AddTerms_ReturnsNoContentResult()
         {
             //Arrange
-            _termsService.Setup(x => x.AddTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()));
+            _mockMediator.Setup(x => x.Send(It.IsAny<AddTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.AddTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.AddTerms(It.IsAny<TermsDto>());
 
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -120,14 +122,14 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _termsController.ModelState.AddModelError("Title", "title field is required");
-            _termsService
-                .Setup(x => x.AddTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()));
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<AddTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.AddTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.AddTerms(It.IsAny<TermsDto>());
 
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
@@ -136,12 +138,12 @@ namespace EPlast.Tests.Controllers
         public async Task AddTerms_ThrowsException_ReturnsNotFound()
         {
             //Arrange
-            _termsService
-                .Setup(x => x.AddTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()))
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<AddTermsCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new Exception());
 
             //Act 
-            var result = await _termsController.AddTerms(new TermsDTO());
+            var result = await _termsController.AddTerms(new TermsDto());
 
             //Assert
             Assert.IsInstanceOf<NotFoundResult>(result);
@@ -151,13 +153,13 @@ namespace EPlast.Tests.Controllers
         public async Task EditTerms_ReturnsNoContentResult()
         {
             //Arrange
-            _termsService.Setup(x => x.ChangeTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()));
+            _mockMediator.Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.EditTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.EditTerms(It.IsAny<TermsDto>());
 
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -167,13 +169,13 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _termsController.ModelState.AddModelError("Title", "Title field is required");
-            _termsService.Setup(x => x.ChangeTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()));
+            _mockMediator.Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()));
 
             //Act
-            var result = await _termsController.EditTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.EditTerms(It.IsAny<TermsDto>());
 
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
@@ -182,11 +184,12 @@ namespace EPlast.Tests.Controllers
         public async Task EditTerms_ReturnsNotFoundResult()
         {
             //Arrange
-            _termsService.Setup(x => x.ChangeTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>())).ThrowsAsync(new NullReferenceException("Not found"));
+            _mockMediator.Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()))
+                .ThrowsAsync(new NullReferenceException("Not found"));
             //Act
-            var result = await _termsController.EditTerms(It.IsAny<TermsDTO>());
+            var result = await _termsController.EditTerms(It.IsAny<TermsDto>());
             //Assert
-            _termsService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NotFoundResult>(result);
         }
@@ -195,12 +198,12 @@ namespace EPlast.Tests.Controllers
         public async Task EditTerms_ThrowsNullReferenceException_ReturnsNotFound()
         {
             //Arrange
-            _termsService
-                .Setup(x => x.ChangeTermsAsync(It.IsAny<TermsDTO>(), It.IsAny<User>()))
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<ChangeTermsCommand>(), It.IsAny<CancellationToken>()))
                 .Throws(new NullReferenceException());
 
             //Act
-            var result = await _termsController.EditTerms(new TermsDTO());
+            var result = await _termsController.EditTerms(new TermsDto());
 
             //Assert   
             Assert.IsInstanceOf<NotFoundResult>(result);

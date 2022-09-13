@@ -1,12 +1,12 @@
-﻿using EPlast.DataAccess.Repositories.Contracts;
+﻿using System.Threading.Tasks;
+using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.DataAccess.Repositories.Interfaces.Blank;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
 using EPlast.DataAccess.Repositories.Interfaces.Events;
-using EPlast.DataAccess.Repositories.Interfaces.Region;
-using System.Threading.Tasks;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody;
-using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Announcement;
+using EPlast.DataAccess.Repositories.Interfaces.GoverningBody.Sector;
+using EPlast.DataAccess.Repositories.Interfaces.Region;
 using EPlast.DataAccess.Repositories.Interfaces.User;
 
 namespace EPlast.DataAccess.Repositories
@@ -43,6 +43,7 @@ namespace EPlast.DataAccess.Repositories
         IDistinctionRepository Distinction { get; }
         IDocumentTemplateRepository DocumentTemplate { get; }
         IGoverningBodyAnnouncementRepository GoverningBodyAnnouncement { get; }
+        IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
         IEventAdminRepository EventAdmin { get; }
@@ -54,10 +55,11 @@ namespace EPlast.DataAccess.Repositories
         IEventStatusRepository EventStatus { get; }
         IEventTypeRepository EventType { get; }
         IEventSectionRepository EventSection { get; }
-        IExtractFromUPUDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
+        IExtractFromUpuDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
         IGallaryRepository Gallary { get; }
         IGenderRepository Gender { get; }
         string GetCitiesUrl { get; }
+        string GetUserPageUrl { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
         IMembersStatisticsRepository MembersStatistics { get; }
@@ -72,8 +74,11 @@ namespace EPlast.DataAccess.Repositories
         ISectorAdministrationRepository GoverningBodySectorAdministration { get; }
         ISectorDocumentsRepository GoverningBodySectorDocuments { get; }
         ISectorDocumentTypeRepository GoverningBodySectorDocumentType { get; }
+        ISubsectionRepository Subsection { get; }
+        ISubsectionPicturesRepository SubsectionPictures { get; }
         IParticipantRepository Participant { get; }
         IParticipantStatusRepository ParticipantStatus { get; }
+        IPicturesRepository Pictures { get;  }
         IPlastDegreeRepository PlastDegrees { get; }
         IPrecautionRepository Precaution { get; }
         IRegionRepository Region { get; }
@@ -95,7 +100,9 @@ namespace EPlast.DataAccess.Repositories
         ISubsectionRepository AboutBaseSubsection { get; }
         ITermsRepository TermsOfUse { get; }
         IUserRenewalRepository UserRenewal { get; }
+        ICourseRepository Course { get; }
 
+        
         void Save();
 
         Task SaveAsync();

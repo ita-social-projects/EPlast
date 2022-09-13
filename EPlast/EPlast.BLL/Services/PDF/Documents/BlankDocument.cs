@@ -5,6 +5,7 @@ using PdfSharpCore.Pdf;
 using System.IO;
 using QRCoder;
 using System.Drawing;
+using EPlast.Resources;
 
 namespace EPlast.BLL.Services.PDF.Documents
 {
@@ -34,7 +35,7 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetText(gfx, "та положень Статуту Пласту НСОУ.", XFontStyle.Regular, 50, 130);
             SetText(gfx, "Відповідно до Закону України „Про захист персональних даних“ надаю згоду проводу Пласту на обробку та ",
                 XFontStyle.Regular, 60, 140);
-            SetText(gfx, "використання моїх персональних даних (прізвище, ім'я, по-батькові, паспортні дані, ідентифікаційний номер, дані",
+            SetText(gfx, "використання моїх персональних даних (прізвище, ім'я, по батькові, паспортні дані, ідентифікаційний номер, дані",
                 XFontStyle.Regular, 50, 150);
             SetText(gfx, "про освіту, дата народження, місце проживання, громадянство, стать, склад сім'ї, номери телефонів, електронні",
                 XFontStyle.Regular, 50, 160);
@@ -50,13 +51,13 @@ namespace EPlast.BLL.Services.PDF.Documents
             int count = blank.User?.ConfirmedUsers != null ? blank.User.ConfirmedUsers.Count : 0;
             for (int i = 0, countMember = 0, coordinates = 250; i < count; i++)
             {
-                if (blank.User.ConfirmedUsers.ElementAt(i).isCityAdmin)
+                if (blank.User.ConfirmedUsers.ElementAt(i).ApproveType == ApproveType.City)
                 {
                     SetText(gfx, $"{blank.User.ConfirmedUsers.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
                     XFontStyle.Regular, 150, 643);
                     SetText(gfx, $" {blank.User.ConfirmedUsers?.ElementAt(i)?.ConfirmDate:dd.MM.yyyy}", XFontStyle.Italic, 435, 643);
                 }
-                else if (blank.User.ConfirmedUsers.ElementAt(i).isClubAdmin)
+                else if (blank.User.ConfirmedUsers.ElementAt(i).ApproveType == ApproveType.Club)
                 {
                     SetText(gfx, $"{blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.ClubMembers?.FirstOrDefault()?.Club?.Name}, {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.FirstName} {blank.User.ConfirmedUsers?.ElementAt(i).Approver?.User?.LastName} ",
                     XFontStyle.Regular, 180, 543);
@@ -88,7 +89,7 @@ namespace EPlast.BLL.Services.PDF.Documents
             SetText(gfx, "Ім’я", XFontStyle.Regular, 320, 360);
             SetLine(gfx, 360, 370, 550, 370);
             SetText(gfx, $"{blank.User.FirstName}", XFontStyle.Italic, 420, 358);
-            SetText(gfx, "По-батькові", XFontStyle.Regular, 50, 375);
+            SetText(gfx, "По батькові", XFontStyle.Regular, 50, 375);
             SetLine(gfx, 110, 385, 290, 385);
             SetText(gfx, $"{blank.User.FatherName}", XFontStyle.Italic, 160, 373);
             SetText(gfx, "Дата народження", XFontStyle.Regular, 300, 375);

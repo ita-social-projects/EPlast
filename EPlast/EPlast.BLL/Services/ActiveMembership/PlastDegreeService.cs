@@ -1,14 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.ActiveMembership
 {
@@ -26,11 +26,11 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<PlastDegreeDTO>> GetDergeesAsync()
+        public async Task<IEnumerable<PlastDegreeDto>> GetDergeesAsync()
         {
-            var degrees = await _repoWrapper.PlastDegrees.GetAllAsync();
-
-            return _mapper.Map<IEnumerable<PlastDegreeDTO>>(degrees);
+            var degrees = await _repoWrapper.PlastDegrees.GetRangeAsync(null, null, x => x.OrderBy(e => e.Name), null, null, null);
+            var sortedDegrees = degrees.Item1;
+            return _mapper.Map<IEnumerable<PlastDegreeDto>>(sortedDegrees);
         }
 
         /// <inheritdoc />
@@ -51,53 +51,50 @@ namespace EPlast.BLL.Services.ActiveMembership
         }
 
         /// <inheritdoc />
-        public async Task<UserPlastDegreeDTO> GetUserPlastDegreeAsync(string userId)
+        public async Task<UserPlastDegreeDto> GetUserPlastDegreeAsync(string userId)
         {
             var userPlastDegree = await _repoWrapper.UserPlastDegree.GetFirstOrDefaultAsync(upd => upd.UserId == userId, include: pd => pd.Include(d => d.PlastDegree));
 
-            return _mapper.Map<UserPlastDegreeDTO>(userPlastDegree);
+            return _mapper.Map<UserPlastDegreeDto>(userPlastDegree);
         }
         /// <inheritdoc />
-        public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDTO userPlastDegreePostDTO)
+        public async Task<bool> AddPlastDegreeForUserAsync(UserPlastDegreePostDto userPlastDegreePostDTO)
         {
-            bool isAdded = false;
             var userDto = await _userManagerService.FindByIdAsync(userPlastDegreePostDTO.UserId);
+            if (userDto == null) return false;
+
             var previousDegreeUserPlastDegree = await _repoWrapper.UserPlastDegree
                 .GetFirstOrDefaultAsync(i => i.UserId == userPlastDegreePostDTO.UserId);
 
+            PlastDegree plastDegree =
+                await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd =>
+                    pd.Id == userPlastDegreePostDTO.PlastDegreeId);
+
+            if (plastDegree == null) return false;
+
             if (previousDegreeUserPlastDegree != null)
             {
-                UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userDto.UserPlastDegrees);
-                if (userPlastDegree != null && userPlastDegree.PlastDegreeId == userPlastDegreePostDTO.PlastDegreeId)
+                if (previousDegreeUserPlastDegree.PlastDegreeId == userPlastDegreePostDTO.PlastDegreeId)
                 {
-                    return isAdded;
+                    return false;
                 }
+
                 previousDegreeUserPlastDegree.UserId = userPlastDegreePostDTO.UserId;
                 previousDegreeUserPlastDegree.PlastDegreeId = userPlastDegreePostDTO.PlastDegreeId;
                 previousDegreeUserPlastDegree.DateStart = userPlastDegreePostDTO.DateStart;
                     
                 _repoWrapper.UserPlastDegree.Update(previousDegreeUserPlastDegree);
                 await _repoWrapper.SaveAsync();
-
-                return isAdded;
+                return true;
             }
+            
+            UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
 
-            if (userDto != null)
-            {
-                UserPlastDegree userPlastDegree = _mapper.Map<UserPlastDegree>(userPlastDegreePostDTO);
-                PlastDegree plastDegree =
-                    await _repoWrapper.PlastDegrees.GetFirstOrDefaultAsync(pd =>
-                        pd.Id == userPlastDegreePostDTO.PlastDegreeId);
-                if (plastDegree != null)
-                {
-                    userPlastDegree.PlastDegree = plastDegree;
-                    _repoWrapper.UserPlastDegree.Attach(userPlastDegree);
-                    _repoWrapper.UserPlastDegree.Create(userPlastDegree);
-                    await _repoWrapper.SaveAsync();
-                    isAdded = true;
-                }
-            }
-            return isAdded;
+            userPlastDegree.PlastDegree = plastDegree;
+            _repoWrapper.UserPlastDegree.Attach(userPlastDegree);
+            _repoWrapper.UserPlastDegree.Create(userPlastDegree);
+            await _repoWrapper.SaveAsync();
+            return true;
         }
 
         /// <inheritdoc />

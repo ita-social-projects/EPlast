@@ -1,16 +1,19 @@
-﻿using EPlast.BLL.DTO.Region;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
+using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
-using EPlast.BLL.Interfaces.Cache;
+using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -24,6 +27,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IRegionAnnualReportService _RegionAnnualReportService;
         private readonly IRegionService _regionService;
         private readonly UserManager<User> _userManager;
+        private readonly IMediator _mediator;
 
         private const string ActiveRegionsCacheKey = "ActiveRegions";
         private const string ArchivedRegionsCacheKey = "ArchivedRegions";
@@ -34,7 +38,8 @@ namespace EPlast.WebApi.Controllers
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService RegionAnnualReportService,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            IMediator mediator)
         {
             _cache = cache;
             _logger = logger;
@@ -42,11 +47,12 @@ namespace EPlast.WebApi.Controllers
             _regionAdministrationService = regionAdministrationService;
             _RegionAnnualReportService = RegionAnnualReportService;
             _userManager = userManager;
+            _mediator = mediator;
         }
 
         [HttpPost("AddAdministrator")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> AddAdministrator(RegionAdministrationDTO admin)
+        public async Task<IActionResult> AddAdministrator(RegionAdministrationDto admin)
         {
             await _regionAdministrationService.AddRegionAdministrator(admin);
 
@@ -55,7 +61,7 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("AddDocument")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> AddDocument(RegionDocumentDTO document)
+        public async Task<IActionResult> AddDocument(RegionDocumentDto document)
         {
             try
             {
@@ -79,9 +85,11 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPost("AddRegion")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
-        public async Task<IActionResult> CreateRegion(RegionDTO region)
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
+        public async Task<IActionResult> CreateRegion(RegionDto region)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             await _regionService.AddRegionAsync(region);
             await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
@@ -108,7 +116,7 @@ namespace EPlast.WebApi.Controllers
                 var annualreport =
                     await _RegionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year,
                         regionAnnualReportQuestions);
-                return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт округи успішно створено!", report= annualreport });
+                return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт округи успішно створено!", report = annualreport });
             }
             catch (NullReferenceException)
             {
@@ -126,13 +134,13 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPost("EditAdministrator")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> EditAdministrator(RegionAdministrationDTO admin)
+        public async Task<IActionResult> EditAdministrator(RegionAdministrationDto admin)
         {
             if (admin != null)
             {
-                await _regionAdministrationService.EditRegionAdministrator(admin);
+                var updatedAdmin = await _regionAdministrationService.EditRegionAdministrator(admin);
                 _logger.LogInformation($"Successful edit Admin: {admin.UserId}");
-                return Ok(admin);
+                return Ok(updatedAdmin);
             }
             _logger.LogError("Admin is null");
 
@@ -141,8 +149,10 @@ namespace EPlast.WebApi.Controllers
 
         [HttpPut("EditRegion/{regId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> EditRegion(int regId, RegionDTO region)
+        public async Task<IActionResult> EditRegion(int regId, RegionDto region)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
             await _regionService.EditRegionAsync(regId, region);
             await _cache.RemoveRecordsByPatternAsync(ActiveRegionsCacheKey);
             await _cache.RemoveRecordsByPatternAsync(ArchivedRegionsCacheKey);
@@ -208,9 +218,19 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> GetAllRegionsReportsAsync(string searchedData, int page, int pageSize, int sortKey, bool auth)
         {
-            var user = await _userManager.GetUserAsync(User);
-            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(user,
-                (await _userManager.GetRolesAsync(user)).Contains(Roles.Admin), searchedData, page, pageSize, sortKey, auth));
+            User user = await _userManager.GetUserAsync(User);
+            IList<string> userRoles = await _userManager.GetRolesAsync(user);
+
+            bool isAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
+            return base.Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(
+                user,
+                isAdmin,
+                searchedData,
+                page,
+                pageSize,
+                sortKey,
+                auth
+            ));
         }
 
         /// <summary>
@@ -276,7 +296,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>Answer from backend</returns>
         /// <response code="200">Region annual report was successfully confirmed</response>
         [HttpPut("confirmReport/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Confirm(int id)
         {
             await _RegionAnnualReportService.ConfirmAsync(id);
@@ -292,7 +312,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Region annual report was successfully confirmed</response>
         /// <response code="404">Region annual report does not exist</response>
         [HttpPut("cancel/{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Cancel(int id)
         {
             try
@@ -316,7 +336,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Region annual report was successfully confirmed</response>
         /// <response code="404">Region annual report does not exist</response>
         [HttpDelete("{id:int}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -371,7 +391,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Follower not found</response>
         [HttpGet("GetFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
         public async Task<IActionResult> GetFollower(int followerId)
         {
             var follower = await _regionService.GetFollowerAsync(followerId);
@@ -391,11 +411,11 @@ namespace EPlast.WebApi.Controllers
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateFollower")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> CreateFollower(RegionFollowerDTO follower)
+        public async Task<IActionResult> CreateFollower(RegionFollowerDto follower)
         {
-            await _regionService.CreateFollowerAsync(follower);
+            int id = await _regionService.CreateFollowerAsync(follower);
 
-            return Ok();
+            return Ok(id);
         }
 
         /// <summary>
@@ -403,7 +423,7 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         [HttpDelete("RemoveFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
             await _regionService.RemoveFollowerAsync(followerId);
@@ -428,7 +448,7 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 var region = await _regionService.GetRegionProfileByIdAsync(regionId, await _userManager.GetUserAsync(User));
-                if (region == null || region.Status == BLL.DTO.RegionsStatusTypeDTO.RegionBoard)
+                if (region == null || region.Status == BLL.DTO.RegionsStatusTypeDto.RegionBoard)
                 {
                     return NotFound();
                 }
@@ -477,34 +497,47 @@ namespace EPlast.WebApi.Controllers
             return Ok(HeadDeputy);
         }
 
+
         /// <summary>
         /// Get all active regions using redis cache
         /// </summary>
         /// <returns>List of active regions</returns>
         [HttpGet("Profiles/Active/{page}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetActiveRegions(int page, int pageSize, string regionName = null)
         {
-            string regionRecordKey = $"{ActiveRegionsCacheKey}_{page}_{pageSize}_{regionName}";
-            var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
-            
-            if (regionsTuple is null)
+            string cacheKey = $"{ActiveRegionsCacheKey}_{page}_{pageSize}_{regionName}";
+            Tuple<IEnumerable<RegionObjectsDto>, int> cache;
+
+            try
             {
-                bool isArchive = false;
-                regionsTuple = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive);
-               if (!String.IsNullOrEmpty(regionName))
-               {
-                    TimeSpan expireTime = TimeSpan.FromMinutes(5);
-                    await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
-               }
-               else
+                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<RegionObjectsDto>, int>>(cacheKey);
+            }
+            catch
+            {
+                cache = null;
+            }
+
+            if (cache is null)
+            {
+                bool isArchive = true;
+                var query = new GetAllRegionsByPageAndIsArchiveQuery(page, pageSize, regionName, isArchive);
+                cache = await _mediator.Send(query);
+                if (!string.IsNullOrEmpty(regionName))
                 {
-                    await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
+                    TimeSpan expireTime = TimeSpan.FromMinutes(5);
+                    await _cache.SetCacheRecordAsync(cacheKey, cache, expireTime);
                 }
             }
-            return StatusCode(StatusCodes.Status200OK, new {page = page, pageSize = pageSize, regions = regionsTuple.Item1, total = regionsTuple.Item2, canCreate = User.IsInRole(Roles.Admin)});
+            return StatusCode(StatusCodes.Status200OK, new
+            {
+                page,
+                pageSize,
+                regions = cache.Item1,
+                total = cache.Item2,
+                canCreate = User.IsInRole(Roles.Admin) || User.IsInRole(Roles.GoverningBodyAdmin)
+            });
         }
-
 
         /// <summary>
         /// Get all not active regions using redis cache
@@ -514,24 +547,30 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetNotActiveRegions(int page, int pageSize, string regionName)
         {
-            string regionRecordKey = $"{ArchivedRegionsCacheKey}_{page}_{pageSize}_{regionName}";
-            var regionsTuple = await _cache.GetRecordByKeyAsync<Tuple<System.Collections.Generic.IEnumerable<RegionObjectsDTO>, int>>(regionRecordKey);
+            string cacheKey = $"{ArchivedRegionsCacheKey}_{page}_{pageSize}_{regionName}";
+            Tuple<IEnumerable<RegionObjectsDto>, int> cache;
 
-            if (regionsTuple is null)
+            try
             {
-                bool isArchive = true;
-                regionsTuple = await _regionService.GetAllRegionsByPageAndIsArchiveAsync(page, pageSize, regionName, isArchive);
-                if (!String.IsNullOrEmpty(regionName))
+                cache = await _cache.GetRecordByKeyAsync<Tuple<IEnumerable<RegionObjectsDto>, int>>(cacheKey);
+            }
+            catch
+            {
+                cache = null;
+            }
+
+            if (cache is null)
+            {
+                bool isArchive = false;
+                var query = new GetAllRegionsByPageAndIsArchiveQuery(page, pageSize, regionName, isArchive);
+                cache = await _mediator.Send(query);
+                if (!string.IsNullOrEmpty(regionName))
                 {
                     TimeSpan expireTime = TimeSpan.FromMinutes(5);
-                    await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple, expireTime);
+                    await _cache.SetCacheRecordAsync(cacheKey, cache, expireTime);
                 }
-                else
-                {
-                    await _cache.SetCacheRecordAsync(regionRecordKey, regionsTuple);
-                }
-            }              
-            return StatusCode(StatusCodes.Status200OK, new { regions = regionsTuple.Item1, total = regionsTuple.Item2});
+            }
+            return StatusCode(StatusCodes.Status200OK, new { regions = cache.Item1, total = cache.Item2 });
         }
 
         /// <summary>
@@ -539,10 +578,10 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of regions</returns>
         [HttpGet("Regions")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> GetRegions()
+        [AllowAnonymous]
+        public async Task<IActionResult> GetRegions(UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            var regions = await _regionService.GetRegions();
+            var regions = await _regionService.GetRegions(oblast);
             return Ok(regions);
         }
 
@@ -597,7 +636,18 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("GetReportById/{id}/{year}")]
         public async Task<IActionResult> GetReportByIdAsync(int id, int year)
         {
-            return Ok(await _RegionAnnualReportService.GetReportByIdAsync(id, year));
+            try
+            {
+                return Ok(await _RegionAnnualReportService.GetReportByIdAsync(await _userManager.GetUserAsync(User), id, year));
+            }
+            catch (NullReferenceException)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
         }
 
         [HttpGet("GetUserAdministrations/{userId}")]
@@ -625,7 +675,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("Profiles/Active")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [AllowAnonymous]
         public async Task<IActionResult> ActiveRegions()
         {
             var regions = await _regionService.GetAllActiveRegionsAsync();
@@ -650,7 +700,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("ArchiveRegion/{Id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> ArchiveRegion(int Id)
         {
             await _regionService.ArchiveRegionAsync(Id);
@@ -667,8 +717,16 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
+        [HttpPut("ChangeStatusAdministration/{Id}")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
+        public async Task<IActionResult> EditStatus(int Id)
+        {
+            await _regionAdministrationService.EditStatusAdministration(Id);
+            return Ok();
+        }
+
         [HttpDelete("RemoveRegion/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.Admin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> RemoveRegion(int Id)
         {
             var admins = await _regionAdministrationService.GetAdministrationAsync(Id);
@@ -702,7 +760,7 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpPut("UnArchiveRegion/{Id}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> UnArchiveRegion(int Id)
         {
             await _regionService.UnArchiveRegionAsync(Id);
@@ -719,7 +777,7 @@ namespace EPlast.WebApi.Controllers
         /// <returns>False if doesn't exist</returns>
         /// <response code="200">Check was successfull</response>
         [HttpGet("CheckIfRegionNameExists/{name}")]
-        [Authorize(Roles = Roles.Admin)]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CheckIfRegionNameExists(string name)
         {
             bool result = await _regionService.CheckIfRegionNameExistsAsync(name);

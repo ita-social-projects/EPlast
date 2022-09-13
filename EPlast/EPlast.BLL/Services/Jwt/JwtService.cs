@@ -1,9 +1,3 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Jwt;
-using EPlast.BLL.Services.Interfaces;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,43 +5,69 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.Jwt;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace EPlast.BLL.Services.Jwt
 {
     public class JwtService : IJwtService
     {
-        private readonly JwtOptions _jwtOptions;
+        private readonly IConfiguration _configuration;
         private readonly IUserManagerService _userManagerService;
-        private readonly IUniqueIdService _uniqueId;
+        private readonly UserManager<User> _userManager;
 
-        public JwtService(IOptions<JwtOptions> jwtOptions, IUserManagerService userManagerService, IUniqueIdService uniqueId)
+        public JwtService(IConfiguration configuration, IUserManagerService userManagerService, UserManager<User> userManager)
         {
-            _jwtOptions = jwtOptions.Value;
+            _configuration = configuration;
             _userManagerService = userManagerService;
-            _uniqueId = uniqueId;
+            _userManager = userManager;
         }
 
         ///<inheritdoc/>
-        public async Task<string> GenerateJWTTokenAsync(UserDTO userDTO)
+        public async Task<string> GenerateJWTTokenAsync(UserDto userDTO)
+        {
+            var id = userDTO.Id;
+            var roles = await _userManagerService.GetRolesAsync(userDTO);
+
+            return Generate(id, roles);
+        }
+
+        public async Task<string> GenerateJWTTokenAsync(User user)
+        {
+            var id = user.Id;
+            var roles = await _userManager.GetRolesAsync(user);
+
+            return Generate(id, roles);
+        }
+
+        private string Generate(string id, IEnumerable<string> roles)
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, userDTO.Email),
-                new Claim(JwtRegisteredClaimNames.NameId, userDTO.Id),
-                new Claim(JwtRegisteredClaimNames.FamilyName, userDTO.Id),
-                new Claim(JwtRegisteredClaimNames.Jti, _uniqueId.GetUniqueId().ToString())
+                // Note 1: Use ClaimTypes.NameIdentifier instead of JwtRegisteredClaimNames.NameId in any future projects
+                //
+                // Note 2: Currently it is not possible to change it to ClaimTypes.NameIdentifier, because 
+                // JwtRegisteredClaimNames.NameId is used everywhere on frontend, in every component, to fetch
+                // information by stored user's ID in JWT. 
+                // ...While using Cookie authorization at the same time. 
+                // ...Don't ask me why it is that way.
+                new Claim(JwtRegisteredClaimNames.NameId, id)
             };
-            var roles = await _userManagerService.GetRolesAsync(userDTO);
-            claims.AddRange(roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)));
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
+            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JwtIssuerSigningKey")));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-              issuer: _jwtOptions.Issuer,
-              audience: _jwtOptions.Audience,
               claims: claims,
-              expires: DateTime.Now.AddMinutes(_jwtOptions.Time),
-              signingCredentials: creds);
+              expires: DateTime.UtcNow.AddMinutes(120),
+              signingCredentials: creds
+            );
 
             var tokenHandler = new JwtSecurityTokenHandler();
             return tokenHandler.WriteToken(token);

@@ -8,6 +8,15 @@
     "AddClubHead": true,
     "DownloadDocument": true
   },
+  "Крайовий Адмін": {
+    "IsAdmin": true,
+    "CreateClub": true,
+    "EditClub": true,
+    "DeleteClub": true,
+    "AddClubSecretary": true,
+    "AddClubHead": true,
+    "DownloadDocument": true
+  },
   "Голова Округи": {
     "IsAdmin": true,
     "EditClub": false,

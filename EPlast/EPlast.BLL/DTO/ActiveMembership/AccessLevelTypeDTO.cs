@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel;
 namespace EPlast.BLL.DTO.ActiveMembership
 {
-    public enum AccessLevelTypeDTO
-    { 
+    public enum AccessLevelTypeDto
+    {
         [Description("Адміністратор")]
         Admin,
 
@@ -17,6 +17,9 @@ namespace EPlast.BLL.DTO.ActiveMembership
 
         [Description("Доступ члена проводу організації")]
         LeadershipMember,
+
+        [Description("Крайовий Адмін")]
+        GoverningBodyAdmin,
 
         [Description("Доступ члена проводу організації, Голова Керівного Органу")]
         LeadershipMemberForGoverningBodyHead,
@@ -58,6 +61,33 @@ namespace EPlast.BLL.DTO.ActiveMembership
         LeadershipMemberForOkrugaSecretary,
 
         [Description("Доступ колишнього члена організації")]
-        FormerPlastMember
+        FormerPlastMember,
+
+        [Description("Доступ члена проводу організації, Референт УПС Округи")]
+        OkrugaReferentUPS,
+
+        [Description("Доступ члена проводу організації, Референт УСП Округи")]
+        OkrugaReferentUSP,
+
+        [Description("Доступ члена проводу організації, Референт Дійсного Членства Станиці")]
+        OkrugaReferentOfActiveMembership,
+
+        [Description("Доступ члена проводу організації, Референт УПС Станиці")]
+        CityReferentUPS,
+
+        [Description("Доступ члена проводу організації, Референт УСП Станиці")]
+        CityReferentUSP,
+
+        [Description("Доступ члена проводу організації, Референт Дійсного Членства Станиці")]
+        CityReferentOfActiveMembership,
+
+        [Description("Доступ члена проводу організації, Адміністратор подій")]
+        EventAdministrator,
+
+        [Description("Доступ члену проводу організації, Голова Пласту")]
+        PlastHead,
+
+        [Description("Зацікавлений")]
+        Interested
     }
 }

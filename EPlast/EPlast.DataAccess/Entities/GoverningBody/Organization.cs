@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using EPlast.DataAccess.Entities.GoverningBody.Announcement;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities.GoverningBody
@@ -21,8 +22,10 @@ namespace EPlast.DataAccess.Entities.GoverningBody
         public string Logo { get; set; }
 
         public ICollection<GoverningBodyAdministration> GoverningBodyAdministration { get; set; }
+        public ICollection<GoverningBodyAnnouncement> GoverningBodyAnnouncement { get; set; }
         public ICollection<GoverningBodyDocuments> GoverningBodyDocuments { get; set; }
         public ICollection<Sector.Sector> GoverningBodySectors { get; set; }
         public bool IsActive { get; set; }
+        public bool IsMainStatus { get; set; }
     }
 }

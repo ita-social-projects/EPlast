@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
+using EPlast.BLL.DTO.GoverningBody.Announcement;
 
 namespace EPlast.BLL.DTO.GoverningBody.Sector
 {
-    public class SectorDTO
+    public class SectorDto
     {
         public int Id { get; set; }
         public int GoverningBodyId { get; set; }
@@ -12,8 +13,9 @@ namespace EPlast.BLL.DTO.GoverningBody.Sector
         public string Logo { get; set; }
         public string PhoneNumber { get; set; }
         public int AdministrationCount { get; set; }
-        public IEnumerable<SectorDocumentsDTO> Documents { get; set; }
-        public IEnumerable<SectorAdministrationDTO> Administration { get; set; }
+        public ICollection<SectorDocumentsDto> Documents { get; set; }
+        public ICollection<GoverningBodyAnnouncementDto> Announcements { get; set; }
+        public ICollection<SectorAdministrationDto> Administration { get; set; }
         public bool IsActive { get; set; }
     }
 }

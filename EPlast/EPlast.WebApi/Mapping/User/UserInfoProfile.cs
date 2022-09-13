@@ -1,7 +1,7 @@
+using System.Linq;
 using AutoMapper;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.WebApi.Models.User;
-using System.Linq;
 
 namespace EPlast.WebApi.Mapping.User
 {
@@ -9,8 +9,8 @@ namespace EPlast.WebApi.Mapping.User
     {
         public UserInfoProfile()
         {
-            CreateMap<EPlast.DataAccess.Entities.User, UserDTO>().ReverseMap();
-            CreateMap<UserDTO, UserInfoViewModel>()
+            CreateMap<EPlast.DataAccess.Entities.User, UserDto>().ReverseMap();
+            CreateMap<UserDto, UserInfoViewModel>()
                 .ForMember(x => x.Pseudo, q => q.MapFrom(w => w.UserProfile.Pseudo))
                 .ForMember(x => x.Region, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Region.RegionName))
                 .ForMember(x => x.City, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.Name))

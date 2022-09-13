@@ -1,10 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Query;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPlast.DataAccess.Repositories
 {
@@ -12,7 +12,7 @@ namespace EPlast.DataAccess.Repositories
     {
         protected EPlastDBContext EPlastDBContext { get; set; }
 
-        public RepositoryBase(EPlastDBContext ePlastDBContext)
+        protected RepositoryBase(EPlastDBContext ePlastDBContext)
         {
             this.EPlastDBContext = ePlastDBContext;
         }
@@ -73,6 +73,11 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetQuery(predicate, include).ToListAsync();
         }
 
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, T>> selector, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include, selector).ToListAsync();
+        }
+
         public async Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             var query = this.GetQuery(predicate, include);
@@ -82,6 +87,11 @@ namespace EPlast.DataAccess.Repositories
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
         {
             return await this.GetQuery(predicate, include).FirstOrDefaultAsync();
+        }
+
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, T>> selector, Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        {
+            return await this.GetQuery(predicate, include, selector).FirstOrDefaultAsync();
         }
 
         public async Task<T> GetLastAsync(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
@@ -104,16 +114,18 @@ namespace EPlast.DataAccess.Repositories
             return await this.GetQuery(predicate, include).SingleOrDefaultAsync();
         }
 
-        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(Expression<Func<T, bool>> filter = null,
-                                                       Expression<Func<T, T>> selector = null,
-                                                       Expression<Func<T, object>> sorting = null,
-                                                       int? pageNumber = null,
-                                                       int? pageSize = null)
+        public async Task<Tuple<IEnumerable<T>, int>> GetRangeAsync(
+            Expression<Func<T, bool>> predicate = null,
+            Expression<Func<T, T>> selector = null,
+            Func<IQueryable<T>, IQueryable<T>> sorting = null,
+            Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+            int? pageNumber = null,
+            int? pageSize = null)
         {
-            return await this.GetRangeQuery(filter, selector, sorting, pageNumber, pageSize);
+            return await this.GetRangeQuery(predicate, selector, sorting, include, pageNumber, pageSize);
         }
 
-        private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null)
+        private IQueryable<T> GetQuery(Expression<Func<T, bool>> predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null, Expression<Func<T, T>> selector = null)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
             if (include != null)
@@ -124,33 +136,45 @@ namespace EPlast.DataAccess.Repositories
             {
                 query = query.Where(predicate);
             }
+            if (selector != null)
+            {
+                query = query.Select(selector);
+            }
             return query;
         }
 
-        private async Task<Tuple<IEnumerable<T>,int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
+        private async Task<Tuple<IEnumerable<T>, int>> GetRangeQuery(Expression<Func<T, bool>> filter = null,
                                                        Expression<Func<T, T>> selector = null,
-                                                       Expression<Func<T, object>> sorting = null,
+                                                       Func<IQueryable<T>, IQueryable<T>> sorting = null,
+                                                       Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
                                                        int? pageNumber = null,
                                                        int? pageSize = null)
         {
             var query = this.EPlastDBContext.Set<T>().AsNoTracking();
 
-            if(filter != null)
+            if (include != null)
+            {
+                query = include(query);
+            }
+
+            if (filter != null)
             {
                 query = query.Where(filter);
             }
-            if(selector != null)
+
+            if (selector != null)
             {
                 query = query.Select(selector);
             }
 
+            if (sorting != null)
+            {
+                query = sorting(query);
+            }
+
             var TotalRecords = await query.CountAsync();
 
-            if(sorting != null)
-            {
-                query = query.OrderBy(sorting);
-            }
-            if(pageNumber != null && pageSize != null)
+            if (pageNumber != null && pageSize != null)
             {
                 query = query.Skip((int)(pageSize * (pageNumber - 1)))
                     .Take((int)pageSize);

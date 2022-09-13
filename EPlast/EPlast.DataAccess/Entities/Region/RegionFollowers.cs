@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using EPlast.Resources;
+using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -23,19 +24,11 @@ namespace EPlast.DataAccess.Entities
         public int RegionId { get; set; }
         public Region Region { get; set; }
 
-        [Required, MaxLength(50, ErrorMessage = "Street name can not exceed 50 characters")]
-        public string Street { get; set; }
-
-        [Required, MaxLength(10, ErrorMessage = "House number can not exceed 10 characters")]
-        public string HouseNumber { get; set; }
-
-        [Required, MaxLength(10, ErrorMessage = "Office number can not exceed 10 characters")]
-        public string OfficeNumber { get; set; }
-
-        [Required, MaxLength(10, ErrorMessage = "Post index can not exceed 10 characters")]
-        public string PostIndex { get; set; }
-
-        public string СityURL { get; set; }
+        [Required, MaxLength(50, ErrorMessage = "Address name can not exceed 50 characters")]
+        public string Address { get; set; }
+        public UkraineOblasts Oblast { get; set; }
+        public CityLevel Level { get; set; }
+        public string CityURL { get; set; }
 
         [MaxLength(50, ErrorMessage = "Email can not exceed 50 characters")]
         public string Email { get; set; }

@@ -1,14 +1,13 @@
-﻿using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Notifications;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
-using EPlast.BLL.Services.Notifications;
-using Moq;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Notification;
+using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Services.Notifications;
+using Moq;
+using NUnit.Framework;
 
 namespace EPlast.Tests.Services.Notifications
 {
@@ -17,31 +16,29 @@ namespace EPlast.Tests.Services.Notifications
     {
         #region  Setup
         private Mock<INotificationConnectionManager> _notificationConnectionManager;
-        private Mock<IUniqueIdService> _uniqueId;
         private Mock<IUserMapService> _userMap;
         private Mock<WebSocket> _socket;
         private NotificationConnectionManager notificationConnectionManager;
-        private ConcurrentDictionary<string, HashSet<ConnectionDTO>> userMap;
+        private ConcurrentDictionary<string, HashSet<ConnectionDto>> userMap;
         private Guid uniqueID;
 
         [SetUp]
         public void SetUp()
         {
-            _uniqueId = new Mock<IUniqueIdService>();
             _userMap = new Mock<IUserMapService>();
             _notificationConnectionManager = new Mock<INotificationConnectionManager>();
             _socket = new Mock<WebSocket>();
             uniqueID = Guid.NewGuid();
-            notificationConnectionManager = new NotificationConnectionManager(_uniqueId.Object, _userMap.Object);
-            userMap = new ConcurrentDictionary<string, HashSet<ConnectionDTO>>();
-            var hash = new HashSet<ConnectionDTO>();
-            var connectionDTO = new ConnectionDTO()
+            notificationConnectionManager = new NotificationConnectionManager(_userMap.Object);
+            userMap = new ConcurrentDictionary<string, HashSet<ConnectionDto>>();
+            var hash = new HashSet<ConnectionDto>();
+            var connectionDTO = new ConnectionDto()
             {
                 WebSocket = _socket.Object,
                 ConnectionId = "1"
             };
             hash.Add(connectionDTO);
-            userMap.TryAdd("1",hash);
+            userMap.TryAdd("1", hash);
         }
         #endregion
         #region CreateAnObject
@@ -51,7 +48,7 @@ namespace EPlast.Tests.Services.Notifications
             //Arrange
 
             //Act
-            var result = new NotificationConnectionManager(_uniqueId.Object, _userMap.Object);
+            var result = new NotificationConnectionManager(_userMap.Object);
 
             //Assert
             Assert.IsNotNull(result);
@@ -117,7 +114,6 @@ namespace EPlast.Tests.Services.Notifications
             //Arrange
             var id = "1";
             _userMap.Setup(a => a.UserConnections).Returns(userMap);
-            _uniqueId.Setup(a => a.GetUniqueId()).Returns(uniqueID);
             _notificationConnectionManager.Setup(
                 a => a.AddSocket(id, _socket.Object)).Returns(id);
 
@@ -127,7 +123,6 @@ namespace EPlast.Tests.Services.Notifications
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<string>(result);
-            Assert.AreEqual(uniqueID.ToString(), result);
         }
 
         [Test]
@@ -136,7 +131,6 @@ namespace EPlast.Tests.Services.Notifications
             //Arrange
             var id = "2";
             _userMap.Setup(a => a.UserConnections).Returns(userMap);
-            _uniqueId.Setup(a => a.GetUniqueId()).Returns(uniqueID);
             _notificationConnectionManager.Setup(
                 a => a.AddSocket(id, _socket.Object)).Returns(id);
 
@@ -146,7 +140,6 @@ namespace EPlast.Tests.Services.Notifications
             //Assert
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<string>(result);
-            Assert.AreEqual(uniqueID.ToString(), result);
         }
 
         [Test]
@@ -155,7 +148,6 @@ namespace EPlast.Tests.Services.Notifications
             //Arrange
             var id = "1";
             _userMap.Setup(a => a.UserConnections).Returns(userMap);
-            _uniqueId.Setup(a => a.GetUniqueId()).Returns(uniqueID);
             _notificationConnectionManager.Setup(b => b.GetSocketByConnectionId(id)).Returns(_socket.Object);
             var task = notificationConnectionManager.RemoveSocketAsync(id, uniqueID.ToString());
             _notificationConnectionManager.Setup(a => a.RemoveSocketAsync(
@@ -207,7 +199,7 @@ namespace EPlast.Tests.Services.Notifications
         public void GetUserId_ThrowsException()
         {
             //Arrange
-            _userMap.Setup(a => a.UserConnections).Returns(new ConcurrentDictionary<string, HashSet<ConnectionDTO>>());
+            _userMap.Setup(a => a.UserConnections).Returns(new ConcurrentDictionary<string, HashSet<ConnectionDto>>());
             _notificationConnectionManager.Setup(
                 a => a.GetUserId(_socket.Object));
 

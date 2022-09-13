@@ -10,7 +10,7 @@ namespace EPlast.DataAccess.Entities.GoverningBody
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        public int GoverningBodyId { get; set; }
+        public int? GoverningBodyId { get; set; }
         public Organization GoverningBody { get; set; }
 
         [Required]
@@ -23,5 +23,7 @@ namespace EPlast.DataAccess.Entities.GoverningBody
         public bool Status { get; set; }
 
         public string WorkEmail { get; set; }
+
+        public string GoverningBodyAdminRole { get; set; }
     }
 }

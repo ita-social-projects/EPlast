@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -6,10 +10,6 @@ using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.EmailSending
 {
@@ -66,13 +66,13 @@ namespace EPlast.BLL.Services.EmailSending
             return (lonelyUsers);
         }
 
-        private async Task<CityDTO> GetUserCityAsync(User user)
+        private async Task<CityDto> GetUserCityAsync(User user)
         {
             var cityMember = await _repoWrapper.CityMembers.GetFirstOrDefaultAsync(x => x.UserId == user.Id,
                                                                                    s => s.Include(c => c.City));
             DataAccess.Entities.City city = null;
             if (cityMember != null) city = cityMember.City;
-            var cityDTO = _mapper.Map<DataAccess.Entities.City, CityDTO>(city);
+            var cityDTO = _mapper.Map<DataAccess.Entities.City, CityDto>(city);
             return (cityDTO);
         }
 

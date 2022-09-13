@@ -1,4 +1,10 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Club;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Services.Club;
@@ -9,12 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Club
 {
@@ -55,17 +55,17 @@ namespace EPlast.Tests.Services.Club
                                 It.IsAny<Func<IQueryable<ClubReportMember>, IIncludableQueryable<ClubReportMember, IQueryable<User>>>>()))
                               .ReturnsAsync(new List<ClubReportMember>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>
                       (It.IsAny<IEnumerable<ClubMemberHistory>>()))
-                   .Returns(new List<ClubMemberHistoryDTO>());
+                   .Returns(new List<ClubMemberHistoryDto>());
  
             _repositoryWrapper.Setup(r => r.ClubReportAdmins.GetAllAsync(It.IsAny<Expression<Func<ClubReportAdmins, bool>>>(),
                  It.IsAny<Func<IQueryable<ClubReportAdmins>, IIncludableQueryable<ClubReportAdmins, IQueryable<User>>>>()))
            .ReturnsAsync(new List<ClubReportAdmins>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDto>>
                       (It.IsAny<IEnumerable<ClubAdministration>>()))
-                .Returns(new List<ClubReportAdministrationDTO>());
+                .Returns(new List<ClubReportAdministrationDto>());
 
 
             _repositoryWrapper
@@ -73,7 +73,7 @@ namespace EPlast.Tests.Services.Club
                 It.IsAny<Func<IQueryable<ClubAnnualReport>,
                 IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
             _mapper
-                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDTO>(report)).Returns(new ClubAnnualReportDTO());
+                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDto>(report)).Returns(new ClubAnnualReportDto());
 
             User testUser = new User();
 
@@ -81,7 +81,7 @@ namespace EPlast.Tests.Services.Club
               var result = await _service.GetByIdAsync(testUser, It.IsAny<int>());
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubAnnualReportDTO>(result);
+            Assert.IsInstanceOf<ClubAnnualReportDto>(result);
         }
 
         [Test]
@@ -94,18 +94,18 @@ namespace EPlast.Tests.Services.Club
                                      It.IsAny<Func<IQueryable<ClubReportMember>, IIncludableQueryable<ClubReportMember, IQueryable<User>>>>()))
                                .ReturnsAsync(new List<ClubReportMember>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>
                       (It.IsAny<IEnumerable<ClubMemberHistory>>()))
-                   .Returns(new List<ClubMemberHistoryDTO>());
+                   .Returns(new List<ClubMemberHistoryDto>());
 
 
             _repositoryWrapper.Setup(r => r.ClubReportAdmins.GetAllAsync(It.IsAny<Expression<Func<ClubReportAdmins, bool>>>(),
                  It.IsAny<Func<IQueryable<ClubReportAdmins>, IIncludableQueryable<ClubReportAdmins, IQueryable<User>>>>()))
            .ReturnsAsync(new List<ClubReportAdmins>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDto>>
                       (It.IsAny<IEnumerable<ClubAdministration>>()))
-                .Returns(new List<ClubReportAdministrationDTO>());
+                .Returns(new List<ClubReportAdministrationDto>());
 
             _repositoryWrapper.Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                                                                                      It.IsAny<Func<IQueryable<ClubAnnualReport>,
@@ -119,14 +119,14 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<ClubAnnualReport>,
                         IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
             _mapper
-                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDTO>(report)).Returns(new ClubAnnualReportDTO());
+                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDto>(report)).Returns(new ClubAnnualReportDto());
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin });
 
             // Act
             var result = await _service.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>());
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<ClubAnnualReportDTO>(result);
+            Assert.IsInstanceOf<ClubAnnualReportDto>(result);
         }
 
         [Test]
@@ -142,7 +142,7 @@ namespace EPlast.Tests.Services.Club
             _clubAccessService
                 .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
             _mapper
-                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDTO>(report)).Returns(new ClubAnnualReportDTO());
+                .Setup(x => x.Map<ClubAnnualReport, ClubAnnualReportDto>(report)).Returns(new ClubAnnualReportDto());
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             
             // Act & Assert
@@ -159,12 +159,12 @@ namespace EPlast.Tests.Services.Club
                 It.IsAny<Func<IQueryable<ClubAnnualReport>,
                 IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(GetReports());
             _mapper
-                .Setup(x => x.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDTO>>(GetReports()))
-                .Returns(new List<ClubAnnualReportDTO>());
+                .Setup(x => x.Map<IEnumerable<ClubAnnualReport>, IEnumerable<ClubAnnualReportDto>>(GetReports()))
+                .Returns(new List<ClubAnnualReportDto>());
             // Act  
             var result = await _service.GetAllAsync(It.IsAny<User>());
             // Assert
-            Assert.IsInstanceOf<IEnumerable<ClubAnnualReportDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<ClubAnnualReportDto>>(result);
         }
 
         [Test]
@@ -198,10 +198,10 @@ namespace EPlast.Tests.Services.Club
             _repositoryWrapper
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                 It.IsAny<Func<IQueryable<ClubAnnualReport>,
-                IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report); 
+                IIncludableQueryable<ClubAnnualReport, object>>>())).ReturnsAsync(report);
             // Act  
             // Assert
-            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()));
+            Assert.ThrowsAsync<InvalidOperationException>(async () => await _service.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()));
         }
 
         [Test]
@@ -222,7 +222,7 @@ namespace EPlast.Tests.Services.Club
 
             // Act  
             // Assert
-            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _service.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDTO>()));
+            Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _service.CreateAsync(It.IsAny<User>(), It.IsAny<ClubAnnualReportDto>()));
         }
 
 
@@ -231,7 +231,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubAnnualReport report = null;
-            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO();
+            ClubAnnualReportDto reportDto = new ClubAnnualReportDto();
             _repositoryWrapper
                .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
@@ -247,7 +247,7 @@ namespace EPlast.Tests.Services.Club
                 It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(GetDegree());
             _mapper
-                .Setup(x=>x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
+                .Setup(x => x.Map<ClubAnnualReportDto, ClubAnnualReport>(It.IsAny<ClubAnnualReportDto>()))
                 .Returns(new ClubAnnualReport());
             _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
@@ -265,7 +265,7 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubAnnualReport report = null;
-            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO();
+            ClubAnnualReportDto reportDto = new ClubAnnualReportDto();
             _repositoryWrapper
                 .Setup(x => x.Club.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Club, bool>>>(),
                     It.IsAny<Func<IQueryable<DataAccess.Entities.Club>,
@@ -281,7 +281,7 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync( new List<UserPlastDegree>());
             _mapper
-                .Setup(x => x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
+                .Setup(x => x.Map<ClubAnnualReportDto, ClubAnnualReport>(It.IsAny<ClubAnnualReportDto>()))
                 .Returns(new ClubAnnualReport());
             _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
                 It.IsAny<Expression<Func<CityMembers, bool>>>(), It.IsAny<Func<IQueryable<CityMembers>,
@@ -299,23 +299,23 @@ namespace EPlast.Tests.Services.Club
         {
             // Arrange
             ClubAnnualReport report = null;
-            ClubAnnualReportDTO reportDto = new ClubAnnualReportDTO
+            ClubAnnualReportDto reportDto = new ClubAnnualReportDto
             {
-                Members = new List<ClubMemberHistoryDTO> {new ClubMemberHistoryDTO {ID = 1
-                                                                                   ,User=new ClubReportUserDTO {ID="1",
-                                                                                            UserPlastDegrees=new BLL.DTO.ActiveMembership.UserPlastDegreeDTO { Id=1,
-                                                                                                      PlastDegree=new BLL.DTO.ActiveMembership.PlastDegreeDTO{
+                Members = new List<ClubMemberHistoryDto> {new ClubMemberHistoryDto {ID = 1
+                                                                                   ,User=new ClubReportUserDto {ID="1",
+                                                                                            UserPlastDegrees=new BLL.DTO.ActiveMembership.UserPlastDegreeDto { Id=1,
+                                                                                                      PlastDegree=new BLL.DTO.ActiveMembership.PlastDegreeDto{
                                                                                                           Id=1 }}
-                                                                                   ,CityMembers=new List<ClubReportCityMembersDTO>{ new ClubReportCityMembersDTO {CityId=1} 
+                                                                                   ,CityMembers=new List<ClubReportCityMembersDto>{ new ClubReportCityMembersDto {CityId=1}
                                                                                    }}}},
-                Followers = new List<ClubMemberHistoryDTO> { new ClubMemberHistoryDTO {ID = 1
-                                                                                   ,User=new ClubReportUserDTO {ID="1",
-                                                                                            UserPlastDegrees=new BLL.DTO.ActiveMembership.UserPlastDegreeDTO { Id=1,
-                                                                                                      PlastDegree=new BLL.DTO.ActiveMembership.PlastDegreeDTO{
+                Followers = new List<ClubMemberHistoryDto> { new ClubMemberHistoryDto {ID = 1
+                                                                                   ,User=new ClubReportUserDto {ID="1",
+                                                                                            UserPlastDegrees=new BLL.DTO.ActiveMembership.UserPlastDegreeDto { Id=1,
+                                                                                                      PlastDegree=new BLL.DTO.ActiveMembership.PlastDegreeDto{
                                                                                                           Id=1 }}
-                                                                                   ,CityMembers=new List<ClubReportCityMembersDTO>{ new ClubReportCityMembersDTO {CityId=1}
+                                                                                   ,CityMembers=new List<ClubReportCityMembersDto>{ new ClubReportCityMembersDto {CityId=1}
                                                                                    }}} },
-                Admins = new List<ClubReportAdministrationDTO> { new ClubReportAdministrationDTO { ID = 1 } }
+                Admins = new List<ClubReportAdministrationDto> { new ClubReportAdministrationDto { ID = 1 } }
             };
 
             _repositoryWrapper
@@ -333,7 +333,7 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<UserPlastDegree>, IIncludableQueryable<UserPlastDegree, object>>>()))
                 .ReturnsAsync(new List<UserPlastDegree>());
             _mapper
-                .Setup(x => x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>()))
+                .Setup(x => x.Map<ClubAnnualReportDto, ClubAnnualReport>(It.IsAny<ClubAnnualReportDto>()))
                 .Returns(new ClubAnnualReport());
 
             _repositoryWrapper.Setup(x => x.CityMembers.GetFirstOrDefaultAsync(
@@ -473,7 +473,7 @@ namespace EPlast.Tests.Services.Club
             // Act  
             // Assert
             Assert.ThrowsAsync<InvalidOperationException>(async () => await _service
-                .EditClubReportAsync(It.IsAny<User>(), new ClubAnnualReportDTO(){Status = AnnualReportStatus.Confirmed }));
+                .EditClubReportAsync(It.IsAny<User>(), new ClubAnnualReportDto() { Status = AnnualReportStatus.Confirmed }));
         }
 
         [Test]
@@ -489,7 +489,7 @@ namespace EPlast.Tests.Services.Club
             // Act  
             // Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _service
-                .EditClubReportAsync(It.IsAny<User>(), new ClubAnnualReportDTO() { Status = AnnualReportStatus.Unconfirmed }));
+                .EditClubReportAsync(It.IsAny<User>(), new ClubAnnualReportDto() { Status = AnnualReportStatus.Unconfirmed }));
         }
 
         [Test]
@@ -503,9 +503,9 @@ namespace EPlast.Tests.Services.Club
             _clubAccessService
                .Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
             _mapper
-                .Setup(x=>x.Map<ClubAnnualReportDTO, ClubAnnualReport>(It.IsAny<ClubAnnualReportDTO>())).Returns(new ClubAnnualReport());
+                .Setup(x => x.Map<ClubAnnualReportDto, ClubAnnualReport>(It.IsAny<ClubAnnualReportDto>())).Returns(new ClubAnnualReport());
             // Act  
-            var result = _service.EditClubReportAsync(It.IsAny<User>(), new ClubAnnualReportDTO() { Status = AnnualReportStatus.Unconfirmed });
+            var result = _service.EditClubReportAsync(It.IsAny<User>(), new ClubAnnualReportDto() { Status = AnnualReportStatus.Unconfirmed });
             // Assert
             Assert.IsNotNull(result);
         }
@@ -566,16 +566,16 @@ namespace EPlast.Tests.Services.Club
                       It.IsAny<Func<IQueryable<ClubReportMember>, IIncludableQueryable<ClubReportMember, IQueryable<User>>>>()))
                 .ReturnsAsync(new List<ClubReportMember>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>
                       (It.IsAny<IEnumerable<ClubMemberHistory>>()))
-                .Returns(new List<ClubMemberHistoryDTO>());
+                .Returns(new List<ClubMemberHistoryDto>());
 
             //Act
             var result = await _service.GetClubReportMembersAsync(ID);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<List<ClubMemberHistoryDTO>>(result);
+            Assert.IsInstanceOf<List<ClubMemberHistoryDto>>(result);
         }
 
         [Test]
@@ -590,9 +590,9 @@ namespace EPlast.Tests.Services.Club
                       It.IsAny<Func<IQueryable<ClubReportMember>, IIncludableQueryable<ClubReportMember, IQueryable<User>>>>()))
                 .ReturnsAsync(new List<ClubReportMember>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubMemberHistory>, IEnumerable<ClubMemberHistoryDto>>
                       (It.IsAny<IEnumerable<ClubMemberHistory>>()))
-                .Returns(null as List<ClubMemberHistoryDTO>);
+                .Returns(null as List<ClubMemberHistoryDto>);
 
             //Act
             var result = await _service.GetClubReportMembersAsync(ID);
@@ -612,16 +612,16 @@ namespace EPlast.Tests.Services.Club
                     It.IsAny<Func<IQueryable<ClubReportAdmins>, IIncludableQueryable<ClubReportAdmins, IQueryable<User>>>>()))
               .ReturnsAsync(new List<ClubReportAdmins>());
 
-            _mapper.Setup(m => m.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDTO>>
+            _mapper.Setup(m => m.Map<IEnumerable<ClubAdministration>, IEnumerable<ClubReportAdministrationDto>>
                       (It.IsAny<IEnumerable<ClubAdministration>>()))
-                .Returns(new List<ClubReportAdministrationDTO>());
+                .Returns(new List<ClubReportAdministrationDto>());
 
             //Act
             var result = await _service.GetClubReportAdminsAsync(ID);
 
             //Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<List<ClubReportAdministrationDTO>>(result);
+            Assert.IsInstanceOf<List<ClubReportAdministrationDto>>(result);
         }
 
         private List<ClubAnnualReport> GetReports() {

@@ -1,12 +1,14 @@
-﻿using EPlast.BLL.DTO.Region;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using Newtonsoft.Json;
 
 namespace EPlast.BLL.DTO.City
 {
-    public class CityDTO
+    public class CityDto
     {
         public int ID { get; set; }
 
@@ -26,20 +28,16 @@ namespace EPlast.BLL.DTO.City
         public string Description { get; set; }
 
         [Required, MaxLength(60, ErrorMessage = "Назва вулиці розташування станиці не має перевищувати 60 символів")]
-        public string Street { get; set; }
+        public string Address { get; set; }
 
-        [Required, MaxLength(10, ErrorMessage = "Номер будинку розташування станиці не має перевищувати 10 символів")]
-        public string HouseNumber { get; set; }
+        [Required, Range(1, int.MaxValue)]
+        public UkraineOblasts Oblast { get; set; }
 
-        [MaxLength(10, ErrorMessage = "Номер офісу/квартири розташування станиці не має перевищувати 10 символів")]
-        public string OfficeNumber { get; set; }
-
-        [MaxLength(7, ErrorMessage = "Поштовий індекс станиці не має перевищувати 7 символів")]
-        public string PostIndex { get; set; }
+        public CityLevel Level { get; set; }
         public string Logo { get; set; }
         public bool IsActive { get; set; }
         public int RegionId { get; set; }
-        public RegionDTO Region { get; set; }
+        public RegionDto Region { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }
         public bool CanJoin { get; set; }
@@ -47,11 +45,11 @@ namespace EPlast.BLL.DTO.City
         public int FollowerCount { get; set; }
         public int AdministrationCount { get; set; }
         public int DocumentsCount { get; set; }
-        public IEnumerable<CityDocumentsDTO> CityDocuments { get; set; }
-        public IEnumerable<CityMembersDTO> CityMembers { get; set; }
+        public IEnumerable<CityDocumentsDto> CityDocuments { get; set; }
+        public IEnumerable<CityMembersDto> CityMembers { get; set; }
         [JsonIgnore]
-        public IEnumerable<CityAdministrationDTO> CityAdministration { get; set; }
-        public IEnumerable<CityLegalStatusDTO> CityLegalStatuses { get; set; }
-        public IEnumerable<UserRenewalDTO> UserRenewals { get; set; }
+        public IEnumerable<CityAdministrationDto> CityAdministration { get; set; }
+        public IEnumerable<CityLegalStatusDto> CityLegalStatuses { get; set; }
+        public IEnumerable<UserRenewalDto> UserRenewals { get; set; }
     }
 }

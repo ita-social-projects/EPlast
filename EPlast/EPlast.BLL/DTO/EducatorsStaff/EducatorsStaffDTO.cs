@@ -1,19 +1,19 @@
-﻿using EPlast.BLL.DTO.UserProfiles;
-using System;
+﻿using System;
+using EPlast.BLL.DTO.UserProfiles;
 
 namespace EPlast.BLL.DTO.EducatorsStaff
 {
-    public class EducatorsStaffDTO
+    public class EducatorsStaffDto
     {
         public int ID { get; set; }
 
         public string UserId { get; set; }
 
-        public UserDTO User { get; set; }
+        public UserDto User { get; set; }
 
         public int KadraVykhovnykivTypeId { get; set; }
 
-        public EducatorsStaffTypesDTO KadraVykhovnykivType { get; set; }
+        public EducatorsStaffTypesDto KadraVykhovnykivType { get; set; }
 
         public DateTime DateOfGranting { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
@@ -11,7 +12,8 @@ namespace EPlast.DataAccess.Entities
 {
     public class User : IdentityUser
     {
-        public string CityName;
+        [NotMapped]
+        public string CityName { get; set; }
         [Display(Name = "Ім'я")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
             ErrorMessage = "Ім'я має містити тільки літери")]
@@ -26,9 +28,9 @@ namespace EPlast.DataAccess.Entities
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Прізвище повинне складати від 2 до 25 символів")]
         public string LastName { get; set; }
 
-        [Display(Name = "По-батькові")]
+        [Display(Name = "По батькові")]
         [RegularExpression(@"^[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26}((\s+|-)[a-zA-Zа-яА-ЯІіЄєЇїҐґ'.`]{1,26})*$",
-            ErrorMessage = "По-батькові має містити тільки літери")]
+            ErrorMessage = "По батькові має містити тільки літери")]
         [StringLength(25, MinimumLength = 2, ErrorMessage = "Поле по-батькові повинне складати від 2 до 25 символів")]
         public string FatherName { get; set; }
         [StringLength(18, MinimumLength = 18, ErrorMessage = "Номер телефону повинен містити 10 цифр")]
@@ -38,7 +40,10 @@ namespace EPlast.DataAccess.Entities
         public DateTime EmailSendedOnForgotPassword { get; set; }
         public string ImagePath { get; set; }
         public bool SocialNetworking { get; set; }
+        public string Comment { get; set; }
         public UserProfile UserProfile { get; set; }
+        public int? RegionId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
+        public int? CityId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
         public ICollection<ConfirmedUser> ConfirmedUsers { get; set; }
         public ICollection<Approver> Approvers { get; set; }
         public ICollection<EventAdmin> Events { get; set; }
@@ -59,7 +64,9 @@ namespace EPlast.DataAccess.Entities
         public ICollection<UserRenewal> UserRenewals { get; set; }
         public ClubReportPlastDegrees ClubReportPlastDegrees { get; set; }
         public ClubReportCities ClubReportCities { get; set; }
+       
 
+        public ICollection<AchievementDocuments> AchievementDocuments { get; set; }
         public User()
         {
             Approvers = new List<Approver>();

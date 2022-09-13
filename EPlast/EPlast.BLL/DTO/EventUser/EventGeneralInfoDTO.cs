@@ -2,7 +2,7 @@
 
 namespace EPlast.BLL.DTO.EventUser
 {
-    public class EventGeneralInfoDTO
+    public class EventGeneralInfoDto
     {
         public int ID { get; set; }
         public string EventName { get; set; }

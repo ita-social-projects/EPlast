@@ -8,8 +8,8 @@ namespace EPlast.BLL.Mapping.City
     {
         public CityProfile()
         {
-            CreateMap<CityViewModel, CityDTO>().ReverseMap();
-            CreateMap<CityProfileDTO, CityViewModel>()
+            CreateMap<CityViewModel, CityDto>().ReverseMap();
+            CreateMap<CityProfileDto, CityViewModel>()
                 .ForMember(r => r.Head, s => s.MapFrom(t => t.Head))
                 .ForMember(r => r.Administration, s => s.MapFrom(t => t.Admins))
                 .ForMember(r => r.Members, s => s.MapFrom(t => t.Members))
@@ -21,10 +21,8 @@ namespace EPlast.BLL.Mapping.City
                 .ForMember(r => r.Email, s => s.MapFrom(t => t.City.Email))
                 .ForMember(r => r.CityURL, s => s.MapFrom(t => t.City.CityURL))
                 .ForMember(r => r.Description, s => s.MapFrom(t => t.City.Description))
-                .ForMember(r => r.Street, s => s.MapFrom(t => t.City.Street))
-                .ForMember(r => r.HouseNumber, s => s.MapFrom(t => t.City.HouseNumber))
-                .ForMember(r => r.OfficeNumber, s => s.MapFrom(t => t.City.OfficeNumber))
-                .ForMember(r => r.PostIndex, s => s.MapFrom(t => t.City.PostIndex))
+                .ForMember(r => r.Address, s => s.MapFrom(t => t.City.Address))
+                .ForMember(r => r.Level, s => s.MapFrom(t => t.City.Level))
                 .ForMember(r => r.Logo, s => s.MapFrom(t => t.City.Logo))
                 .ForMember(r => r.Region, s => s.MapFrom(t => t.City.Region))
                 .ForMember(r => r.CanCreate, s => s.MapFrom(t => t.City.CanCreate))
@@ -34,7 +32,8 @@ namespace EPlast.BLL.Mapping.City
                 .ForMember(r => r.MemberCount, s => s.MapFrom(t => t.City.MemberCount))
                 .ForMember(r => r.FollowerCount, s => s.MapFrom(t => t.City.FollowerCount))
                 .ForMember(r => r.AdministrationCount, s => s.MapFrom(t => t.City.AdministrationCount))  
-                .ForMember(r => r.DocumentsCount, s => s.MapFrom(t => t.City.DocumentsCount));
+                .ForMember(r => r.DocumentsCount, s => s.MapFrom(t => t.City.DocumentsCount))
+                .ForMember(r => r.Oblast, s => s.MapFrom(t => t.City.Oblast));
 
         }
     }

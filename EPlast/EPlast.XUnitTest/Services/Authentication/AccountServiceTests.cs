@@ -1,8 +1,14 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Services;
+using EPlast.BLL.Services.Auth;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.AspNetCore.Authentication;
@@ -13,19 +19,13 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using EPlast.BLL.Services.Auth;
 using Xunit;
 
 namespace EPlast.XUnitTest.Services
 {
     public class AuthServiceTests
     {
-        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, Mock<IEmailSendingService>, Mock<IEmailContentService>, AuthService) CreateAuthService()
+        public (Mock<SignInManager<User>>, Mock<UserManager<User>>, AuthService) CreateAuthService()
         {
             Mock<IUserPasswordStore<User>> userPasswordStore = new Mock<IUserPasswordStore<User>>();
             userPasswordStore.Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -72,22 +72,18 @@ namespace EPlast.XUnitTest.Services
                            _contextAccessor.Object, _userPrincipalFactory.Object, null, null, null, null);
 
             Mock<IRepositoryWrapper> mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
-            Mock<IEmailSendingService> mockEmailConfirmation = new Mock<IEmailSendingService>();
-            Mock<IEmailContentService> mockEmailContentService = new Mock<IEmailContentService>();
             Mock<IMapper> mockMapper = new Mock<IMapper>();
             mockMapper
-               .Setup(s => s.Map<UserDTO, User>(It.IsAny<UserDTO>()))
+               .Setup(s => s.Map<UserDto, User>(It.IsAny<UserDto>()))
                .Returns(GetTestUserWithEmailsSendedTime());
 
             AuthService AuthService = new AuthService(
                 mockUserManager.Object,
                 mockSignInManager.Object,
-                mockEmailConfirmation.Object,
-                mockEmailContentService.Object,
                 mockMapper.Object,
                 mockRepositoryWrapper.Object);
 
-            return (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService);
+            return (mockSignInManager, mockUserManager, AuthService);
         }
 
         public (
@@ -133,7 +129,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestSignInAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                .ReturnsAsync(GetTestUserWithAllFields());
@@ -154,7 +150,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestCreateAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
               .Setup(s => s.CreateAsync(It.IsAny<User>(), It.IsAny<string>()))
               .Returns(Task.FromResult(IdentityResult.Success));
@@ -200,7 +196,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestChangePassword()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserWithAllFields());
@@ -221,7 +217,7 @@ namespace EPlast.XUnitTest.Services
         public void TestGetAuthProperties()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockSignInManager
               .Setup(s => s.ConfigureExternalAuthenticationProperties(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
               .Returns(GetTestAuthenticationProperties());
@@ -238,7 +234,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestInfoAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockSignInManager
               .Setup(s => s.GetExternalLoginInfoAsync(It.IsAny<string>()))
               .ReturnsAsync(GetExternalLoginInfoFake());
@@ -255,7 +251,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestGetSignInResultAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockSignInManager
               .Setup(s => s.ExternalLoginSignInAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
               .ReturnsAsync(SignInResult.Success);
@@ -272,7 +268,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestIsEmailConfirmedAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
               .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
               .ReturnsAsync(true);
@@ -289,7 +285,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestIsEmailConfirmedAsyncFalse()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
               .Setup(s => s.IsEmailConfirmedAsync(It.IsAny<User>()))
               .ReturnsAsync(false);
@@ -306,7 +302,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestAddRoleAndTokenAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetTestUserWithAllFields());
@@ -327,7 +323,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestGenerateConfToken()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                 .Setup(s => s.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetTestCode());
@@ -344,7 +340,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestGenerateResetTokenAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                 .Setup(s => s.GeneratePasswordResetTokenAsync(It.IsAny<User>()))
                 .ReturnsAsync(GetTestCode());
@@ -361,7 +357,7 @@ namespace EPlast.XUnitTest.Services
         public async Task TestResetPasswordAsync()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                 .Setup(s => s.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Success);
@@ -378,7 +374,7 @@ namespace EPlast.XUnitTest.Services
         public async Task FindByEmailReturnsNull()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
             mockUserManager
                 .Setup(s => s.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync((User)null);
@@ -394,7 +390,7 @@ namespace EPlast.XUnitTest.Services
         public void GetTimeAfterRegistrTest()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
 
             //Act
             var result = AuthService.GetTimeAfterRegister(GetTestUserDtoWithEmailsSendedTime());
@@ -407,7 +403,7 @@ namespace EPlast.XUnitTest.Services
         public void GetTimeAfterResetTest()
         {
             //Arrange
-            var (mockSignInManager, mockUserManager, mockEmailConfirmation, mockEmailContentService, AuthService) = CreateAuthService();
+            var (mockSignInManager, mockUserManager, AuthService) = CreateAuthService();
 
             //Act
             var result = AuthService.GetTimeAfterReset(GetTestUserDtoWithEmailsSendedTime());
@@ -433,9 +429,9 @@ namespace EPlast.XUnitTest.Services
             };
         }
 
-        private UserDTO GetTestUserDtoWithAllFields()
+        private UserDto GetTestUserDtoWithAllFields()
         {
-            return new UserDTO()
+            return new UserDto()
             {
                 UserName = "andriishainoha@gmail.com",
                 FirstName = "Andrii",
@@ -460,11 +456,14 @@ namespace EPlast.XUnitTest.Services
         {
             var registerDto = new RegisterDto
             {
+                FirstName = "Andrii",
+                LastName = "Shainoha",
+                GenderId = 1,
+                Birthday = DateTime.Now.AddYears(-18),
+                Address = "вулиця Героїв України",
+                PhoneNumber = "+380123456789",
                 Email = "andriishainoha@gmail.com",
-                Name = "Andrii",
-                SurName = "Shainoha",
-                Password = "andrii123",
-                ConfirmPassword = "andrii123"
+                Password = "andrii123"
             };
             return registerDto;
         }
@@ -528,10 +527,7 @@ namespace EPlast.XUnitTest.Services
 
         private User GetTestUserWithEmailsSendedTime()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                    .GetCurrentTime()
-                    .AddMinutes(-GetTestDifferenceInTime());
+            var timeEmailSended = DateTime.Now.AddMinutes(-GetTestDifferenceInTime());
 
             return new User()
             {
@@ -540,14 +536,11 @@ namespace EPlast.XUnitTest.Services
             };
         }
 
-        private UserDTO GetTestUserDtoWithEmailsSendedTime()
+        private UserDto GetTestUserDtoWithEmailsSendedTime()
         {
-            IDateTimeHelper dateTimeResetingPassword = new DateTimeHelper();
-            var timeEmailSended = dateTimeResetingPassword
-                    .GetCurrentTime()
-                    .AddMinutes(-GetTestDifferenceInTime());
+            var timeEmailSended = DateTime.Now.AddMinutes(-GetTestDifferenceInTime());
 
-            return new UserDTO()
+            return new UserDto()
             {
                 EmailSendedOnForgotPassword = timeEmailSended,
                 EmailSendedOnRegister = timeEmailSended

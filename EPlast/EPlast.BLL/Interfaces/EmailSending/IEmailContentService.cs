@@ -57,8 +57,9 @@ namespace EPlast.BLL.Interfaces
         /// </summary>
         /// <param name="cityUrl">City url</param>
         /// <param name="cityName">City name</param>
+        /// <param name="comment">Comment stating a reason for the removal</param>
         /// <returns>Email content</returns>
-        EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName);
+        EmailModel GetCityRemoveFollowerEmail(string cityUrl, string cityName, string comment);
 
         /// <summary>
         /// Get email to inform user about his new supporter role when he was approved
@@ -75,6 +76,8 @@ namespace EPlast.BLL.Interfaces
         /// <param name="isReminder">Determinate whether its first email or weekly reminder</param>
         /// <returns>Email content</returns>
         Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
+
+        Task<EmailModel> GetRegionAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
 
         /// <summary>
         /// Get email to inform user about approve in city

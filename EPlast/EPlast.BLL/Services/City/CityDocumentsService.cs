@@ -1,14 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces.AzureStorage;
 using EPlast.BLL.Interfaces.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using EPlast.BLL.Interfaces;
 
 namespace EPlast.BLL.Services.City
 {
@@ -17,17 +16,16 @@ namespace EPlast.BLL.Services.City
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly IMapper _mapper;
         private readonly ICityFilesBlobStorageRepository _cityFilesBlobStorage;
-        private readonly IUniqueIdService _uniqueId;
 
-        public CityDocumentsService(IRepositoryWrapper repositoryWrapper,
+        public CityDocumentsService(
+            IRepositoryWrapper repositoryWrapper,
             IMapper mapper,
-            ICityFilesBlobStorageRepository cityFilesBlobStorage,
-            IUniqueIdService uniqueId)
+            ICityFilesBlobStorageRepository cityFilesBlobStorage
+        )
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _cityFilesBlobStorage = cityFilesBlobStorage;
-            _uniqueId = uniqueId;
         }
 
         private async Task<IEnumerable<CityDocumentType>> GetAllCityDocumentTypeEntities()
@@ -38,19 +36,19 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityDocumentTypeDTO>> GetAllCityDocumentTypesAsync()
+        public async Task<IEnumerable<CityDocumentTypeDto>> GetAllCityDocumentTypesAsync()
         {
             var documentTypes = await GetAllCityDocumentTypeEntities();
 
-            return _mapper.Map<IEnumerable<CityDocumentType>, IEnumerable<CityDocumentTypeDTO>>(documentTypes);
+            return _mapper.Map<IEnumerable<CityDocumentType>, IEnumerable<CityDocumentTypeDto>>(documentTypes);
         }
 
         /// <inheritdoc />
-        public async Task<CityDocumentsDTO> AddDocumentAsync(CityDocumentsDTO documentDTO)
+        public async Task<CityDocumentsDto> AddDocumentAsync(CityDocumentsDto documentDTO)
         {
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
             var extension = $".{documentDTO.FileName.Split('.').LastOrDefault()}";
-            var fileName = $"{_uniqueId.GetUniqueId()}{extension}";
+            var fileName = $"{Guid.NewGuid()}{extension}";
 
             await _cityFilesBlobStorage.UploadBlobForBase64Async(fileBase64, fileName);
             documentDTO.BlobName = fileName;
@@ -60,7 +58,7 @@ namespace EPlast.BLL.Services.City
                 .FirstOrDefault(dt => dt.Name == documentDTO.CityDocumentType.Name);
             documentDTO.CityDocumentTypeId = documentDTO.CityDocumentType.ID;
 
-            var document = _mapper.Map<CityDocumentsDTO, CityDocuments>(documentDTO);
+            var document = _mapper.Map<CityDocumentsDto, CityDocuments>(documentDTO);
             _repositoryWrapper.CityDocuments.Attach(document);
             await _repositoryWrapper.CityDocuments.CreateAsync(document);
             await _repositoryWrapper.SaveAsync();

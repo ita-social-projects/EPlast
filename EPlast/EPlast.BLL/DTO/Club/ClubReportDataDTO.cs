@@ -3,13 +3,13 @@ using EPlast.DataAccess.Entities;
 
 namespace EPlast.BLL.DTO.Club
 {
-    public class ClubReportDataDTO
+    public class ClubReportDataDto
     {
-        public ClubDTO Club { get; set; }
-        public ClubReportAdministrationDTO Head { get; set; }
-        public List<ClubReportAdministrationDTO> Admins { get; set; }
-        public List<ClubMemberHistoryDTO> Members { get; set; }
-        public List<ClubMemberHistoryDTO> Followers { get; set; }
+        public ClubDto Club { get; set; }
+        public ClubReportAdministrationDto Head { get; set; }
+        public List<ClubReportAdministrationDto> Admins { get; set; }
+        public List<ClubMemberHistoryDto> Members { get; set; }
+        public List<ClubMemberHistoryDto> Followers { get; set; }
         public int CountUsersPerYear {get;set;}
         public int CountDeletedUsersPerYear { get; set; }
         public string PhoneNumber { get; set; }

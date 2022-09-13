@@ -8,11 +8,20 @@
     "AddCityHead": true,
     "DownloadDocument": true
   },
+  "Крайовий Адмін": {
+    "IsAdmin": true,
+    "CreateCity": true,
+    "EditCity": true,
+    "DeleteCity": false,
+    "AddCitySecretary": true,
+    "AddCityHead": true,
+    "DownloadDocument": true
+  },
   "Голова Округи": {
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
-    "DeleteCity": false,
+    "DeleteCity": true,
     "AddCitySecretary": false,
     "AddCityHead": false,
     "DownloadDocument": true
@@ -21,7 +30,7 @@
     "IsAdmin": true,
     "EditCity": false,
     "CreateCity": false,
-    "DeleteCity": false,
+    "DeleteCity": true,
     "AddCitySecretary": false,
     "AddCityHead": false,
     "DownloadDocument": true
@@ -88,5 +97,33 @@
     "AddCitySecretary": false,
     "AddCityHead": false,
     "DownloadDocument": false
+  },
+  "Референт/-ка УПС Станиці": {
+    "IsAdmin": true,
+    "EditCity": true,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Референт/-ка УСП Станиці": {
+    "IsAdmin": true,
+    "EditCity": true,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
+  },
+  "Референт дійсного членства Станиці": {
+    "IsAdmin": true,
+    "EditCity": true,
+    "CreateCity": false,
+    "DeleteCity": false,
+    "AddCitySecretary": false,
+    "AddCityHead": false,
+    "DownloadDocument": true
   }
+
 }

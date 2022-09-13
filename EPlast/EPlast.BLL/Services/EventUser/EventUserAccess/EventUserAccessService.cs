@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
-using System.Linq;
-using System.Threading.Tasks;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 
@@ -44,12 +44,12 @@ namespace EPlast.BLL.Services.EventUser.EventUserAccess
 
             userAccesses["SubscribeOnEvent"] = !access;
 
-            if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead)))
+            if (!(roles.Contains(Roles.Admin) || roles.Contains(Roles.GoverningBodyHead) || roles.Contains(Roles.GoverningBodyAdmin)))
             {
-                FunctionalityWithSpecificAccessForEvents.canWhenUserIsAdmin.ForEach(i => userAccesses[i] = access);
+                FunctionalityWithSpecificAccessForEvents.CanWhenUserIsAdmin.ForEach(i => userAccesses[i] = access);
                 if (eventStatus == "Затверджено")
                 {
-                    FunctionalityWithSpecificAccessForEvents.cannotWhenEventIsApproved.ForEach(i => userAccesses[i] = false);
+                    FunctionalityWithSpecificAccessForEvents.CannotWhenEventIsApproved.ForEach(i => userAccesses[i] = false);
                 }
             }
             else if (eventStatus == "Завершено")

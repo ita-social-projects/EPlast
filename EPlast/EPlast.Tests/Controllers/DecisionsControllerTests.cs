@@ -1,72 +1,85 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading;
+using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.Commands.Decision;
 using EPlast.BLL.DTO;
 using EPlast.BLL.Interfaces.GoverningBodies;
+using EPlast.BLL.Queries.Decision;
+using EPlast.BLL.Services.Interfaces;
+using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.Decision;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Decision;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Controllers
 {
     [TestFixture]
     internal class DecisionsControllerTests
     {
-        private Mock<IDecisionService> _decisionService;
         private Mock<IPdfService> _pdfService = new Mock<IPdfService>();
         private Mock<IMapper> _mapper;
         private Mock<IGoverningBodiesService> _goverrningBodiesService;
-
+        private Mock<IUserManagerService> _userManagerService;
+        private Mock<HttpContext> _httpContext;
+        private ControllerContext _context;
+        private Mock<IMediator> _mockMediator;
+        private Mock<IDecisionVmInitializer> _mockGetDecisionStatusTypesExtention;
         private DecisionsController _decisionsController;
 
         [SetUp]
         public void SetUp()
         {
-            _decisionService = new Mock<IDecisionService>();
+            _mockMediator = new Mock<IMediator>();
             _pdfService = new Mock<IPdfService>();
             _mapper = new Mock<IMapper>();
+            _userManagerService = new Mock<IUserManagerService>();
             _goverrningBodiesService = new Mock<IGoverningBodiesService>();
-
+            _httpContext = new Mock<HttpContext>();
+            _mockGetDecisionStatusTypesExtention = new Mock<IDecisionVmInitializer>();
+            _context = new ControllerContext(
+               new ActionContext(
+                   _httpContext.Object, new RouteData(),
+                   new ControllerActionDescriptor()));
             _decisionsController = new DecisionsController(
                 _pdfService.Object,
-                _decisionService.Object,
+                _userManagerService.Object,
                 _mapper.Object,
-                _goverrningBodiesService.Object);
+                _goverrningBodiesService.Object, _mockMediator.Object);
         }
-
+        
         [Test]
         public async Task GetMetaData_DecisionById_ReturnsOkObjectResult()
         {
             //Arrange
             _goverrningBodiesService
                 .Setup(x => x.GetGoverningBodiesListAsync())
-                .ReturnsAsync(new List<GoverningBodyDTO>().AsEnumerable());
-            _decisionService
-                .Setup(x => x.GetDecisionTargetListAsync())
-                .ReturnsAsync(GetFakeDecisionTargetDtosDtos());
-            _decisionService
-                .Setup(x => x.GetDecisionStatusTypes())
-                .Returns(GetFakeSelectListItems());
+                .ReturnsAsync(new List<GoverningBodyDto>().AsEnumerable());
+            _mockGetDecisionStatusTypesExtention.Setup(x => x.GetDecesionStatusTypes()).Returns(GetFakeSelectListItems());
 
             //Act
             var result = await _decisionsController.GetMetaData();
             var resultValue = (result.Result as OkObjectResult).Value;
             var decisionStatusTypes = (resultValue as DecisionCreateViewModel).DecisionStatusTypeListItems;
-            var decisionTargets = (resultValue as DecisionCreateViewModel).DecisionTargets;
 
             //Assert
-            _decisionService.Verify();
             Assert.IsNotNull(result);
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<DecisionCreateViewModel>(resultValue);
-            Assert.AreEqual(2, decisionStatusTypes.Count());
-            Assert.AreEqual(2, decisionTargets.Count());
+            Assert.AreEqual(3, decisionStatusTypes.Count());
             Assert.IsInstanceOf<ActionResult<DecisionCreateViewModel>>(result);
         }
 
@@ -74,17 +87,14 @@ namespace EPlast.Tests.Controllers
         public async Task Get_DecisionById_ReturnsOkObjectResult()
         {
             //Arrange
-            _decisionService
-                .Setup(x => x.GetDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync(new DecisionDTO());
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetDecisionAsyncQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(new DecisionDto());
 
             //Act
             var result = await _decisionsController.Get(It.IsAny<int>());
-            var decisionDTO = (result as ObjectResult).Value as DecisionDTO;
+            var decisionDTO = (result as ObjectResult).Value as DecisionDto;
 
             //Assert
-            _decisionService.Verify();
-            Assert.IsInstanceOf<DecisionDTO>(decisionDTO);
+            Assert.IsInstanceOf<DecisionDto>(decisionDTO);
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
@@ -93,10 +103,6 @@ namespace EPlast.Tests.Controllers
         public async Task Get_ReturnsNotFoundResult()
         {
             //Arrange
-            _decisionService
-                .Setup(x => x.GetDecisionAsync(It.IsAny<int>()))
-                .ReturnsAsync((DecisionDTO)null);
-
             //Act
             var result = await _decisionsController.Get(It.IsAny<int>());
 
@@ -109,34 +115,77 @@ namespace EPlast.Tests.Controllers
         public async Task Update_ReturnsNoContentResult()
         {
             //Arrange
-            var mockDecision = new DecisionDTO();
-            _decisionService
-                .Setup(x => x.ChangeDecisionAsync(mockDecision));
+            _httpContext = new Mock<HttpContext>();
+
+            var fakeIdentity = new GenericIdentity("User");
+            var principal = new GenericPrincipal(fakeIdentity, null);
+
+            _httpContext.Setup(t => t.User).Returns(principal);
+            DecisionsController decisionsController = _decisionsController;
+            decisionsController.ControllerContext = _context;
+            var mockDecision = new DecisionDto() { UserId = "qwerty" };
+            _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(mockDecision);
+            _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));
+
+            var user = new User() { Id = "qwerty" };
+            var _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
+            _userManagerMock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(user);
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(false);
 
             //Act
-            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision);
+            var result = await _decisionsController.Update(It.IsAny<int>(), mockDecision, _userManagerMock.Object);
 
             //Assert
-            _decisionService.Verify();
+            _mockMediator.Verify();
             Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task Update_Returns403Result()
+        {
+            //Arrange
+            _httpContext = new Mock<HttpContext>();
+
+            var fakeIdentity = new GenericIdentity("User");
+            var principal = new GenericPrincipal(fakeIdentity, null);
+            _httpContext.Setup(t => t.User).Returns(principal);
+            DecisionsController decisionsController = _decisionsController;
+            decisionsController.ControllerContext = _context;
+            var mockDecision = new DecisionDto() { UserId = "qazzaq" };
+            _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionAsyncQuery>(),It.IsAny<CancellationToken>())).ReturnsAsync(mockDecision);
+            _mockMediator.Setup(x => x.Send(It.IsAny<UpdateCommand>(), It.IsAny<CancellationToken>()));
+
+            var user = new User() { Id = "qwerty" };
+            var _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
+            _userManagerMock.Setup(m => m.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(user);
+            _userManagerMock.Setup(m => m.IsInRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
+                .ReturnsAsync(false);
+
+            //Act
+            var actual = await _decisionsController.Update(It.IsAny<int>(), mockDecision, _userManagerMock.Object);
+
+            //Assert
+            _mockMediator.Verify();
+            Assert.IsInstanceOf<ForbidResult>(actual);
         }
 
         [Test]
         public async Task Update_InvalidID_ReturnsBadRequestResult()
         {
             //Arrange
-            var expected = 1;
-            var mockDecision = new DecisionDTO();
-            mockDecision.ID = 2;
-            _decisionService
-                .Setup(x => x.ChangeDecisionAsync(mockDecision));
+            var id = 1;
+            var mockDecision = new DecisionDto();
+            var _userManagerMock = new Mock<UserManager<User>>(Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
 
             //Act
-            var result = await _decisionsController.Update(expected, mockDecision);
+            var result = await _decisionsController.Update(id, mockDecision, _userManagerMock.Object);
 
             //Assert
-            _decisionService.Verify();
-            Assert.IsInstanceOf<BadRequestResult>(result);
+            _mockMediator.Verify();
+            Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
 
         [Test]
@@ -144,28 +193,25 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var governingBodyName = "SomeName";
-            DecisionWrapperDTO decisionWrapperDTO = new DecisionWrapperDTO()
+            DecisionWrapperDto decisionWrapperDTO = new DecisionWrapperDto()
             {
-                Decision = new DecisionDTO()
+                Decision = new DecisionDto()
                 {
-                    GoverningBody = new GoverningBodyDTO
+                    GoverningBody = new GoverningBodyDto
                     {
                         GoverningBodyName = governingBodyName
                     }
                 }
             };
-            _decisionService
-                .Setup(x => x.SaveDecisionAsync(decisionWrapperDTO))
-                .ReturnsAsync(decisionWrapperDTO.Decision.ID);
-            _decisionService
-                .Setup(x => x.GetDecisionOrganizationAsync(decisionWrapperDTO.Decision.GoverningBody))
-                .ReturnsAsync(decisionWrapperDTO.Decision.GoverningBody);
+            _mockMediator.Setup(x=>x.Send(It.IsAny<SaveDecisionAsyncCommand>(),It.IsAny<CancellationToken>())).ReturnsAsync(decisionWrapperDTO.Decision.ID);
+            _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionOrganizationAsyncQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(decisionWrapperDTO.Decision.GoverningBody);
+           
 
             //Act
             var result = await _decisionsController.Save(decisionWrapperDTO);
 
             //Assert
-            _decisionService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -174,9 +220,9 @@ namespace EPlast.Tests.Controllers
         public async Task Save_ReturnsBadRequestResult()
         {
             //Arrange
-            var decisionWrapper = new DecisionWrapperDTO()
+            var decisionWrapper = new DecisionWrapperDto()
             {
-                Decision = new DecisionDTO
+                Decision = new DecisionDto
                 {
                     FileName = "string"
                 },
@@ -197,14 +243,11 @@ namespace EPlast.Tests.Controllers
         public async Task Delete_ReturnsNoContent()
         {
             //Arrange
-            _decisionService
-                .Setup(x => x.DeleteDecisionAsync(It.IsAny<int>()));
-
             //Act
             var result = await _decisionsController.Delete(It.IsAny<int>());
 
             //Assert
-            _decisionService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<NoContentResult>(result);
         }
@@ -213,15 +256,11 @@ namespace EPlast.Tests.Controllers
         public async Task Get_ReturnsOkObjectResult()
         {
             //Arrange
-            _decisionService
-                .Setup(x => x.GetDecisionListAsync())
-                .ReturnsAsync(GetFakeDecisionWrapperDtos());
+            _mockMediator.Setup(x=>x.Send(It.IsAny<GetDecisionListAsyncQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(GetFakeDecisionWrapperDtos());
             _mapper
-                .Setup(m => m.Map<DecisionViewModel>(It.IsAny<DecisionDTO>()))
+                .Setup(m => m.Map<DecisionViewModel>(It.IsAny<DecisionDto>()))
                 .Returns(GetFakeDecisionViewModel());
-            _decisionService
-                .Setup(x => x.GetDecisionStatusTypes())
-                .Returns(GetFakeSelectListItems());
+            _mockGetDecisionStatusTypesExtention.Setup(x => x.GetDecesionStatusTypes()).Returns(GetFakeSelectListItems());
 
             //Act
             var result = await _decisionsController.Get();
@@ -229,7 +268,7 @@ namespace EPlast.Tests.Controllers
             var decisions = resultValue as List<DecisionViewModel>;
 
             //Assert
-            _decisionService.Verify();
+            _mockMediator.Verify();
             _mapper.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -241,10 +280,7 @@ namespace EPlast.Tests.Controllers
         public void GetDecisionsForTable_ReturnsOkObjectResult()
         {
             //Arrange
-            _decisionService
-                .Setup(x => x.GetDecisionsForTable(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>()))
-                .Returns(new List<DecisionTableObject>());
+            _mockMediator.Setup(x => x.Send(It.IsAny<GetDecisionsForTableQuery>(),It.IsAny<CancellationToken>())).Returns(FakedDecisionTableObject);
 
             //Act
             var result = _decisionsController.GetDecisionsForTable(It.IsAny<string>(),
@@ -252,7 +288,7 @@ namespace EPlast.Tests.Controllers
             var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert
-            _decisionService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(resultValue);
@@ -264,8 +300,8 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             var returnResult = "result";
-            _decisionService
-                .Setup(x => x.DownloadDecisionFileFromBlobAsync(It.IsAny<string>()))
+            _mockMediator
+                .Setup(x => x.Send(It.IsAny<DownloadDecisionFileFromBlobAsyncQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(returnResult);
 
             //Act
@@ -273,7 +309,7 @@ namespace EPlast.Tests.Controllers
             var resultValue = (result as OkObjectResult).Value;
 
             //Assert
-            _decisionService.Verify();
+            _mockMediator.Verify();
             Assert.IsNotNull(resultValue);
             Assert.IsInstanceOf<string>(resultValue);
             Assert.IsNotNull(result);
@@ -301,46 +337,56 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+        [Test]
+        public async Task GetTargetList_ReturnsOkObjectResult()
+        {
+            //Act
+            var result = await _decisionsController.GetDecisionTargetSearchList(It.IsAny<string>());
 
+            //Assert
+            _mockMediator.Verify();
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
         public DecisionViewModel GetFakeDecisionViewModel()
             => new DecisionViewModel
             {
                 Id = 1
             };
 
-        public List<DecisionWrapperDTO> GetFakeDecisionWrapperDtos()
-            => new List<DecisionWrapperDTO>
+        public List<DecisionWrapperDto> GetFakeDecisionWrapperDtos()
+            => new List<DecisionWrapperDto>
             {
-                new DecisionWrapperDTO
+                new DecisionWrapperDto
                 {
-                    Decision = new DecisionDTO()
+                    Decision = new DecisionDto()
                     {
                         ID = 1,
-                        DecisionStatusType = DecisionStatusTypeDTO.Confirmed
+                        DecisionStatusType = DecisionStatusTypeDto.Confirmed
                     },
                     FileAsBase64 = "file1"
                 },
-                new DecisionWrapperDTO
+                new DecisionWrapperDto
                 {
-                    Decision = new DecisionDTO()
+                    Decision = new DecisionDto()
                     {
                         ID = 2,
-                        DecisionStatusType = DecisionStatusTypeDTO.Confirmed
+                        DecisionStatusType = DecisionStatusTypeDto.Confirmed
                     },
                     FileAsBase64 = "file2"
                 }
             };
 
 
-        public List<DecisionTargetDTO> GetFakeDecisionTargetDtosDtos()
-            => new List<DecisionTargetDTO>
+        public List<DecisionTargetDto> GetFakeDecisionTargetDtosDtos()
+            => new List<DecisionTargetDto>
             {
-                new DecisionTargetDTO
+                new DecisionTargetDto
                 {
                     ID = 1,
                     TargetName = "Name1"
                 },
-                new DecisionTargetDTO
+                new DecisionTargetDto
                 {
                     ID = 2,
                     TargetName = "Name2"
@@ -361,5 +407,10 @@ namespace EPlast.Tests.Controllers
                     Text = "Text2"
                 },
             };
+            
+        public Task<IEnumerable<DecisionTableObject>> FakedDecisionTableObject()
+        {
+            return Task.FromResult(new List<DecisionTableObject>().AsEnumerable());
+        }
     }
 }

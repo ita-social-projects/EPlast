@@ -1,20 +1,20 @@
-﻿using EPlast.BLL;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using EPlast.BLL;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.Blank;
+using EPlast.BLL.Interfaces.Logging;
+using EPlast.DataAccess.Entities;
+using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using EPlast.BLL.Interfaces.Logging;
-using EPlast.DataAccess.Entities;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.Tests.Controllers
 {
@@ -23,19 +23,19 @@ namespace EPlast.Tests.Controllers
     {
         Mock<IBlankBiographyDocumentService> _mockBiographyService;
         Mock<IBlankAchievementDocumentService> _mockBlankAchievementDocumentService;
-        Mock<IBlankExtractFromUPUDocumentService> _mockBlankExtractFromUPUDocumentService;
+        Mock<IBlankExtractFromUpuDocumentService> _mockBlankExtractFromUPUDocumentService;
         Mock<IPdfService> _pdfService;
         Mock<ILoggerService<BlanksController>> _mockLoggerService;
         private Mock<UserManager<User>> _mockUserManager;
         BlanksController _blanksController;
-        
+
 
         [SetUp]
         public void SetUp()
         {
             _mockBiographyService = new Mock<IBlankBiographyDocumentService>();
             _mockBlankAchievementDocumentService = new Mock<IBlankAchievementDocumentService>();
-            _mockBlankExtractFromUPUDocumentService = new Mock<IBlankExtractFromUPUDocumentService>();
+            _mockBlankExtractFromUPUDocumentService = new Mock<IBlankExtractFromUpuDocumentService>();
             _pdfService = new Mock<IPdfService>();
             _mockLoggerService = new Mock<ILoggerService<BlanksController>>();
             var store = new Mock<IUserStore<User>>();
@@ -51,7 +51,7 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _mockBiographyService
-                .Setup(x => x.AddDocumentAsync(It.IsAny<BlankBiographyDocumentsDTO>()))
+                .Setup(x => x.AddDocumentAsync(It.IsAny<BlankBiographyDocumentsDto>()))
                 .ReturnsAsync(GetBlankBiographyDocumentDTO());
 
             //Act
@@ -70,11 +70,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _mockBlankAchievementDocumentService
-                .Setup(x => x.AddDocumentAsync(It.IsAny<List<AchievementDocumentsDTO>>()))
-                .ReturnsAsync(new List<AchievementDocumentsDTO>());
+                .Setup(x => x.AddDocumentAsync(It.IsAny<List<AchievementDocumentsDto>>()))
+                .ReturnsAsync(new List<AchievementDocumentsDto>());
 
             //Act
-            var document = await _blanksController.AddAchievementDocument(new List<AchievementDocumentsDTO>());
+            var document = await _blanksController.AddAchievementDocument(new List<AchievementDocumentsDto>());
             CreatedResult createdResult = document as CreatedResult;
 
             //Assert
@@ -91,11 +91,11 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             _mockBlankExtractFromUPUDocumentService
-                .Setup(x => x.AddDocumentAsync(It.IsAny<ExtractFromUPUDocumentsDTO>()))
-                .ReturnsAsync(new ExtractFromUPUDocumentsDTO());
+                .Setup(x => x.AddDocumentAsync(It.IsAny<ExtractFromUpuDocumentsDto>()))
+                .ReturnsAsync(new ExtractFromUpuDocumentsDto());
 
             //Act
-            var document = await _blanksController.AddExtractFromUPUDocument(new ExtractFromUPUDocumentsDTO());
+            var document = await _blanksController.AddExtractFromUPUDocument(new ExtractFromUpuDocumentsDto());
             CreatedResult createdResult = document as CreatedResult;
 
             //Assert
@@ -273,16 +273,20 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual("Dogovir", result.Value);
         }
 
-        [TestCase(1, 1, "userId")]
-        public async Task GetPartOfAchievement_ReturnsOkObjectResult(int pageNumber, int pageSize, string userId)
+        [TestCase(1, 1, "userId", 0)]
+        [TestCase(1, 1, "userId", 1)]
+        public async Task GetPartOfAchievementByUserId_ReturnsOkObjectResult(int pageNumber, int pageSize, string userId, int courseId)
         {
             //Arrange
             _mockBlankAchievementDocumentService
-               .Setup(x => x.GetPartOfAchievementAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
-               .ReturnsAsync(new List<AchievementDocumentsDTO>());
+               .Setup(x => x.GetPartOfAchievementByUserIdAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+               .ReturnsAsync(new List<AchievementDocumentsDto>());
+            _mockBlankAchievementDocumentService
+               .Setup(x => x.GetPartOfAchievementByUserIdAndCourseIdAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<int>()))
+               .ReturnsAsync(new List<AchievementDocumentsDto>());
 
             //Act
-            var result = await _blanksController.GetPartOfAchievement(pageNumber, pageSize, userId);
+            var result = await _blanksController.GetPartOfAchievement(pageNumber, pageSize, userId, courseId);
             OkObjectResult okObjectResult = result as OkObjectResult;
 
             //Assert
@@ -300,7 +304,7 @@ namespace EPlast.Tests.Controllers
             _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(new User() {Id = userId});
             _mockBlankAchievementDocumentService.Setup(x => x.GetDocumentsByUserIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new List<AchievementDocumentsDTO>());
+                .ReturnsAsync(new List<AchievementDocumentsDto>());
 
             //Act
             var result = await _blanksController.GetAchievementDocumentsByUserId(userId);
@@ -322,7 +326,7 @@ namespace EPlast.Tests.Controllers
                 .ReturnsAsync(new User() { Id = "" });
             _mockUserManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>());
             _mockBlankAchievementDocumentService.Setup(x => x.GetDocumentsByUserIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new List<AchievementDocumentsDTO>());
+                .ReturnsAsync(new List<AchievementDocumentsDto>());
 
             var expected = StatusCodes.Status403Forbidden;
 
@@ -341,11 +345,12 @@ namespace EPlast.Tests.Controllers
         {
             //Arrange
             int documentId = 1;
+
             _mockBlankAchievementDocumentService
-                .Setup(x => x.DeleteFileAsync(documentId));
+                .Setup(x => x.DeleteFileAsync(documentId, It.IsAny<string>()));
 
             //Act
-            var document = await _blanksController.RemoveAchievementDocument(documentId);
+            var document = await _blanksController.RemoveAchievementDocument(documentId,  It.IsAny<string>());
             var statusCodeDocument = document as StatusCodeResult;
 
             //Assert
@@ -373,9 +378,9 @@ namespace EPlast.Tests.Controllers
             Assert.AreEqual(GetExtractFromUPUDocumentsDTO().FileName, result.Value);
         }
 
-        private BlankBiographyDocumentsDTO GetBlankBiographyDocumentDTO()
+        private BlankBiographyDocumentsDto GetBlankBiographyDocumentDTO()
         {
-            return new BlankBiographyDocumentsDTO
+            return new BlankBiographyDocumentsDto
             {
                 ID = 1,
                 FileName = "Dogovir",
@@ -384,9 +389,9 @@ namespace EPlast.Tests.Controllers
             };
         }
 
-        public ExtractFromUPUDocumentsDTO GetExtractFromUPUDocumentsDTO()
+        public ExtractFromUpuDocumentsDto GetExtractFromUPUDocumentsDTO()
         {
-            return new ExtractFromUPUDocumentsDTO
+            return new ExtractFromUpuDocumentsDto
             {
                 ID = 1,
                 FileName = "Dogovir",

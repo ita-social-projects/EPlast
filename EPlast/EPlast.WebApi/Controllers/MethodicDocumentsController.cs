@@ -1,14 +1,14 @@
-﻿using AutoMapper;
-using EPlast.BLL;
-using EPlast.BLL.DTO;
-using EPlast.WebApi.Models.MethodicDocument;
-using Microsoft.AspNetCore.Authorization;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL;
+using EPlast.BLL.DTO;
+using EPlast.Resources;
+using EPlast.WebApi.Models.MethodicDocument;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace EPlast.WebApi.Controllers
 {
@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get(int id)
         {
-            MethodicDocumentDTO documentDto = await _methodicDocService.GetMethodicDocumentAsync(id);
+            MethodicDocumentDto documentDto = await _methodicDocService.GetMethodicDocumentAsync(id);
             if (documentDto == null)
             {
                 return NotFound();
@@ -88,6 +88,26 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Returns last MethodicDocument
+        /// </summary>
+        /// <returns>Last MethodicDocuments</returns>
+        /// <response code="200">MethodicDocuments object</response>
+        /// <response code="404">Any MethodicDocument not exist</response>
+        [HttpGet("Last")]
+        public async Task<IActionResult> GetLast()
+        {
+            try
+            {
+                var methodic = await _methodicDocService.GetLastAsync();
+                return Ok(methodic);
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+        }
+
+        /// <summary>
         /// Updates MethodicDocument
         /// </summary>
         /// <param name="id">MethodicDocument id</param>
@@ -96,7 +116,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">An instance of MethodicDocument was created</response>
         /// <response code="400">The id and MethodicDocument id are not same</response>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, MethodicDocumentDTO documentDTO)
+        public async Task<IActionResult> Update(int id, MethodicDocumentDto documentDTO)
         {
             if (id != documentDTO.ID)
             {
@@ -131,8 +151,8 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Created MethodicDocument object</response>
         /// <response code="400">Problem with file validation or model state is not valid</response>
         [HttpPost]
-        [Authorize(Roles = Roles.Admin)]
-        public async Task<IActionResult> Save(MethodicDocumentWraperDTO documentWrapper)
+        [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
+        public async Task<IActionResult> Save(MethodicDocumentWraperDto documentWrapper)
         {
             if (documentWrapper.FileAsBase64 == null && documentWrapper.MethodicDocument.FileName != null)
             {
@@ -158,6 +178,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">MethodicDocument was deleted</response>
         /// <response code="404">MethodicDocument does not exist</response>
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Delete(int id)
         {
             await _methodicDocService.DeleteMethodicDocumentAsync(id);

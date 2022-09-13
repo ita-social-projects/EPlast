@@ -1,22 +1,24 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.AzureStorage;
-using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
 {
@@ -27,8 +29,7 @@ namespace EPlast.Tests.Services.Regions
         private Mock<IMapper> _mapper;
         private Mock<IRegionBlobStorageRepository> _regionBlobStorage;
         private Mock<IRegionFilesBlobStorageRepository> _regionFilesBlobStorageRepository;
-        private Mock<ICityService> _cityService;
-        private Mock<IUniqueIdService> _uniqueId;
+        private Mock<IMediator> _mediator;
         private Mock<UserManager<User>> _userManager;
         private RegionService _regionService;
 
@@ -39,14 +40,17 @@ namespace EPlast.Tests.Services.Regions
             _mapper = new Mock<IMapper>();
             _regionBlobStorage = new Mock<IRegionBlobStorageRepository>();
             _regionFilesBlobStorageRepository = new Mock<IRegionFilesBlobStorageRepository>();
-            _cityService = new Mock<ICityService>();
-            _uniqueId = new Mock<IUniqueIdService>();
+            _mediator = new Mock<IMediator>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _regionService = new RegionService(
-                _repoWrapper.Object, _mapper.Object, _regionFilesBlobStorageRepository.Object,
-                _regionBlobStorage.Object, _cityService.Object, _uniqueId.Object, _userManager.Object
-                );
+                _repoWrapper.Object,
+                _mapper.Object,
+                _regionFilesBlobStorageRepository.Object,
+                _regionBlobStorage.Object,
+                _mediator.Object,
+                _userManager.Object
+            );
         }
 
         [Test]
@@ -116,14 +120,14 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new List<Region>());
-            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(regions);
 
             // Act
             var result = await _regionService.GetAllActiveRegionsAsync();
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -141,7 +145,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             Assert.NotNull(result);
-            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDTO>, int>>(result);
+            Assert.IsInstanceOf<Tuple<IEnumerable<RegionObjectsDto>, int>>(result);
         }
 
         [Test]
@@ -152,14 +156,14 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new List<Region>());
-            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(regions);
 
             // Act
             var result = await _regionService.GetAllRegionsAsync();
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -171,14 +175,14 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new List<Region>());
-            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDTO>>(It.IsAny<IEnumerable<Region>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(regions);
 
             // Act
             var result = await _regionService.GetAllNotActiveRegionsAsync();
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -206,7 +210,7 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
                 .ReturnsAsync(new DataAccess.Entities.Region());
-            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDTO>(It.IsAny<DataAccess.Entities.Region>()))
+            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDto>(It.IsAny<DataAccess.Entities.Region>()))
                 .Returns(regions.First);
 
             // Act
@@ -214,7 +218,7 @@ namespace EPlast.Tests.Services.Regions
             var actual = result.ID;
 
             // Assert
-            Assert.IsInstanceOf<RegionDTO>(result);
+            Assert.IsInstanceOf<RegionDto>(result);
             Assert.AreEqual(1, actual);
             Assert.IsNotNull(result);
         }
@@ -226,14 +230,14 @@ namespace EPlast.Tests.Services.Regions
             _repoWrapper.Setup(x => x.City.GetAllAsync(It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
               It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
                 .ReturnsAsync(new List<DataAccess.Entities.City>());
-            _mapper.Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDTO>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<DataAccess.Entities.City>, IEnumerable<CityDto>>(It.IsAny<IEnumerable<DataAccess.Entities.City>>()))
                 .Returns(cities);
 
             // Act
             var result = await _regionService.GetMembersAsync(2);
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<CityDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<CityDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -246,14 +250,14 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
                 .ReturnsAsync(new List<RegionFollowers>());
             _mapper
-                .Setup(x => x.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDTO>>(It.IsAny<IEnumerable<RegionFollowers>>()))
+                .Setup(x => x.Map<IEnumerable<RegionFollowers>, IEnumerable<RegionFollowerDto>>(It.IsAny<IEnumerable<RegionFollowers>>()))
                 .Returns(regionFollowers);
 
             // Act
             var result = await _regionService.GetFollowersAsync(It.IsAny<int>());
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionFollowerDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionFollowerDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -261,38 +265,40 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetFollowerAsync_ReturnsRegionFollowerDTO()
         {
             // Arrange
-            RegionFollowerDTO regionFollower = new RegionFollowerDTO();
+            RegionFollowerDto regionFollower = new RegionFollowerDto();
             _repoWrapper.Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
               It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
                 .ReturnsAsync(new RegionFollowers());
             _mapper
-                .Setup(x => x.Map<RegionFollowers, RegionFollowerDTO>(It.IsAny<RegionFollowers>()))
+                .Setup(x => x.Map<RegionFollowers, RegionFollowerDto>(It.IsAny<RegionFollowers>()))
                 .Returns(regionFollower);
 
             // Act
             var result = await _regionService.GetFollowerAsync(It.IsAny<int>());
 
             // Assert
-            Assert.IsInstanceOf<RegionFollowerDTO>(result);
+            Assert.IsInstanceOf<RegionFollowerDto>(result);
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public void CreateFollowerAsync_ReturnsSuccess()
+        public void CreateFollowerAsync_ReturnsFollowerId()
         {
             // Arrange
+            int id = 1;
+
             _mapper
-               .Setup(x => x.Map<RegionFollowerDTO, RegionFollowers>(It.IsAny<RegionFollowerDTO>()))
-               .Returns(new RegionFollowers());
+               .Setup(x => x.Map<RegionFollowerDto, RegionFollowers>(It.IsAny<RegionFollowerDto>()))
+               .Returns(new RegionFollowers() { ID = id });
             _repoWrapper.Setup(x => x.RegionFollowers.CreateAsync(new RegionFollowers()));
             _repoWrapper.Setup(x => x.SaveAsync());
 
             // Act
-            var result = _regionService.CreateFollowerAsync(It.IsAny<RegionFollowerDTO>());
+            var result = _regionService.CreateFollowerAsync(It.IsAny<RegionFollowerDto>());
 
             // Assert
-            _repoWrapper.Verify();
             Assert.NotNull(result);
+            Assert.AreEqual(id, result.Result);
         }
 
         [Test]
@@ -327,8 +333,8 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.RegionDocument.GetAllAsync(It.IsAny<Expression<Func<RegionDocuments, bool>>>(),
               It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
                 .ReturnsAsync(new List<RegionDocuments> { new RegionDocuments() });
-            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionProfileDTO>(It.IsAny<DataAccess.Entities.Region>()))
-                .Returns(new RegionProfileDTO());
+            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionProfileDto>(It.IsAny<DataAccess.Entities.Region>()))
+                .Returns(new RegionProfileDto());
             _userManager.
                 Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.Admin, Roles.OkrugaHead, Roles.OkrugaHeadDeputy });
 
@@ -336,7 +342,7 @@ namespace EPlast.Tests.Services.Regions
             var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>(), It.IsAny<User>());
 
             // Assert
-            Assert.IsInstanceOf<RegionProfileDTO>(result);
+            Assert.IsInstanceOf<RegionProfileDto>(result);
             Assert.IsNotNull(result);
         }
 
@@ -348,14 +354,14 @@ namespace EPlast.Tests.Services.Regions
                   .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(),
                   It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>()))
                   .ReturnsAsync(new DataAccess.Entities.Region());
-            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDTO>(It.IsAny<DataAccess.Entities.Region>()))
-                .Returns(new RegionDTO());
+            _mapper.Setup(x => x.Map<DataAccess.Entities.Region, RegionDto>(It.IsAny<DataAccess.Entities.Region>()))
+                .Returns(new RegionDto());
 
             // Act
             var result = await _regionService.GetRegionByNameAsync(It.IsAny<string>());
 
             // Assert
-            Assert.IsInstanceOf<RegionDTO>(result);
+            Assert.IsInstanceOf<RegionDto>(result);
             Assert.IsNotNull(result);
         }
 
@@ -363,9 +369,9 @@ namespace EPlast.Tests.Services.Regions
         public async Task AddDocumentAsync_ReturnsRegionDocumentDTO()
         {
             // Arrange
-            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "Some.doc" };
+            RegionDocumentDto doc = new RegionDocumentDto() { ID = 2, BlobName = "Some, book", FileName = "Some.doc" };
             RegionDocuments regionDocuments = new RegionDocuments() { ID = 2, BlobName = "Some, book", FileName = "Some.doc" };
-            _mapper.Setup(x => x.Map<RegionDocumentDTO, RegionDocuments>(doc))
+            _mapper.Setup(x => x.Map<RegionDocumentDto, RegionDocuments>(doc))
                 .Returns(regionDocuments);
             _repoWrapper.Setup(x => x.RegionDocument.Attach(regionDocuments));
 
@@ -373,7 +379,7 @@ namespace EPlast.Tests.Services.Regions
             var result = await _regionService.AddDocumentAsync(doc);
 
             // Assert
-            Assert.IsInstanceOf<RegionDocumentDTO>(result);
+            Assert.IsInstanceOf<RegionDocumentDto>(result);
             Assert.IsNotNull(result);
         }
 
@@ -381,7 +387,7 @@ namespace EPlast.Tests.Services.Regions
         public void AddDocumentAsync_DocumentHasNoExtension_ThrowsArgumentExeption()
         {
             // Arrange
-            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "Name" };
+            RegionDocumentDto doc = new RegionDocumentDto() { ID = 2, BlobName = "Some, book", FileName = "Name" };
 
             // Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
@@ -391,7 +397,7 @@ namespace EPlast.Tests.Services.Regions
         public void AddDocumentAsync_DocumentNameIsEmpty_ThrowsArgumentExeption()
         {
             // Arrange
-            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = ".doc" };
+            RegionDocumentDto doc = new RegionDocumentDto() { ID = 2, BlobName = "Some, book", FileName = ".doc" };
 
             // Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
@@ -401,7 +407,7 @@ namespace EPlast.Tests.Services.Regions
         public void AddDocumentAsync_DocumentHasWrongExtension_ThrowsArgumentExeption()
         {
             // Arrange
-            RegionDocumentDTO doc = new RegionDocumentDTO() { ID = 2, BlobName = "Some, book", FileName = "qwe.dejavu" };
+            RegionDocumentDto doc = new RegionDocumentDto() { ID = 2, BlobName = "Some, book", FileName = "qwe.dejavu" };
 
             // Assert
             Assert.ThrowsAsync<ArgumentException>(async () => await _regionService.AddDocumentAsync(doc));
@@ -416,7 +422,7 @@ namespace EPlast.Tests.Services.Regions
                    It.IsAny<Func<IQueryable<RegionDocuments>, IIncludableQueryable<RegionDocuments, object>>>()))
                    .ReturnsAsync(new List<RegionDocuments>());
 
-            _mapper.Setup(x => x.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDTO>>(It.IsAny<List<RegionDocuments>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<RegionDocuments>, IEnumerable<RegionDocumentDto>>(It.IsAny<List<RegionDocuments>>()))
                 .Returns(documentDTOs);
 
             // Act
@@ -424,7 +430,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<RegionDocumentDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionDocumentDto>>(result);
         }
 
         [Test]
@@ -450,14 +456,14 @@ namespace EPlast.Tests.Services.Regions
                    .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new List<Region>());
-            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDTO>>(It.IsAny<List<Region>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<Region>, IEnumerable<RegionForAdministrationDto>>(It.IsAny<List<Region>>()))
                 .Returns(regionsForAdmin);
 
             // Act
             var result = await _regionService.GetRegions();
 
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionForAdministrationDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -467,7 +473,7 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             _repoWrapper.Setup(x => x.Region.GetActiveRegionsNames());
             _mapper
-                .Setup(x => x.Map<IEnumerable<RegionNamesObject>, IEnumerable<RegionNamesDTO>>(It.IsAny<List<RegionNamesObject>>()))
+                .Setup(x => x.Map<IEnumerable<RegionNamesObject>, IEnumerable<RegionNamesDto>>(It.IsAny<List<RegionNamesObject>>()))
                 .Returns(regionsNames);
 
             // Act
@@ -475,7 +481,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<IEnumerable<RegionNamesDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionNamesDto>>(result);
         }
 
         [Test]
@@ -525,7 +531,7 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
             Region reg = new Region() { ID = 2, Logo = "some logo" };
-            RegionDTO region = new RegionDTO()
+            RegionDto region = new RegionDto()
             {
                 ID = 3,
                 City = "Lviv",
@@ -556,7 +562,7 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
             Region reg = new Region() { ID = 2, Logo = "some logo" };
-            RegionDTO region = new RegionDTO() { ID = 3, City = "Lviv", Logo = string.Empty };
+            RegionDto region = new RegionDto() { ID = 3, City = "Lviv", Logo = string.Empty };
             _repoWrapper
                    .Setup(x => x.Region.GetFirstAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
@@ -625,14 +631,12 @@ namespace EPlast.Tests.Services.Regions
                 .Setup(x => x.Region.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                 It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new Region());
-            _cityService
-                .Setup(x => x.GetCitiesByRegionAsync(It.IsAny<int>()))
-                .ReturnsAsync(cities);
+            _mediator.Setup(x => x.Send(It.IsAny<GetCitiesByRegionQuery>(), It.IsAny<CancellationToken>())).ReturnsAsync(cities);
             _mapper
-                .Setup(x => x.Map<RegionDTO, RegionProfileDTO>(It.IsAny<RegionDTO>()))
+                .Setup(x => x.Map<RegionDto, RegionProfileDto>(It.IsAny<RegionDto>()))
                 .Returns(regionProfileDTO);
             _mapper
-                .Setup(x => x.Map<Region, RegionDTO>(It.IsAny<Region>()))
+                .Setup(x => x.Map<Region, RegionDto>(It.IsAny<Region>()))
                 .Returns(regionDTO);
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
@@ -648,7 +652,7 @@ namespace EPlast.Tests.Services.Regions
 
             // Assert
             Assert.IsNotNull(result);
-            Assert.IsInstanceOf<RegionProfileDTO>(result);
+            Assert.IsInstanceOf<RegionProfileDto>(result);
         }
 
         [Test]
@@ -695,7 +699,7 @@ namespace EPlast.Tests.Services.Regions
         {
             // Arrange
             _mapper
-               .Setup(x => x.Map<RegionDTO, Region>(It.IsAny<RegionDTO>())).Returns(fakeRegion);
+               .Setup(x => x.Map<RegionDto, Region>(It.IsAny<RegionDto>())).Returns(fakeRegion);
             _repoWrapper.Setup(x => x.Region.CreateAsync(fakeRegion));
             _repoWrapper.Setup(x => x.SaveAsync());
 
@@ -724,7 +728,7 @@ namespace EPlast.Tests.Services.Regions
             // Assert
             Assert.NotNull(result);
             _repoWrapper.Verify();
-            Assert.IsInstanceOf<Task<IEnumerable<RegionUserDTO>>>(result);
+            Assert.IsInstanceOf<Task<IEnumerable<RegionUserDto>>>(result);
         }
 
         [Test]
@@ -756,8 +760,8 @@ namespace EPlast.Tests.Services.Regions
                     It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new Region());
             _mapper
-                .Setup(m => m.Map<RegionDTO>(It.IsAny<Region>()))
-                .Returns(new RegionDTO());
+                .Setup(m => m.Map<RegionDto>(It.IsAny<Region>()))
+                .Returns(new RegionDto());
 
             //Act
             var result = await _regionService.CheckIfRegionNameExistsAsync(It.IsAny<string>());
@@ -775,7 +779,7 @@ namespace EPlast.Tests.Services.Regions
                     It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(nullRegion);
             _mapper
-                .Setup(m => m.Map<RegionDTO>(It.IsAny<Region>()))
+                .Setup(m => m.Map<RegionDto>(It.IsAny<Region>()))
                 .Returns(nullRegionDTO);
 
             //Act
@@ -791,7 +795,7 @@ namespace EPlast.Tests.Services.Regions
 
         private readonly Region nullRegion = null;
 
-        private readonly RegionDTO nullRegionDTO = null;
+        private readonly RegionDto nullRegionDTO = null;
 
 
         private readonly Region fakeRegion = new Region()
@@ -799,56 +803,56 @@ namespace EPlast.Tests.Services.Regions
             RegionName = ""
         };
 
-        private readonly RegionDTO fakeRegionDTO = new RegionDTO
+        private readonly RegionDto fakeRegionDTO = new RegionDto
         {
             RegionName = ""
         };
 
-        private readonly RegionProfileDTO regionProfileDTO = new RegionProfileDTO
+        private readonly RegionProfileDto regionProfileDTO = new RegionProfileDto
         {
-            Cities = new List<CityDTO>()
+            Cities = new List<CityDto>()
         };
 
-        private readonly RegionDTO regionDTO = new RegionDTO
+        private readonly RegionDto regionDTO = new RegionDto
         {
             City = "city",
             Logo = "Some logo.png"
         };
 
-        private readonly IEnumerable<RegionNamesDTO> regionsNames = new List<RegionNamesDTO>
+        private readonly IEnumerable<RegionNamesDto> regionsNames = new List<RegionNamesDto>
         {
-            new RegionNamesDTO { ID = 1, RegionName = "Львівський" },
-            new RegionNamesDTO { ID = 2, RegionName = "Тернопільський" }
+            new RegionNamesDto { ID = 1, RegionName = "Львівський" },
+            new RegionNamesDto { ID = 2, RegionName = "Тернопільський" }
         };
 
-        private readonly IEnumerable<RegionForAdministrationDTO> regionsForAdmin = new List<RegionForAdministrationDTO>
+        private readonly IEnumerable<RegionForAdministrationDto> regionsForAdmin = new List<RegionForAdministrationDto>
         {
-            new RegionForAdministrationDTO { ID = 1, RegionName = "Львівський" },
-            new RegionForAdministrationDTO { ID = 2, RegionName = "Тернопільський" }
+            new RegionForAdministrationDto { ID = 1, RegionName = "Львівський" },
+            new RegionForAdministrationDto { ID = 2, RegionName = "Тернопільський" }
         };
 
-        private readonly IEnumerable<RegionDocumentDTO> documentDTOs = new List<RegionDocumentDTO>
+        private readonly IEnumerable<RegionDocumentDto> documentDTOs = new List<RegionDocumentDto>
         {
-            new RegionDocumentDTO { ID = 1, BlobName="Some, name" },
-            new RegionDocumentDTO { ID = 2, BlobName="Some, 2name" }
+            new RegionDocumentDto { ID = 1, BlobName="Some, name" },
+            new RegionDocumentDto { ID = 2, BlobName="Some, 2name" }
         };
 
-        private readonly IEnumerable<RegionDTO> regions = new List<RegionDTO>
+        private readonly IEnumerable<RegionDto> regions = new List<RegionDto>
         {
-            new RegionDTO { ID = 1, RegionName = "Львівський" },
-            new RegionDTO { ID = 2, RegionName = "Тернопільський" }
+            new RegionDto { ID = 1, RegionName = "Львівський" },
+            new RegionDto { ID = 2, RegionName = "Тернопільський" }
         };
 
-        private readonly IEnumerable<CityDTO> cities = new List<CityDTO>
+        private readonly IEnumerable<CityDto> cities = new List<CityDto>
         {
-            new CityDTO { ID = 1, Name = "Золочів" },
-            new CityDTO { ID = 2, Name = "Перемишляни" }
+            new CityDto { ID = 1, Name = "Золочів" },
+            new CityDto { ID = 2, Name = "Перемишляни" }
         };
 
-        private readonly IEnumerable<RegionFollowerDTO> regionFollowers = new List<RegionFollowerDTO>
+        private readonly IEnumerable<RegionFollowerDto> regionFollowers = new List<RegionFollowerDto>
         {
-            new RegionFollowerDTO { ID = 1, CityName = "Золочів" },
-            new RegionFollowerDTO { ID = 2, CityName = "Перемишляни" }
+            new RegionFollowerDto { ID = 1, CityName = "Золочів" },
+            new RegionFollowerDto { ID = 2, CityName = "Перемишляни" }
         };
 
         private readonly IEnumerable<DataAccess.Entities.City> city = new List<DataAccess.Entities.City>

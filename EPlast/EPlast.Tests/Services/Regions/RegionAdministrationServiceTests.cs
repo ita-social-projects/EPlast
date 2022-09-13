@@ -1,4 +1,9 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Admin;
@@ -12,11 +17,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Regions
 {
@@ -54,16 +54,15 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
             .ReturnsAsync(new List<RegionAdministration>());
 
-            _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(It.IsAny<IEnumerable<RegionAdministration>>()))
                 .Returns(GetFakeAdminDTO());
 
             //Act
             var result = await _servise.GetUsersAdministrations(It.IsAny<string>());
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionAdministrationDto>>(result);
             Assert.IsNotNull(result);
         }
-
 
         [Test]
         public async Task GetUsersPreviousAdministrations_ReturnsIEnumerableRegionAdministrationDTO()
@@ -73,13 +72,13 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
             .ReturnsAsync(new List<RegionAdministration>());
 
-            _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(It.IsAny<IEnumerable<RegionAdministration>>()))
                 .Returns(GetFakeAdminDTO());
 
             //Act
             var result = await _servise.GetUsersPreviousAdministrations(It.IsAny<string>());
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionAdministrationDto>>(result);
             Assert.IsNotNull(result);
         }
 
@@ -91,13 +90,13 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
             .ReturnsAsync(new RegionAdministration());
 
-            _mapper.Setup(x => x.Map<RegionAdministration, RegionAdministrationDTO>(It.IsAny<RegionAdministration>()))
-                .Returns(new RegionAdministrationDTO() { ID=2 });
+            _mapper.Setup(x => x.Map<RegionAdministration, RegionAdministrationDto>(It.IsAny<RegionAdministration>()))
+                .Returns(new RegionAdministrationDto() { ID = 2 });
 
             //Act
             var result = await _servise.GetHead(It.IsAny<int>());
             // Assert
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
             Assert.IsNotNull(result);
         }
 
@@ -109,13 +108,13 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
             .ReturnsAsync(new RegionAdministration());
 
-            _mapper.Setup(x => x.Map<RegionAdministration, RegionAdministrationDTO>(It.IsAny<RegionAdministration>()))
-                .Returns(new RegionAdministrationDTO() { ID = 2 });
+            _mapper.Setup(x => x.Map<RegionAdministration, RegionAdministrationDto>(It.IsAny<RegionAdministration>()))
+                .Returns(new RegionAdministrationDto() { ID = 2 });
 
             //Act
             var result = await _servise.GetHeadDeputy(It.IsAny<int>());
             // Assert
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
             Assert.IsNotNull(result);
         }
 
@@ -123,12 +122,13 @@ namespace EPlast.Tests.Services.Regions
         public async Task GetAdminType_ReturnsAdminTypeId()
         {
             // Arrange
-            _repoWrapper.Setup(x => x.AdminType.GetFirstAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
+            _repoWrapper.Setup(x => x.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
                 It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
-            .ReturnsAsync(new AdminType() { ID=2});
-          
+            .ReturnsAsync(new AdminType() { ID = 2 });
+
             //Act
             var result = await _servise.GetAdminType(It.IsAny<string>());
+
             // Assert
             Assert.IsInstanceOf<int>(result);
             Assert.AreEqual(2, result);
@@ -136,6 +136,25 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
+        public async Task GetAdminType_Throw_Null_of_AdminType_ReturnsAdminTypeId()
+        {
+            // Arrange
+            _repoWrapper.SetupSequence(x => x.AdminType.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<AdminType, bool>>>(),
+                It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
+            .ReturnsAsync((AdminType)null)
+            .ReturnsAsync(new AdminType() { ID = 2 });
+
+            //Act
+            var result = await _servise.GetAdminType(It.IsAny<string>());
+
+            // Assert
+            Assert.IsInstanceOf<int>(result);
+            Assert.AreEqual(2, result);
+            Assert.IsNotNull(result);
+        }
+
+        [Test]
+
         public async Task GetAdministrationAsync_ReturnsIEnumerableRegionAdministrationDTO()
         {
             // Arrange
@@ -143,13 +162,13 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
             .ReturnsAsync(new List<RegionAdministration>());
 
-            _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDTO>>(It.IsAny<IEnumerable<RegionAdministration>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(It.IsAny<IEnumerable<RegionAdministration>>()))
                 .Returns(GetFakeAdminDTO());
 
             //Act
             var result = await _servise.GetAdministrationAsync(It.IsAny<int>());
             // Assert
-            Assert.IsInstanceOf<IEnumerable<RegionAdministrationDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<RegionAdministrationDto>>(result);
             Assert.AreEqual(3, result.Count());
             Assert.IsNotNull(result);
         }
@@ -162,13 +181,13 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<AdminType>, IIncludableQueryable<AdminType, object>>>()))
             .ReturnsAsync(new List<AdminType>());
 
-            _mapper.Setup(x => x.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDTO>>(It.IsAny<IEnumerable<AdminType>>()))
+            _mapper.Setup(x => x.Map<IEnumerable<AdminType>, IEnumerable<AdminTypeDto>>(It.IsAny<IEnumerable<AdminType>>()))
                 .Returns(GetFakeAdminTypes());
 
             //Act
             var result = await _servise.GetAllAdminTypes();
             // Assert
-            Assert.IsInstanceOf<IEnumerable<AdminTypeDTO>>(result);
+            Assert.IsInstanceOf<IEnumerable<AdminTypeDto>>(result);
             Assert.AreEqual(3, result.Count());
             Assert.IsNotNull(result);
         }
@@ -185,7 +204,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(regionAdmHead);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -217,7 +236,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(regionAdmHead);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -248,7 +267,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(regionAdmHead);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHeadDeputy));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHeadDeputy));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -277,7 +296,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(regionAdmHead);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeSecretary));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeSecretary));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -299,7 +318,7 @@ namespace EPlast.Tests.Services.Regions
         public async Task EditRegionAdministrator_SameAdminTypeID_ReturnsCorrect()
         {
             //Arrange
-            RegionAdministrationDTO regionAdministrationDTO = regionAdmDTOEndDateNull;
+            RegionAdministrationDto regionAdministrationDTO = regionAdmDTOEndDateNull;
             regionAdministrationDTO.AdminTypeId = 1;
             _repoWrapper
                 .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
@@ -308,7 +327,7 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(regionAdmHead);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-                .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _repoWrapper
                 .Setup(r => r.RegionAdministration.Update(It.IsAny<RegionAdministration>()));
             _repoWrapper
@@ -317,14 +336,14 @@ namespace EPlast.Tests.Services.Regions
             var result = await _servise.EditRegionAdministrator(regionAdministrationDTO);
             //Assert
             _repoWrapper.Verify();
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
         }
 
         [Test]
         public async Task EditRegionAdministrator_OtherAdminTypeID_ReturnsCorrect()
         {
             //Arrange
-            RegionAdministrationDTO regionAdministrationDTO = regionAdmDTOEndDateNull;
+            RegionAdministrationDto regionAdministrationDTO = regionAdmDTOEndDateNull;
             _repoWrapper
                 .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -345,14 +364,14 @@ namespace EPlast.Tests.Services.Regions
             var result = await _servise.EditRegionAdministrator(regionAdministrationDTO);
             //Assert
             _repoWrapper.Verify();
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
         }
 
         [Test]
         public async Task EditRegionAdministrator_EditHeadAndRemoveHeadDeputy_ReturnsCorrect()
         {
             //Arrange
-            RegionAdministrationDTO regionAdministrationDTO = regionAdmDTOEndDateNull;
+            RegionAdministrationDto regionAdministrationDTO = regionAdmDTOEndDateNull;
             _repoWrapper
                 .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                 It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -377,7 +396,7 @@ namespace EPlast.Tests.Services.Regions
             var result = await _servise.EditRegionAdministrator(regionAdministrationDTO);
             //Assert
             _repoWrapper.Verify();
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
         }
 
         [Test]
@@ -411,7 +430,7 @@ namespace EPlast.Tests.Services.Regions
             var result = await _servise.EditRegionAdministrator(regionAdmDTOEndDateNull);
             //Assert
             _repoWrapper.Verify();
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
         }
 
         [Test]
@@ -421,23 +440,23 @@ namespace EPlast.Tests.Services.Regions
             RegionAdministration adm = null;
             _adminTypeService
               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+              .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _repoWrapper
                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
                IIncludableQueryable<RegionAdministration, object>>>()))
                .ReturnsAsync(adm);
             _userManager
-                .Setup(x=>x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id= "Some" });
+                .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Some" });
             _userManager
-                .Setup(x=>x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
+                .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
             _repoWrapper
-                .Setup(x=>x.RegionAdministration.CreateAsync(regionAdmHead));
+                .Setup(x => x.RegionAdministration.CreateAsync(regionAdmHead));
             //Act
             var result = _servise.AddRegionAdministrator(regionAdmDTOEndDateToday);
             //Assert
             _adminTypeService.Verify();
-            _userManager.Verify();          
+            _userManager.Verify();
             Assert.NotNull(result);
         }
 
@@ -448,7 +467,7 @@ namespace EPlast.Tests.Services.Regions
             RegionAdministration adm = null;
             _adminTypeService
               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHeadDeputy));
+              .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHeadDeputy));
             _repoWrapper
                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -502,7 +521,7 @@ namespace EPlast.Tests.Services.Regions
             //Assert    
             _adminTypeService.Verify();
             _userManager.Verify();
-            Assert.IsInstanceOf<RegionAdministrationDTO>(result);
+            Assert.IsInstanceOf<RegionAdministrationDto>(result);
         }
 
         [Test]
@@ -512,7 +531,7 @@ namespace EPlast.Tests.Services.Regions
             RegionAdministration adm = null;
             _adminTypeService
               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeSecretary));
+              .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeSecretary));
             _repoWrapper
                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -539,7 +558,7 @@ namespace EPlast.Tests.Services.Regions
             RegionAdministration adm = null;
             _adminTypeService
               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+              .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _repoWrapper
                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -565,7 +584,7 @@ namespace EPlast.Tests.Services.Regions
             //Arrange
             _adminTypeService
               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+              .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _repoWrapper
                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -573,7 +592,7 @@ namespace EPlast.Tests.Services.Regions
                .ReturnsAsync(regionAdmHead);
             _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "Some" })
-                .Callback(()=> _userManager
+                .Callback(() => _userManager
                 .Setup(x => x.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User() { Id = "SomeNew" }));
             _userManager
                 .Setup(x => x.AddToRoleAsync(new User() { Id = "Some" }, Roles.OkrugaHead));
@@ -593,7 +612,7 @@ namespace EPlast.Tests.Services.Regions
             //Arrange
             _adminTypeService
               .Setup(a => a.GetAdminTypeByNameAsync(It.IsAny<string>()))
-              .Returns(() => Task<AdminTypeDTO>.Factory.StartNew(() => AdminTypeHead));
+              .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeHead));
             _repoWrapper
                .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
                It.IsAny<Func<IQueryable<RegionAdministration>,
@@ -615,19 +634,49 @@ namespace EPlast.Tests.Services.Regions
             Assert.NotNull(result);
         }
 
-        private static AdminTypeDTO AdminTypeHead = new AdminTypeDTO
+        [Test]
+        public async Task EditStatusAdministration_AdminNotFound_NotUpdate()
+        {
+            // Arrange
+            _repoWrapper
+                  .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                  It.IsAny<Func<IQueryable<RegionAdministration>,
+                  IIncludableQueryable<RegionAdministration, object>>>()))
+                  .ReturnsAsync((RegionAdministration)null);
+            // Act
+            await _servise.EditStatusAdministration(It.IsAny<int>());
+            // Assert
+            _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()), Times.Never);
+        }
+
+        [Test]
+        public async Task EditStatusAdministration_AdminFound_Update()
+        {
+            // Arrange
+            _repoWrapper
+                  .Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                  It.IsAny<Func<IQueryable<RegionAdministration>,
+                  IIncludableQueryable<RegionAdministration, object>>>()))
+                  .ReturnsAsync(new RegionAdministration() { });
+            // Act
+            await _servise.EditStatusAdministration(It.IsAny<int>());
+            // Assert
+            _repoWrapper.Verify(x => x.RegionAdministration.Update(It.IsAny<RegionAdministration>()), Times.Once);
+        }
+
+        private static AdminTypeDto AdminTypeHead = new AdminTypeDto
         {
             AdminTypeName = Roles.OkrugaHead,
             ID = 1
         };
 
-        private static AdminTypeDTO AdminTypeHeadDeputy = new AdminTypeDTO
+        private static AdminTypeDto AdminTypeHeadDeputy = new AdminTypeDto
         {
             AdminTypeName = Roles.OkrugaHeadDeputy,
             ID = 1
         };
 
-        private static AdminTypeDTO AdminTypeSecretary = new AdminTypeDTO
+        private static AdminTypeDto AdminTypeSecretary = new AdminTypeDto
         {
             AdminTypeName = Roles.OkrugaSecretary,
             ID = 2
@@ -641,7 +690,7 @@ namespace EPlast.Tests.Services.Regions
                 AdminTypeName = Roles.OkrugaHead,
                 ID = 1
             },
-            Status=true,
+            Status = true,
             AdminTypeId = AdminTypeHead.ID,
             UserId = Roles.OkrugaHead
         };
@@ -659,10 +708,10 @@ namespace EPlast.Tests.Services.Regions
             UserId = Roles.OkrugaHead
         };
 
-        private readonly RegionAdministrationDTO regionAdmDTOEndDateToday = new RegionAdministrationDTO
+        private readonly RegionAdministrationDto regionAdmDTOEndDateToday = new RegionAdministrationDto
         {
             ID = 1,
-            AdminType = new AdminTypeDTO()
+            AdminType = new AdminTypeDto()
             {
                 AdminTypeName = Roles.OkrugaHead,
                 ID = 1
@@ -671,13 +720,13 @@ namespace EPlast.Tests.Services.Regions
             Status = true,
             AdminTypeId = AdminTypeHead.ID,
             UserId = Roles.OkrugaHead,
-            RegionId=2
+            RegionId = 2
         };
 
-        private readonly RegionAdministrationDTO regionAdmDTOEndDateNull = new RegionAdministrationDTO
+        private readonly RegionAdministrationDto regionAdmDTOEndDateNull = new RegionAdministrationDto
         {
             ID = 1,
-            AdminType = new AdminTypeDTO()
+            AdminType = new AdminTypeDto()
             {
                 AdminTypeName = Roles.OkrugaHead,
                 ID = 1
@@ -688,20 +737,21 @@ namespace EPlast.Tests.Services.Regions
             RegionId = 2
         };
 
-        private IEnumerable<RegionAdministrationDTO> GetFakeAdminDTO() {
-            return new List<RegionAdministrationDTO>() {
-                    new RegionAdministrationDTO(){ID=2, AdminTypeId=2, CityId=2 },
-                    new RegionAdministrationDTO(){ID=3, AdminTypeId=3, CityId=3 },
-                    new RegionAdministrationDTO(){ID=4, AdminTypeId=4, CityId=4 }
+        private IEnumerable<RegionAdministrationDto> GetFakeAdminDTO()
+        {
+            return new List<RegionAdministrationDto>() {
+                    new RegionAdministrationDto(){ID=2, AdminTypeId=2, CityId=2 },
+                    new RegionAdministrationDto(){ID=3, AdminTypeId=3, CityId=3 },
+                    new RegionAdministrationDto(){ID=4, AdminTypeId=4, CityId=4 }
             };
         }
 
-        private IEnumerable<AdminTypeDTO> GetFakeAdminTypes()
+        private IEnumerable<AdminTypeDto> GetFakeAdminTypes()
         {
-            return new List<AdminTypeDTO>() {
-                    new AdminTypeDTO(){ID=2 },
-                    new AdminTypeDTO(){ID=3 },
-                    new AdminTypeDTO(){ID=4 }
+            return new List<AdminTypeDto>() {
+                    new AdminTypeDto(){ID=2 },
+                    new AdminTypeDto(){ID=3 },
+                    new AdminTypeDto(){ID=4 }
             };
         }
     }

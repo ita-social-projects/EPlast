@@ -1,4 +1,8 @@
-﻿using EPlast.BLL.DTO.GoverningBody.Sector;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
@@ -6,10 +10,6 @@ using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
 {
@@ -28,7 +28,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             _adminTypeService = adminTypeService;
         }
 
-        public async Task<SectorAdministrationDTO> AddSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto)
+        public async Task<SectorAdministrationDto> AddSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(sectorAdministrationDto.AdminType.AdminTypeName);
 
@@ -48,18 +48,21 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             var user = await _userManager.FindByIdAsync(sectorAdministrationDto.UserId);
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var allowedRoles = new List<List<string>>
+            if (!sectorAdministration.Status)
             {
-                { new List<string>(){ Roles.PlastMember } },
-                { new List<string>(){ Roles.PlastMember, Roles.KurinHead } },
-                { new List<string>(){ Roles.PlastMember, Roles.KurinHeadDeputy } }
-            };
-            
-            if (!allowedRoles.Any(x => x.OrderByDescending(x => x).SequenceEqual(userRoles.OrderByDescending(x => x))))
+                await _repositoryWrapper.GoverningBodySectorAdministration.CreateAsync(sectorAdministration);
+                await _repositoryWrapper.SaveAsync();
+                sectorAdministrationDto.Id = sectorAdministration.Id;
+                return sectorAdministrationDto;
+            }
+
+            if (!userRoles.Contains(Roles.PlastMember))
+            {
                 throw new ArgumentException("Can't add user with the roles");
+            }
 
             var adminRole = adminType.AdminTypeName == Roles.GoverningBodySectorHead ?
-                Roles.GoverningBodySectorHead : 
+                Roles.GoverningBodySectorHead :
                 Roles.GoverningBodySectorSecretary;
             await _userManager.AddToRoleAsync(user, adminRole);
 
@@ -72,7 +75,7 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             return sectorAdministrationDto;
         }
 
-        public async Task<SectorAdministrationDTO> EditSectorAdministratorAsync(SectorAdministrationDTO sectorAdministrationDto)
+        public async Task<SectorAdministrationDto> EditSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto)
         {
             var admin = await _repositoryWrapper.GoverningBodySectorAdministration.GetFirstOrDefaultAsync(a => a.Id == sectorAdministrationDto.Id);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(sectorAdministrationDto.AdminType.AdminTypeName);

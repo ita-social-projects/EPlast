@@ -1,17 +1,21 @@
-﻿using AutoMapper;
-using EPlast.BLL.DTO.City;
-using EPlast.BLL.Interfaces;
-using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Interfaces.City;
-using EPlast.DataAccess.Entities;
-using EPlast.DataAccess.Repositories;
-using EPlast.Resources;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.City;
+using EPlast.BLL.DTO.Notification;
+using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Admin;
+using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Queries.City;
+using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
+using MediatR;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.City
 {
@@ -22,57 +26,67 @@ namespace EPlast.BLL.Services.City
         private readonly IEmailContentService _emailContentService;
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repositoryWrapper;
-        private readonly ICityService _cityService;
         private readonly UserManager<User> _userManager;
+        private readonly INotificationService _notificationService;
+        private readonly IMediator _mediator;
 
-        public CityParticipantsService(IRepositoryWrapper repositoryWrapper,
-                                       IMapper mapper,
-                                       UserManager<User> userManager,
-                                       IAdminTypeService adminTypeService,
-                                       IEmailSendingService emailSendingService,
-                                       ICityService cityService,
-                                       IEmailContentService emailContentService)
+        public CityParticipantsService(
+            IRepositoryWrapper repositoryWrapper,
+            IMapper mapper,
+            UserManager<User> userManager,
+            IAdminTypeService adminTypeService,
+            IEmailSendingService emailSendingService,
+            IEmailContentService emailContentService,
+            IMediator mediator,
+            INotificationService notificationService
+        )
         {
             _repositoryWrapper = repositoryWrapper;
             _mapper = mapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
             _emailSendingService = emailSendingService;
-            _cityService = cityService;
             _emailContentService = emailContentService;
+            _mediator = mediator;
+            _notificationService = notificationService;
         }
 
         /// <inheritdoc />
-        public async Task<CityAdministrationDTO> AddAdministratorAsync(CityAdministrationDTO adminDTO)
+        public async Task<CityAdministrationDto> AddAdministratorAsync(CityAdministrationDto adminDTO)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
             var headType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHead);
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.CityHeadDeputy);
-            adminDTO.Status = DateTime.Today < adminDTO.EndDate || adminDTO.EndDate == null;
             var newAdmin = new CityAdministration()
             {
                 StartDate = adminDTO.StartDate ?? DateTime.Now,
                 EndDate = adminDTO.EndDate,
                 AdminTypeId = adminType.ID,
                 CityId = adminDTO.CityId,
-                UserId = adminDTO.UserId,
+                UserId = adminDTO.User.ID,
                 Status = adminDTO.Status
             };
 
-            var user = await _userManager.FindByIdAsync(adminDTO.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            if (CheckCityWasAdmin(newAdmin))
             {
-                case Roles.CityHead:
-                    role = Roles.CityHead;
-                    break;
-                case Roles.CityHeadDeputy:
-                    role = Roles.CityHeadDeputy;
-                    break;
-                default:
-                    role = Roles.CitySecretary;
-                    break;
+                newAdmin.Status = false;
+                await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
+                await _repositoryWrapper.SaveAsync();
+                adminDTO.ID = newAdmin.ID;
+                adminDTO.UserId = newAdmin.UserId;
+                return adminDTO;
             }
+
+            var user = await _userManager.FindByIdAsync(adminDTO.User.ID);
+            string role = adminType.AdminTypeName switch
+            {
+                Roles.CityHead => Roles.CityHead,
+                Roles.CityHeadDeputy => Roles.CityHeadDeputy,
+                Roles.CityReferentUPS => Roles.CityReferentUPS,
+                Roles.CityReferentUSP => Roles.CityReferentUSP,
+                Roles.CityReferentOfActiveMembership => Roles.CityReferentOfActiveMembership,
+                _ => Roles.CitySecretary,
+            };
             await _userManager.AddToRoleAsync(user, role);
             if (adminType.AdminTypeName == headType.AdminTypeName)
             {
@@ -89,12 +103,12 @@ namespace EPlast.BLL.Services.City
             await _repositoryWrapper.CityAdministration.CreateAsync(newAdmin);
             await _repositoryWrapper.SaveAsync();
             adminDTO.ID = newAdmin.ID;
-
+            adminDTO.UserId = newAdmin.UserId;
             return adminDTO;
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, string userId)
+        public async Task<CityMembersDto> AddFollowerAsync(int cityId, string userId)
         {
             var oldCityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(i => i.UserId == userId);
@@ -117,13 +131,16 @@ namespace EPlast.BLL.Services.City
                 IsApproved = false,
                 UserId = userId,
                 User = await _userManager.FindByIdAsync(userId)
-                
             };
             await _repositoryWrapper.CityMembers.CreateAsync(cityMember);
-            var regionId = await _cityService.GetByIdAsync(cityId);
+
+            var cityDTO = await _mediator.Send(
+                new GetCityByIdQuery(cityId)
+            );
+
             var regionAdministrations =
                 await _repositoryWrapper.RegionAdministration.GetAllAsync(d =>
-                    d.UserId == userId && d.Status && d.RegionId != regionId.RegionId);
+                    d.UserId == userId && d.Status && d.RegionId != cityDTO.RegionId);
             if (regionAdministrations != null)
             {
                 foreach (var elem in regionAdministrations)
@@ -139,15 +156,137 @@ namespace EPlast.BLL.Services.City
             if (await _userManager.IsInRoleAsync(cityMember.User, Roles.RegisteredUser))
             {
                 await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
+                await SendNotificationCityAdminAboutNewFollowerAsync(cityId, cityMember.User);
             }
 
-            return _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            return _mapper.Map<CityMembers, CityMembersDto>(cityMember);
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> AddFollowerAsync(int cityId, User user)
+        public async Task<CityMembersDto> AddFollowerAsync(int cityId, User user)
         {
+            await _userManager.RemoveFromRolesAsync(user, Roles.DeleteableListOfRoles);
             return await AddFollowerAsync(cityId, await _userManager.GetUserIdAsync(user));
+        }
+
+        public async Task AddNotificationUserWithoutSelectedCity(User user, int regionId)
+        {
+            List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
+
+            var regionAdministration = await _repositoryWrapper.RegionAdministration
+                .GetAllAsync(i => i.RegionId == regionId,
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
+
+            var regionHead = regionAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.OkrugaHead
+                                                                      && (DateTime.Now < a.EndDate ||
+                                                                          a.EndDate == null));
+            var regionHeadDeputy = regionAdministration.FirstOrDefault(a =>
+                a.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy
+                && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            var regionReferentsUPS =
+                regionAdministration.Where(a => a.AdminType.AdminTypeName == Roles.OkrugaReferentUPS
+                                                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var regionReferentsUSP =
+                regionAdministration.Where(a => a.AdminType.AdminTypeName == Roles.OkrugaReferentUSP
+                                                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var regionReferentsOfActiveMembership = regionAdministration.Where(a =>
+                a.AdminType.AdminTypeName == Roles.OkrugaReferentOfActiveMembership
+                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+
+            var emailContent = await _emailContentService.GetRegionAdminAboutNewFollowerEmailAsync(user.Id,
+                user.FirstName, user.LastName, false);
+
+            if (regionHead != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDto
+                {
+                    Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = regionHead.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+
+                await _emailSendingService.SendEmailAsync(regionHead.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+
+            if (regionHeadDeputy != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDto
+                {
+                    Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = regionHeadDeputy.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+
+                await _emailSendingService.SendEmailAsync(regionHeadDeputy.User.Email, emailContent.Subject,
+                    emailContent.Message,
+                    emailContent.Title);
+            }
+
+            if (!regionReferentsUPS.Any())
+            {
+                foreach (var referent in regionReferentsUPS)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDto
+                    {
+                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+
+            if (regionReferentsUSP.Count != 0)
+            {
+                foreach (var referent in regionReferentsUSP)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDto
+                    {
+                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+
+            if (regionReferentsOfActiveMembership.Count != 0)
+            {
+                foreach (var referent in regionReferentsOfActiveMembership)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDto
+                    {
+                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+
+            await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
         }
 
         public async Task ContinueAdminsDueToDate()
@@ -166,7 +305,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityAdministrationDTO> EditAdministratorAsync(CityAdministrationDTO adminDTO)
+        public async Task<CityAdministrationDto> EditAdministratorAsync(CityAdministrationDto adminDTO)
         {
             var admin = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(a => a.ID == adminDTO.ID);
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminDTO.AdminType.AdminTypeName);
@@ -188,17 +327,17 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationByIdAsync(int cityId)
+        public async Task<IEnumerable<CityAdministrationDto>> GetAdministrationByIdAsync(int cityId)
         {
             var cityAdministration = await _repositoryWrapper.CityAdministration.GetAllAsync(
                 predicate: x => x.CityId == cityId,
                 include: x => x.Include(q => q.User).
                      Include(q => q.AdminType));
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(cityAdministration);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDto>>(cityAdministration);
         }
 
-        public async Task<IEnumerable<CityAdministrationDTO>> GetAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<CityAdministrationDto>> GetAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && a.Status,
                  include:
@@ -210,30 +349,30 @@ namespace EPlast.BLL.Services.City
                 admin.City.CityAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDto>>(admins);
         }
 
-        public async Task<IEnumerable<CityAdministrationStatusDTO>> GetAdministrationStatuses(string UserId)
+        public async Task<IEnumerable<CityAdministrationStatusDto>> GetAdministrationStatuses(string UserId)
         {
             var cityAdmins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
                              include:
                              source => source.Include(c => c.User).Include(c => c.AdminType).Include(c => c.City)
                              );
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDTO>>(cityAdmins);
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationStatusDto>>(cityAdmins);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<CityMembersDTO>> GetMembersByCityIdAsync(int cityId)
+        public async Task<IEnumerable<CityMembersDto>> GetMembersByCityIdAsync(int cityId)
         {
             var cityMembers = await _repositoryWrapper.CityMembers.GetAllAsync(
                     predicate: c => c.CityId == cityId && c.EndDate == null,
                     include: source => source
                         .Include(c => c.User));
 
-            return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDTO>>(cityMembers);
+            return _mapper.Map<IEnumerable<CityMembers>, IEnumerable<CityMembersDto>>(cityMembers);
         }
 
-        public async Task<IEnumerable<CityAdministrationDTO>> GetPreviousAdministrationsOfUserAsync(string UserId)
+        public async Task<IEnumerable<CityAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId)
         {
             var admins = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == UserId && !a.Status,
                  include:
@@ -245,7 +384,7 @@ namespace EPlast.BLL.Services.City
                 admin.City.CityAdministration = null;
             }
 
-            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDTO>>(admins).Reverse();
+            return _mapper.Map<IEnumerable<CityAdministration>, IEnumerable<CityAdministrationDto>>(admins).Reverse();
         }
 
         /// <inheritdoc />
@@ -257,19 +396,15 @@ namespace EPlast.BLL.Services.City
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            string role;
-            switch (adminType.AdminTypeName)
+            string role = adminType.AdminTypeName switch
             {
-                case Roles.CityHead:
-                    role = Roles.CityHead;
-                    break;
-                case Roles.CityHeadDeputy:
-                    role = Roles.CityHeadDeputy;
-                    break;
-                default:
-                    role = Roles.CitySecretary;
-                    break;
-            }
+                Roles.CityHead => Roles.CityHead,
+                Roles.CityHeadDeputy => Roles.CityHeadDeputy,
+                Roles.CityReferentUPS => Roles.CityReferentUPS,
+                Roles.CityReferentUSP => Roles.CityReferentUSP,
+                Roles.CityReferentOfActiveMembership => Roles.CityReferentOfActiveMembership,
+                _ => Roles.CitySecretary,
+            };
             await _userManager.RemoveFromRoleAsync(user, role);
 
             _repositoryWrapper.CityAdministration.Update(admin);
@@ -277,7 +412,7 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task RemoveFollowerAsync(int followerId)
+        public async Task RemoveFollowerAsync(int followerId, string comment)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.ID == followerId,
@@ -287,7 +422,7 @@ namespace EPlast.BLL.Services.City
             _repositoryWrapper.CityMembers.Delete(cityMember);
             await _repositoryWrapper.SaveAsync();
 
-            await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City);
+            await SendEmailRemoveCityFollowerAsync(cityMember.User.Email, cityMember.City, comment);
         }
 
         public async Task RemoveMemberAsync(string userId)
@@ -302,17 +437,17 @@ namespace EPlast.BLL.Services.City
         }
 
         /// <inheritdoc />
-        public async Task<CityMembersDTO> ToggleApproveStatusAsync(int memberId)
+        public async Task<CityMembersDto> ToggleApproveStatusAsync(int memberId)
         {
             var cityMember = await _repositoryWrapper.CityMembers
                 .GetFirstOrDefaultAsync(u => u.ID == memberId,
                                         m => m.Include(u => u.User)
                                               .Include(u => u.City));
-            cityMember.IsApproved = !cityMember.IsApproved; 
+            cityMember.IsApproved = !cityMember.IsApproved;
             _repositoryWrapper.CityMembers.Update(cityMember);
             await _repositoryWrapper.SaveAsync();
             await ChangeMembershipDatesByApprove(cityMember.UserId, cityMember.IsApproved);
-            var cityMemberDto = _mapper.Map<CityMembers, CityMembersDTO>(cityMember);
+            var cityMemberDto = _mapper.Map<CityMembers, CityMembersDto>(cityMember);
             var user = await _userManager.FindByIdAsync(cityMember.UserId);
             if (cityMember.IsApproved && await _userManager.IsInRoleAsync(user, Roles.RegisteredUser))
             {
@@ -371,7 +506,11 @@ namespace EPlast.BLL.Services.City
             var admin = await _repositoryWrapper.CityAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID && a.CityId == cityId && a.Status);
 
-            newAdmin.Status = false;
+            if (!(newAdmin.EndDate == null || DateTime.Today < newAdmin.EndDate))
+            {
+                newAdmin.Status = false;
+                return;
+            }
             if (admin != null)
             {
                 if (newAdmin.EndDate == null || admin.EndDate < newAdmin.EndDate)
@@ -384,6 +523,11 @@ namespace EPlast.BLL.Services.City
             {
                 newAdmin.Status = true;
             }
+        }
+
+        private bool CheckCityWasAdmin(CityAdministration newAdmin)
+        {
+            return !(newAdmin.EndDate == null || DateTime.Today < newAdmin.EndDate);
         }
 
         private async Task GiveUserSupporterRole(User user)
@@ -406,6 +550,16 @@ namespace EPlast.BLL.Services.City
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
             var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
                                                                   && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityReferentsUPS =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUPS
+                                              && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsUSP =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUSP
+                                              && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsOfActiveMembership = cityAdministration.Where(a =>
+                a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership
+                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
                 user.FirstName, user.LastName, false);
             if (cityHead != null)
@@ -420,6 +574,124 @@ namespace EPlast.BLL.Services.City
                     emailContent.Message,
                     emailContent.Title);
             }
+
+            if (cityReferentsUPS.Count != 0)
+            {
+                foreach (var referent in cityReferentsUPS)
+                {
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+            if (cityReferentsUSP.Count != 0)
+            {
+                foreach (var referent in cityReferentsUSP)
+                {
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+            if (cityReferentsOfActiveMembership.Count != 0)
+            {
+                foreach (var referent in cityReferentsOfActiveMembership)
+                {
+                    await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
+                        emailContent.Message,
+                        emailContent.Title);
+                }
+            }
+        }
+
+        public async Task SendNotificationCityAdminAboutNewFollowerAsync(int cityId, User user)
+        {
+            var cityAdministration = await _repositoryWrapper.CityAdministration
+                .GetAllAsync(i => i.CityId == cityId,
+                    i => i
+                        .Include(c => c.AdminType)
+                        .Include(a => a.User));
+            var cityHead = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHead
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+            var cityHeadDeputy = cityAdministration.FirstOrDefault(a => a.AdminType.AdminTypeName == Roles.CityHeadDeputy
+                                                                  && (DateTime.Now < a.EndDate || a.EndDate == null));
+
+            var cityReferentsUPS =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUPS
+                                                       && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsUSP =
+                cityAdministration.Where(a => a.AdminType.AdminTypeName == Roles.CityReferentUSP
+                                              && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            var cityReferentsOfActiveMembership = cityAdministration.Where(a =>
+                a.AdminType.AdminTypeName == Roles.CityReferentOfActiveMembership
+                && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
+            List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
+
+            if (cityHead != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDto
+                {
+                    Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = cityHead.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+            }
+            if (cityHeadDeputy != null)
+            {
+                userNotificationsDTO.Add(new UserNotificationDto
+                {
+                    Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    NotificationTypeId = 1,
+                    OwnerUserId = cityHeadDeputy.UserId,
+                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderName = "Переглянути"
+                });
+            }
+            if (cityReferentsUPS.Count != 0)
+            {
+                foreach (var referent in cityReferentsUPS)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDto
+                    {
+                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                }
+            }
+            if (cityReferentsUSP.Count != 0)
+            {
+                foreach (var referent in cityReferentsUSP)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDto
+                    {
+                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                }
+            }
+            if (cityReferentsOfActiveMembership.Count != 0)
+            {
+                foreach (var referent in cityReferentsOfActiveMembership)
+                {
+                    userNotificationsDTO.Add(new UserNotificationDto
+                    {
+                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        NotificationTypeId = 1,
+                        OwnerUserId = referent.UserId,
+                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderName = "Переглянути"
+                    });
+                }
+            }
+            await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
         }
 
         private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)
@@ -431,10 +703,10 @@ namespace EPlast.BLL.Services.City
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
-        private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city)
+        private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city, string comment)
         {
             var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
-            var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name);
+            var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name, comment);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
         }
@@ -445,7 +717,7 @@ namespace EPlast.BLL.Services.City
             foreach (var role in roles)
             {
                 await RemoveAdministratorAsync(role.ID);
-            }    
+            }
         }
     }
 }

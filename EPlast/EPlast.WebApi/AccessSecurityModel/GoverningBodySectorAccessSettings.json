@@ -1,5 +1,6 @@
 ﻿{
   "Admin": {
+    "AddAnnouncement": true,
     "ViewInfo": true,
     "EditSector": true,
     "DeleteSector": true,
@@ -7,10 +8,23 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
+    "ViewDocument": true
+  },
+  "Крайовий Адмін": {
+    "AddAnnouncement": true,
+    "ViewInfo": true,
+    "EditSector": true,
+    "DeleteSector": true,
+    "AddSecretary": true,
+    "GoToSecretaryProfile": true,
+    "ManipulatePoster": true,
+    "ManipulateDocument": true,
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Керівного Органу": {
+    "AddAnnouncement": true,
     "ViewInfo": true,
     "EditSector": true,
     "DeleteSector": true,
@@ -18,10 +32,11 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Напряму Керівного Органу": {
+    "AddAnnouncement": true,
     "ViewInfo": true,
     "EditSector": true,
     "DeleteSector": true,
@@ -29,10 +44,11 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": true,
     "ManipulateDocument": true,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Округи": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "EditSector": false,
     "DeleteSector": false,
@@ -40,10 +56,11 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Станиці": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "EditSector": false,
     "DeleteSector": false,
@@ -51,10 +68,11 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Голова Куреня": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "EditSector": false,
     "DeleteSector": false,
@@ -62,10 +80,11 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Прихильник": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "EditSector": false,
     "DeleteSector": false,
@@ -73,10 +92,11 @@
     "GoToSecretaryProfile": true,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Дійсний член організації": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "EditSector": false,
     "DeleteSector": false,
@@ -85,10 +105,11 @@
     "DeleteGBMembers": false,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": true, 
+    "ViewAnnouncements": true,
     "ViewDocument": true
   },
   "Зареєстрований користувач": {
+    "AddAnnouncement": false,
     "ViewInfo": true,
     "EditSector": false,
     "DeleteSector": false,
@@ -97,7 +118,7 @@
     "DeleteGBMembers": false,
     "ManipulatePoster": false,
     "ManipulateDocument": false,
-    "ViewAnnouncements": false, 
+    "ViewAnnouncements": false,
     "ViewDocument": false
   }
 }

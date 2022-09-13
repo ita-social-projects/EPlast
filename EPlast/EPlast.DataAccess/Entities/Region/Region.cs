@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using EPlast.Resources;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -17,6 +18,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<City> Cities { get; set; }
         public ICollection<RegionDocuments> Documents { get; set; }
         public string City { get; set; }
+        public UkraineOblasts Oblast { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public string Link { get; set; }

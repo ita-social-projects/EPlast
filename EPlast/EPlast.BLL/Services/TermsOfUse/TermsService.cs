@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL.DTO.Terms;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Terms;
@@ -6,10 +10,6 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace EPlast.BLL.Services.TermsOfUse
 {
@@ -27,24 +27,25 @@ namespace EPlast.BLL.Services.TermsOfUse
         }
 
         /// <inheritdoc />
-        public async Task<TermsDTO> GetFirstRecordAsync()
+        public async Task<TermsDto> GetFirstRecordAsync()
         {
-            var terms = _mapper.Map<TermsDTO>(await _repoWrapper.TermsOfUse.GetFirstAsync());
+            var terms = _mapper.Map<TermsDto>(await _repoWrapper.TermsOfUse.GetFirstAsync());
             return terms;
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<string>> GetAllUsersIdAsync(User user)
+        public async Task<IEnumerable<string>> GetAllUsersIdWithoutAdminIdAsync(User user)
         {
             await CheckIfAdminAsync(user);
-            var allUsersId = _mapper.Map<IEnumerable<UserProfile>, IEnumerable<UserProfileDTO>>(await _repoWrapper.UserProfile.GetAllAsync())
+            var userId = await _userManager.GetUserIdAsync(user);
+            var allUsersId = (await _repoWrapper.UserProfile.GetAllAsync(x => x.UserID != userId))
                 .Select(c => c.UserID);
             return allUsersId;
         }
 
         /// <inheritdoc />
-        public async Task ChangeTermsAsync(TermsDTO termsDTO, User user)
-        { 
+        public async Task ChangeTermsAsync(TermsDto termsDTO, User user)
+        {
             await CheckIfAdminAsync(user);
             var terms = await _repoWrapper.TermsOfUse.GetFirstAsync(x => x.TermsId == termsDTO.TermsId);
             terms.TermsTitle = termsDTO.TermsTitle;
@@ -55,10 +56,10 @@ namespace EPlast.BLL.Services.TermsOfUse
         }
 
         /// <inheritdoc />
-        public async Task AddTermsAsync(TermsDTO termsDTO, User user)
+        public async Task AddTermsAsync(TermsDto termsDTO, User user)
         {
             await CheckIfAdminAsync(user);
-            var terms = _mapper.Map<TermsDTO, Terms>(termsDTO);
+            var terms = _mapper.Map<TermsDto, Terms>(termsDTO);
             await _repoWrapper.TermsOfUse.CreateAsync(terms);
             await _repoWrapper.SaveAsync();
         }

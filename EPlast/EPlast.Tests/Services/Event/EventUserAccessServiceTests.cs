@@ -1,4 +1,6 @@
-﻿using EPlast.BLL.DTO.Events;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Services.EventUser.EventUserAccess;
@@ -8,8 +10,6 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.Event
 {
@@ -145,10 +145,10 @@ namespace EPlast.Tests.Services.Event
                 }
             };
 
-        private EventDTO CreateFakeFinishedEvent()
-            => new EventDTO()
+        private EventDto CreateFakeFinishedEvent()
+            => new EventDto()
             {
-                Event = new EventInfoDTO()
+                Event = new EventInfoDto()
                 {
                     EventId = 1,
                     EventName = "SomeEventName",
@@ -157,10 +157,10 @@ namespace EPlast.Tests.Services.Event
 
             };
 
-        private EventDTO CreateFakeApprovedEvent()
-            => new EventDTO()
+        private EventDto CreateFakeApprovedEvent()
+            => new EventDto()
             {
-                Event = new EventInfoDTO()
+                Event = new EventInfoDto()
                 {
                     EventId = 1,
                     EventName = "SomeEventName",
