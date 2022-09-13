@@ -153,8 +153,6 @@ stages:
                 ################################################################################################
                 $(Pipeline.Workspace)/manifests/test/redis-master-deployment.yaml
                 $(Pipeline.Workspace)/manifests/test/redis-master-service.yaml
-              variables:
-              - group: EPlast
               imagePullSecrets: |
                 $(imagePullSecret)
               containers: |
