@@ -114,7 +114,7 @@ stages:
   - Test
   jobs:
   - deployment: Deploy
-    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
+#    condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/pull/')))
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
@@ -148,9 +148,7 @@ stages:
               manifests: |
                 $(Pipeline.Workspace)/manifests/test/deployment.yml
                 $(Pipeline.Workspace)/manifests/test/service.yml
-                ######################## DEFINE host value before creating ingress prod ########################
-                # $(Pipeline.Workspace)/manifests/test/ingress-prod.yml
-                ################################################################################################
+                $(Pipeline.Workspace)/manifests/test/ingress-prod.yml
                 $(Pipeline.Workspace)/manifests/test/redis-master-deployment.yaml
                 $(Pipeline.Workspace)/manifests/test/redis-master-service.yaml
               imagePullSecrets: |
