@@ -1,0 +1,59 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: eplastapi
+  labels:
+    app: eplastapi  
+spec:
+  selector:
+    matchLabels:
+      app: eplastapi
+  template:
+    metadata:
+      labels:
+        app: eplastapi 
+    spec:
+      containers:
+        - name: eplastapi 
+          image: eplast.azurecr.io/eplastapi:10286
+          resources:
+            limits:
+              cpu: "200m"
+              memory: "100Mi"
+          ports:
+          - containerPort: 5000
+          env:
+          - name: ConnectionStrings__EPlastDBConnection
+            value: ___ConnectionStrings__EPlastDBConnection___
+          - name: StorageConnectionString
+            value: ___StorageConnectionString___
+          - name: EmailServiceSettings__SMTPServerLogin
+            value: ___EmailServiceSettings__SMTPServerLogin___
+          - name: EmailServiceSettings__SMTPServerPassword
+            value: ___EmailServiceSettings__SMTPServerPassword___
+          - name: Admin__Email
+            value: ___Admin__Email___
+          - name: Admin__Password
+            value: ___Admin__Password___
+          - name: GoogleAuthentication__GoogleClientId
+            value: ___GoogleAuthentication__GoogleClientId___
+          - name: GoogleAuthentication__GoogleClientSecret
+            value: ___GoogleAuthentication__GoogleClientSecret___
+          - name: FacebookAuthentication__FacebookAppId
+            value: ___FacebookAuthentication__FacebookAppId___
+          - name: FacebookAuthentication__FacebookAppSecret
+            value: ___FacebookAuthentication__FacebookAppSecret___
+            
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: eplastapi-autoscaler
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: eplastapi
+  targetCPUUtilizationPercentage: 70
+  minReplicas: 1
+  maxReplicas: 3
