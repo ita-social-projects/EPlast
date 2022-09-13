@@ -118,7 +118,8 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'EPlast.eplast'
+#    environment: 'EPlast.eplast'
+    environment: 'EPlast.test-deploy'
     strategy:
       runOnce:
         deploy:
