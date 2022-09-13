@@ -15,11 +15,11 @@ spec:
     spec:
       containers:
         - name: eplastapi 
-          image: ___containerRegistry___/eplastapi
+          image: ___containerRegistry___/eplastapi:10286
           resources:
             limits:
-              cpu: "600m"
-              memory: "500Mi"          
+              cpu: "200m"
+              memory: "100Mi"          
           ports:
           - containerPort: 5000
           env:
