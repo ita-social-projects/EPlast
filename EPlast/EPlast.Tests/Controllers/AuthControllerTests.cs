@@ -9,6 +9,7 @@ using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
@@ -32,13 +33,14 @@ namespace EPlast.Tests.Controllers
             _userManagerMock = new Mock<UserManager<User>>(MockBehavior.Strict, Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             _userManagerMock
                 .SetupSet(m => m.Logger = null);
-
+            _hostURLService = new Mock<IHostURLService>();
             _controller = new AuthController(
                 _userDatesServiceMock.Object,
                 _emailSendingServiceMock.Object,
                 _mapperMock.Object,
                 _cityParticipantServiceMock.Object,
-                _userManagerMock.Object
+                _userManagerMock.Object,
+                _hostURLService.Object
             );
         }
 
@@ -47,6 +49,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _controller.ModelState.AddModelError("", "");
+            _hostURLService.Setup(h => h.GetSignInURL(400)).Returns(GetURL(400));
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -63,6 +66,7 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.FindByIdAsync(""))
                 .ReturnsAsync(value: null!);
+            _hostURLService.Setup(h => h.GetSignInURL(404)).Returns(GetURL(404));
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -87,6 +91,7 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
                 .ReturnsAsync(value: null!);
+            _hostURLService.Setup(h => h.GetSignInURL(410)).Returns(GetURL(410));
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -112,6 +117,7 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.ConfirmEmailAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed());
+            _hostURLService.Setup(h => h.GetSignInURL(400)).Returns(GetURL(400));
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -147,6 +153,8 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(value: null!);
+            _hostURLService.Setup(h => h.GetSignInURL(It.IsAny<int>())).Returns(GetURL(It.IsAny<int>()));
+            _hostURLService.Setup(h => h.SignInURL).Returns(GetURL());
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -184,6 +192,8 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .Setup(m => m.AddToRoleAsync(It.Is<User>(v => v == user), It.IsAny<string>()))
                 .ReturnsAsync(value: null!);
+            _hostURLService.Setup(h => h.GetSignInURL(It.IsAny<int>())).Returns(GetURL(It.IsAny<int>()));
+            _hostURLService.Setup(h => h.SignInURL).Returns(GetURL());
 
             // Act
             var response = _controller.ConfirmEmail("", "").Result;
@@ -541,6 +551,17 @@ namespace EPlast.Tests.Controllers
         private Mock<IMapper> _mapperMock = null!;
         private Mock<ICityParticipantsService> _cityParticipantServiceMock = null!;
         private Mock<UserManager<User>> _userManagerMock = null!;
+        private Mock<IHostURLService> _hostURLService = null!;
         private AuthController _controller = null!;
+
+        private string GetURL()
+        {
+            return $"localhost";
+        }        
+        
+        private string GetURL(int error)
+        {
+            return $"{GetURL()}?error={error}";
+        }
     }
 }
