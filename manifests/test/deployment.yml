@@ -15,37 +15,44 @@ spec:
     spec:
       containers:
         - name: eplastapi 
-          image: ___containerRegistry___/eplastapi
-          resources:
-            limits:
-              cpu: "600m"
-              memory: "500Mi"          
+          image: ___containerRegistry___/eplastapi:10286
+        # resources:
+        #    limits:
+        #      cpu: "200m"
+        #      memory: "100Mi"
           ports:
           - containerPort: 5000
           env:
+          - name: ConnectionStrings__Redis
+            value: "10.0.95.244:6379"
+          - name: ConnectionStrings__EplastDatabase
+            value: "Server=tcp:eplast.database.windows.net,1433;Initial Catalog=EPlast;Persist Security Info=False;User ID=Admin_EPlast;Password=Jm4<-z>X3K?B&YLz;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+          - name: ConnectionStrings__BlobStorage
+            value: "DefaultEndpointsProtocol=https;AccountName=eplaststorage;AccountKey=AaMfm+wYcacPhE3JACqadhgVBTBRrHFjtUkdUBwYK6YjqU7x7ySP1i7mEbYeTtPORKYP6YZ9xevS+NfHv1Ug7w==;EndpointSuffix=core.windows.net"
+          - name: JwtIssuerSigningKey
+            value: "vKlLhnY8I4qZazGle4CIpnAROyuKYAyoRUENRFHUPhIEWk0yr91tz2faHEbm5vq4"
           - name: ConnectionStrings__EPlastDBConnection
-            value: ___ConnectionStrings__EPlastDBConnection___
+            value: "Server=tcp:eplast.database.windows.net,1433;Initial Catalog=EPlast;Persist Security Info=False;UserID=Admin_EPlast;Password=Jm4<-z>X3K?B&YLz;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
           - name: StorageConnectionString
-            value: ___StorageConnectionString___
+            value: "DefaultEndpointsProtocol=https;AccountName=eplaststorage;AccountKey=AaMfm+wYcacPhE3JACqadhgVBTBRrHFjtUkdUBwYK6YjqU7x7ySP1i7mEbYeTtPORKYP6YZ9xevS+NfHv1Ug7w==;EndpointSuffix=core.windows.net"
           - name: EmailServiceSettings__SMTPServerLogin
-            value: ___EmailServiceSettings__SMTPServerLogin___
+            value: "eplast.pysar@ukr.net"
           - name: EmailServiceSettings__SMTPServerPassword
-            value: ___EmailServiceSettings__SMTPServerPassword___
+            value: "yEiXc5aNj5sC261P"
           - name: Admin__Email
-            value: ___Admin__Email___
+            value: "admin@eplast.com"
           - name: Admin__Password
-            value: ___Admin__Password___
+            value: "Pq!83874"
           - name: GoogleAuthentication__GoogleClientId
-            value: ___GoogleAuthentication__GoogleClientId___
+            value: "710369145500-ur2qfp5292p16458pfvg4oieu7eqmca7.apps.googleusercontent.com"
           - name: GoogleAuthentication__GoogleClientSecret
-            value: ___GoogleAuthentication__GoogleClientSecret___
+            value: "ea7hGS--XPc-gOFcs1cuMKv5"
           - name: FacebookAuthentication__FacebookAppId
-            value: ___FacebookAuthentication__FacebookAppId___
+            value: "392908158421729"
           - name: FacebookAuthentication__FacebookAppSecret
-            value: ___FacebookAuthentication__FacebookAppSecret___
-            
+            value: "f4caaed57da8d16e69346d8d52bebc52"           
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: eplastapi-autoscaler
@@ -54,14 +61,6 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: eplastapi
+  targetCPUUtilizationPercentage: 70
   minReplicas: 1
   maxReplicas: 3
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      targetAverageUtilization: 80            

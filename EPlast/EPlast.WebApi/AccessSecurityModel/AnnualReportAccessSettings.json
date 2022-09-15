@@ -51,11 +51,11 @@
     "CanViewCityReportsTable": true,
     "CanViewClubReportsTable": false,
     "CanViewRegionReportsTable": true,
-    "CanViewReportDetails": false,
+    "CanViewReportDetails": true,
     "CanSubmitCityReport": true,
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": true,
-    "CanEditReport": false,
+    "CanEditReport": true,
     "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
@@ -70,7 +70,7 @@
     "CanSubmitCityReport": true,
     "CanSubmitClubReport": false,
     "CanSubmitRegionReport": true,
-    "CanEditReport": false,
+    "CanEditReport": true,
     "CanChangeReportStatus": false,
     "CanDeleteReport": false
   },
