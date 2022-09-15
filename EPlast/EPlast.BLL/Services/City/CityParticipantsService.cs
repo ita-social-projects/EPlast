@@ -8,6 +8,7 @@ using EPlast.BLL.DTO.Notification;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
@@ -29,6 +30,7 @@ namespace EPlast.BLL.Services.City
         private readonly UserManager<User> _userManager;
         private readonly INotificationService _notificationService;
         private readonly IMediator _mediator;
+        private readonly IHostURLService _hostURLService;
 
         public CityParticipantsService(
             IRepositoryWrapper repositoryWrapper,
@@ -38,7 +40,8 @@ namespace EPlast.BLL.Services.City
             IEmailSendingService emailSendingService,
             IEmailContentService emailContentService,
             IMediator mediator,
-            INotificationService notificationService
+            INotificationService notificationService,
+            IHostURLService hostURLService
         )
         {
             _repositoryWrapper = repositoryWrapper;
@@ -49,6 +52,7 @@ namespace EPlast.BLL.Services.City
             _emailContentService = emailContentService;
             _mediator = mediator;
             _notificationService = notificationService;
+            _hostURLService = hostURLService;
         }
 
         /// <inheritdoc />
@@ -696,7 +700,7 @@ namespace EPlast.BLL.Services.City
 
         private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)
         {
-            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var cityUrl = _hostURLService.GetCitiesURL(city.ID);
             var emailContent = isApproved
                 ? await _emailContentService.GetCityApproveEmailAsync(userId, cityUrl, city.Name)
                 : await _emailContentService.GetCityExcludeEmailAsync(userId, cityUrl, city.Name);
@@ -705,7 +709,7 @@ namespace EPlast.BLL.Services.City
 
         private async Task SendEmailRemoveCityFollowerAsync(string email, DataAccess.Entities.City city, string comment)
         {
-            var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
+            var cityUrl = _hostURLService.GetCitiesURL(city.ID);
             var emailContent = _emailContentService.GetCityRemoveFollowerEmail(cityUrl, city.Name, comment);
             await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message,
                 emailContent.Title);
