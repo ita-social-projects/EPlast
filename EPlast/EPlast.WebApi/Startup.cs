@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL;
+using EPlast.BLL.Services.HostURL;
 using EPlast.BLL.Settings;
 using EPlast.DataAccess;
 using EPlast.DataAccess.Entities;
@@ -118,6 +119,8 @@ namespace EPlast.WebApi
                 o.SupportedCultures = supportedCultures;
                 o.SupportedUICultures = supportedCultures;
             });
+
+            services.Configure<HostURLOptions>(Configuration.GetSection("URLs"));
         }
 
         private void ConfigureAppSecurity(IServiceCollection services)
