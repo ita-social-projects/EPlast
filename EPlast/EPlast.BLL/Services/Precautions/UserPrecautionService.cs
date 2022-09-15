@@ -101,14 +101,21 @@ namespace EPlast.BLL.Services.Precautions
 
         private async Task<bool> CanUserChangePrecautionAsync(int precautionId, User user)
         {
-            var precaution = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(p => p.Id == precautionId);
-            if (precaution == null)
+            var userPrecaution = await _repoWrapper
+                .UserPrecaution
+                .GetFirstOrDefaultAsync
+                (
+                    predicate: d => d.Id == precautionId,
+                    include: up => up.Include(p => p.Precaution)
+                );
+
+            if (userPrecaution == null)
             {
                 return false;
             }
 
             bool isCurrentUserGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
-            if (isCurrentUserGoverningBodyAdmin && !precaution.IsActive)
+            if (isCurrentUserGoverningBodyAdmin && !userPrecaution.IsActive)
             {
                 return false;
             }
@@ -150,7 +157,13 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<bool> DeleteUserPrecautionAsync(int id, User user)
         {
-            var userPrecaution = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(d => d.Id == id);
+            var userPrecaution = await _repoWrapper
+                .UserPrecaution
+                .GetFirstOrDefaultAsync
+                (
+                    predicate: d => d.Id == id,
+                    include: up => up.Include(p => p.Precaution)
+                );
             if (userPrecaution == null)
             {
                 return false;
@@ -214,13 +227,19 @@ namespace EPlast.BLL.Services.Precautions
 
         public async Task<bool> IsNumberExistAsync(int number, int? id = null)
         {
-            var distNum = await _repoWrapper.UserPrecaution.GetFirstOrDefaultAsync(x => x.Number == number);
-            if (distNum == null)
+            var userPrecaution = await _repoWrapper
+                .UserPrecaution
+                .GetFirstOrDefaultAsync
+                (
+                    predicate: d => d.Id == id,
+                    include: up => up.Include(p => p.Precaution)
+                );
+            if (userPrecaution == null)
             {
                 return false;
             }
 
-            return distNum.Id != id;
+            return userPrecaution.Id != id;
         }
 
         public async Task<IEnumerable<ShortUserInformationDto>> UsersTableWithoutPrecautionAsync()
@@ -246,7 +265,7 @@ namespace EPlast.BLL.Services.Precautions
         {
             return (await GetUserPrecautionsOfUserAsync(userId)).FirstOrDefault(
                 x => x.Date < DateTime.Now && DateTime.Now < x.Date.AddMonths(x.Precaution.MonthsPeriod)
-                && x.Precaution.Name.Equals(type) 
+                && x.Precaution.Name.Equals(type)
                 && x.Status != UserPrecautionStatus.Cancelled
             );
         }
