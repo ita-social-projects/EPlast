@@ -98,12 +98,13 @@ namespace EPlast.BLL.Services.UserAccess
             _securityModel.SetSettingsFile(UserProfileAccessSettings);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             var canViewUserFullProfile = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
-            var canApproveAsHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            var canApproveAsClubHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            var canApproveAsCityHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
             var canEditUserProfile = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
 
             userAccess["CanViewUserFullProfile"] = canViewUserFullProfile;
-            userAccess["CanApproveAsClubHead"] = canApproveAsHead;
-            userAccess["CanApproveAsCityHead"] = canApproveAsHead;
+            userAccess["CanApproveAsClubHead"] = canApproveAsClubHead;
+            userAccess["CanApproveAsCityHead"] = canApproveAsCityHead;
             userAccess["CanEditUserProfile"] = canEditUserProfile;
             userAccess["CanSeeAddDeleteUserExtractUPU"] = canEditUserProfile;
             userAccess["CanAddUserDistionction"] = canEditUserProfile;
