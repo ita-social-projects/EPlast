@@ -9,6 +9,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Models;
 using EPlast.BLL.Queries.City;
@@ -95,6 +96,7 @@ namespace EPlast.Tests.Services.City
         private Mock<UserManager<User>> _userManager;
         private Mock<INotificationService> _notificationServiceMock;
         private Mock<IMediator> _mediator;
+        private Mock<IHostURLService> _hostURLService;
 
         [SetUp]
         public void SetUp()
@@ -107,6 +109,7 @@ namespace EPlast.Tests.Services.City
             _emailSendingService = new Mock<IEmailSendingService>();
             _emailContentService = new Mock<IEmailContentService>();
             _notificationServiceMock = new Mock<INotificationService>();
+            _hostURLService = new Mock<IHostURLService>();
             _mediator = new Mock<IMediator>(); 
             _cityParticipantsService = new CityParticipantsService(
                 _repoWrapper.Object,
@@ -116,7 +119,8 @@ namespace EPlast.Tests.Services.City
                 _emailSendingService.Object,
                 _emailContentService.Object,
                 _mediator.Object,
-                _notificationServiceMock.Object
+                _notificationServiceMock.Object,
+                _hostURLService.Object
             );
         }
 
@@ -957,9 +961,6 @@ namespace EPlast.Tests.Services.City
             _mapper
                 .Setup(x => x.Map<CityMembers, CityMembersDto>(It.IsAny<CityMembers>()))
                 .Returns(new CityMembersDto());
-            _repoWrapper
-                .Setup(x => x.GetCitiesUrl)
-                .Returns("citiesUrl");
             _emailSendingService
                 .Setup(x => x.SendEmailAsync(It.IsAny<string>(),
                                              It.IsAny<string>(),

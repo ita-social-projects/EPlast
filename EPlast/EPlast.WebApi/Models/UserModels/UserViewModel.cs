@@ -1,5 +1,5 @@
 ﻿using EPlast.WebApi.Models.UserModels.UserProfileFields;
-using EPlast.WebApi.Validators;
+using EPlast.WebApi.CustomAttributes;
 using System;
 using System.ComponentModel.DataAnnotations;
 
