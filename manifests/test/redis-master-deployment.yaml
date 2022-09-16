@@ -31,7 +31,7 @@ spec:
         - containerPort: 6379
 
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: redis-autoscaler
@@ -40,14 +40,4 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: redis-master
-  minReplicas: 1
-  maxReplicas: 2
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      targetAverageUtilization: 80
+  targetCPUUtilizationPercentage: 70
