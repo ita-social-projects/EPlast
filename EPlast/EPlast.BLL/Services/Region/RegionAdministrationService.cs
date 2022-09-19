@@ -154,6 +154,10 @@ namespace EPlast.BLL.Services.Region
         public async Task DeleteAdminByIdAsync(int Id)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
+            // don't use EditStatusAdministration because of CheckUserHasOneSecretaryTypeForRegion
+            admin.EndDate = DateTime.Now;
+            admin.Status = false;
+
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
             string role = adminType.AdminTypeName switch
@@ -165,10 +169,17 @@ namespace EPlast.BLL.Services.Region
                 Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
                 _ => Roles.OkrugaSecretary,
             };
-            await _userManager.RemoveFromRoleAsync(user, role);
+
+            if (role != Roles.OkrugaSecretary || (await CheckUserHasOneSecretaryTypeForRegionAsync(admin)))
+            {
+                await _userManager.RemoveFromRoleAsync(user, role);
+            }
+
+            _repoWrapper.RegionAdministration.Update(admin);
+            await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId)
+        public async Task<IEnumerable<RegionAdministrationDto>> GetUserAdministrations(string userId)
         {
 
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
@@ -180,7 +191,7 @@ namespace EPlast.BLL.Services.Region
             return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries);
         }
 
-        public async Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId)
+        public async Task<IEnumerable<RegionAdministrationDto>> GetUserPreviousAdministrations(string userId)
         {
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                 include: source => source
@@ -249,6 +260,27 @@ namespace EPlast.BLL.Services.Region
             {
                 await DeleteAdminByIdAsync(role.ID);
             }
+        }
+
+        private async Task<bool> CheckUserHasOneSecretaryTypeForRegionAsync(RegionAdministration admin)
+        {
+            int secretaryAdminTypesCount = 0;
+            var userAdminTypes = await GetUserAdministrations(admin.UserId);
+            foreach (RegionAdministrationDto userAdminType in userAdminTypes)
+            {
+                var secretaryCheck = userAdminType.AdminType.AdminTypeName switch
+                {
+                    Roles.OkrugaHead => Roles.OkrugaHead,
+                    Roles.OkrugaHeadDeputy => Roles.OkrugaHeadDeputy,
+                    Roles.OkrugaReferentUPS => Roles.OkrugaReferentUPS,
+                    Roles.OkrugaReferentUSP => Roles.OkrugaReferentUSP,
+                    Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
+                    _ => Roles.OkrugaSecretary,
+                };
+                if (secretaryCheck == Roles.OkrugaSecretary) secretaryAdminTypesCount++;
+            }
+            if (secretaryAdminTypesCount > 1) return false;
+            return true;
         }
 
         private bool CheckCityWasAdmin(RegionAdministration newAdmin)

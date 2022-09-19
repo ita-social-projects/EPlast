@@ -405,7 +405,11 @@ namespace EPlast.BLL.Services.City
                 Roles.CityReferentOfActiveMembership => Roles.CityReferentOfActiveMembership,
                 _ => Roles.CitySecretary,
             };
-            await _userManager.RemoveFromRoleAsync(user, role);
+
+            if (role != Roles.CitySecretary || (await CheckUserHasOneSecretaryTypeForCityAsync(admin)))
+            {
+                await _userManager.RemoveFromRoleAsync(user, role);
+            }
 
             _repositoryWrapper.CityAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
@@ -694,6 +698,15 @@ namespace EPlast.BLL.Services.City
             await _notificationService.AddListUserNotificationAsync(userNotificationsDTO);
         }
 
+        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        {
+            var roles = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
+            foreach (var role in roles)
+            {
+                await RemoveAdministratorAsync(role.ID);
+            }
+        }
+
         private async Task SendEmailCityApproveStatusAsync(string email, string userId, DataAccess.Entities.City city, bool isApproved)
         {
             var cityUrl = _repositoryWrapper.GetCitiesUrl + city.ID;
@@ -711,13 +724,25 @@ namespace EPlast.BLL.Services.City
                 emailContent.Title);
         }
 
-        public async Task RemoveAdminRolesByUserIdAsync(string userId)
+        private async Task<bool> CheckUserHasOneSecretaryTypeForCityAsync(CityAdministration admin)
         {
-            var roles = await _repositoryWrapper.CityAdministration.GetAllAsync(a => a.UserId == userId && a.Status);
-            foreach (var role in roles)
+            int secretaryAdminTypesCount = 0;
+            var userAdminTypes = await GetAdministrationsOfUserAsync(admin.UserId);
+            foreach (CityAdministrationDto userAdminType in userAdminTypes)
             {
-                await RemoveAdministratorAsync(role.ID);
+                var secretaryCheck = userAdminType.AdminType.AdminTypeName switch
+                {
+                    Roles.CityHead => Roles.CityHead,
+                    Roles.CityHeadDeputy => Roles.CityHeadDeputy,
+                    Roles.CityReferentUPS => Roles.CityReferentUPS,
+                    Roles.CityReferentUSP => Roles.CityReferentUSP,
+                    Roles.CityReferentOfActiveMembership => Roles.CityReferentOfActiveMembership,
+                    _ => Roles.CitySecretary,
+                };
+                if (secretaryCheck == Roles.CitySecretary) secretaryAdminTypesCount++;
             }
+            if (secretaryAdminTypesCount > 1) return false;
+            return true;
         }
     }
 }

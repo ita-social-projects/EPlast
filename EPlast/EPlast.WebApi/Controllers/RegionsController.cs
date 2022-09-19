@@ -654,7 +654,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
-            var secretaries = await _regionAdministrationService.GetUsersAdministrations(userId);
+            var secretaries = await _regionAdministrationService.GetUserAdministrations(userId);
             return Ok(secretaries);
         }
 
@@ -662,7 +662,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserPrevAdministrations(string userId)
         {
-            var secretaries = await _regionAdministrationService.GetUsersPreviousAdministrations(userId);
+            var secretaries = await _regionAdministrationService.GetUserPreviousAdministrations(userId);
             return Ok(secretaries);
         }
 
@@ -714,14 +714,6 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Remove(int Id)
         {
             await _regionAdministrationService.DeleteAdminByIdAsync(Id);
-            return Ok();
-        }
-
-        [HttpPut("ChangeStatusAdministration/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> EditStatus(int Id)
-        {
-            await _regionAdministrationService.EditStatusAdministration(Id);
             return Ok();
         }
 

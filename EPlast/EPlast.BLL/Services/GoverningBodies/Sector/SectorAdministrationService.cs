@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using EPlast.BLL.DTO.Club;
+using EPlast.BLL.DTO.GoverningBody;
 using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.BLL.Services.GoverningBodies.Sector
 {
@@ -18,14 +23,17 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
         private readonly IRepositoryWrapper _repositoryWrapper;
         private readonly UserManager<User> _userManager;
         private readonly IAdminTypeService _adminTypeService;
+        private readonly IMapper _mapper;
 
         public SectorAdministrationService(IRepositoryWrapper repositoryWrapper,
                                             UserManager<User> userManager,
-                                            IAdminTypeService adminTypeService)
+                                            IAdminTypeService adminTypeService,
+                                            IMapper mapper)
         {
             _repositoryWrapper = repositoryWrapper;
             _userManager = userManager;
             _adminTypeService = adminTypeService;
+            _mapper = mapper;
         }
 
         public async Task<SectorAdministrationDto> AddSectorAdministratorAsync(SectorAdministrationDto sectorAdministrationDto)
@@ -107,9 +115,16 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
-            var role = adminType.AdminTypeName == Roles.GoverningBodySectorHead ? 
-                Roles.GoverningBodySectorHead : Roles.GoverningBodySectorSecretary;
-            await _userManager.RemoveFromRoleAsync(user, role);
+            var role = adminType.AdminTypeName switch
+            {
+                Roles.GoverningBodySectorHead => Roles.GoverningBodySectorHead,
+                _ => Roles.GoverningBodySectorSecretary
+            }; 
+            
+            if (role != Roles.GoverningBodySectorSecretary || (await CheckUserHasOneSecretaryTypeForSectorAsync(admin)))
+            {
+                await _userManager.RemoveFromRoleAsync(user, role);
+            }
 
             _repositoryWrapper.GoverningBodySectorAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
@@ -124,17 +139,43 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             }
         }
 
+        public async Task<IEnumerable<SectorAdministrationDto>> GetUserAdministrations(string userId)
+        {
+            var admins = await _repositoryWrapper.GoverningBodySectorAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
+                 include:
+                 source => source.Include(c => c.User).Include(c => c.AdminType)
+                 );
+
+            return _mapper.Map<IEnumerable<SectorAdministration>, IEnumerable<SectorAdministrationDto>>(admins);
+        }
+
+        private async Task<bool> CheckUserHasOneSecretaryTypeForSectorAsync(SectorAdministration admin)
+        {
+            int secretaryAdminTypesCount = 0;
+            var userAdminTypes = await GetUserAdministrations(admin.UserId);
+            foreach (SectorAdministrationDto userAdminType in userAdminTypes)
+            {
+                var secretaryCheck = userAdminType.AdminType.AdminTypeName switch
+                {
+                    Roles.GoverningBodySectorHead => Roles.GoverningBodySectorHead,
+                    _ => Roles.GoverningBodySectorSecretary,
+                };
+                if (secretaryCheck == Roles.GoverningBodySectorSecretary) secretaryAdminTypesCount++;
+            }
+            if (secretaryAdminTypesCount > 1) return false;
+            return true;
+        }
+
         private async Task RemoveSectorAdminIfPresent(int sectorId, string adminTypeName)
         {
             var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
             var admin = await _repositoryWrapper.GoverningBodySectorAdministration.
                 GetFirstOrDefaultAsync(a => a.AdminTypeId == adminType.ID
                                             && a.Status && a.SectorId == sectorId);
-
            if(admin != null)
-            {
+           {
                 await RemoveAdministratorAsync(admin.Id);
-            }
+           }
         }
     }
 }

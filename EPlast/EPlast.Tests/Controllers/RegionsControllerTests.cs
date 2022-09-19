@@ -715,7 +715,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             string id = "Admin";
-            _regionAdministrationService.Setup(x => x.GetUsersAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
+            _regionAdministrationService.Setup(x => x.GetUserAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
             
             // Act
             var result = await _regionController.GetUserAdministrations(id);
@@ -744,7 +744,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             string id = "Admin";
-            _regionAdministrationService.Setup(x => x.GetUsersPreviousAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
+            _regionAdministrationService.Setup(x => x.GetUserPreviousAdministrations(It.IsAny<string>())).ReturnsAsync(GetAdmins());
             
             // Act
             var result = await _regionController.GetUserAdministrations(id);
@@ -794,17 +794,6 @@ namespace EPlast.Tests.Controllers
             // Act
             var result = await _regionController.Remove(id);
             
-            // Assert
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-        
-        [Test]
-        public async Task EditStatus_ReturnsRegions()
-        {
-            // Arrange
-            int id = 2;
-            // Act
-            var result = await _regionController.EditStatus(id);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
