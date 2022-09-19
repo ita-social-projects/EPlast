@@ -6,12 +6,18 @@
 variables:
 - group: EPlast-PROD
   # Container registry service connection established during pipeline creation
+  
+- name: imageRepository
+  value: 'eplastapi'
+- name: containerRegistry
+  value: 'eplast.azurecr.io'
+  
 - name: dockerRegistryServiceConnection
   value: '6ed81c59-e17e-4f6e-b772-e7a2b4d0d06f'
-- name: imageRepository
-  value: 'eplastbackend'
-- name: containerRegistry
-  value: 'eplastregistry.azurecr.io'
+#- name: imageRepository
+#  value: 'eplastbackend'
+#- name: containerRegistry
+#  value: 'eplastregistry.azurecr.io'
 - name: dockerfilePath
   value: '**/Dockerfile'
 - name: tag
