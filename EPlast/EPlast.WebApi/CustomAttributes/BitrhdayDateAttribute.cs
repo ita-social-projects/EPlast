@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace EPlast.WebApi.Validators
+namespace EPlast.WebApi.CustomAttributes
 {
     public class BirthdayDateAttribute: ValidationAttribute
     {
