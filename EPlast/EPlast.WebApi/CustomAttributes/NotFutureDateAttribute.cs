@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EPlast.WebApi.ValidationAttributes
+namespace EPlast.WebApi.CustomAttributes
 {
     public class NotFutureDateAttribute : ValidationAttribute
     {

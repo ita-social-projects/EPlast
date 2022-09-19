@@ -1,5 +1,6 @@
 ﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.DataAccess.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -14,30 +15,23 @@ namespace EPlast.BLL.Services.Auth
 {
     public class AuthEmailService : IAuthEmailService
     {
-        private readonly IActionContextAccessor _actionContextAccessor;
+        private readonly IHostURLService _hostURLService;
         private readonly IAuthService _authService;
-        private readonly IHttpContextAccessor _contextAccessor;
         private readonly IEmailSendingService _emailSendingService;
         private readonly IEmailContentService _emailContentService;
-        private readonly IUrlHelperFactory _urlHelperFactory;
         private readonly UserManager<User> _userManager;
 
         public AuthEmailService(IEmailSendingService emailSendingService,
                                 IEmailContentService emailContentService,
                                 IAuthService authService,
                                 UserManager<User> userManager,
-                                IUrlHelperFactory urlHelperFactory,
-                                IActionContextAccessor actionContextAccessor,
-                                IHttpContextAccessor contextAccessor)
+                                IHostURLService hostURLService)
         {
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
             _authService = authService;
             _userManager = userManager;
-
-            _contextAccessor = contextAccessor;
-            _urlHelperFactory = urlHelperFactory;
-            _actionContextAccessor = actionContextAccessor;
+            _hostURLService = hostURLService;
         }
 
         /// <inheritdoc />
@@ -51,32 +45,24 @@ namespace EPlast.BLL.Services.Auth
         /// <inheritdoc />
         public async Task<bool> SendEmailGreetingAsync(string email)
         {
-            var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
-            citiesUrl = citiesUrl.Remove(citiesUrl.Length - 1);
             var user = await _userManager.FindByEmailAsync(email);
             user.EmailSendedOnRegister = DateTime.Now;
-            var emailContent = _emailContentService.GetAuthGreetingEmail(citiesUrl);
+            var emailContent = _emailContentService.GetAuthGreetingEmail(_hostURLService.CitiesURL);
             return await _emailSendingService.SendEmailAsync(user.Email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
         public async Task<bool> SendEmailJoinToCityReminderAsync(string email, string userId)
         {
-            var citiesUrl = ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
-            citiesUrl = citiesUrl.Remove(citiesUrl.Length - 1);
-            var emailContent = await _emailContentService.GetAuthJoinToCityReminderEmailAsync(citiesUrl, userId);
+            var emailContent = await _emailContentService.GetAuthJoinToCityReminderEmailAsync(_hostURLService.CitiesURL, userId);
             return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);
         }
 
         /// <inheritdoc />
         public async Task<bool> SendEmailRegistrAsync(string email)
         {
-            IUrlHelper _url = _urlHelperFactory.GetUrlHelper(_actionContextAccessor.ActionContext);
             var token = await _authService.AddRoleAndTokenAsync(email);
             var user = await _userManager.FindByEmailAsync(email);
-            var confirmationLink = _url.Action("confirmingEmail",
-                                               "Auth",
-                                               new { token, userId = user.Id },
-                                               _contextAccessor.HttpContext.Request.Scheme);
+            var confirmationLink = _hostURLService.GetConfirmEmailApiURL(userId: user.Id, token: token);
             user.EmailSendedOnRegister = DateTime.Now;
             var emailContent = _emailContentService.GetAuthRegisterEmail(confirmationLink);
             return await _emailSendingService.SendEmailAsync(email, emailContent.Subject, emailContent.Message, emailContent.Title);

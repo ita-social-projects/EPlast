@@ -4,14 +4,16 @@ using EPlast.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    partial class EPlastDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220830132637_DeleteAdminTypeValidation")]
+    partial class DeleteAdminTypeValidation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1103,14 +1105,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Courses");
-
-                    b.HasData(
-                        new
-                        {
-                            ID = 1,
-                            Link = "https://vumonline.ua/search/?search=%D0%BF%D0%BB%D0%B0%D1%81%D1%82",
-                            Name = "Vumonline курс"
-                        });
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Decesion", b =>
