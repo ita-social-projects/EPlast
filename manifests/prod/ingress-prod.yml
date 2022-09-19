@@ -16,17 +16,17 @@ spec:
   - host: ___SiteDnsName___
     http:
       paths:
-      - path: /api
-        pathType: Prefix
-        backend:
+      - backend:
           service:
             name: eplastbackend
             port:
               number: 5000
-      - path: /swagger
+        path: /api
         pathType: Prefix
-        backend:
-         service:
-           name: eplastbackend
-           port:
-             number: 5000
+      - backend:
+          service:
+            name: eplastbackend
+            port:
+              number: 5000
+        path: /swagger
+        pathType: Prefix
