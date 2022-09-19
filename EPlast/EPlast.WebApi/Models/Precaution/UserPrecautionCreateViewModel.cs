@@ -1,5 +1,5 @@
 ﻿using EPlast.Resources;
-using EPlast.WebApi.ValidationAttributes;
+using EPlast.WebApi.CustomAttributes;
 using System;
 
 namespace EPlast.WebApi.Models.Precaution

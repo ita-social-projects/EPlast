@@ -20,6 +20,7 @@ using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.FormerMember;
 using EPlast.BLL.Interfaces.GoverningBodies;
 using EPlast.BLL.Interfaces.GoverningBodies.Sector;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Jwt;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Notifications;
@@ -54,6 +55,7 @@ using EPlast.BLL.Services.FormerMember;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.BLL.Services.GoverningBodies.Announcement;
 using EPlast.BLL.Services.GoverningBodies.Sector;
+using EPlast.BLL.Services.HostURL;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.Jwt;
 using EPlast.BLL.Services.Logging;
@@ -209,8 +211,9 @@ namespace EPlast.WebApi
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IEventUserService, EventUserService>();
             services.AddTransient<IJwtService, JwtService>();
-            services.AddTransient<IUserRenewalService, UserRenewalService>();
-
+            services.AddSingleton<IUserMapService, UserMapService>();
+            services.AddSingleton<ICacheService, RedisCacheService>();
+            services.AddSingleton<IHostURLService, HostURLService>();
             return services;
         }
 
