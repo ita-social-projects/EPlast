@@ -1,12 +1,14 @@
-﻿using EPlast.BLL.Interfaces.UserProfiles;
+using System;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.HostURL;
+using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Models;
 using EPlast.BLL.Services.EmailSending;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Moq;
 using NUnit.Framework;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.Tests.Services.EmailSending
 {
@@ -14,6 +16,8 @@ namespace EPlast.Tests.Services.EmailSending
     {
         private EmailContentService _emailContentService;
         private Mock<IUserService> _mockUserService;
+        private Mock<IRepositoryWrapper> _mockRepositoryWrapper;
+        private Mock<IHostURLService> _mockHostUrlService;
 
         [Test]
         public void GetAuthFacebookRegisterEmail_ReturnsEmailModel()
@@ -248,8 +252,11 @@ namespace EPlast.Tests.Services.EmailSending
         public void SetUp()
         {
             _mockUserService = new Mock<IUserService>();
+            _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
 
-            _emailContentService = new EmailContentService(_mockUserService.Object);
+            _mockHostUrlService = new Mock<IHostURLService>();
+
+            _emailContentService = new EmailContentService(_mockUserService.Object, _mockHostUrlService.Object);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Blank;
 using EPlast.BLL.Interfaces.AzureStorage;
+using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Services.Blank;
 using EPlast.DataAccess.Entities.Blank;
 using EPlast.DataAccess.Repositories;
@@ -22,14 +23,16 @@ namespace EPlast.Tests.Services.Blank
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<IMapper> _mapper;
         private Mock<IBlankAchievementBlobStorageRepository> _blankBlobRepository;
-
+        private Mock<IUserCourseService> _usercourseService;
         [SetUp]
         public void SetUp()
         {
             _mapper = new Mock<IMapper>();
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _blankBlobRepository = new Mock<IBlankAchievementBlobStorageRepository>();
-            _achievementDocumentService = new AchievementDocumentService(_repoWrapper.Object, _mapper.Object, _blankBlobRepository.Object);
+            _usercourseService = new Mock<IUserCourseService>();
+
+            _achievementDocumentService = new AchievementDocumentService(_repoWrapper.Object, _mapper.Object, _blankBlobRepository.Object,_usercourseService.Object);
         }
 
         [Test]
@@ -69,7 +72,7 @@ namespace EPlast.Tests.Services.Blank
             _repoWrapper.Setup(rw => rw.SaveAsync());
 
             //Act
-            await _achievementDocumentService.DeleteFileAsync(AchievementDocuments.ID);
+            await _achievementDocumentService.DeleteFileAsync(AchievementDocuments.ID,  AchievementDocuments.UserId);
 
             //Assert
             _repoWrapper.Verify();
@@ -162,7 +165,7 @@ namespace EPlast.Tests.Services.Blank
         }
 
         [TestCase(1, 1, "someId")]
-        public async Task GetPartOfAchievement_ReturnsObj(int pageNumber, int pageSize, string userId)
+        public async Task GetPartOfAchievementByUserId_ReturnsObj(int pageNumber, int pageSize, string userId)
         {
             //Arrange
             _repoWrapper
@@ -171,7 +174,24 @@ namespace EPlast.Tests.Services.Blank
                 .ReturnsAsync(GetTestAchievements());
 
             //Act
-            var result = await _achievementDocumentService.GetPartOfAchievementAsync(pageNumber, pageSize, userId);
+            var result = await _achievementDocumentService.GetPartOfAchievementByUserIdAsync(pageNumber, pageSize, userId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<IEnumerable<AchievementDocumentsDto>>(result);
+        }
+
+        [TestCase(1, 1, "someId", 1)]
+        public async Task GetPartOfAchievementByUserIdAndCourseId_ReturnsObj(int pageNumber, int pageSize, string userId, int courseId)
+        {
+            //Arrange
+            _repoWrapper
+               .Setup(b => b.AchievementDocumentsRepository.GetAllAsync(It.IsAny<Expression<Func<AchievementDocuments, bool>>>(),
+                    It.IsAny<Func<IQueryable<AchievementDocuments>, IIncludableQueryable<AchievementDocuments, object>>>()))
+                .ReturnsAsync(GetTestAchievements());
+
+            //Act
+            var result = await _achievementDocumentService.GetPartOfAchievementByUserIdAndCourseIdAsync(pageNumber, pageSize, userId, courseId);
 
             //Assert
             Assert.NotNull(result);

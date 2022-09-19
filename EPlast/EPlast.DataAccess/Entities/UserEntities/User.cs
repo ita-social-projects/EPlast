@@ -42,7 +42,8 @@ namespace EPlast.DataAccess.Entities
         public bool SocialNetworking { get; set; }
         public string Comment { get; set; }
         public UserProfile UserProfile { get; set; }
-        public int RegionId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
+        public int? RegionId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
+        public int? CityId { get; set; } // Do not use this field anywhere, it is used only for newly registered users
         public ICollection<ConfirmedUser> ConfirmedUsers { get; set; }
         public ICollection<Approver> Approvers { get; set; }
         public ICollection<EventAdmin> Events { get; set; }
@@ -63,8 +64,9 @@ namespace EPlast.DataAccess.Entities
         public ICollection<UserRenewal> UserRenewals { get; set; }
         public ClubReportPlastDegrees ClubReportPlastDegrees { get; set; }
         public ClubReportCities ClubReportCities { get; set; }
-        public ICollection<UserCourse> UserCourses { get; set; }
+       
 
+        public ICollection<AchievementDocuments> AchievementDocuments { get; set; }
         public User()
         {
             Approvers = new List<Approver>();

@@ -97,15 +97,21 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(UserProfileAccessSettings);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            userAccess["CanViewUserFullProfile"] = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
-            userAccess["CanApproveAsClubHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
-            userAccess["CanApproveAsCityHead"] = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
-            userAccess["CanEditUserProfile"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
-            userAccess["CanSeeAddDeleteUserExtractUPU"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
-            userAccess["CanAddUserDistionction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
-            userAccess["CanDeleteUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
-            userAccess["CanDownloadUserDistinction"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
-            userAccess["CanViewDownloadUserBiography"] = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+            var canViewUserFullProfile = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
+            var canApproveAsClubHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            var canApproveAsCityHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
+            var canEditUserProfile = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
+
+            userAccess["CanViewUserFullProfile"] = canViewUserFullProfile;
+            userAccess["CanApproveAsClubHead"] = canApproveAsClubHead;
+            userAccess["CanApproveAsCityHead"] = canApproveAsCityHead;
+            userAccess["CanEditUserProfile"] = canEditUserProfile;
+            userAccess["CanSeeAddDeleteUserExtractUPU"] = canEditUserProfile;
+            userAccess["CanAddUserDistionction"] = canEditUserProfile;
+            userAccess["CanDeleteUserDistinction"] = canEditUserProfile;
+            userAccess["CanDownloadUserDistinction"] = canEditUserProfile;
+            userAccess["CanViewDownloadUserBiography"] = canEditUserProfile;
+
             return userAccess;
         }
 

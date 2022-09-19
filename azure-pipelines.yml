@@ -12,7 +12,9 @@ variables:
 - group: EPlast
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
-  value: '5aab2e73-307d-46b2-8421-8ac50de15018'
+  # value: '5aab2e73-307d-46b2-8421-8ac50de15018'
+  value: '88435167-4a39-4ca0-9290-a2ef27d3ff17'
+#  value: 'a4044132-4df5-4427-8b71-97bb4e8a3dda'
 - name: imageRepository
   value: 'eplastapi'
 - name: containerRegistry
@@ -22,7 +24,8 @@ variables:
 - name: tag
   value: '$(Build.BuildId)'
 - name: imagePullSecret
-  value: 'eplast1348122b-auth'
+  # value: 'eplast1348122b-auth'
+  value: 'azdev-sa-3a5f0b-token-rqwl2'
 
   # Agent VM image name
 - name: vmImageName
@@ -128,17 +131,20 @@ stages:
               keepToken: true
               tokenPrefix: ___
               tokenSuffix: ___ 
+
           - task: KubernetesManifest@0
             displayName: Create imagePullSecret
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
+              kubernetesServiceConnection: 'EPlast-eplast-ServiceConnection'
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
+              kubernetesServiceConnection: 'EPlast-eplast-ServiceConnection'
               manifests: |
                 $(Pipeline.Workspace)/manifests/test/deployment.yml
                 $(Pipeline.Workspace)/manifests/test/service.yml

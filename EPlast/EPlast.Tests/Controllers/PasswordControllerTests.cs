@@ -2,6 +2,7 @@
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.DataAccess.Entities;
 using EPlast.WebApi.Controllers;
@@ -24,6 +25,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
@@ -55,6 +57,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 _,
                 _,
+                _,
                 passwordController) = CreatePasswordController();
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
 
@@ -76,6 +79,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 _,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
@@ -101,6 +105,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
@@ -138,6 +143,7 @@ namespace EPlast.Tests.Controllers
                 mockAuthService,
                 mockResources,
                 _,
+                _,
                 passwordController) = CreatePasswordController();
             ChangePasswordDto changePasswordDto = new ChangePasswordDto();
             mockAuthService
@@ -165,27 +171,31 @@ namespace EPlast.Tests.Controllers
         }
 
         public (
-            Mock<IAuthEmailService>,
-            Mock<IAuthService>,
-            Mock<IResources>,
-            Mock<UserManager<User>>,
-            PasswordController
+            Mock<IAuthEmailService> w,
+            Mock<IAuthService> f,
+            Mock<IResources> h,
+            Mock<IHostURLService> g,
+            Mock<UserManager<User>> hfg ,
+            PasswordController hf
             ) CreatePasswordController()
         {
-            Mock<IAuthEmailService> mockAuthEmailService = new Mock<IAuthEmailService>();
-            Mock<IAuthService> mockAuthService = new Mock<IAuthService>();
-            Mock<IResources> mockResources = new Mock<IResources>();
+            var mockAuthEmailService = new Mock<IAuthEmailService>();
+            var mockAuthService = new Mock<IAuthService>();
+            var mockResources = new Mock<IResources>();
+            var mockHostUrlService = new Mock<IHostURLService>();
             var store = new Mock<IUserStore<User>>();
             Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             PasswordController passwordController = new PasswordController(
                 mockAuthService.Object,
                 mockResources.Object,
                 mockAuthEmailService.Object,
-                mockUserManager.Object);
+                mockUserManager.Object,
+                mockHostUrlService.Object);
             return (
                 mockAuthEmailService,
                 mockAuthService,
                 mockResources,
+                mockHostUrlService,
                 mockUserManager,
                 passwordController);
         }
@@ -196,6 +206,7 @@ namespace EPlast.Tests.Controllers
             //Arrange
             var (_,
                 mockAuthService,
+                _,
                 _,
                 _,
                 passwordController) = CreatePasswordController();
@@ -224,6 +235,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
             string userId = "userId";
@@ -257,6 +269,7 @@ namespace EPlast.Tests.Controllers
                 mockAuthService,
                 _,
                 _,
+                _,
                 passwordController) = CreatePasswordController();
             string userId = "userId";
             string token = "token";
@@ -283,6 +296,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
 
@@ -314,6 +328,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
 
@@ -359,6 +374,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 mockResources,
                 _,
+                _,
                 passwordController) = CreatePasswordController();
             passwordController.ModelState.AddModelError("NameError", "Required");
 
@@ -383,6 +399,7 @@ namespace EPlast.Tests.Controllers
                 _,
                 mockResources,
                 _,
+                _,
                 passwordController) = CreatePasswordController();
             passwordController.ModelState.AddModelError("NameError", "Required");
 
@@ -406,6 +423,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
 
@@ -433,6 +451,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 mockUserManager,
                 passwordController) = CreatePasswordController();
 
@@ -468,6 +487,7 @@ namespace EPlast.Tests.Controllers
             var (_,
                 mockAuthService,
                 mockResources,
+                _,
                 _,
                 passwordController) = CreatePasswordController();
 

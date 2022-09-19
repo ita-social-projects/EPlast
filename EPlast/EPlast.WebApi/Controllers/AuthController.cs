@@ -1,5 +1,3 @@
-#nullable enable
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,7 +8,7 @@ using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
-using EPlast.DataAccess;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -28,19 +26,26 @@ namespace EPlast.WebApi.Controllers
     {
         public struct ConflictErrorObject
         {
-            public ConflictErrorObject(string error, bool isEmailConfirmed)
+            public ConflictErrorObject(string error, bool isEmailConfirmed) : this()
             {
                 Error = error;
                 IsEmailConfirmed = isEmailConfirmed;
             }
+            public ConflictErrorObject(string error, bool isEmailConfirmed, DateTime registeredExpire) : this(error, isEmailConfirmed)
+            {
+
+                RegisteredExpire = registeredExpire;
+            }
 
             public string Error { get; }
             public bool IsEmailConfirmed { get; }
+            public DateTime? RegisteredExpire { get; }
         }
 
         private readonly IUserDatesService _userDatesService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly UserManager<User> _userManager;
+        private readonly IHostURLService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
 
@@ -49,7 +54,8 @@ namespace EPlast.WebApi.Controllers
             IEmailSendingService emailSendingService,
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
-            UserManager<User> userManager
+            UserManager<User> userManager,
+            IHostURLService hostURLService
         )
         {
             _userDatesService = userDatesService;
@@ -57,6 +63,7 @@ namespace EPlast.WebApi.Controllers
             _mapper = mapper;
             _cityParticipantsService = cityParticipantsService;
             _userManager = userManager;
+            _hostURLService = hostURLService;
         }
 
         /// <summary>
@@ -71,52 +78,49 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
-            var frontendUrl = Request?.Host.Host ?? "localhost";
-            if (frontendUrl == "localhost" || frontendUrl == "127.0.0.1")
-            {
-                frontendUrl = "http://" + frontendUrl + ":3000";
-            }
-            else
-            {
-                frontendUrl = "https://" + frontendUrl;
-            }
-            frontendUrl += "/signin";
-
             if (!ModelState.IsValid)
             {
-                // return Redirect(frontendUrl + "?error=400");
-                return BadRequest(ModelState);
+                return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
-
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                // return Redirect(frontendUrl + "?error=404");
-                return NotFound();
+                return Redirect(_hostURLService.GetSignInURL(error: 404));
             }
-
             TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
             if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
             {
                 // 410 GONE - User should be deleted, because 12hrs elapsed from registration and email is still is not confirmed
                 await _userManager.DeleteAsync(user);
-                // return Redirect(frontendUrl + "?error=410");
-                return StatusCode(410);
+                return Redirect(_hostURLService.GetSignInURL(error: 410));
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
-                // return Redirect(frontendUrl + "?error=400");
-                var tokens = await ctx.UserTokens
-                    .Where(ut => ut.UserId == user.Id)
-                    .Select(ut => ut.Value)
-                    .ToListAsync();
-
-                return BadRequest(new { error = result.Errors, tokens, included = tokens.Contains(token) });
+                return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
 
-            return Redirect(frontendUrl);
+            await _userDatesService.AddDateEntryAsync(user.Id);
+
+            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
+
+            if (user.CityId != null)
+            {
+                await _cityParticipantsService.AddFollowerAsync((int)user.CityId, user.Id);
+            }
+            else if (user.RegionId != null)
+            {
+                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, (int)user.RegionId);
+            }
+            else
+            {
+                await _userManager.DeleteAsync(user);
+                throw new ArgumentException("User had both RegionId and CityId set to null, which is an anomaly", nameof(user));
+            }
+
+            return Redirect(_hostURLService.SignInURL);
         }
 
         /// <summary>
@@ -141,7 +145,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            User? user = await _userManager.FindByEmailAsync(registerDto.Email);
+            User user = await _userManager.FindByEmailAsync(registerDto.Email);
             if (user != null)
             {
                 // Check if user's email is confirmed
@@ -149,10 +153,14 @@ namespace EPlast.WebApi.Controllers
                 {
                     return Conflict(new ConflictErrorObject("User exists and email is confirmed", true));
                 }
-                else
+
+                TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
+                if (elapsedTimeFromRegistration < TimeSpan.FromHours(12))
                 {
-                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false));
+                    return Conflict(new ConflictErrorObject("User exists, but email is not yet confirmed", false, user.RegistredOn.AddHours(12)));
                 }
+
+                await _userManager.DeleteAsync(user);
             }
 
             user = _mapper.Map<User>(registerDto);
@@ -175,19 +183,6 @@ namespace EPlast.WebApi.Controllers
                 throw;
             }
 
-            await _userDatesService.AddDateEntryAsync(user.Id);
-
-            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
-
-            if (registerDto.CityId != null)
-            {
-                await _cityParticipantsService.AddFollowerAsync((int)registerDto.CityId, user.Id);
-            }
-            else
-            {
-                await _cityParticipantsService.AddNotificationUserWithoutSelectedCity(user, registerDto.RegionId);
-            }
-
             return NoContent();
         }
 
@@ -207,7 +202,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            User? user = await _userManager.FindByEmailAsync(userEmail);
+            User user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return NotFound();

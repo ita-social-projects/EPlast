@@ -1,9 +1,9 @@
-﻿using EPlast.BLL.Interfaces.AzureStorage.Base;
+﻿using System;
+using System.Threading.Tasks;
+using EPlast.BLL.Interfaces.AzureStorage.Base;
 using Microsoft.Azure.Storage;
 using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Threading.Tasks;
 
 namespace EPlast.BLL.Services.AzureStorage.Base
 {
@@ -20,7 +20,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
         /// <inheritdoc />
         public async Task<CloudBlobContainer> GetBlobContainer(string containerNameKey)
         {
-            var containerName = _configuration.GetValue<string>(containerNameKey);
+            var containerName = _configuration.GetValue<string>("BlobContainerNames:" + containerNameKey);
             var blobClient = GetBlobClient();
 
             CloudBlobContainer _blobContainer = blobClient.GetContainerReference(containerName);
@@ -40,7 +40,7 @@ namespace EPlast.BLL.Services.AzureStorage.Base
                 return _blobClient;
             }
 
-            var storageConnectionString = _configuration.GetValue<string>("StorageConnectionString");
+            var storageConnectionString = _configuration.GetConnectionString("BlobStorage");
 
             if (!CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount))
             {

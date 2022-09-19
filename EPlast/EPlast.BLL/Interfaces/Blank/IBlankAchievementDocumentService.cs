@@ -24,10 +24,12 @@ namespace EPlast.BLL.Interfaces.Blank
         /// Delete a specific document by id
         /// </summary>
         /// <param name="documentId">The id of a specific document</param>
-        Task DeleteFileAsync(int documentId);
+        Task DeleteFileAsync(int documentId, string userId);
 
-        Task<IEnumerable<AchievementDocumentsDto>> GetDocumentsByUserIdAsync(string userid);
+        Task<IEnumerable<AchievementDocumentsDto>> GetDocumentsByUserIdAsync(string userId);
 
-        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementAsync(int pageNumber, int pageSize, string userid);
+        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAsync(int pageNumber, int pageSize, string userId);
+
+        Task<IEnumerable<AchievementDocumentsDto>> GetPartOfAchievementByUserIdAndCourseIdAsync(int pageNumber, int pageSize, string userId, int courseId);
     }
 }

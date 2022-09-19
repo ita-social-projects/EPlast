@@ -58,7 +58,6 @@ namespace EPlast.DataAccess.Repositories
         IExtractFromUpuDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
         IGallaryRepository Gallary { get; }
         IGenderRepository Gender { get; }
-        string GetCitiesUrl { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
         IMembersStatisticsRepository MembersStatistics { get; }
@@ -101,7 +100,7 @@ namespace EPlast.DataAccess.Repositories
         IUserRenewalRepository UserRenewal { get; }
         ICourseRepository Course { get; }
 
-        IUserCourseRepository UserCourse { get; }
+        
         void Save();
 
         Task SaveAsync();

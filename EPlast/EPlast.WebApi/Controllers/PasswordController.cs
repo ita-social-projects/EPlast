@@ -1,7 +1,9 @@
 ﻿using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Resources;
 using EPlast.DataAccess.Entities;
+using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,24 +17,24 @@ namespace EPlast.WebApi.Controllers
     public class PasswordController : ControllerBase
     {
         private readonly IAuthEmailService _authEmailServices;
-
         private readonly IAuthService _authService;
-
         private readonly IResources _resources;
-
         private readonly UserManager<User> _userManager;
+        private readonly IHostURLService _hostURLService;
 
         public PasswordController(
-                                            IAuthService authService,
+            IAuthService authService,
             IResources resources,
             IAuthEmailService authEmailService,
-            UserManager<User> userManager
-            )
+            UserManager<User> userManager,
+            IHostURLService hostURLService
+        )
         {
             _authService = authService;
             _resources = resources;
             _authEmailServices = authEmailService;
             _userManager = userManager;
+            _hostURLService = hostURLService;
         }
 
         /// <summary>
@@ -81,19 +83,22 @@ namespace EPlast.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotpasswordDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var userDto = await _authService.FindByEmailAsync(forgotpasswordDto.Email);
-                if (userDto == null || !(await _authService.IsEmailConfirmedAsync(userDto)))
-                {
-                    return BadRequest(_resources.ResourceForErrors["Forgot-NotRegisteredUser"]);
-                }
-                string token = await _authService.GenerateResetTokenAsync(userDto);
-                var confirmationLink = string.Format("https://eplast.westeurope.cloudapp.azure.com/resetPassword?token={0}", HttpUtility.UrlEncode(token));
-                await _authEmailServices.SendEmailResetingAsync(confirmationLink, forgotpasswordDto);
-                return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
+                return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]); 
             }
-            return BadRequest(_resources.ResourceForErrors["ModelIsNotValid"]);
+
+            var userDto = await _authService.FindByEmailAsync(forgotpasswordDto.Email);
+            if (userDto == null || !(await _authService.IsEmailConfirmedAsync(userDto)))
+            {
+                return BadRequest(_resources.ResourceForErrors["Forgot-NotRegisteredUser"]);
+            }
+
+            string token = await _authService.GenerateResetTokenAsync(userDto);
+            var confirmationLink = _hostURLService.GetResetPasswordURL(token);
+            await _authEmailServices.SendEmailResetingAsync(confirmationLink, forgotpasswordDto);
+
+            return Ok(_resources.ResourceForErrors["ForgotPasswordConfirmation"]);
         }
 
         /// <summary>

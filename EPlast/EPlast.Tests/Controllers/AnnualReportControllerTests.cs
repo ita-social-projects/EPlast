@@ -28,7 +28,6 @@ namespace EPlast.Tests.Controllers
     {
         private readonly Mock<IAnnualReportService> _annualReportService;
         private readonly Mock<IClubAnnualReportService> _clubAnnualReportService;
-        private readonly Mock<IStringLocalizer<AnnualReportControllerMessage>> _localizer;
         private readonly Mock<ILoggerService<AnnualReportController>> _loggerService;
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<UserManager<User>> _userManager;
@@ -38,7 +37,6 @@ namespace EPlast.Tests.Controllers
         {
             _annualReportService = new Mock<IAnnualReportService>();
             _loggerService = new Mock<ILoggerService<AnnualReportController>>();
-            _localizer = new Mock<IStringLocalizer<AnnualReportControllerMessage>>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _clubAnnualReportService = new Mock<IClubAnnualReportService>();
@@ -48,7 +46,6 @@ namespace EPlast.Tests.Controllers
         private AnnualReportController CreateAnnualReportController => new AnnualReportController(
             _annualReportService.Object,
             _loggerService.Object,
-            _localizer.Object,
             _userManager.Object,
             _clubAnnualReportService.Object,
             _mapper.Object
@@ -62,10 +59,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["NotFound"])
-               .Returns(GetNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -77,8 +70,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -92,10 +83,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["Canceled"])
-               .Returns(GetCanceled());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -107,8 +94,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["Canceled"]);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -204,10 +189,6 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
-            _localizer
-              .Setup(s => s["CityNotFound"])
-              .Returns(GetCityNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -218,8 +199,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-             .Verify(s => s["CityNotFound"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -228,10 +207,6 @@ namespace EPlast.Tests.Controllers
         {
             _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
-
-            _localizer
-              .Setup(s => s["CityNoAccess"])
-              .Returns(GetCityNoAccess());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -243,8 +218,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-             .Verify(s => s["CityNoAccess"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -253,10 +226,6 @@ namespace EPlast.Tests.Controllers
         {
             _annualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
-
-            _localizer
-               .Setup(s => s["HasReport"])
-               .Returns(GetHasReport());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -268,8 +237,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["HasReport"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -302,10 +269,6 @@ namespace EPlast.Tests.Controllers
             _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new NullReferenceException());
 
-            _localizer
-              .Setup(s => s["ClubNotFound"])
-              .Returns(GetClubNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -316,8 +279,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-             .Verify(s => s["ClubNotFound"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -326,10 +287,6 @@ namespace EPlast.Tests.Controllers
         {
             _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .Throws(new UnauthorizedAccessException());
-
-            _localizer
-              .Setup(s => s["ClubNoAccess"])
-              .Returns(GetClubNoAccess());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -341,8 +298,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-             .Verify(s => s["ClubNoAccess"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -351,10 +306,6 @@ namespace EPlast.Tests.Controllers
         {
             _clubAnnualReportService.Setup(a => a.CheckCreated(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(true);
-
-            _localizer
-               .Setup(s => s["ClubHasReport"])
-               .Returns(GetClubHasReport());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -366,8 +317,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["ClubHasReport"], Times.Once);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -432,10 +381,6 @@ namespace EPlast.Tests.Controllers
                 .ThrowsAsync(new NullReferenceException());
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-                .Setup(s => s["NotFound"])
-                .Returns(GetNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -447,8 +392,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-                .Verify(s => s["NotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -463,10 +406,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-                .Setup(s => s["NoAccess"])
-                .Returns(GetNoAccess());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -477,8 +416,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-                .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -491,10 +428,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["NotFound"])
-               .Returns(GetNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -506,8 +439,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -521,10 +452,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["Confirmed"])
-               .Returns(GetConfirmed());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -535,8 +462,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["Confirmed"]);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -611,10 +536,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["HasReport"])
-               .Returns(GetHasReport());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -626,8 +547,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["HasReport"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -640,10 +559,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["CityNotFound"])
-               .Returns(GetCityNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -655,8 +570,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["CityNotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -671,10 +584,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["CityNoAccess"])
-               .Returns(GetCityNoAccess());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -686,8 +595,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["CityNoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -701,10 +608,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["Created"])
-               .Returns(GetCreated());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -716,8 +619,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["Created"]);
             _loggerService.Verify(l => l.LogInformation(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -844,9 +745,6 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.DeleteAsync(It.IsAny<User>(), It.IsAny<int>()))
                  .Throws(new NullReferenceException());
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-            _localizer
-               .Setup(s => s["NotFound"])
-               .Returns(GetNotFound());
 
             AnnualReportController annualController = CreateAnnualReportController;
 
@@ -855,8 +753,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["NotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -870,10 +766,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogInformation(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["Deleted"])
-               .Returns(GetDeleted());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -885,8 +777,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["Deleted"]);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
 
@@ -961,10 +851,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["FailedEdit"])
-               .Returns(GetFailedEdit());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -977,8 +863,6 @@ namespace EPlast.Tests.Controllers
 
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["FailedEdit"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1005,10 +889,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["NotFound"])
-               .Returns(GetNotFound());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -1020,8 +900,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-              .Verify(s => s["NotFound"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1036,10 +914,6 @@ namespace EPlast.Tests.Controllers
 
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
             AnnualReportController annualController = CreateAnnualReportController;
 
             // Act
@@ -1051,8 +925,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
             Assert.NotNull(result);
-            _localizer
-              .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1065,9 +937,6 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                 .ReturnsAsync(new AnnualReportDto());
 
-            _localizer
-                .Setup(s => s["Edited"])
-                .Returns(GetEdited());
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
             var expected = StatusCodes.Status200OK;
@@ -1081,8 +950,6 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull(result);
-            _localizer
-                .Verify(s => s["Edited"]);
             Assert.AreEqual(expected, actual);
             Assert.IsInstanceOf<ObjectResult>(result);
         }
@@ -1175,10 +1042,6 @@ namespace EPlast.Tests.Controllers
             _annualReportService.Setup(a => a.GetByIdAsync(It.IsAny<User>(), It.IsAny<int>()))
                .Throws(new NullReferenceException());
 
-            _localizer
-               .Setup(s => s["NotFound"])
-               .Returns(GetNotFound());
-
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -1189,9 +1052,6 @@ namespace EPlast.Tests.Controllers
             var actual = (result as ObjectResult).StatusCode;
 
             // Assert
-
-            _localizer
-               .Verify(s => s["NotFound"]);
             Assert.NotNull(result);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
             Assert.AreEqual(expected, actual);
@@ -1206,10 +1066,6 @@ namespace EPlast.Tests.Controllers
 
             _userManager.Setup(a => a.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
-            _localizer
-               .Setup(s => s["NoAccess"])
-               .Returns(GetNoAccess());
-
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
 
             AnnualReportController annualController = CreateAnnualReportController;
@@ -1222,8 +1078,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-            _localizer
-               .Verify(s => s["NoAccess"]);
             _loggerService.Verify(l => l.LogError(It.IsAny<string>()));
 
             Assert.IsInstanceOf<ObjectResult>(result);
@@ -1260,9 +1114,6 @@ namespace EPlast.Tests.Controllers
 
             AnnualReportController annualController = CreateAnnualReportController;
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-            _localizer
-                .Setup(s => s["NotFound"])
-                .Returns(GetNotFound());
 
             // Act
             var expected = StatusCodes.Status404NotFound;
@@ -1307,9 +1158,6 @@ namespace EPlast.Tests.Controllers
 
             AnnualReportController annualController = CreateAnnualReportController;
             _loggerService.Setup(l => l.LogError(It.IsAny<string>()));
-            _localizer
-                .Setup(s => s["NotFound"])
-                .Returns(GetNotFound());
 
             // Act
             var expected = StatusCodes.Status404NotFound;
@@ -1469,104 +1317,6 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(resultValue);
             Assert.NotNull(result);
             Assert.IsInstanceOf<ObjectResult>(result);
-        }
-
-        private LocalizedString GetCanceled()
-        {
-            var localizedString = new LocalizedString("Canceled",
-                "Річний звіт успішно скасовано!");
-            return localizedString;
-        }
-
-        private LocalizedString GetCityNoAccess()
-        {
-            var localizedString = new LocalizedString("CityNoAccess",
-                "Ви не маєте доступу до даної станиці!");
-            return localizedString;
-        }
-
-        private LocalizedString GetClubNoAccess()
-        {
-            var localizedString = new LocalizedString("ClubNoAccess",
-                "Ви не маєте доступу до даного куреня!");
-            return localizedString;
-        }
-
-        private LocalizedString GetCityNotFound()
-        {
-            var localizedString = new LocalizedString("CityNotFound",
-                "Не вдалося знайти інформацію про станицю!");
-            return localizedString;
-        }
-
-        private LocalizedString GetClubNotFound()
-        {
-            var localizedString = new LocalizedString("ClubNotFound",
-                "Не вдалося знайти інформацію про курінь!");
-            return localizedString;
-        }
-
-        private LocalizedString GetConfirmed()
-        {
-            var localizedString = new LocalizedString("Confirmed",
-                "Річний звіт успішно підтверджено!");
-            return localizedString;
-        }
-
-        private LocalizedString GetCreated()
-        {
-            var localizedString = new LocalizedString("Creataed",
-                "Річний звіт успішно створено!");
-            return localizedString;
-        }
-
-        private LocalizedString GetDeleted()
-        {
-            var localizedString = new LocalizedString("Deleted",
-                "Річний звіт успішно видалено!");
-            return localizedString;
-        }
-
-        private LocalizedString GetEdited()
-        {
-            var localizedString = new LocalizedString("Edited",
-                "Річний звіт успішно відредаговано!");
-            return localizedString;
-        }
-
-        private LocalizedString GetFailedEdit()
-        {
-            var localizedString = new LocalizedString("FailedEdit",
-                "Не вдалося редагувати річний звіт!");
-            return localizedString;
-        }
-
-        private LocalizedString GetHasReport()
-        {
-            var localizedString = new LocalizedString("HasReport",
-                "Станиця вже має створений річний звіт!");
-            return localizedString;
-        }
-
-        private LocalizedString GetClubHasReport()
-        {
-            var localizedString = new LocalizedString("ClubHasReport",
-                "Курінь вже має створений річний звіт!");
-            return localizedString;
-        }
-
-        private LocalizedString GetNoAccess()
-        {
-            var localizedString = new LocalizedString("NoAccess",
-                "Ви не маєте доступу до даного річного звіту!");
-            return localizedString;
-        }
-
-        private LocalizedString GetNotFound()
-        {
-            var localizedString = new LocalizedString("NotFound",
-                "Не вдалося знайти річний звіт!");
-            return localizedString;
         }
     }
 }
