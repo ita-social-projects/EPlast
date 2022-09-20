@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -28,6 +30,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IRegionService _regionService;
         private readonly UserManager<User> _userManager;
         private readonly IMediator _mediator;
+        private readonly IUserAccessService _userAccessService;
 
         private const string ActiveRegionsCacheKey = "ActiveRegions";
         private const string ArchivedRegionsCacheKey = "ArchivedRegions";
@@ -39,7 +42,7 @@ namespace EPlast.WebApi.Controllers
             IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService RegionAnnualReportService,
             UserManager<User> userManager,
-            IMediator mediator)
+            IMediator mediator, IUserAccessService userAccessService)
         {
             _cache = cache;
             _logger = logger;
@@ -48,6 +51,7 @@ namespace EPlast.WebApi.Controllers
             _RegionAnnualReportService = RegionAnnualReportService;
             _userManager = userManager;
             _mediator = mediator;
+            _userAccessService = userAccessService;
         }
 
         [HttpPost("AddAdministrator")]
@@ -391,16 +395,24 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="404">Follower not found</response>
         [HttpGet("GetFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHead)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> GetFollower(int followerId)
         {
             var follower = await _regionService.GetFollowerAsync(followerId);
+
             if (follower == null)
             {
                 return NotFound();
             }
 
-            return Ok(follower);
+            var user = await  _userManager.GetUserAsync(User);
+            var userAccess = await _userAccessService.GetUserRegionAccessAsync(follower.RegionId, user.Id, user);
+            if (userAccess["EditRegion"])
+            {
+                return Ok(follower);
+            }
+
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         /// <summary>
@@ -423,13 +435,26 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <param name="followerId">The id of the follower</param>
         [HttpDelete("RemoveFollower/{followerId}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> RemoveFollower(int followerId)
         {
-            await _regionService.RemoveFollowerAsync(followerId);
-            _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
+            var follower = await _regionService.GetFollowerAsync(followerId);
 
-            return Ok();
+            if (follower == null)
+            {
+                return NotFound();
+            }
+            var user = await  _userManager.GetUserAsync(User);
+            var userAccess = await _userAccessService.GetUserRegionAccessAsync(follower.RegionId, user.Id, user);
+            if (userAccess["EditRegion"])
+            {
+                await _regionService.RemoveFollowerAsync(followerId);
+                _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
+                return Ok();
+            }
+
+            return StatusCode(StatusCodes.Status403Forbidden);
+
         }
 
         [HttpGet("LogoBase64")]

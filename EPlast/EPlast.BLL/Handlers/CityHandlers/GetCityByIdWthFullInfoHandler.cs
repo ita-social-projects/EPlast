@@ -89,6 +89,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
                 }).ToList(),
                 CityDocuments = x.CityDocuments.Select(x => new CityDocuments
                 {
+                    ID = x.ID,
                     BlobName = x.BlobName,
                     FileName = x.FileName,
                     SubmitDate = x.SubmitDate,
