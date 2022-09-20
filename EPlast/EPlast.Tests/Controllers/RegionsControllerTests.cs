@@ -11,6 +11,7 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
@@ -35,6 +36,29 @@ namespace EPlast.Tests.Controllers
         private Mock<UserManager<User>> _userManager;
         private Mock<ICacheService> _cache;
         private Mock<IMediator> _medaitor;
+        private Mock<IUserAccessService> _userAccessServiceMock;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _logger = new Mock<ILoggerService<CitiesController>>();
+            _regionService = new Mock<IRegionService>();
+            _regionAdministrationService = new Mock<IRegionAdministrationService>();
+            _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _cache = new Mock<ICacheService>();
+            _medaitor = new Mock<IMediator>();
+            _userAccessServiceMock = new Mock<IUserAccessService>();
+            _regionController = new RegionsController(_cache.Object,
+                _logger.Object,
+                _regionService.Object, 
+                _regionAdministrationService.Object,
+                _regionAnnualReportService.Object, 
+                _userManager.Object,
+                _medaitor.Object,
+                _userAccessServiceMock.Object);
+        }
 
         [Test]
         public async Task AddAdministrator_CorrectData_ReturnsOkObjectResult()
@@ -405,17 +429,47 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetFollower_ReturnsOkObjectResult()
+        public async Task GetFollower_UserHasAccess_ReturnsOkObjectResult()
         {
             // Arrange
+            var userAccess= new Dictionary<string, bool>()
+            {
+                {"EditRegion", true}  
+            };
             _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
                 .ReturnsAsync(new RegionFollowerDto());
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userAccessServiceMock
+                .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
             // Act
             var result = await _regionController.GetFollower(It.IsAny<int>());
             var actual = (result as ObjectResult).Value;
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<RegionFollowerDto>(actual);
+        }
+
+        [Test]
+        public async Task GetFollower_UserDontHaveAccess_Returns403StatusCodeResult()
+        {
+            // Arrange
+            var userAccess= new Dictionary<string, bool>()
+            {
+                {"EditRegion", false}  
+            };
+            _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
+                .ReturnsAsync(new RegionFollowerDto());
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userAccessServiceMock
+                .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
+            // Act
+            var result = await _regionController.GetFollower(It.IsAny<int>());
+            var actual = (result as StatusCodeResult).StatusCode;
+            // Assert
+            Assert.IsInstanceOf<StatusCodeResult>(result);
+            Assert.AreEqual( StatusCodes.Status403Forbidden, actual);
         }
 
         [Test]
@@ -450,15 +504,66 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task RemoveFollower_ReturnsOkObjectResult()
+        public async Task RemoveFollower_UserHasAccess_ReturnsOkObjectResult()
         {
             // Arrange
             int id = 1;
+            var userAccess= new Dictionary<string, bool>()
+            {
+                {"EditRegion", true}  
+            };
+
+            _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
+                .ReturnsAsync(new RegionFollowerDto());
             _regionService.Setup(x => x.RemoveFollowerAsync(It.IsAny<int>()));
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userAccessServiceMock
+                .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
             // Act
             var result = await _regionController.RemoveFollower(id);
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
+        }
+
+        [Test]
+        public async Task RemoveFollower_UserDontHaveAccess_Returns403StatusCodeResult()
+        {
+            // Arrange
+            int id = 1;
+            var userAccess= new Dictionary<string, bool>()
+            {
+                {"EditRegion", false}  
+            };
+
+            _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
+                .ReturnsAsync(new RegionFollowerDto());
+            _regionService.Setup(x => x.RemoveFollowerAsync(It.IsAny<int>()));
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userAccessServiceMock
+                .Setup(x => x.GetUserRegionAccessAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
+            // Act
+            var result = await _regionController.RemoveFollower(id);
+            // Assert
+            Assert.IsInstanceOf<StatusCodeResult>(result);
+        }
+
+        [Test]
+        public async Task RemoveFollower_FollowerDontExist_ReturnsNotFoundResult()
+        {
+            // Arrange
+            int id = 1;
+            RegionFollowerDto regionFollower = null;
+
+            _regionService.Setup(x => x.GetFollowerAsync(It.IsAny<int>()))
+                .ReturnsAsync(regionFollower);
+            _regionService.Setup(x => x.RemoveFollowerAsync(It.IsAny<int>()));
+
+            // Act
+            var result = await _regionController.RemoveFollower(id);
+            // Assert
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
@@ -1104,26 +1209,6 @@ namespace EPlast.Tests.Controllers
             _medaitor.Verify();
             Assert.NotNull(result);
             Assert.AreEqual(expected, actual);
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-            _logger = new Mock<ILoggerService<CitiesController>>();
-            _regionService = new Mock<IRegionService>();
-            _regionAdministrationService = new Mock<IRegionAdministrationService>();
-            _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
-            var store = new Mock<IUserStore<User>>();
-            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            _cache = new Mock<ICacheService>();
-            _medaitor = new Mock<IMediator>();
-            _regionController = new RegionsController(_cache.Object,
-                _logger.Object,
-                _regionService.Object, 
-                _regionAdministrationService.Object,
-                _regionAnnualReportService.Object, 
-                _userManager.Object,
-                _medaitor.Object);
         }
 
         [Test]
