@@ -150,7 +150,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 else
                 {
                     await RemoveExistingGbAdminsAsync(governingBodyAdministrationDto.GoverningBodyId, adminType.AdminTypeName);
-                    await _userManager.AddToRoleAsync(user, adminType.AdminTypeName);
+                    await _userManager.AddToRoleAsync(user, Roles.GoverningBodyAdmin);
                 }
             }
 
@@ -203,7 +203,7 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             var user = await _userManager.FindByIdAsync(admin.UserId);
 
-            await _userManager.RemoveFromRoleAsync(user, adminType.AdminTypeName);
+            await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
 
             _repositoryWrapper.GoverningBodyAdministration.Update(admin);
 

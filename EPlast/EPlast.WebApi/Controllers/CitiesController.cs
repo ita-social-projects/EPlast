@@ -347,7 +347,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         /// <response code="400">Wrong input</response>
         [HttpPost("CreateCity")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> Create(CityViewModel city)
         {
             if (!ModelState.IsValid)
@@ -585,7 +585,7 @@ namespace EPlast.WebApi.Controllers
 
             var adminDTO = _mapper.Map<CityAdministrationViewModel, CityAdministrationDto>(admin);
 
-            await _cityParticipantsService.EditAdministratorAsync(adminDTO);
+            adminDTO = await _cityParticipantsService.EditAdministratorAsync(adminDTO);
             _logger.LogInformation($"Admin with User-ID {{{admin.UserId}}} was edited.");
 
             return Ok(adminDTO);
@@ -693,7 +693,6 @@ namespace EPlast.WebApi.Controllers
         }
 
         [HttpGet("GetCheckPlastMember/{userId}")]
-
         public async Task<IActionResult> GetCheckPlastMember(string userId)
         {
             var query = new PlastMemberCheckQuery(userId);

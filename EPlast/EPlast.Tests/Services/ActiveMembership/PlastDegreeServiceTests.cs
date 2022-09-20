@@ -36,9 +36,13 @@ namespace EPlast.Tests.Services.ActiveMembership
         public async Task GetDergeesAsync_ReturnsAllDergees()
         {
             // Arrange
-            _repoWrapper.Setup(rw => rw.PlastDegrees.GetAllAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(),
-                    It.IsAny<Func<IQueryable<PlastDegree>, IIncludableQueryable<PlastDegree, object>>>()))
-                .ReturnsAsync(GetTestPlastDegrees());
+            _repoWrapper
+            .Setup(x => x.PlastDegrees.GetRangeAsync(It.IsAny<Expression<Func<PlastDegree, bool>>>(),
+             null, It.IsAny<Func<IQueryable<PlastDegree>, IQueryable<PlastDegree>>>(),
+             null, null, null))
+             .ReturnsAsync(new Tuple<IEnumerable<PlastDegree>, int>(GetTestPlastDegrees(), 1));
+
+
             _mapper.Setup(m => m.Map<IEnumerable<PlastDegreeDto>>(It.IsAny<IEnumerable<PlastDegree>>()))
                 .Returns(GetTestPlastDegreesDTO());
 

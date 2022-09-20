@@ -46,7 +46,8 @@ namespace EPlast.DataAccess.Repositories
         {
             var regions = EPlastDBContext.Regions
                 .Where(x => x.IsActive && x.Status != RegionsStatusType.RegionBoard)
-                .Select(s =>new RegionNamesObject(){ ID = s.ID, RegionName = s.RegionName });
+                .Select(s =>new RegionNamesObject(){ ID = s.ID, RegionName = s.RegionName })
+                .OrderBy(r => r.RegionName);
             return regions; 
         }
     }
