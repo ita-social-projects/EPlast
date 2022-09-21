@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: eplastbackend 
-          image: ___containerRegistry___/eplastbackend
+          image: ___containerRegistry___/eplastbackend:10964
           resources:
             limits:
               cpu: "500m"
@@ -28,6 +28,14 @@ spec:
           ports:
           - containerPort: 5000
           env:
+          - name: ConnectionStrings__Redis
+            value: ___ConnectionStrings__Redis___
+          - name: JwtIssuerSigningKey
+            value: ___JwtIssuerSigningKey___
+          - name: ConnectionStrings__BlobStorage
+            value: ___ConnectionStrings__BlobStorage___
+          - name: ConnectionStrings__EplastDatabase
+            value: ___ConnectionStrings__EplastDatabase___
           - name: ConnectionStrings__EPlastDBConnection
             value: ___ConnectionStrings__EPlastDBConnection___
           - name: StorageConnectionString
@@ -48,30 +56,6 @@ spec:
             value: ___FacebookAuthentication__FacebookAppId___
           - name: FacebookAuthentication__FacebookAppSecret
             value: ___FacebookAuthentication__FacebookAppSecret___
-            
-# ---
-# apiVersion: autoscaling/v2beta2
-# kind: HorizontalPodAutoscaler
-# metadata:
-#   name: eplastbackend-autoscaler
-#   namespace: eplast
-# spec:
-#   scaleTargetRef:
-#     apiVersion: apps/v1
-#     kind: Deployment
-#     name: eplastbackend
-#   minReplicas: 1
-#   maxReplicas: 3
-#   metrics:
-#   - type: Resource
-#     resource:
-#       name: cpu
-#       targetAverageUtilization: 70
-#   - type: Resource
-#     resource:
-#       name: memory
-#       targetAverageUtilization: 80            
-
 ---
 apiVersion: v1
 kind: Service
@@ -84,57 +68,17 @@ spec:
     selector:
         app: eplastbackend
 
-# ---
-# apiVersion: autoscaling/v1
-# kind: HorizontalPodAutoscaler
-# metadata:
-#   name: eplastbackend-autoscaler
-#   namespace: eplast
-# spec:
-#   scaleTargetRef:
-#     apiVersion: apps/v1
-#     kind: Deployment
-#     name: eplastbackend
-#   minReplicas: 1
-#   maxReplicas: 3
-#   targetCPUUtilizationPercentage: 60
-
 ---
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: eplastbackend-autoscaler
   namespace: eplast
 spec:
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: 300
-      policies:
-      - type: Pods
-        value: 1
-        periodSeconds: 60
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: eplastbackend
   minReplicas: 1
   maxReplicas: 3
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 50
-  # - type: Resource
-  #   resource:
-  #     name: memory
-  #     target:
-  #       type: AverageValue
-  #       averageValue: 75
+  targetCPUUtilizationPercentage: 50
