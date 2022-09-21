@@ -59,7 +59,7 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(GetFakeAdminDTO());
 
             //Act
-            var result = await _servise.GetUsersAdministrations(It.IsAny<string>());
+            var result = await _servise.GetUserAdministrations(It.IsAny<string>());
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionAdministrationDto>>(result);
             Assert.IsNotNull(result);
@@ -77,7 +77,7 @@ namespace EPlast.Tests.Services.Regions
                 .Returns(GetFakeAdminDTO());
 
             //Act
-            var result = await _servise.GetUsersPreviousAdministrations(It.IsAny<string>());
+            var result = await _servise.GetUserPreviousAdministrations(It.IsAny<string>());
             // Assert
             Assert.IsInstanceOf<IEnumerable<RegionAdministrationDto>>(result);
             Assert.IsNotNull(result);

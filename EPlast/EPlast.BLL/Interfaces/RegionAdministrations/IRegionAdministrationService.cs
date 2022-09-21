@@ -13,11 +13,11 @@ namespace EPlast.BLL.Interfaces.RegionAdministrations
 
         Task DeleteAdminByIdAsync(int Id);
 
-        Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId);
+        Task<IEnumerable<RegionAdministrationDto>> GetUserAdministrations(string userId);
 
         Task<RegionAdministrationDto> GetRegionAdministrationByIdAsync(int regionAdministrationId);
 
-        Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId);
+        Task<IEnumerable<RegionAdministrationDto>> GetUserPreviousAdministrations(string userId);
 
         Task<RegionAdministrationDto> GetHead(int regionId);
 
