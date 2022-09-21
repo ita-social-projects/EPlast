@@ -6,14 +6,14 @@ using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace EPlast.BLL.Services.Region
+namespace EPlast.BLL.Services.RegionAdministrations
 {
     public class RegionAdministrationService : IRegionAdministrationService
     {
@@ -42,7 +42,7 @@ namespace EPlast.BLL.Services.Region
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
 
 
-            var newRegionAdmin = new RegionAdministration()
+            var newRegionAdmin = new DataAccess.Entities.RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
                 EndDate = regionAdministrationDTO.EndDate,
@@ -134,7 +134,6 @@ namespace EPlast.BLL.Services.Region
             }
 
             await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
-            await EditStatusAdministration(regionAdministrationDTO.ID, false);
             await AddRegionAdministrator(regionAdministrationDTO);
             return regionAdministrationDTO;
         }
@@ -165,6 +164,7 @@ namespace EPlast.BLL.Services.Region
                 Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
                 _ => Roles.OkrugaSecretary,
             };
+            await EditStatusAdministration(Id);
             await _userManager.RemoveFromRoleAsync(user, role);
         }
 
@@ -177,7 +177,16 @@ namespace EPlast.BLL.Services.Region
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
 
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries);
+        }
+
+        public async Task<RegionAdministrationDto> GetRegionAdministrationByIdAsync(int regionAdministrationId)
+        {
+            var regionAdministration = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(predicate: a=>a.ID==regionAdministrationId,
+                include: source =>source.Include(a=>a.User)
+                    .Include(a=>a.Region)
+                    .Include(a=>a.AdminType));
+            return _mapper.Map<DataAccess.Entities.RegionAdministration, RegionAdministrationDto>(regionAdministration);
         }
 
         public async Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId)
@@ -234,7 +243,7 @@ namespace EPlast.BLL.Services.Region
                         .Include(t => t.Region)
                         .Include(t => t.AdminType));
 
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(admins);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.RegionAdministration>, IEnumerable<RegionAdministrationDto>>(admins);
         }
 
         public async Task<IEnumerable<AdminTypeDto>> GetAllAdminTypes()

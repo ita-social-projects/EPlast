@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
 
-namespace EPlast.BLL.Interfaces.Region
+namespace EPlast.BLL.Interfaces.RegionAdministrations
 {
     public interface IRegionAdministrationService
     {
@@ -14,6 +14,8 @@ namespace EPlast.BLL.Interfaces.Region
         Task DeleteAdminByIdAsync(int Id);
 
         Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId);
+
+        Task<RegionAdministrationDto> GetRegionAdministrationByIdAsync(int regionAdministrationId);
 
         Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId);
 
