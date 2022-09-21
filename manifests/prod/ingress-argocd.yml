@@ -20,10 +20,10 @@ spec:
   - host: eplastprd.westeurope.cloudapp.azure.com
     http:
       paths:
-      - path: /argocd
+      - backend:
+          service:
+            name: argocd-server
+            port:
+              number: 80
+        path: /argocd
         pathType: Prefix
-        backend:
-         service:
-           name: argocd-server
-           port:
-             number: 80
