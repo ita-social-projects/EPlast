@@ -23,14 +23,14 @@ spec:
           ports:
           - containerPort: 5000
           env:
-        #  - name: ConnectionStrings__Redis
-        #    value: ___ConnectionStrings__Redis___
-        #  - name: ConnectionStrings__EplastDatabase
-        #    value: ___ConnectionStrings__EplastDatabase___
-        #  - name: ConnectionStrings__BlobStorage
-        #    value: ___ConnectionStrings__BlobStorage___
-        #  - name: JwtIssuerSigningKey
-        #    value: ___JwtIssuerSigningKey___
+          - name: ConnectionStrings__Redis
+            value: ___ConnectionStrings__Redis___
+          - name: ConnectionStrings__EplastDatabase
+            value: ___ConnectionStrings__EplastDatabase___
+          - name: ConnectionStrings__BlobStorage
+            value: ___ConnectionStrings__BlobStorage___
+          - name: JwtIssuerSigningKey
+            value: ___JwtIssuerSigningKey___
           - name: ConnectionStrings__EPlastDBConnection
             value: ___ConnectionStrings__EPlastDBConnection___
           - name: StorageConnectionString
