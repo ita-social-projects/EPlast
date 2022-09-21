@@ -81,7 +81,7 @@ namespace EPlast.BLL.Services
             return certainCityAdministration;
         }
 
-        private async Task<RegionAdministration> GetRegionOverCertainCityAdministration(AnnualReport cityAnnualReport, User user)
+        private async Task<DataAccess.Entities.RegionAdministration> GetRegionOverCertainCityAdministration(AnnualReport cityAnnualReport, User user)
         {
             var certainCityUnderRegion = cityAnnualReport != null
                 ? await _repositoryWrapper.City.GetFirstOrDefaultAsync(x => x.ID == cityAnnualReport.CityId)
@@ -125,7 +125,7 @@ namespace EPlast.BLL.Services
             return certainRegionAnnualReport;
         }
 
-        private async Task<RegionAdministration> GetCertainRegionAdministration(User user,
+        private async Task<DataAccess.Entities.RegionAdministration> GetCertainRegionAdministration(User user,
             RegionAnnualReport regionAnnualReport)
         {
             var certainRegionAdministration = regionAnnualReport != null

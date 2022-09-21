@@ -47,14 +47,19 @@ namespace EPlast.BLL.Interfaces.Club
         Task ContinueAdminsDueToDate();
 
         /// <summary>
-        ///returns administrations of given user
+        /// Returns administrations of given user
         /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>Club Administrations DTO</returns>
         Task<IEnumerable<ClubAdministrationDto>> GetAdministrationsOfUserAsync(string userId);
 
         /// <summary>
-        ///returns administrations of given user
+        /// Returns previous administrations of given user
         /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>Club Administrations DTO</returns>
         Task<IEnumerable<ClubAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string userId);
+
         Task<IEnumerable<ClubAdministrationStatusDto>> GetAdministrationStatuses(string userId);
 
         /// <summary>

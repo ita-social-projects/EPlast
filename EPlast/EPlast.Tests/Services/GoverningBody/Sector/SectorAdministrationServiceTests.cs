@@ -24,6 +24,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         private Mock<IRepositoryWrapper> _repoWrapper;
         private Mock<UserManager<User>> _userManager;
         private Mock<IAdminTypeService> _adminTypeService;
+        private Mock<IMapper> _mapper;
         private SectorAdministrationService _service;
 
         [SetUp]
@@ -31,6 +32,7 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
         {
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _adminTypeService = new Mock<IAdminTypeService>();
+            _mapper = new Mock<IMapper>();
 
             var store = new Mock<Microsoft.AspNetCore.Identity.IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -38,7 +40,8 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _service = new SectorAdministrationService(
                 _repoWrapper.Object,
                 _userManager.Object,
-                _adminTypeService.Object);
+                _adminTypeService.Object,
+                _mapper.Object);
         }
 
         [Test]
