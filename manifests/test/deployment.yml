@@ -16,41 +16,41 @@ spec:
       containers:
         - name: eplastapi 
           image: ___containerRegistry___/eplastapi:10286
-        # resources:
-        #    limits:
-        #      cpu: "200m"
-        #      memory: "100Mi"
+         resources:
+            limits:
+              cpu: "600m"
+              memory: "500Mi"
           ports:
           - containerPort: 5000
           env:
           - name: ConnectionStrings__Redis
-            value: "10.0.95.244:6379"
+            value: ___ConnectionStrings__Redis___
           - name: ConnectionStrings__EplastDatabase
-            value: "Server=tcp:eplast.database.windows.net,1433;Initial Catalog=EPlast;Persist Security Info=False;User ID=Admin_EPlast;Password=Jm4<-z>X3K?B&YLz;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            value: ___ConnectionStrings__EplastDatabase___
           - name: ConnectionStrings__BlobStorage
-            value: "DefaultEndpointsProtocol=https;AccountName=eplaststorage;AccountKey=AaMfm+wYcacPhE3JACqadhgVBTBRrHFjtUkdUBwYK6YjqU7x7ySP1i7mEbYeTtPORKYP6YZ9xevS+NfHv1Ug7w==;EndpointSuffix=core.windows.net"
+            value: ___ConnectionStrings__BlobStorage___
           - name: JwtIssuerSigningKey
-            value: "vKlLhnY8I4qZazGle4CIpnAROyuKYAyoRUENRFHUPhIEWk0yr91tz2faHEbm5vq4"
+            value: ___JwtIssuerSigningKey___
           - name: ConnectionStrings__EPlastDBConnection
-            value: "Server=tcp:eplast.database.windows.net,1433;Initial Catalog=EPlast;Persist Security Info=False;UserID=Admin_EPlast;Password=Jm4<-z>X3K?B&YLz;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+            value: ___ConnectionStrings__EPlastDBConnection___
           - name: StorageConnectionString
-            value: "DefaultEndpointsProtocol=https;AccountName=eplaststorage;AccountKey=AaMfm+wYcacPhE3JACqadhgVBTBRrHFjtUkdUBwYK6YjqU7x7ySP1i7mEbYeTtPORKYP6YZ9xevS+NfHv1Ug7w==;EndpointSuffix=core.windows.net"
+            value: ___StorageConnectionString___
           - name: EmailServiceSettings__SMTPServerLogin
-            value: "eplast.pysar@ukr.net"
+            value: ___EmailServiceSettings__SMTPServerLogin___
           - name: EmailServiceSettings__SMTPServerPassword
-            value: "yEiXc5aNj5sC261P"
+            value: ___EmailServiceSettings__SMTPServerPassword___
           - name: Admin__Email
-            value: "admin@eplast.com"
+            value: ___Admin__Email___
           - name: Admin__Password
-            value: "Pq!83874"
+            value: ___Admin__Password___
           - name: GoogleAuthentication__GoogleClientId
-            value: "710369145500-ur2qfp5292p16458pfvg4oieu7eqmca7.apps.googleusercontent.com"
+            value: ___GoogleAuthentication__GoogleClientId___
           - name: GoogleAuthentication__GoogleClientSecret
-            value: "ea7hGS--XPc-gOFcs1cuMKv5"
+            value: ___GoogleAuthentication__GoogleClientSecret___
           - name: FacebookAuthentication__FacebookAppId
-            value: "392908158421729"
+            value: ___FacebookAuthentication__FacebookAppId___
           - name: FacebookAuthentication__FacebookAppSecret
-            value: "f4caaed57da8d16e69346d8d52bebc52"           
+            value: ___FacebookAuthentication__FacebookAppSecret___          
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
