@@ -1014,19 +1014,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task Remove_ReturnsRegions()
-        {
-            // Arrange
-            int id = 2;
-            
-            // Act
-            var result = await _regionController.Remove(id);
-            
-            // Assert
-            Assert.IsInstanceOf<OkResult>(result);
-        }
-
-        [Test]
         public async Task GetRegionMembersInfo_ReturnsOk()
         {
             // Arrange
