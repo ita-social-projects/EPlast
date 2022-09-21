@@ -18,31 +18,31 @@ spec:
   - host: eplastprd.westeurope.cloudapp.azure.com
     http:
       paths:
-      - path: /grafana
+      - backend:
+          service:
+            name: prometheus-stack-grafana
+            port:
+              number: 80
+        path: /grafana
         pathType: Prefix
-        backend:
-         service:
-           name: prometheus-stack-grafana
-           port:
-             number: 80
-      - path: /prometheus
+      - backend:
+          service:
+            name: prometheus-stack-kube-prom-prometheus
+            port:
+              number: 9090
+        path: /prometheus
         pathType: Prefix
-        backend:
-         service:
-           name: prometheus-stack-kube-prom-prometheus
-           port:
-             number: 9090
-      - path: /alerts
+      - backend:
+          service:
+            name: prometheus-stack-kube-prom-alertmanager
+            port:
+              number:9093
+        path: /alerts
         pathType: Prefix
-        backend:
-         service:
-           name: prometheus-stack-kube-prom-alertmanager
-           port:
-             number: 9093
-      - path: /loki
+      - backend:
+          service:
+            name: loki
+            port:
+              number: 3100
+        path: /loki
         pathType: Prefix
-        backend:
-         service:
-           name: loki
-           port:
-             number: 3100
