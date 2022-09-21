@@ -79,7 +79,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
-            
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
@@ -246,12 +246,7 @@ namespace EPlast.WebApi.Controllers
 
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-            string url = Url.Action(
-                "ConfirmEmail",
-                "Auth",
-                new { userId = user.Id, token },
-                "https"
-            );
+            string url = _hostURLService.GetConfirmEmailApiURL(user.Id, token);
 
             var message = _emailSendingService.Compose(
                 reciever,
