@@ -67,7 +67,6 @@ spec:
     - port: 5000 
     selector:
         app: eplastbackend
-
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
