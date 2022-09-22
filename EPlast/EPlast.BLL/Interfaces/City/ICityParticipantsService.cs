@@ -41,16 +41,21 @@ namespace EPlast.BLL.Interfaces.City
         Task ContinueAdminsDueToDate();
 
         /// <summary>
-        ///returns administrations of given user
+        /// Returns administrations of given user
         /// </summary>
+        /// <param name="UserId">The id of the user</param>
+        /// <returns>City Administrations DTO</returns>
         Task<IEnumerable<CityAdministrationDto>> GetAdministrationsOfUserAsync(string UserId);
 
         Task<IEnumerable<CityAdministrationStatusDto>> GetAdministrationStatuses(string UserId);
 
         /// <summary>
-        ///returns previous administrations of given user
+        /// Returns previous administrations of given user
         /// </summary>
+        /// <param name="UserId">The id of the user</param>
+        /// <returns>City Administrations DTO</returns>
         Task<IEnumerable<CityAdministrationDto>> GetPreviousAdministrationsOfUserAsync(string UserId);
+
         /// <summary>
         /// Get all members by specific city
         /// </summary>

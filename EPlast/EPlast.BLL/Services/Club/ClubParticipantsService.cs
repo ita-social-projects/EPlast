@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading.Tasks;
@@ -153,7 +154,11 @@ namespace EPlast.BLL.Services.Club
                 Roles.KurinHeadDeputy => Roles.KurinHeadDeputy,
                 _ => Roles.KurinSecretary,
             };
-            await _userManager.RemoveFromRoleAsync(user, role);
+
+            if (role != Roles.KurinSecretary || (await CheckUserHasOneSecretaryTypeForClubAsync(admin)))
+            {
+                await _userManager.RemoveFromRoleAsync(user, role);
+            }
 
             _repositoryWrapper.ClubAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
@@ -398,6 +403,24 @@ namespace EPlast.BLL.Services.Club
             {
                 await RemoveAdministratorAsync(role.ID);
             }
+        }
+
+        private async Task<bool> CheckUserHasOneSecretaryTypeForClubAsync(ClubAdministration admin)
+        {
+            int secretaryAdminTypesCount = 0;
+            var userAdminTypes = await GetAdministrationsOfUserAsync(admin.UserId);
+            foreach (ClubAdministrationDto userAdminType in userAdminTypes)
+            {
+                var secretaryCheck = userAdminType.AdminType.AdminTypeName switch
+                {
+                    Roles.KurinHead => Roles.KurinHead,
+                    Roles.KurinHeadDeputy => Roles.KurinHeadDeputy,
+                    _ => Roles.KurinSecretary
+                };
+                if (secretaryCheck == Roles.KurinSecretary) secretaryAdminTypesCount++;
+            }
+            if (secretaryAdminTypesCount > 1) return false;
+            return true;
         }
 
         private bool CheckCityWasAdmin(ClubAdministration newAdmin)
