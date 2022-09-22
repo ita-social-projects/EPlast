@@ -29,8 +29,11 @@ namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
             var RegionAdministration = await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(
                     predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && 
                     (c.AdminTypeId == _RegionAdminType.ID || c.AdminTypeId == _RegionAdminDeputyType.ID));
-            return RegionAdministration != null ? await _repositoryWrapper.Region.GetAllAsync(
-                predicate: c => c.ID == RegionAdministration.RegionId)
+
+            var regionRange = await _repositoryWrapper.Region.GetRangeAsync(
+            c => c.ID == RegionAdministration.RegionId, null, с => с.OrderBy(x => x.RegionName), null, null, null);
+
+            return RegionAdministration != null ? regionRange.Item1
                 : Enumerable.Empty<DatabaseEntities.Region>();
         }
 
