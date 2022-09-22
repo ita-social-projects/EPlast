@@ -48,9 +48,9 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-         # ls $(Pipeline.Workspace)
-         ls 
-       #   ls E*
+          # ls $(Pipeline.Workspace)
+          ls 
+          # ls E*
           cat EPlast/EPlast.WebApi/Properties/launchSettings.json
       
   #  steps:
