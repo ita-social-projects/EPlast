@@ -45,10 +45,10 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: PowerShell@2
-    inputs:
-      targetType: 'inline'
-      script: |
-        cat $(Pipeline.Workspace)/EPlast.WebApi/Properties/launchSettings.json
+      inputs:
+        targetType: 'inline'
+        script: |
+          cat $(Pipeline.Workspace)/EPlast.WebApi/Properties/launchSettings.json
       
   #  steps:
     - task: Docker@2
