@@ -48,9 +48,9 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          ls $(Pipeline.Workspace)
+         # ls $(Pipeline.Workspace)
          # ls 
-         # cat Eplast/EPlast.WebApi/Properties/launchSettings.json
+          cat Eplast/EPlast.WebApi/Properties/launchSettings.json
       
   #  steps:
     - task: Docker@2
