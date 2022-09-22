@@ -50,8 +50,8 @@ stages:
         script: |
          # ls $(Pipeline.Workspace)
          ls 
-          ls E*
-        #  cat Eplast/EPlast.WebApi/Properties/launchSettings.json
+       #   ls E*
+        #  cat EPlast/EPlast.WebApi/Properties/launchSettings.json
       
   #  steps:
     - task: Docker@2
