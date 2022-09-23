@@ -179,7 +179,12 @@ namespace EPlast.WebApi.Controllers
 
             try
             {
-                await SendConfirmationEmail(user);
+                //Right now all users are verified here until Email verification is fixed on Production
+                var createdUser = await _userManager.FindByEmailAsync(registerDto.Email);
+                var confirmationToken = await _userManager.GenerateEmailConfirmationTokenAsync(createdUser);
+                await ConfirmEmail(createdUser.Id, confirmationToken);
+                //This is commented out unit Email verification is fixed on Production
+                //await SendConfirmationEmail(user);
             }
             catch (Exception)
             {
