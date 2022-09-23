@@ -7,6 +7,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.HostURL;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IHostURLService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
+        private readonly ILoggerService<AuthController> _loggerService;
 
         public AuthController(
             IUserDatesService userDatesService,
@@ -52,8 +54,7 @@ namespace EPlast.WebApi.Controllers
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
             UserManager<User> userManager,
-            IHostURLService hostURLService
-        )
+            IHostURLService hostURLService, ILoggerService<AuthController> loggerService)
         {
             _userDatesService = userDatesService;
             _emailSendingService = emailSendingService;
@@ -61,6 +62,7 @@ namespace EPlast.WebApi.Controllers
             _cityParticipantsService = cityParticipantsService;
             _userManager = userManager;
             _hostURLService = hostURLService;
+            _loggerService = loggerService;
         }
 
         /// <summary>
@@ -77,6 +79,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (!ModelState.IsValid)
             {
+                _loggerService.LogWarning("Invalid ModelState");
                 return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
             
@@ -96,6 +99,10 @@ namespace EPlast.WebApi.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
             {
+                foreach (var error in result.Errors)
+                {
+                    _loggerService.LogWarning(error.Description);
+                }
                 return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
 
