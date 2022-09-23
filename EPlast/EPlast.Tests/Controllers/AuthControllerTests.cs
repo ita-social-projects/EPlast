@@ -10,6 +10,7 @@ using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.HostURL;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
@@ -34,13 +35,15 @@ namespace EPlast.Tests.Controllers
             _userManagerMock
                 .SetupSet(m => m.Logger = null);
             _hostURLService = new Mock<IHostURLService>();
+            _loggerServiceMock = new Mock<ILoggerService<AuthController>>();
             _controller = new AuthController(
                 _userDatesServiceMock.Object,
                 _emailSendingServiceMock.Object,
                 _mapperMock.Object,
                 _cityParticipantServiceMock.Object,
                 _userManagerMock.Object,
-                _hostURLService.Object
+                _hostURLService.Object,
+                _loggerServiceMock.Object
             );
         }
 
@@ -553,6 +556,7 @@ namespace EPlast.Tests.Controllers
         private Mock<UserManager<User>> _userManagerMock = null!;
         private Mock<IHostURLService> _hostURLService = null!;
         private AuthController _controller = null!;
+        private Mock<ILoggerService<AuthController>> _loggerServiceMock;
 
         private string GetURL()
         {
