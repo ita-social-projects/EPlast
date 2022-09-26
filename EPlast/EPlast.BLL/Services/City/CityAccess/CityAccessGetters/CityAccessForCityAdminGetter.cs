@@ -38,7 +38,7 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
         {
             var cityAdministration = await _repositoryWrapper.CityAdministration.GetFirstOrDefaultAsync(
                 predicate: c => c.UserId == userId
-                                && (DateTime.Now < c.EndDate || c.EndDate == null)
+                                && (DateTime.Now.Date <= c.EndDate.Value.Date || c.EndDate == null)
                                 && (c.AdminTypeId == _cityAdminType.ID
                                     || c.AdminTypeId == _cityAdminDeputyType.ID
                                     || c.AdminTypeId == _cityReferentUPSType.ID

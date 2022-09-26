@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services.Region.RegionAccess.RegionAccessGetters
         public async Task<IEnumerable<DatabaseEntities.Region>> GetRegionAsync(string userId)
         {
             var RegionAdministration = await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(
-                    predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && 
+                    predicate: c => c.UserId == userId && (DateTime.Now.Date <= c.EndDate.Value.Date || c.EndDate == null) && 
                     (c.AdminTypeId == _RegionAdminType.ID || c.AdminTypeId == _RegionAdminDeputyType.ID));
             return RegionAdministration != null ? await _repositoryWrapper.Region.GetAllAsync(
                 predicate: c => c.ID == RegionAdministration.RegionId)

@@ -27,7 +27,7 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
         public async Task<IEnumerable<DatabaseEntities.Club>> GetClubs(string userId)
         {
             var ClubAdministration = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(
-                    predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && (c.AdminTypeId == _ClubAdminType.ID || c.AdminTypeId == _ClubAdminDeputyType.ID));
+                    predicate: c => c.UserId == userId && (DateTime.Now.Date <= c.EndDate.Value.Date || c.EndDate == null) && (c.AdminTypeId == _ClubAdminType.ID || c.AdminTypeId == _ClubAdminDeputyType.ID));
             return ClubAdministration != null ? await _repositoryWrapper.Club.GetAllAsync(
                 predicate: c => c.ID == ClubAdministration.ClubId)
                 : Enumerable.Empty<DatabaseEntities.Club>();
