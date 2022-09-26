@@ -15,8 +15,8 @@ spec:
     spec:
       containers:
         - name: eplastapi 
-          image: ___containerRegistry___/eplastapi:10286
-          resources:
+          image: ___containerRegistry___/eplastapi
+         resources:
             limits:
               cpu: "600m"
               memory: "500Mi"
@@ -50,7 +50,7 @@ spec:
           - name: FacebookAuthentication__FacebookAppId
             value: ___FacebookAuthentication__FacebookAppId___
           - name: FacebookAuthentication__FacebookAppSecret
-            value: ___FacebookAuthentication__FacebookAppSecret___          
+            value: ___FacebookAuthentication__FacebookAppSecret___
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
