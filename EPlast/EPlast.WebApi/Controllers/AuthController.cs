@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
@@ -13,6 +15,7 @@ using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MimeKit;
 
 namespace EPlast.WebApi.Controllers
@@ -256,7 +259,7 @@ namespace EPlast.WebApi.Controllers
         {
             var reciever = new MailboxAddress($"{user.FirstName} {user.LastName}", user.Email);
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user));
 
             string url = Url.Action(
                 "ConfirmEmail",
