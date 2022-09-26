@@ -39,9 +39,12 @@ namespace EPlast.Tests.Services.Regions
                 It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
                 .ReturnsAsync(new RegionAdministration() { ID=2});
             _repositoryWrapper
-                .Setup(x => x.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
-                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
-                .ReturnsAsync(new List<Region>() { new Region() { ID = 2 },new Region() { ID = 3 } });
+               .Setup(x => x.Region.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(), null, 
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(),
+                                 null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
+
             //Act
             var result = await _regionAccessGetter.GetRegionAsync(It.IsAny<string>());
             // Assert
@@ -67,6 +70,15 @@ namespace EPlast.Tests.Services.Regions
             // Assert
             Assert.IsInstanceOf<IEnumerable<Region>>(result);
             Assert.AreEqual(0, result.Count());
+        }
+
+        private IEnumerable<DataAccess.Entities.Region> GetTestRegionsForHandler()
+        {
+            return new List<DataAccess.Entities.Region>
+            {
+                new DataAccess.Entities.Region() { ID = 2 },
+                new DataAccess.Entities.Region() { ID = 3 }
+            }.AsEnumerable();
         }
     }
 }

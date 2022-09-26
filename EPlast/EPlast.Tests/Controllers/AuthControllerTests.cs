@@ -326,108 +326,108 @@ namespace EPlast.Tests.Controllers
             _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
         }
 
-        [Test]
-        public void SignUp_EmailSendingServiceThrowsException_DeletesUserAndRethrows()
-        {
-            // Arrange
-            var registerDto = new RegisterDto()
-            {
-                GenderId = 1,
-                Email = ""
-            };
-            var user = new User()
-            {
-                Email = registerDto.Email
-            };
-            var message = new MimeMessage();
+        //[Test]
+        //public void SignUp_EmailSendingServiceThrowsException_DeletesUserAndRethrows()
+        //{
+        //    // Arrange
+        //    var registerDto = new RegisterDto()
+        //    {
+        //        GenderId = 1,
+        //        Email = ""
+        //    };
+        //    var user = new User()
+        //    {
+        //        Email = registerDto.Email
+        //    };
+        //    var message = new MimeMessage();
 
-            _userManagerMock
-                .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(value: null!);
-            _mapperMock
-                .Setup(m => m.Map<User>(It.Is<RegisterDto>(v => v == registerDto)))
-                .Returns(user);
-            _userManagerMock
-                .Setup(m => m.CreateAsync(It.Is<User>(v => v == user), It.Is<string>(v => v == registerDto.Password)))
-                .ReturnsAsync(IdentityResult.Success);
-            _userManagerMock
-                .Setup(m => m.GenerateEmailConfirmationTokenAsync(It.Is<User>(v => v == user)))
-                .ReturnsAsync("");
-            _emailSendingServiceMock
-                .Setup(m => m.Compose(It.Is<MailboxAddress>(v => v.Address == user.Email), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(message);
-            _emailSendingServiceMock
-                .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
-                .ThrowsAsync(new SmtpException());
-            _userManagerMock
-                .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
-                .ReturnsAsync(value: null!);
+        //    _userManagerMock
+        //        .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
+        //        .ReturnsAsync(value: null!);
+        //    _mapperMock
+        //        .Setup(m => m.Map<User>(It.Is<RegisterDto>(v => v == registerDto)))
+        //        .Returns(user);
+        //    _userManagerMock
+        //        .Setup(m => m.CreateAsync(It.Is<User>(v => v == user), It.Is<string>(v => v == registerDto.Password)))
+        //        .ReturnsAsync(IdentityResult.Success);
+        //    _userManagerMock
+        //        .Setup(m => m.GenerateEmailConfirmationTokenAsync(It.Is<User>(v => v == user)))
+        //        .ReturnsAsync("");
+        //    _emailSendingServiceMock
+        //        .Setup(m => m.Compose(It.Is<MailboxAddress>(v => v.Address == user.Email), It.IsAny<string>(), It.IsAny<string>()))
+        //        .Returns(message);
+        //    _emailSendingServiceMock
+        //        .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
+        //        .ThrowsAsync(new SmtpException());
+        //    _userManagerMock
+        //        .Setup(m => m.DeleteAsync(It.Is<User>(v => v == user)))
+        //        .ReturnsAsync(value: null!);
 
-            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
-            _controller.Url = urlHelper.Object;
+        //    var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
+        //    _controller.Url = urlHelper.Object;
 
-            // Act
-            AsyncTestDelegate action = () => _controller.SignUp(registerDto);
+        //    // Act
+        //    AsyncTestDelegate action = () => _controller.SignUp(registerDto);
 
-            // Assert
-            Assert.ThrowsAsync<SmtpException>(action);
-            _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
-            _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
-            _userManagerMock.Verify(m => m.DeleteAsync(It.IsAny<User>()), Times.Once);
-        }
+        //    // Assert
+        //    Assert.ThrowsAsync<SmtpException>(action);
+        //    _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        //    _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
+        //    _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
+        //    _userManagerMock.Verify(m => m.DeleteAsync(It.IsAny<User>()), Times.Once);
+        //}
 
-        [Test]
-        public void SignUp_Valid_SendsEmailAndReturnsOkWithUserDTO()
-        {
-            // Arrange
-            var registerDto = new RegisterDto()
-            {
-                GenderId = 1,
-                Email = "",
-                Oblast = UkraineOblasts.Crimea
-            };
-            var user = new User()
-            {
-                Id = "",
-                Email = registerDto.Email
-            };
-            var message = new MimeMessage();
+        //[Test]
+        //public void SignUp_Valid_SendsEmailAndReturnsOkWithUserDTO()
+        //{
+        //    // Arrange
+        //    var registerDto = new RegisterDto()
+        //    {
+        //        GenderId = 1,
+        //        Email = "",
+        //        Oblast = UkraineOblasts.Crimea
+        //    };
+        //    var user = new User()
+        //    {
+        //        Id = "",
+        //        Email = registerDto.Email
+        //    };
+        //    var message = new MimeMessage();
 
-            _userManagerMock
-                .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
-                .ReturnsAsync(value: null!);
-            _mapperMock
-                .Setup(m => m.Map<User>(It.Is<RegisterDto>(v => v == registerDto)))
-                .Returns(user);
-            _userManagerMock
-                .Setup(m => m.CreateAsync(It.Is<User>(v => v == user), It.Is<string>(v => v == registerDto.Password)))
-                .ReturnsAsync(IdentityResult.Success);
-            _userManagerMock
-                .Setup(m => m.GenerateEmailConfirmationTokenAsync(It.Is<User>(v => v == user)))
-                .ReturnsAsync("");
-            _emailSendingServiceMock
-                .Setup(m => m.Compose(It.Is<MailboxAddress>(v => v.Address == user.Email), It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(message);
-            _emailSendingServiceMock
-                .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
-                .Returns(Task.CompletedTask);
-            _mapperMock
-                .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
-                .Returns(new UserDto());
+        //    _userManagerMock
+        //        .Setup(m => m.FindByEmailAsync(It.IsAny<string>()))
+        //        .ReturnsAsync(value: null!);
+        //    _mapperMock
+        //        .Setup(m => m.Map<User>(It.Is<RegisterDto>(v => v == registerDto)))
+        //        .Returns(user);
+        //    _userManagerMock
+        //        .Setup(m => m.CreateAsync(It.Is<User>(v => v == user), It.Is<string>(v => v == registerDto.Password)))
+        //        .ReturnsAsync(IdentityResult.Success);
+        //    _userManagerMock
+        //        .Setup(m => m.GenerateEmailConfirmationTokenAsync(It.Is<User>(v => v == user)))
+        //        .ReturnsAsync("");
+        //    _emailSendingServiceMock
+        //        .Setup(m => m.Compose(It.Is<MailboxAddress>(v => v.Address == user.Email), It.IsAny<string>(), It.IsAny<string>()))
+        //        .Returns(message);
+        //    _emailSendingServiceMock
+        //        .Setup(m => m.SendEmailAsync(It.Is<MimeMessage>(v => v == message)))
+        //        .Returns(Task.CompletedTask);
+        //    _mapperMock
+        //        .Setup(m => m.Map<UserDto>(It.Is<User>(v => v == user)))
+        //        .Returns(new UserDto());
 
-            var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
-            _controller.Url = urlHelper.Object;
+        //    var urlHelper = new Mock<IUrlHelper>(MockBehavior.Loose);
+        //    _controller.Url = urlHelper.Object;
 
-            // Act
-            var response = _controller.SignUp(registerDto).Result;
+        //    // Act
+        //    var response = _controller.SignUp(registerDto).Result;
 
-            // Assert
-            Assert.IsInstanceOf<NoContentResult>(response);
-            _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
-            _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
-        }
+        //    // Assert
+        //    Assert.IsInstanceOf<NoContentResult>(response);
+        //    _userManagerMock.Verify(m => m.CreateAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
+        //    _userManagerMock.Verify(m => m.GenerateEmailConfirmationTokenAsync(It.IsAny<User>()), Times.Once);
+        //    _emailSendingServiceMock.Verify(m => m.SendEmailAsync(It.IsAny<MimeMessage>()), Times.Once);
+        //}
 
         [Test]
         public void ResendConfirmationEmail_InvalidModelState_ReturnsBadRequest()
