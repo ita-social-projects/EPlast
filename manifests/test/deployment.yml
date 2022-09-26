@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: eplastapi 
-          image: ___containerRegistry___/eplastapi:10286
+          image: ___containerRegistry___/eplastapi:___containerRegistry_version_backend___
           resources:
             limits:
               cpu: "600m"
