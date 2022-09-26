@@ -43,10 +43,15 @@ namespace EPlast.BLL.Services.City.CityAccess.CityAccessGetters
                                     || c.AdminTypeId == _cityAdminDeputyType.ID
                                     || c.AdminTypeId == _cityReferentUPSType.ID
                                     || c.AdminTypeId == _cityReferentUSPType.ID
-                                    || c.AdminTypeId == _cityReferentOfActiveMembership.ID));
-            return cityAdministration != null ? await _repositoryWrapper.City.GetAllAsync(
-                predicate: c => c.ID == cityAdministration.CityId, include: source => source.Include(c => c.Region))
-                : Enumerable.Empty<DatabaseEntities.City>();
+                                    || c.AdminTypeId
+                                    == _cityReferentOfActiveMembership.ID));
+
+            var cityRange = await _repositoryWrapper.City.GetRangeAsync(
+                c => c.ID == cityAdministration.CityId, null, 
+                с => с.OrderBy(x => x.Name), 
+                source => source.Include(c => c.Region), null, null);
+
+            return cityAdministration != null ? cityRange.Item1 : Enumerable.Empty<DatabaseEntities.City>();
         }
 
         public async Task<IEnumerable<Tuple<int, string>>> GetCitiesIdAndName(string userId)

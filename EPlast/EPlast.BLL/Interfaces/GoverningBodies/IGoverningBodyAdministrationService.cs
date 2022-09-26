@@ -41,7 +41,6 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// <param name="adminId">Governing Body Administration object</param>
         Task RemoveAdministratorAsync(int adminId);
 
-
         /// <summary>
         /// Removes Main Administrator of Governing Bodies
         /// </summary>
@@ -53,6 +52,13 @@ namespace EPlast.BLL.Interfaces.GoverningBodies
         /// </summary>
         /// <param name="userId">The id of the user</param>
         Task RemoveGbAdminRoleAsync(string userId);
+
+        /// <summary>
+        /// Returns administrations of giver user
+        /// </summary>
+        /// <param name="userId">The id of the user</param>
+        /// <returns>Governing Body Administrations DTO</returns>
+        Task<IEnumerable<GoverningBodyAdministrationDto>> GetUserAdministrations(string userId);
 
         Task<bool> CheckRoleNameExistsAsync(string roleName);
     }
