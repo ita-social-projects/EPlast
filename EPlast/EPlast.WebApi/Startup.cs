@@ -151,8 +151,7 @@ namespace EPlast.WebApi
                 o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
                 o.Lockout.MaxFailedAccessAttempts = 5;
                 o.Password.RequiredLength = 8;
-                //This change is temporary, turn it on as soon as email verification is fixed on production
-                o.SignIn.RequireConfirmedEmail = false;
+                o.SignIn.RequireConfirmedEmail = true;
                 o.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<EPlastDBContext>()
