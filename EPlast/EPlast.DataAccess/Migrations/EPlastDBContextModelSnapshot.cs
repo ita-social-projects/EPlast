@@ -416,6 +416,26 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("BlankBiographyDocuments");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.Course", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Courses");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.ExtractFromUpuDocuments", b =>
                 {
                     b.Property<int>("ID")
