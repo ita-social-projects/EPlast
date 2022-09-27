@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
@@ -77,6 +78,8 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
+            var decodedToken = HttpUtility.UrlDecode(token);
+
             if (!ModelState.IsValid)
             {
                 _loggerService.LogWarning("Invalid ModelState");
@@ -96,7 +99,7 @@ namespace EPlast.WebApi.Controllers
                 return Redirect(_hostURLService.GetSignInURL(error: 410));
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -251,7 +254,7 @@ namespace EPlast.WebApi.Controllers
         {
             var reciever = new MailboxAddress($"{user.FirstName} {user.LastName}", user.Email);
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user)); 
 
             string url = Url.Action(
                 "ConfirmEmail",
