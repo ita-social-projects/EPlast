@@ -102,7 +102,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IUserMembershipDatesRepository _userMembershipDates;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
-        private IEventFeedbackRepository _eventFeedback;
         private IEventCategoryTypeRepository _eventCategoryTypeRepository;
         private IPlastDegreeRepository _plastDegree;
         private IEducatorsStaffRepository _KVs;
@@ -408,19 +407,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _event;
-            }
-        }
-
-        public IEventFeedbackRepository EventFeedback
-        {
-            get
-            {
-                if (_eventFeedback == null)
-                {
-                    _eventFeedback = new EventFeedbackRepository(_dbContext);
-                }
-
-                return _eventFeedback;
             }
         }
 
@@ -1236,22 +1222,6 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         public async Task SaveAsync()
         {
             await _dbContext.SaveChangesAsync();
-        }
-
-        public string GetCitiesUrl
-        {
-            get
-            {
-                return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["Cities"];
-            }
-        }
-
-        public string GetUserPageUrl
-        {
-            get
-            {
-                return ConfigSettingLayoutRenderer.DefaultConfiguration.GetSection("URLs")["UserPage"];
-            }
         }
     }
 }

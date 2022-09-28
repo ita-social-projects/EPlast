@@ -7,6 +7,7 @@ using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Services;
 using EPlast.BLL.Services.Auth;
 using EPlast.DataAccess.Entities;
@@ -90,10 +91,8 @@ namespace EPlast.XUnitTest.Services
             Mock<IEmailSendingService>,
             Mock<IEmailContentService>,
             Mock<IAuthService>,
+            Mock<IHostURLService>,
             Mock<UserManager<User>>,
-            Mock<IUrlHelperFactory>,
-            Mock<IActionContextAccessor>,
-            Mock<IHttpContextAccessor>,
             AuthEmailService
             ) CreateAuthEmailService()
         {
@@ -102,25 +101,19 @@ namespace EPlast.XUnitTest.Services
             Mock<IAuthService> mockAuthSerive = new Mock<IAuthService>();
             var store = new Mock<IUserStore<User>>();
             Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            Mock<IUrlHelperFactory> mockUrlFactory = new Mock<IUrlHelperFactory>();
-            Mock<IActionContextAccessor> mockActioAccessor = new Mock<IActionContextAccessor>();
-            Mock<IHttpContextAccessor> mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            Mock<IHostURLService> mockHostUrlService = new Mock<IHostURLService>();
             AuthEmailService authEmailService = new AuthEmailService(
-                mockEmailConfirmatioService.Object,
-                mockEmailContentService.Object,
-                mockAuthSerive.Object,
-                mockUserManager.Object,
-                mockUrlFactory.Object,
-                mockActioAccessor.Object,
-                mockHttpContextAccessor.Object);
+                    mockEmailConfirmatioService.Object,
+                    mockEmailContentService.Object,
+                    mockAuthSerive.Object,
+                    mockUserManager.Object,
+                    mockHostUrlService.Object);
             return (
                 mockEmailConfirmatioService,
                 mockEmailContentService,
                 mockAuthSerive,
+                mockHostUrlService,
                 mockUserManager,
-                mockUrlFactory,
-                mockActioAccessor,
-                mockHttpContextAccessor,
                 authEmailService
                 );
         }
@@ -171,10 +164,8 @@ namespace EPlast.XUnitTest.Services
                 _,
                 _,
                 _,
+                _,
                 mockUserManager,
-                _,
-                _,
-                _,
                 authEmailService) = CreateAuthEmailService();
             mockUserManager
                 .Setup(s => s.FindByIdAsync(It.IsAny<string>()))

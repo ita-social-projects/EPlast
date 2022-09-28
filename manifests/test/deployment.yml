@@ -15,14 +15,22 @@ spec:
     spec:
       containers:
         - name: eplastapi 
-          image: ___containerRegistry___/eplastapi
+          image: ___containerRegistry___/eplastapi:___containerRegistry_version_backend_test___
           resources:
             limits:
               cpu: "600m"
-              memory: "500Mi"          
+              memory: "500Mi"
           ports:
           - containerPort: 5000
           env:
+          - name: ConnectionStrings__Redis
+            value: ___ConnectionStrings__Redis___
+          - name: ConnectionStrings__EplastDatabase
+            value: ___ConnectionStrings__EplastDatabase___
+          - name: ConnectionStrings__BlobStorage
+            value: ___ConnectionStrings__BlobStorage___
+          - name: JwtIssuerSigningKey
+            value: ___JwtIssuerSigningKey___
           - name: ConnectionStrings__EPlastDBConnection
             value: ___ConnectionStrings__EPlastDBConnection___
           - name: StorageConnectionString
@@ -42,10 +50,9 @@ spec:
           - name: FacebookAuthentication__FacebookAppId
             value: ___FacebookAuthentication__FacebookAppId___
           - name: FacebookAuthentication__FacebookAppSecret
-            value: ___FacebookAuthentication__FacebookAppSecret___
-            
+            value: ___FacebookAuthentication__FacebookAppSecret___          
 ---
-apiVersion: autoscaling/v2beta1
+apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: eplastapi-autoscaler
@@ -54,14 +61,6 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: eplastapi
+  targetCPUUtilizationPercentage: 70
   minReplicas: 1
   maxReplicas: 3
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      targetAverageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      targetAverageUtilization: 80            

@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EPlast.DataAccess.Migrations
 {
     [DbContext(typeof(EPlastDBContext))]
-    [Migration("20220810185416_EventFeedback")]
-    partial class EventFeedback
+    [Migration("20220830132637_DeleteAdminTypeValidation")]
+    partial class DeleteAdminTypeValidation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -103,8 +103,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<string>("AdminTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -349,38 +348,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("AnnualReports");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.AnnualReportTableObject", b =>
-                {
-                    b.Property<bool>("CanManage")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CityName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RegionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.ToTable("AnnualReportTableObjects");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Approver", b =>
                 {
                     b.Property<int>("ID")
@@ -408,6 +375,9 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("BlobName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FileName")
                         .HasColumnType("nvarchar(max)");
 
@@ -416,6 +386,8 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("CourseId");
 
                     b.HasIndex("UserId");
 
@@ -446,26 +418,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("BlankBiographyDocuments");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.Course", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Link")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Courses");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.ExtractFromUpuDocuments", b =>
                 {
                     b.Property<int>("ID")
@@ -488,32 +440,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ExtractFromUPUDocuments");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.UserCourse", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("StatusPassedCourse")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserCourses");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.City", b =>
@@ -729,27 +655,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("CityMembers");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.CityObject", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("CityObjects");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Club", b =>
                 {
                     b.Property<int>("ID")
@@ -891,35 +796,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("ClubId");
 
                     b.ToTable("ClubAnnualReports");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.ClubAnnualReportTableObject", b =>
-                {
-                    b.Property<bool>("CanManage")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("ClubId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ClubName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.ToTable("ClubAnnualReportTableObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.ClubDocumentType", b =>
@@ -1211,6 +1087,26 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("ConfirmedUsers");
                 });
 
+            modelBuilder.Entity("EPlast.DataAccess.Entities.Course.Course", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Link")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)")
+                        .HasMaxLength(50);
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Courses");
+                });
+
             modelBuilder.Entity("EPlast.DataAccess.Entities.Decesion", b =>
                 {
                     b.Property<int>("ID")
@@ -1272,44 +1168,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("DecesionTargets");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Decision.DecisionTableObject", b =>
-                {
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DecisionStatusType")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DecisionTarget")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GoverningBody")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("DecisionTableObject");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Degree", b =>
@@ -1396,38 +1254,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("KVs");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.EducatorsStaffTableObject", b =>
-                {
-                    b.Property<DateTime>("DateOfGranting")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("KadraName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("KadraVykhovnykivTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberInRegister")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Subtotal")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("EducatorsStaffTableObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.EducatorsStaff.EducatorsStaffTypes", b =>
@@ -1521,6 +1347,9 @@ namespace EPlast.DataAccess.Migrations
                     b.Property<string>("Questions")
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
+
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
 
                     b.HasKey("ID");
 
@@ -1647,30 +1476,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("EventCategoryId");
 
                     b.ToTable("EventCategoryTypes");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventFeedback", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ParticipantId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId")
-                        .IsUnique();
-
-                    b.ToTable("EventFeedbacks");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventGallary", b =>
@@ -2267,38 +2072,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("MethodicDocuments");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.MethodicDocumentTableObject", b =>
-                {
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GoverningBody")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("MethodicDocumentTableObjects");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.Nationality", b =>
                 {
                     b.Property<int>("ID")
@@ -2734,35 +2507,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("RegionAnnualReports");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionAnnualReportTableObject", b =>
-                {
-                    b.Property<bool>("CanManage")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RegionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RegionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.ToTable("RegionAnnualReportTableObjects");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.RegionDocuments", b =>
                 {
                     b.Property<int>("ID")
@@ -2848,125 +2592,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("RegionFollowers");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionMembersInfoTableObject", b =>
-                {
-                    b.Property<int?>("CityAnnualReportId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CityName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("NumberOfAdministrators")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfBeneficiaries")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfClubs")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfHonoraryMembers")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfIndependentGroups")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfIndependentRiy")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfNovatstva")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfPlastpryiatMembers")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfPtashata")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfSeatsPtashat")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfSeigneurMembers")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfSeigneurSupporters")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfSeniorPlastynMembers")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfSeniorPlastynSupporters")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfTeacherAdministrators")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfTeachers")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfUnatstvaMembers")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfUnatstvaNoname")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfUnatstvaProspectors")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfUnatstvaSkobVirlyts")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfUnatstvaSupporters")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ReportStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("Total")
-                        .HasColumnType("int");
-
-                    b.ToTable("RegionMembersInfoTableObjects");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionNamesObject", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("RegionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("RegionNamesObjects");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.RegionObject", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Logo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RegionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("RegionObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Religion", b =>
@@ -3248,41 +2873,6 @@ namespace EPlast.DataAccess.Migrations
                     b.ToTable("UserDistinctions");
                 });
 
-            modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserDistinctionsTableObject", b =>
-                {
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("DistinctionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Reporter")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("UserDistinctionsTableObject");
-                });
-
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserPrecaution", b =>
                 {
                     b.Property<int>("Id")
@@ -3319,44 +2909,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserPrecautions");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.UserEntities.UserRenewalsTableObject", b =>
-                {
-                    b.Property<bool>("Approved")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("CityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CityName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("RegionName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Subtotal")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Total")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("UserRenewalsTableObjects");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.UserMembershipDates", b =>
@@ -3774,10 +3326,15 @@ namespace EPlast.DataAccess.Migrations
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.AchievementDocuments", b =>
                 {
+                    b.HasOne("EPlast.DataAccess.Entities.Course.Course", "Course")
+                        .WithMany("AchievementDocuments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany()
+                        .WithMany("AchievementDocuments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
@@ -3794,21 +3351,6 @@ namespace EPlast.DataAccess.Migrations
                 {
                     b.HasOne("EPlast.DataAccess.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Blank.UserCourse", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Blank.Course", "Сourse")
-                        .WithMany("UserCourses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EPlast.DataAccess.Entities.User", "User")
-                        .WithMany("UserCourses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4159,15 +3701,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.Event.EventType", "EventType")
                         .WithMany("EventCategories")
                         .HasForeignKey("EventTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventFeedback", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Participant", "Participant")
-                        .WithOne("EventFeedback")
-                        .HasForeignKey("EPlast.DataAccess.Entities.Event.EventFeedback", "ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

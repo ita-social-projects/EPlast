@@ -46,7 +46,6 @@ namespace EPlast.DataAccess.Repositories
         IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
-        IEventFeedbackRepository EventFeedback { get; }
         IEventAdminRepository EventAdmin { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventAdministrationTypeRepository EventAdministrationType { get; }
@@ -59,8 +58,6 @@ namespace EPlast.DataAccess.Repositories
         IExtractFromUpuDocumentsRepository ExtractFromUPUDocumentsRepository { get; }
         IGallaryRepository Gallary { get; }
         IGenderRepository Gender { get; }
-        string GetCitiesUrl { get; }
-        string GetUserPageUrl { get; }
         IEducatorsStaffRepository KVs { get; }
         IEducatorsStaffTypesRepository KVTypes { get; }
         IMembersStatisticsRepository MembersStatistics { get; }

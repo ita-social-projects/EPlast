@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.GoverningBody;
+using EPlast.BLL.DTO.Region;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.GoverningBodies;
@@ -150,7 +151,7 @@ namespace EPlast.BLL.Services.GoverningBodies
                 else
                 {
                     await RemoveExistingGbAdminsAsync(governingBodyAdministrationDto.GoverningBodyId, adminType.AdminTypeName);
-                    await _userManager.AddToRoleAsync(user, Roles.GoverningBodySecretary);
+                    await _userManager.AddToRoleAsync(user, Roles.GoverningBodyAdmin);
                 }
             }
 
@@ -209,11 +210,22 @@ namespace EPlast.BLL.Services.GoverningBodies
                 _ => Roles.GoverningBodySecretary,
             };
 
-            await _userManager.RemoveFromRoleAsync(user, role);
+            if (role != Roles.GoverningBodySecretary || (await CheckUserHasOneSecretaryTypeForGoverningBodyAsync(admin)))
+            {
+                await _userManager.RemoveFromRoleAsync(user, role);
+            }
 
             _repositoryWrapper.GoverningBodyAdministration.Update(admin);
-
             await _repositoryWrapper.SaveAsync();
+        }
+
+        public async Task<IEnumerable<GoverningBodyAdministrationDto>> GetUserAdministrations(string userId)
+        {
+
+            var secretaries = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
+                include: Include);
+
+            return _mapper.Map<IEnumerable<GoverningBodyAdministration>, IEnumerable<GoverningBodyAdministrationDto>>(secretaries);
         }
 
         public async Task RemoveMainAdministratorAsync(string userId)
@@ -250,26 +262,6 @@ namespace EPlast.BLL.Services.GoverningBodies
             }
         }
 
-        private async Task RemoveExistingGbAdminsAsync(int governingBodyId, string adminTypeName)
-        {
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
-
-            var admins = await _repositoryWrapper.GoverningBodyAdministration
-                .GetAllAsync(a =>
-                    a.AdminTypeId == adminType.ID
-                    && a.Status
-                    && a.GoverningBodyId == governingBodyId
-                );
-
-            foreach (var admin in admins)
-            {
-                await RemoveAdministratorAsync(admin.Id);
-            }
-        }
-
-        private Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>> Include =>
-            x => x.Include(a => a.User).Include(a => a.AdminType);
-
         public async Task<IEnumerable<ShortUserInformationDto>> GetUsersForGoverningBodyAdminFormAsync()
         {
             var users = await _repositoryWrapper.User.GetAllAsync();
@@ -304,5 +296,42 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             return result != null;
         }
+
+        private async Task<bool> CheckUserHasOneSecretaryTypeForGoverningBodyAsync(GoverningBodyAdministration admin)
+        {
+            int secretaryAdminTypesCount = 0;
+            var userAdminTypes = await GetUserAdministrations(admin.UserId);
+            foreach (GoverningBodyAdministrationDto userAdminType in userAdminTypes)
+            {
+                var secretaryCheck = userAdminType.AdminType.AdminTypeName switch
+                {
+                    Roles.GoverningBodyAdmin => Roles.GoverningBodyAdmin,
+                    _ => Roles.GoverningBodySecretary,
+                };
+                if (secretaryCheck == Roles.GoverningBodySecretary) secretaryAdminTypesCount++;
+            }
+            if (secretaryAdminTypesCount > 1) return false;
+            return true;
+        }
+
+        private async Task RemoveExistingGbAdminsAsync(int governingBodyId, string adminTypeName)
+        {
+            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(adminTypeName);
+
+            var admins = await _repositoryWrapper.GoverningBodyAdministration
+                .GetAllAsync(a =>
+                    a.AdminTypeId == adminType.ID
+                    && a.Status
+                    && a.GoverningBodyId == governingBodyId
+                );
+
+            foreach (var admin in admins)
+            {
+                await RemoveAdministratorAsync(admin.Id);
+            }
+        }
+
+        private Func<IQueryable<GoverningBodyAdministration>, IIncludableQueryable<GoverningBodyAdministration, object>> Include =>
+            x => x.Include(a => a.User).Include(a => a.AdminType);
     }
 }

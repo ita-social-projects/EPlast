@@ -101,8 +101,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<string>("AdminTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -1355,6 +1354,9 @@ namespace EPlast.DataAccess.Migrations
                         .HasColumnType("nvarchar(200)")
                         .HasMaxLength(200);
 
+                    b.Property<double>("Rating")
+                        .HasColumnType("float");
+
                     b.HasKey("ID");
 
                     b.HasIndex("EventCategoryID");
@@ -1480,30 +1482,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasIndex("EventCategoryId");
 
                     b.ToTable("EventCategoryTypes");
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventFeedback", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ParticipantId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ParticipantId")
-                        .IsUnique();
-
-                    b.ToTable("EventFeedbacks");
                 });
 
             modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventGallary", b =>
@@ -3729,15 +3707,6 @@ namespace EPlast.DataAccess.Migrations
                     b.HasOne("EPlast.DataAccess.Entities.Event.EventType", "EventType")
                         .WithMany("EventCategories")
                         .HasForeignKey("EventTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EPlast.DataAccess.Entities.Event.EventFeedback", b =>
-                {
-                    b.HasOne("EPlast.DataAccess.Entities.Participant", "Participant")
-                        .WithOne("EventFeedback")
-                        .HasForeignKey("EPlast.DataAccess.Entities.Event.EventFeedback", "ParticipantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

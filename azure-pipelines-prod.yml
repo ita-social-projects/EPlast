@@ -23,8 +23,8 @@ variables:
 - name: vmImageName
   value: 'ubuntu-latest'
 
-- name: vmImageName
-  value: 'ubuntu-latest'
+- name: ASPNETCORE_ENVIRONMENT
+  value: 'Production'
 
 stages:
 - stage: Build
