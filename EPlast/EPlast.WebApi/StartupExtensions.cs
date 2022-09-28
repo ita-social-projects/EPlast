@@ -216,7 +216,7 @@ namespace EPlast.WebApi
             services.AddTransient<IJwtService, JwtService>();
             services.AddSingleton<IUserMapService, UserMapService>();
             services.AddSingleton<ICacheService, RedisCacheService>();
-            services.AddSingleton<IHostURLService, HostURLService>();
+            services.AddSingleton<IHostUrlService, HostUrlService>();
             return services;
         }
 

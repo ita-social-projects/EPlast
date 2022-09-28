@@ -30,7 +30,7 @@ namespace EPlast.BLL.Services.City
         private readonly UserManager<User> _userManager;
         private readonly INotificationService _notificationService;
         private readonly IMediator _mediator;
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
 
         public CityParticipantsService(
             IRepositoryWrapper repositoryWrapper,
@@ -41,7 +41,7 @@ namespace EPlast.BLL.Services.City
             IEmailContentService emailContentService,
             IMediator mediator,
             INotificationService notificationService,
-            IHostURLService hostURLService
+            IHostUrlService hostURLService
         )
         {
             _repositoryWrapper = repositoryWrapper;

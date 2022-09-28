@@ -44,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserDatesService _userDatesService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly UserManager<User> _userManager;
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
         private readonly ILoggerService<AuthController> _loggerService;
@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
             UserManager<User> userManager,
-            IHostURLService hostURLService, ILoggerService<AuthController> loggerService)
+            IHostUrlService hostURLService, ILoggerService<AuthController> loggerService)
         {
             _userDatesService = userDatesService;
             _emailSendingService = emailSendingService;
