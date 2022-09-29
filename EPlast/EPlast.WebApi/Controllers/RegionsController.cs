@@ -7,6 +7,7 @@ using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Interfaces.Cache;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Queries.Region;
 using EPlast.DataAccess.Entities;
@@ -26,7 +27,7 @@ namespace EPlast.WebApi.Controllers
         private readonly ICacheService _cache;
         private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionAdministrationService _regionAdministrationService;
-        private readonly IRegionAnnualReportService _RegionAnnualReportService;
+        private readonly IRegionAnnualReportService _regionAnnualReportService;
         private readonly IRegionService _regionService;
         private readonly UserManager<User> _userManager;
         private readonly IMediator _mediator;
@@ -40,7 +41,7 @@ namespace EPlast.WebApi.Controllers
             ILoggerService<CitiesController> logger,
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
-            IRegionAnnualReportService RegionAnnualReportService,
+            IRegionAnnualReportService regionAnnualReportService,
             UserManager<User> userManager,
             IMediator mediator, IUserAccessService userAccessService)
         {
@@ -48,7 +49,7 @@ namespace EPlast.WebApi.Controllers
             _logger = logger;
             _regionService = regionService;
             _regionAdministrationService = regionAdministrationService;
-            _RegionAnnualReportService = RegionAnnualReportService;
+            _regionAnnualReportService = regionAnnualReportService;
             _userManager = userManager;
             _mediator = mediator;
             _userAccessService = userAccessService;
@@ -118,7 +119,7 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 var annualreport =
-                    await _RegionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year,
+                    await _regionAnnualReportService.CreateByNameAsync(await _userManager.GetUserAsync(User), id, year,
                         regionAnnualReportQuestions);
                 return StatusCode(StatusCodes.Status201Created, new { message = "Річний звіт округи успішно створено!", report = annualreport });
             }
@@ -140,15 +141,27 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
         public async Task<IActionResult> EditAdministrator(RegionAdministrationDto admin)
         {
-            if (admin != null)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var regionAdministration = await _regionAdministrationService.GetRegionAdministrationByIdAsync(admin.ID);
+            if (regionAdministration == null)
+            {
+                return NotFound();
+            }
+
+            var userAccess = await _userAccessService.GetUserRegionAdministrationAccessAsync(regionAdministration,
+                await _userManager.GetUserAsync(User));
+            if (userAccess["EditRegionHead"])
             {
                 var updatedAdmin = await _regionAdministrationService.EditRegionAdministrator(admin);
                 _logger.LogInformation($"Successful edit Admin: {admin.UserId}");
                 return Ok(updatedAdmin);
             }
-            _logger.LogError("Admin is null");
 
-            return NotFound();
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         [HttpPut("EditRegion/{regId}")]
@@ -189,7 +202,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> GetAllRegionAnnualReports()
         {
             return StatusCode(StatusCodes.Status200OK,
-                new { annualReports = await _RegionAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
+                new { annualReports = await _regionAnnualReportService.GetAllAsync(await _userManager.GetUserAsync(User)) });
         }
 
         /// <summary>
@@ -203,7 +216,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]
         public async Task<IActionResult> GetAllRegionsReportsAsync()
         {
-            return Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync());
+            return Ok(await _regionAnnualReportService.GetAllRegionsReportsAsync());
         }
 
         /// <summary>
@@ -226,7 +239,7 @@ namespace EPlast.WebApi.Controllers
             IList<string> userRoles = await _userManager.GetRolesAsync(user);
 
             bool isAdmin = userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin);
-            return base.Ok(await _RegionAnnualReportService.GetAllRegionsReportsAsync(
+            return base.Ok(await _regionAnnualReportService.GetAllRegionsReportsAsync(
                 user,
                 isAdmin,
                 searchedData,
@@ -257,7 +270,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _RegionAnnualReportService.EditAsync(reportId, regionAnnualReportQuestions);
+                    await _regionAnnualReportService.EditAsync(reportId, regionAnnualReportQuestions);
                     _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {reportId})");
                     return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи змінено" });
                 }
@@ -288,7 +301,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy)]
         public async Task<IActionResult> GetRegionMembersInfo(int regionId, int year, int page, int pageSize)
         {
-            return Ok(await _RegionAnnualReportService.GetRegionMembersInfoAsync(regionId, year, page, pageSize));
+            return Ok(await _regionAnnualReportService.GetRegionMembersInfoAsync(regionId, year, page, pageSize));
         }
 
 
@@ -303,7 +316,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> Confirm(int id)
         {
-            await _RegionAnnualReportService.ConfirmAsync(id);
+            await _regionAnnualReportService.ConfirmAsync(id);
             _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) confirmed annual report (id: {id})");
             return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи підтверджено" });
         }
@@ -321,7 +334,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _RegionAnnualReportService.CancelAsync(id);
+                await _regionAnnualReportService.CancelAsync(id);
                 _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) canceled annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи скасовано" });
             }
@@ -345,7 +358,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                await _RegionAnnualReportService.DeleteAsync(id);
+                await _regionAnnualReportService.DeleteAsync(id);
                 _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) deleted annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи видалено" });
             }
@@ -630,7 +643,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetRegionsNameThatUserHasAccessTo()
         {
-            return Ok(new { regions = await _RegionAnnualReportService.GetAllRegionsIdAndName(await _userManager.GetUserAsync(User)) });
+            return Ok(new { regions = await _regionAnnualReportService.GetAllRegionsIdAndName(await _userManager.GetUserAsync(User)) });
         }
 
         /// <summary>
@@ -663,7 +676,7 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                return Ok(await _RegionAnnualReportService.GetReportByIdAsync(await _userManager.GetUserAsync(User), id, year));
+                return Ok(await _regionAnnualReportService.GetReportByIdAsync(await _userManager.GetUserAsync(User), id, year));
             }
             catch (NullReferenceException)
             {
@@ -679,7 +692,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserAdministrations(string userId)
         {
-            var secretaries = await _regionAdministrationService.GetUsersAdministrations(userId);
+            var secretaries = await _regionAdministrationService.GetUserAdministrations(userId);
             return Ok(secretaries);
         }
 
@@ -687,7 +700,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetUserPrevAdministrations(string userId)
         {
-            var secretaries = await _regionAdministrationService.GetUsersPreviousAdministrations(userId);
+            var secretaries = await _regionAdministrationService.GetUserPreviousAdministrations(userId);
             return Ok(secretaries);
         }
 
@@ -734,20 +747,25 @@ namespace EPlast.WebApi.Controllers
             return Ok();
         }
 
-        [HttpDelete("RemoveAdministration/{Id}")]
+        [HttpDelete("RemoveAdministration/{administratorId}")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> Remove(int Id)
+        public async Task<IActionResult> RemoveAdministration(int administratorId)
         {
-            await _regionAdministrationService.DeleteAdminByIdAsync(Id);
-            return Ok();
-        }
+            var regionAdministration = await _regionAdministrationService.GetRegionAdministrationByIdAsync(administratorId);
+            if (regionAdministration == null)
+            {
+                return NotFound();
+            }
 
-        [HttpPut("ChangeStatusAdministration/{Id}")]
-        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy)]
-        public async Task<IActionResult> EditStatus(int Id)
-        {
-            await _regionAdministrationService.EditStatusAdministration(Id);
-            return Ok();
+            var userAccess = await _userAccessService.GetUserRegionAdministrationAccessAsync(regionAdministration,
+                await _userManager.GetUserAsync(User));
+            if (userAccess["RemoveRegionHead"])
+            {
+                await _regionAdministrationService.DeleteAdminByIdAsync(administratorId);
+                return Ok();
+            }
+
+            return StatusCode(StatusCodes.Status403Forbidden);
         }
 
         [HttpDelete("RemoveRegion/{Id}")]

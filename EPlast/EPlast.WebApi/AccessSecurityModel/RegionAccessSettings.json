@@ -6,6 +6,8 @@
     "DeleteRegion": true,
     "AddRegionSecretary": true,
     "AddRegionHead": true,
+    "EditRegionHead": true,
+    "RemoveRegionHead":  true, 
     "DownloadDocument": true
   },
   "Крайовий Адмін": {
@@ -15,6 +17,8 @@
     "DeleteRegion": true,
     "AddRegionSecretary": true,
     "AddRegionHead": true,
+    "EditRegionHead": true,
+    "RemoveRegionHead": true,
     "DownloadDocument": true
   },
   "Голова Округи": {
@@ -24,6 +28,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": true,
     "AddRegionHead": true,
+    "EditRegionHead": true,
+    "RemoveRegionHead": true,
     "DownloadDocument": true
   },
   "Заступник Голови Округи": {
@@ -33,6 +39,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": true,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Голова Станиці": {
@@ -42,6 +50,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Заступник Голови Станиці": {
@@ -51,6 +61,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Голова Куреня": {
@@ -60,6 +72,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Заступник Голови Куреня": {
@@ -69,6 +83,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Прихильник": {
@@ -87,6 +103,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Зареєстрований користувач": {
@@ -96,6 +114,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": false
   },
   "Референт/-ка УПС Округи": {
@@ -105,6 +125,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Референт/-ка УСП Округи": {
@@ -114,6 +136,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   },
   "Референт дійсного членства Округи": {
@@ -123,6 +147,8 @@
     "DeleteRegion": false,
     "AddRegionSecretary": false,
     "AddRegionHead": false,
+    "EditRegionHead": false,
+    "RemoveRegionHead": false,
     "DownloadDocument": true
   }
 }
