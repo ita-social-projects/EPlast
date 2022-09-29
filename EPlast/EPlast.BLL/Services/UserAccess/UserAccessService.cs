@@ -10,6 +10,8 @@ using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Region;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 
 namespace EPlast.BLL.Services.UserAccess
 {
@@ -22,6 +24,7 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly IAnnualReportAccessService _annualReportAccessService;
         private readonly IUserProfileAccessService _userProfileAccessService;
         private readonly ISecurityModel _securityModel;
+        private readonly IRegionAdministrationAccessService _regionAdministrationAccessService;
 
         private const string ClubSecuritySettingsFile = "ClubAccessSettings.json";
         private const string DistinctionSecuritySettingsFile = "DistinctionsAccessSettings.json";
@@ -42,6 +45,7 @@ namespace EPlast.BLL.Services.UserAccess
             _regionAccessService = userAccessWrapper.RegionAccessService;
             _annualReportAccessService = userAccessWrapper.AnnualReportAccessService;
             _userProfileAccessService = userAccessWrapper.UserProfileAccessService;
+            _regionAdministrationAccessService = userAccessWrapper.RegionAdministrationAccessService;
             _securityModel = securityModel;
         }
 
@@ -86,6 +90,17 @@ namespace EPlast.BLL.Services.UserAccess
             return userAccess;
         }
 
+        public async Task<Dictionary<string, bool>> GetUserRegionAdministrationAccessAsync(
+            RegionAdministrationDto regionAdministration, User user)
+        {
+            var regionUserAccess = await GetUserRegionAccessAsync(regionAdministration.RegionId, user.Id, user);
+            regionUserAccess["RemoveRegionHead"] =
+                _regionAdministrationAccessService.CanRemoveRegionAdmin(regionUserAccess, regionAdministration, user);
+            regionUserAccess["EditRegionHead"] =
+                _regionAdministrationAccessService.CanEditRegionAdmin(regionUserAccess, regionAdministration, user);
+            return regionUserAccess;
+        }
+
         public async Task<Dictionary<string, bool>> GetUserAnnualReportAccessAsync(string userId, User user, ReportType? reportType=null, int? reportId=null)
         {
             _securityModel.SetSettingsFile(AnnualReportSecuritySettingsFile);
@@ -100,12 +115,13 @@ namespace EPlast.BLL.Services.UserAccess
             _securityModel.SetSettingsFile(UserProfileAccessSettings);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
             var canViewUserFullProfile = await _userProfileAccessService.CanViewFullProfile(user, focusUserId);
-            var canApproveAsHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            var canApproveAsClubHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.KurinHead);
+            var canApproveAsCityHead = await _userProfileAccessService.CanApproveAsHead(user, focusUserId, Roles.CityHead);
             var canEditUserProfile = await _userProfileAccessService.CanEditUserProfile(user, focusUserId);
 
             userAccess["CanViewUserFullProfile"] = canViewUserFullProfile;
-            userAccess["CanApproveAsClubHead"] = canApproveAsHead;
-            userAccess["CanApproveAsCityHead"] = canApproveAsHead;
+            userAccess["CanApproveAsClubHead"] = canApproveAsClubHead;
+            userAccess["CanApproveAsCityHead"] = canApproveAsCityHead;
             userAccess["CanEditUserProfile"] = canEditUserProfile;
             userAccess["CanSeeAddDeleteUserExtractUPU"] = canEditUserProfile;
             userAccess["CanAddUserDistionction"] = canEditUserProfile;

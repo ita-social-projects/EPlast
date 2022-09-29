@@ -157,7 +157,7 @@
     <value>Невірний пароль. Спробуйте, будь ласка, ще раз</value>
   </data>
   <data name="Login-NotConfirmed" xml:space="preserve">
-    <value>Ваш акаунт не підтверджений, будь ласка, увійдіть та зробіть підтвердження</value>
+    <value>Підтвердіть реєстрацію, перейшовши за посиланням, вказаним у електронній пошті</value>
   </data>
   <data name="Login-NotRegistered" xml:space="preserve">
     <value>Ви не зареєстровані в системі, або не підтвердили свою електронну пошту</value>

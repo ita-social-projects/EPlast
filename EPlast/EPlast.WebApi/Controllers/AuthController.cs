@@ -1,16 +1,16 @@
-#nullable enable
-
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.HostURL;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
-using EPlast.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,22 +44,26 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserDatesService _userDatesService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly UserManager<User> _userManager;
+        private readonly IHostURLService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
+        private readonly ILoggerService<AuthController> _loggerService;
 
         public AuthController(
             IUserDatesService userDatesService,
             IEmailSendingService emailSendingService,
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
-            UserManager<User> userManager
-        )
+            UserManager<User> userManager,
+            IHostURLService hostURLService, ILoggerService<AuthController> loggerService)
         {
             _userDatesService = userDatesService;
             _emailSendingService = emailSendingService;
             _mapper = mapper;
             _cityParticipantsService = cityParticipantsService;
             _userManager = userManager;
+            _hostURLService = hostURLService;
+            _loggerService = loggerService;
         }
 
         /// <summary>
@@ -74,31 +78,35 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
-            var frontendUrl = Request.GetFrontEndSignInURL();
+            var decodedToken = HttpUtility.UrlDecode(token);
 
             if (!ModelState.IsValid)
             {
-                return Redirect(frontendUrl + "?error=400");
+                _loggerService.LogWarning("Invalid ModelState");
+                return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
-
+            
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return Redirect(frontendUrl + "?error=404");
+                return Redirect(_hostURLService.GetSignInURL(error: 404));
             }
-
             TimeSpan elapsedTimeFromRegistration = DateTime.Now - user.RegistredOn;
             if (elapsedTimeFromRegistration >= TimeSpan.FromHours(12))
             {
                 // 410 GONE - User should be deleted, because 12hrs elapsed from registration and email is still is not confirmed
                 await _userManager.DeleteAsync(user);
-                return Redirect(frontendUrl + "?error=410");
+                return Redirect(_hostURLService.GetSignInURL(error: 410));
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (!result.Succeeded)
             {
-                return Redirect(frontendUrl + "?error=400");
+                foreach (var error in result.Errors)
+                {
+                    _loggerService.LogWarning(error.Description);
+                }
+                return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
 
             await _userDatesService.AddDateEntryAsync(user.Id);
@@ -119,7 +127,7 @@ namespace EPlast.WebApi.Controllers
                 throw new ArgumentException("User had both RegionId and CityId set to null, which is an anomaly", nameof(user));
             }
 
-            return Redirect(frontendUrl);
+            return Redirect(_hostURLService.SignInURL);
         }
 
         /// <summary>
@@ -144,7 +152,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            User? user = await _userManager.FindByEmailAsync(registerDto.Email);
+            User user = await _userManager.FindByEmailAsync(registerDto.Email);
             if (user != null)
             {
                 // Check if user's email is confirmed
@@ -201,7 +209,7 @@ namespace EPlast.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            User? user = await _userManager.FindByEmailAsync(userEmail);
+            User user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return NotFound();
@@ -246,7 +254,7 @@ namespace EPlast.WebApi.Controllers
         {
             var reciever = new MailboxAddress($"{user.FirstName} {user.LastName}", user.Email);
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user)); 
 
             string url = Url.Action(
                 "ConfirmEmail",
