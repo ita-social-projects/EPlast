@@ -47,8 +47,9 @@ namespace EPlast.Tests.Services.UserAcccess
                 _annualReportAccessService.Object,
                 _userProfileAccessService.Object,
                 _eventAccessService.Object,
-                _regionAdministrationAccessService.Object,
-                _blankAccessService.Object);
+                _blankAccessService.Object,
+                _regionAdministrationAccessService.Object
+                );
         }
 
         [Test]
