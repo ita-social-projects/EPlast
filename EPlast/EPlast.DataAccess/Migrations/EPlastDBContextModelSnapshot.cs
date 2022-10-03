@@ -101,8 +101,7 @@ namespace EPlast.DataAccess.Migrations
 
                     b.Property<string>("AdminTypeName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(50)")
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 

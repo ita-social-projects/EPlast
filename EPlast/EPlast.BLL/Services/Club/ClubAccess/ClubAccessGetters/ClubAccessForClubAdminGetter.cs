@@ -28,8 +28,11 @@ namespace EPlast.BLL.Services.Club.ClubAccess.ClubAccessGetters
         {
             var ClubAdministration = await _repositoryWrapper.ClubAdministration.GetFirstOrDefaultAsync(
                     predicate: c => c.UserId == userId && (DateTime.Now < c.EndDate || c.EndDate == null) && (c.AdminTypeId == _ClubAdminType.ID || c.AdminTypeId == _ClubAdminDeputyType.ID));
-            return ClubAdministration != null ? await _repositoryWrapper.Club.GetAllAsync(
-                predicate: c => c.ID == ClubAdministration.ClubId)
+
+            var regionRange = await _repositoryWrapper.Club.GetRangeAsync(
+            c => c.ID == ClubAdministration.ClubId, null, с => с.OrderBy(x => x.Name), null, null, null);
+
+            return ClubAdministration != null ? regionRange.Item1
                 : Enumerable.Empty<DatabaseEntities.Club>();
         }
     }

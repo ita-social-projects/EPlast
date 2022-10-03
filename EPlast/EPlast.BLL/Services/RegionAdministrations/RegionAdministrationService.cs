@@ -6,14 +6,14 @@ using AutoMapper;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.Region;
 using EPlast.BLL.Interfaces.Admin;
-using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace EPlast.BLL.Services.Region
+namespace EPlast.BLL.Services.RegionAdministrations
 {
     public class RegionAdministrationService : IRegionAdministrationService
     {
@@ -42,7 +42,7 @@ namespace EPlast.BLL.Services.Region
             var headDeputyType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.OkrugaHeadDeputy);
 
 
-            var newRegionAdmin = new RegionAdministration()
+            var newRegionAdmin = new DataAccess.Entities.RegionAdministration()
             {
                 StartDate = regionAdministrationDTO.StartDate ?? DateTime.Now,
                 EndDate = regionAdministrationDTO.EndDate,
@@ -134,7 +134,6 @@ namespace EPlast.BLL.Services.Region
             }
 
             await DeleteAdminByIdAsync(regionAdministrationDTO.ID);
-            await EditStatusAdministration(regionAdministrationDTO.ID, false);
             await AddRegionAdministrator(regionAdministrationDTO);
             return regionAdministrationDTO;
         }
@@ -154,6 +153,10 @@ namespace EPlast.BLL.Services.Region
         public async Task DeleteAdminByIdAsync(int Id)
         {
             var admin = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(a => a.ID == Id);
+            // don't use EditStatusAdministration because of CheckUserHasOneSecretaryTypeForRegion
+            admin.EndDate = DateTime.Now;
+            admin.Status = false;
+
             var adminType = await _adminTypeService.GetAdminTypeByIdAsync(admin.AdminTypeId);
             var user = await _userManager.FindByIdAsync(admin.UserId);
             string role = adminType.AdminTypeName switch
@@ -165,10 +168,17 @@ namespace EPlast.BLL.Services.Region
                 Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
                 _ => Roles.OkrugaSecretary,
             };
-            await _userManager.RemoveFromRoleAsync(user, role);
+
+            if (role != Roles.OkrugaSecretary || (await CheckUserHasOneSecretaryTypeForRegionAsync(admin)))
+            {
+                await _userManager.RemoveFromRoleAsync(user, role);
+            }
+
+            _repoWrapper.RegionAdministration.Update(admin);
+            await _repoWrapper.SaveAsync();
         }
 
-        public async Task<IEnumerable<RegionAdministrationDto>> GetUsersAdministrations(string userId)
+        public async Task<IEnumerable<RegionAdministrationDto>> GetUserAdministrations(string userId)
         {
 
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && a.Status,
@@ -177,10 +187,19 @@ namespace EPlast.BLL.Services.Region
                  .Include(r => r.Region)
                  .Include(r => r.AdminType));
 
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.RegionAdministration>, IEnumerable<RegionAdministrationDto>>(secretaries);
         }
 
-        public async Task<IEnumerable<RegionAdministrationDto>> GetUsersPreviousAdministrations(string userId)
+        public async Task<RegionAdministrationDto> GetRegionAdministrationByIdAsync(int regionAdministrationId)
+        {
+            var regionAdministration = await _repoWrapper.RegionAdministration.GetFirstOrDefaultAsync(predicate: a=>a.ID==regionAdministrationId,
+                include: source =>source.Include(a=>a.User)
+                    .Include(a=>a.Region)
+                    .Include(a=>a.AdminType));
+            return _mapper.Map<DataAccess.Entities.RegionAdministration, RegionAdministrationDto>(regionAdministration);
+        }
+
+        public async Task<IEnumerable<RegionAdministrationDto>> GetUserPreviousAdministrations(string userId)
         {
             var secretaries = await _repoWrapper.RegionAdministration.GetAllAsync(a => a.UserId == userId && !a.Status,
                 include: source => source
@@ -234,7 +253,7 @@ namespace EPlast.BLL.Services.Region
                         .Include(t => t.Region)
                         .Include(t => t.AdminType));
 
-            return _mapper.Map<IEnumerable<RegionAdministration>, IEnumerable<RegionAdministrationDto>>(admins);
+            return _mapper.Map<IEnumerable<DataAccess.Entities.RegionAdministration>, IEnumerable<RegionAdministrationDto>>(admins);
         }
 
         public async Task<IEnumerable<AdminTypeDto>> GetAllAdminTypes()
@@ -249,6 +268,27 @@ namespace EPlast.BLL.Services.Region
             {
                 await DeleteAdminByIdAsync(role.ID);
             }
+        }
+
+        private async Task<bool> CheckUserHasOneSecretaryTypeForRegionAsync(RegionAdministration admin)
+        {
+            int secretaryAdminTypesCount = 0;
+            var userAdminTypes = await GetUserAdministrations(admin.UserId);
+            foreach (RegionAdministrationDto userAdminType in userAdminTypes)
+            {
+                var secretaryCheck = userAdminType.AdminType.AdminTypeName switch
+                {
+                    Roles.OkrugaHead => Roles.OkrugaHead,
+                    Roles.OkrugaHeadDeputy => Roles.OkrugaHeadDeputy,
+                    Roles.OkrugaReferentUPS => Roles.OkrugaReferentUPS,
+                    Roles.OkrugaReferentUSP => Roles.OkrugaReferentUSP,
+                    Roles.OkrugaReferentOfActiveMembership => Roles.OkrugaReferentOfActiveMembership,
+                    _ => Roles.OkrugaSecretary,
+                };
+                if (secretaryCheck == Roles.OkrugaSecretary) secretaryAdminTypesCount++;
+            }
+            if (secretaryAdminTypesCount > 1) return false;
+            return true;
         }
 
         private bool CheckCityWasAdmin(RegionAdministration newAdmin)

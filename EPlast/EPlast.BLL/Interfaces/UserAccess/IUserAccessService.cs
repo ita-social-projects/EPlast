@@ -2,6 +2,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EPlast.BLL.DTO.Region;
 
 namespace EPlast.BLL.Interfaces.UserAccess
 {
@@ -26,6 +27,8 @@ namespace EPlast.BLL.Interfaces.UserAccess
         /// Returns dictionary with user accesses for regions
         /// </summary>
         Task<Dictionary<string, bool>> GetUserRegionAccessAsync(int regionId, string userId, User user);
+
+        Task<Dictionary<string, bool>> GetUserRegionAdministrationAccessAsync( RegionAdministrationDto regionAdministration, User user);
 
         /// <summary>
         /// Returns dictionary with user accesses for annual reports

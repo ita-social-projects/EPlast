@@ -4,6 +4,7 @@ using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Region;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.BLL.Services.UserAccess;
@@ -23,6 +24,7 @@ namespace EPlast.Tests.Services.UserAcccess
         private Mock<IUserProfileAccessService> _userProfileAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
         private Mock<IBlankAccessService> _blankAccessService;
+        private Mock<IRegionAdministrationAccessService> _regionAdministrationAccessService;
 
         private UserAccessWrapper _userAcccessWrapper;
 
@@ -37,6 +39,7 @@ namespace EPlast.Tests.Services.UserAcccess
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
             _userProfileAccessService = new Mock<IUserProfileAccessService>();
             _blankAccessService = new Mock<IBlankAccessService>();
+            _regionAdministrationAccessService = new Mock<IRegionAdministrationAccessService>();
             _userAcccessWrapper = new UserAccessWrapper(
                 _clubAccessService.Object,
                 _cityAccessService.Object,
@@ -44,6 +47,7 @@ namespace EPlast.Tests.Services.UserAcccess
                 _annualReportAccessService.Object,
                 _userProfileAccessService.Object,
                 _eventAccessService.Object,
+                _regionAdministrationAccessService.Object,
                 _blankAccessService.Object);
         }
 
@@ -105,6 +109,16 @@ namespace EPlast.Tests.Services.UserAcccess
 
             // Assert
             Assert.IsInstanceOf<IRegionAccessService>(result);
+        }
+
+        [Test]
+        public void GetRegionAdministrationAccessService_Valid()
+        {
+            // Act 
+            var result = _userAcccessWrapper.RegionAdministrationAccessService;
+
+            // Assert
+            Assert.IsInstanceOf<IRegionAdministrationAccessService>(result);
         }
 
         [Test]
