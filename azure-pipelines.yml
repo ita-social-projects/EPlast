@@ -10,6 +10,7 @@ resources:
 
 variables:
 - group: EPlast
+
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
   # value: '5aab2e73-307d-46b2-8421-8ac50de15018'
