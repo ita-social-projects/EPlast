@@ -2,7 +2,6 @@
 # Build and push image to Azure Container Registry; Deploy to Azure Kubernetes Service
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
-
 variables:
 - group: EPlast-PROD
   # Container registry service connection established during pipeline creation
@@ -20,9 +19,6 @@ variables:
   value: 'eplastregistryd27e-auth'
 - name: k8sNamespaceForPR
   value: 'review-app-$(System.PullRequest.PullRequestId)'
-- name: vmImageName
-  value: 'ubuntu-latest'
-
 - name: vmImageName
   value: 'ubuntu-latest'
 

@@ -1,12 +1,14 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using System.Web;
 using AutoMapper;
 using EPlast.BLL.DTO.Account;
 using EPlast.BLL.Interfaces;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.HostURL;
+using EPlast.BLL.Interfaces.Logging;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +47,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IHostURLService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
+        private readonly ILoggerService<AuthController> _loggerService;
 
         public AuthController(
             IUserDatesService userDatesService,
@@ -52,8 +55,7 @@ namespace EPlast.WebApi.Controllers
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
             UserManager<User> userManager,
-            IHostURLService hostURLService
-        )
+            IHostURLService hostURLService, ILoggerService<AuthController> loggerService)
         {
             _userDatesService = userDatesService;
             _emailSendingService = emailSendingService;
@@ -61,6 +63,7 @@ namespace EPlast.WebApi.Controllers
             _cityParticipantsService = cityParticipantsService;
             _userManager = userManager;
             _hostURLService = hostURLService;
+            _loggerService = loggerService;
         }
 
         /// <summary>
@@ -75,8 +78,11 @@ namespace EPlast.WebApi.Controllers
         [HttpGet("confirmEmail")]
         public async Task<IActionResult> ConfirmEmail([Required, FromQuery] string userId, [Required, FromQuery] string token)
         {
+            var decodedToken = HttpUtility.UrlDecode(token);
+
             if (!ModelState.IsValid)
             {
+                _loggerService.LogWarning("Invalid ModelState");
                 return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
 
@@ -93,9 +99,13 @@ namespace EPlast.WebApi.Controllers
                 return Redirect(_hostURLService.GetSignInURL(error: 410));
             }
 
-            var result = await _userManager.ConfirmEmailAsync(user, token);
+            var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
             if (!result.Succeeded)
             {
+                foreach (var error in result.Errors)
+                {
+                    _loggerService.LogWarning(error.Description);
+                }
                 return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
 
@@ -244,7 +254,7 @@ namespace EPlast.WebApi.Controllers
         {
             var reciever = new MailboxAddress($"{user.FirstName} {user.LastName}", user.Email);
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user)); 
 
             string url = _hostURLService.GetConfirmEmailApiURL(user.Id, token);
 
