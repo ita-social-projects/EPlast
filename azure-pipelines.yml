@@ -27,7 +27,13 @@ variables:
 - name: imagePullSecret
   # value: 'eplast1348122b-auth'
   value: 'azdev-sa-3a5f0b-token-rqwl2'
+
+#- name: Aspnetcore_Environment
+#  value: 'Staging'
   
+#- name: ASPNETCORE_ENVIRONMENT
+#  value: 'Staging'
+   
   # Agent VM image name
 - name: vmImageName
   value: 'ubuntu-latest'

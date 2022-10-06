@@ -6,6 +6,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 #ENV ASPNETCORE_ENVIRONMENT=Development
 ENV ASPNETCORE_ENVIRONMENT=${Aspnetcore_Environment}
+#ENV ASPNETCORE_ENVIRONMENT=___Aspnetcore_Environment___
 ENV ASPNETCORE_URLS http://*:5000
 EXPOSE 5000
 
