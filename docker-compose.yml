@@ -11,8 +11,6 @@ services:
             - "80:80"
         depends_on:
             - api
-      environment:
-        Aspnetcore_Environment: ${Aspnetcore_Environment}
     api:
         build:
             context: .
