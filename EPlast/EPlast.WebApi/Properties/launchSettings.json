@@ -14,7 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": '${Aspnetcore_Environment}'
+        "ASPNETCORE_ENVIRONMENT": "${Aspnetcore_Environment}"
       }
     },
     "EPlast.WebApi": {
@@ -22,7 +22,7 @@
       "launchBrowser": true,
       "launchUrl": "api/values",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": '${Aspnetcore_Environment}'
+        "ASPNETCORE_ENVIRONMENT": "${Aspnetcore_Environment}"
       },
       "applicationUrl": "https://localhost:5000"
     }
