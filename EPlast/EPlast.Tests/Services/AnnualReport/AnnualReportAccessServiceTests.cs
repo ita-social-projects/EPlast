@@ -3,6 +3,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -17,14 +18,14 @@ namespace EPlast.Tests.Services
     {
         private IAnnualReportAccessService _annualReportAccessService;
         private Mock<IRepositoryWrapper> _repositoryWrapper;
+        private readonly Mock<UserManager<User>> _userManager;
 
         [SetUp]
         public void SetUp()
         {
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
-            _annualReportAccessService = new AnnualReportAccessService(_repositoryWrapper.Object);
+            _annualReportAccessService = new AnnualReportAccessService(_repositoryWrapper.Object, _userManager.Object);
         }
-
 
         [Test]
         public async Task CanViewCityReportDetailsAsync_ReturnsBool()

@@ -3,36 +3,58 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 
 namespace EPlast.BLL.Services
 {
     public class AnnualReportAccessService : IAnnualReportAccessService
     {
         private readonly IRepositoryWrapper _repositoryWrapper;
+        private readonly UserManager<User> _userManager;
 
-        public AnnualReportAccessService(IRepositoryWrapper repositoryWrapper)
+        public AnnualReportAccessService(IRepositoryWrapper repositoryWrapper, UserManager<User> userManager)
         {
             _repositoryWrapper = repositoryWrapper;
+            _userManager = userManager;
         }
 
         public async Task<bool> CanViewReportDetailsAsync(User user, bool defaultStatus, ReportType? reportType, int? reportId)
         {
-            if (defaultStatus || reportType == null || reportId == null) return defaultStatus;
+            var userRoles = await _userManager.GetRolesAsync(user);
+
             switch (reportType)
             {
                 case ReportType.City:
                     var cityAnnualReport = await GetCertainCityAnnualReport(reportId);
                     var cityAnnualReportCityAdministration = await GetCertainCityAdministration(user, cityAnnualReport);
                     var regionOverCityAnnualReportRegionAdministration = await GetRegionOverCertainCityAdministration(cityAnnualReport, user);
-                    return cityAnnualReportCityAdministration != null || regionOverCityAnnualReportRegionAdministration != null;
+                    if (cityAnnualReportCityAdministration != null || regionOverCityAnnualReportRegionAdministration != null ||
+                       userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                    {
+                        return true;
+                    }
+                    else
+                        return false;
                 case ReportType.Club:
                     var clubAnnualReport = await GetCertainClubAnnualReport(reportId);
                     var clubAnnualReportClubAdministration = await GetCertainClubAdministration(user, clubAnnualReport);
-                    return clubAnnualReportClubAdministration != null;
+                    if (clubAnnualReportClubAdministration != null ||
+                       userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                    {
+                        return true;
+                    }
+                    else
+                        return false;
                 case ReportType.Region:
                     var regionAnnualReport = await GetCertainRegionAnnualReport(reportId);
                     var regionAnnualReportRegionAdministration = await GetCertainRegionAdministration(user, regionAnnualReport);
-                    return regionAnnualReportRegionAdministration != null;
+                    if (regionAnnualReportRegionAdministration != null ||
+                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                    {
+                        return true;
+                    }
+                    else
+                        return false;
                 default:
                     return defaultStatus;
             }
@@ -40,26 +62,48 @@ namespace EPlast.BLL.Services
 
         public async Task<bool> CanEditReportAsync(User user, bool defaultStatus, ReportType? reportType, int? reportId)
         {
-            if (defaultStatus || reportType == null || reportId == null) return defaultStatus;
+            var userRoles = await _userManager.GetRolesAsync(user);
+
             switch (reportType)
             {
                 case ReportType.City:
                     var cityAnnualReport = await GetCertainCityAnnualReport(reportId);
                     var cityAnnualReportCityAdministration = await GetCertainCityAdministration(user, cityAnnualReport);
-                    return cityAnnualReportCityAdministration != null;
+                    var regionOverCityAnnualReportRegionAdministration = await GetRegionOverCertainCityAdministration(cityAnnualReport, user);
+                    if (((cityAnnualReportCityAdministration != null || regionOverCityAnnualReportRegionAdministration != null)
+                         && user.Id == cityAnnualReport.CreatorId) ||
+                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін")){
+                        return true;
+                    }
+                    else
+                        return false;
                 case ReportType.Club:
                     var clubAnnualReport = await GetCertainClubAnnualReport(reportId);
                     var clubAnnualReportClubAdministration = await GetCertainClubAdministration(user, clubAnnualReport);
-                    return clubAnnualReportClubAdministration != null;
+                    if (clubAnnualReportClubAdministration != null && user.Id == clubAnnualReport.CreatorId
+                        && clubAnnualReportClubAdministration.ClubId == clubAnnualReport.ClubId ||
+                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                    {
+                        return true;
+                    }
+                    else
+                        return false;
                 case ReportType.Region:
                     var regionAnnualReport = await GetCertainRegionAnnualReport(reportId);
-                    var regionAnnualReportRegionAdministration =
-                        await GetCertainRegionAdministration(user, regionAnnualReport);
-                    return regionAnnualReportRegionAdministration != null;
+                    var regionAnnualReportRegionAdministration = await GetCertainRegionAdministration(user, regionAnnualReport);
+                    if (regionAnnualReportRegionAdministration != null && user.Id == regionAnnualReport.CreatorId
+                        && regionAnnualReportRegionAdministration.RegionId == regionAnnualReport.RegionId  ||
+                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін")) {
+                        return true;
+                    }
+                    else
+                        return false;
                 default:
                     return defaultStatus;
             }
         }
+
+
 
         private async Task<AnnualReport> GetCertainCityAnnualReport(int? reportId)
         {
@@ -81,11 +125,12 @@ namespace EPlast.BLL.Services
             return certainCityAdministration;
         }
 
-        private async Task<DataAccess.Entities.RegionAdministration> GetRegionOverCertainCityAdministration(AnnualReport cityAnnualReport, User user)
+        private async Task<RegionAdministration> GetRegionOverCertainCityAdministration(AnnualReport cityAnnualReport, User user)
         {
             var certainCityUnderRegion = cityAnnualReport != null
                 ? await _repositoryWrapper.City.GetFirstOrDefaultAsync(x => x.ID == cityAnnualReport.CityId)
                 : null;
+
             var certainRegionAdministration =
                 certainCityUnderRegion != null
                     ? await _repositoryWrapper.RegionAdministration.GetFirstOrDefaultAsync(x =>
@@ -95,6 +140,7 @@ namespace EPlast.BLL.Services
                         x.AdminType.AdminTypeName != null &&
                         Roles.AdminAndOkrugaHeadAndOkrugaHeadDeputy.Contains(x.AdminType.AdminTypeName))
                     : null;
+
             return certainRegionAdministration;
         }
 

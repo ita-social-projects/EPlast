@@ -11,6 +11,7 @@ using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace EPlast.BLL.Services
 {
     public class AnnualReportService : IAnnualReportService
