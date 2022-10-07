@@ -32,17 +32,29 @@ stages:
       vmImage: $(vmImageName)
     steps:
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: Build
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
+        command: build
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
         tags: |
           $(tag)
-
+        arguments: --build-arg ASPNETCORE_ENVIRONMENT=$(Aspnetcore_Environment)
+    - upload: manifests 
+      artifact: manifests
+  
+    - task: Docker@2   
+      displayName: Push
+      inputs:
+        command: push
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        tags: |
+          $(tag)
     - upload: manifests
       artifact: manifests
+
 - stage: Test
   displayName: Test stage
   dependsOn: []
