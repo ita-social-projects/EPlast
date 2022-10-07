@@ -4,10 +4,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libgdiplus libc6-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-#ENV ASPNETCORE_ENVIRONMENT=Development
 ARG ASPNETCORE_ENVIRONMENT
 ENV ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT
-#ENV ASPNETCORE_ENVIRONMENT=___Aspnetcore_Environment___
 ENV ASPNETCORE_URLS http://*:5000
 EXPOSE 5000
 
