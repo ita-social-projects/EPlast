@@ -29,7 +29,7 @@ namespace EPlast.BLL.Services
                     var cityAnnualReportCityAdministration = await GetCertainCityAdministration(user, cityAnnualReport);
                     var regionOverCityAnnualReportRegionAdministration = await GetRegionOverCertainCityAdministration(cityAnnualReport, user);
                     if (cityAnnualReportCityAdministration != null || regionOverCityAnnualReportRegionAdministration != null ||
-                       userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                       userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin))
                     {
                         return true;
                     }
@@ -39,7 +39,7 @@ namespace EPlast.BLL.Services
                     var clubAnnualReport = await GetCertainClubAnnualReport(reportId);
                     var clubAnnualReportClubAdministration = await GetCertainClubAdministration(user, clubAnnualReport);
                     if (clubAnnualReportClubAdministration != null ||
-                       userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                       userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin))
                     {
                         return true;
                     }
@@ -49,7 +49,7 @@ namespace EPlast.BLL.Services
                     var regionAnnualReport = await GetCertainRegionAnnualReport(reportId);
                     var regionAnnualReportRegionAdministration = await GetCertainRegionAdministration(user, regionAnnualReport);
                     if (regionAnnualReportRegionAdministration != null ||
-                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                         userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin))
                     {
                         return true;
                     }
@@ -72,7 +72,7 @@ namespace EPlast.BLL.Services
                     var regionOverCityAnnualReportRegionAdministration = await GetRegionOverCertainCityAdministration(cityAnnualReport, user);
                     if (((cityAnnualReportCityAdministration != null || regionOverCityAnnualReportRegionAdministration != null)
                          && user.Id == cityAnnualReport.CreatorId) ||
-                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін")){
+                         userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin)){
                         return true;
                     }
                     else
@@ -82,7 +82,7 @@ namespace EPlast.BLL.Services
                     var clubAnnualReportClubAdministration = await GetCertainClubAdministration(user, clubAnnualReport);
                     if (clubAnnualReportClubAdministration != null && user.Id == clubAnnualReport.CreatorId
                         && clubAnnualReportClubAdministration.ClubId == clubAnnualReport.ClubId ||
-                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін"))
+                         userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin))
                     {
                         return true;
                     }
@@ -93,7 +93,7 @@ namespace EPlast.BLL.Services
                     var regionAnnualReportRegionAdministration = await GetCertainRegionAdministration(user, regionAnnualReport);
                     if (regionAnnualReportRegionAdministration != null && user.Id == regionAnnualReport.CreatorId
                         && regionAnnualReportRegionAdministration.RegionId == regionAnnualReport.RegionId  ||
-                         userRoles.Contains("Admin") || userRoles.Contains("Крайовий Адмін")) {
+                         userRoles.Contains(Roles.Admin) || userRoles.Contains(Roles.GoverningBodyAdmin)) {
                         return true;
                     }
                     else
