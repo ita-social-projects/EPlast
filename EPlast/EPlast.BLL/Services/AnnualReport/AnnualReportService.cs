@@ -98,6 +98,9 @@ namespace EPlast.BLL.Services
             }
             var annualReport = _mapper.Map<AnnualReportDto, AnnualReport>(annualReportDTO);
             annualReport.CreatorId = user.Id;
+            annualReport.CreatorFirstName = user.FirstName;
+            annualReport.CreatorLastName = user.LastName;
+            annualReport.CreatorFatherName = user.FatherName;
             annualReport.Date = DateTime.Now;
             annualReport.Status = AnnualReportStatus.Unconfirmed;
             await _repositoryWrapper.AnnualReports.CreateAsync(annualReport);
