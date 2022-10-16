@@ -44,6 +44,7 @@ namespace EPlast.DataAccess.Repositories
                     ID = x.Id,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
+                    UserName = x.LastName + " " + x.FirstName,
                     Birthday = x.UserProfile.Birthday,
                     Gender = x.UserProfile.Gender.Name,
                     RegionName = EPlastDBContext.Set<Region>().FirstOrDefault(y => y.ID == x.RegionId).RegionName
