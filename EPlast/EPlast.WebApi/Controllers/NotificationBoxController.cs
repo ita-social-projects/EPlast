@@ -72,18 +72,15 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("addNotifications")]
         public async Task<IActionResult> AddNotificationList(IEnumerable<UserNotificationDto> userNotifications)
         {
-            IEnumerable<UserNotificationDto> notificationsToAddToDb = userNotifications.Where(un => un.NotificationTypeId != 4).ToList();
-            IEnumerable<UserNotificationDto> notificationsNotToAddDb = userNotifications.Where(un => un.NotificationTypeId == 4).ToList();
             IEnumerable<UserNotificationDto> addedUserNotifications;
             try
             {
-                addedUserNotifications = await _notificationService.AddListUserNotificationAsync(notificationsToAddToDb);
+                addedUserNotifications = await _notificationService.AddListUserNotificationAsync(userNotifications);
             }
             catch (InvalidOperationException)
             {
                 return BadRequest();
             }
-            addedUserNotifications = addedUserNotifications.Concat(notificationsNotToAddDb);
             var tasks = GetOnlineUserFromList(addedUserNotifications).Select(un => SendPrivateNotification(un));
             await Task.WhenAll(tasks);
             return NoContent();
