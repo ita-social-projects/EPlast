@@ -347,7 +347,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> GetUserActivePrecautionEndDate(string userId, string type)
         {
-            string endDate = (await _userPrecautionService.GetUserActivePrecaution(userId, type)).EndDate.ToShortDateString();
+            string endDate = (await _userPrecautionService.GetUserActivePrecaution(userId, type)).EndDate.ToString("dd.MM.yyyy");
             return Ok(endDate);
         }
 
