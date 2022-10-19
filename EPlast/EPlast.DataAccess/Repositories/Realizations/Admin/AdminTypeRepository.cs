@@ -71,7 +71,7 @@ namespace EPlast.DataAccess.Repositories
                        .Contains(r.Id))),
                     Comment = x.Comment,
                     IsCityFollower = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : true,
-                    IsClubFollower = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : false
+                    IsClubFollower = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : false,
                 });
 
             //tab sorting
@@ -164,6 +164,8 @@ namespace EPlast.DataAccess.Repositories
             // filter out super admins and former members of plast
             finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.Admin));
             if (tab == "registered") finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.FormerPlastMember));
+            if (tab == "confirmed") finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.FormerPlastMember));
+            if (tab == "formers") finalItems = finalItems.Where(u => u.Roles.Contains(Roles.FormerPlastMember));
 
             int rowCount = finalItems.Count();
 
