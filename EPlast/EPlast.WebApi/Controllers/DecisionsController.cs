@@ -117,10 +117,10 @@ namespace EPlast.WebApi.Controllers
         /// <response code="200">Successful operation</response>
         [HttpGet("DecisionsForTable")]
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
-        public IActionResult GetDecisionsForTable(string searchedData, int page, int pageSize)
+        public async Task<IActionResult> GetDecisionsForTable(string searchedData, int page, int pageSize)
         {
             var query = new GetDecisionsForTableQuery(searchedData, page, pageSize);
-            var decisions = _mediator.Send(query).Result;
+            var decisions = await _mediator.Send(query);
             return Ok(decisions);
         }
 
