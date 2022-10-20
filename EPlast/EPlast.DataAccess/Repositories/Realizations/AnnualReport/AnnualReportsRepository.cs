@@ -12,7 +12,7 @@ namespace EPlast.DataAccess.Repositories
 {
     public class AnnualReportsRepository : RepositoryBase<AnnualReport>, IAnnualReportsRepository
     {
-        public AnnualReportsRepository(EPlastDBContext dbContext) : base(dbContext) { }
+        public AnnualReportsRepository(EPlastDBContext dbContext) : base(dbContext) {  }
 
         public async Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(
             string userId,
