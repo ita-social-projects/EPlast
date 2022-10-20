@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using Microsoft.AspNetCore.Http;
 
 namespace EPlast.BLL.Interfaces.Events
@@ -38,6 +39,13 @@ namespace EPlast.BLL.Interfaces.Events
         Task<IEnumerable<EventCategoryDto>> GetCategoriesByTypeIdAsync(int eventTypeId);
 
         /// <summary>
+        /// Get event category by Id.
+        /// </summary>
+        /// <returns>Event category with the specified ID</returns>
+        /// <param name="categoryId">The Id of category</param>
+        Task<EventCategoryDto> GetCategoryByIdAsync(int categoryId);
+
+        /// <summary>
         /// Get events  by event category Id and event type Id.
         /// </summary>
         /// <returns>List of events of the appropriate event type and event category.</returns>
@@ -45,6 +53,8 @@ namespace EPlast.BLL.Interfaces.Events
         /// <param name="categoryId">The Id of event category</param>
         /// <param name="user">ClaimsPrincipal of logged in user</param>
         Task<IEnumerable<GeneralEventDto>> GetEventsAsync(int categoryId, int eventTypeId, User user);
+
+        Task<Event> GetEventAsync(int eventId);
 
         /// <summary>
         /// Get detailed information about event by event Id.
@@ -60,6 +70,13 @@ namespace EPlast.BLL.Interfaces.Events
         /// <returns>List of pictures in Base64 format.</returns>
         /// <param name="id">The Id of event</param>
         Task<IEnumerable<EventGalleryDto>> GetPicturesAsync(int id);
+
+        /// <summary>
+        /// Get a picture in Base64 format by gallery ID.
+        /// </summary>
+        /// <returns>Picture in Base64 format.</returns>
+        /// <param name="id">The Id of the picture</param>
+        Task<EventGalleryDto> GetPictureAsync(int id);
 
         /// <summary>
         /// Delete event by Id.
@@ -85,13 +102,22 @@ namespace EPlast.BLL.Interfaces.Events
         Task<int> UnSubscribeOnEventAsync(int id, User user);
 
         /// <summary>
-        /// Set an estimate of the participant's event.
+        /// Create a feedback entry for the participant's event.
         /// </summary>
-        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>
+        /// <returns>Status code of the operation.</returns>
         /// <param name="eventId">The Id of event</param>
         /// <param name="user">User object</param>
-        /// <param name="estimate">The value of estimate</param>
-        Task<int> EstimateEventAsync(int eventId, User user, double estimate);
+        /// <param name="feedback">Feedback object</param>
+        Task LeaveFeedbackAsync( EventFeedbackDto feedback, Participant participant);
+
+        /// <summary>
+        /// Delete a feedback for the participant's event.
+        /// </summary>
+        /// <returns>Status code of the operation.</returns>
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="feedbackId">Feedback Id</param>
+        /// <param name="user">User object</param>
+        Task DeleteFeedbackAsync(int feedbackId);
 
         /// <summary>
         /// Change event participant status to approved.
@@ -117,10 +143,10 @@ namespace EPlast.BLL.Interfaces.Events
         /// <summary>
         /// Add pictures to gallery of specific event by event Id.
         /// </summary>
-        /// <returns>List of added pictures.</returns>
+        /// <returns>List of ids of added pictures.</returns>
         /// <param name="id">The Id of event</param>
         /// <param name="files">List of uploaded pictures</param>
-        Task<IEnumerable<EventGalleryDto>> FillEventGalleryAsync(int id, IList<IFormFile> files);
+        Task<IEnumerable<int>> FillEventGalleryAsync(int id, IList<IFormFile> files);
 
         /// <summary>
         /// Delete picture by Id.
