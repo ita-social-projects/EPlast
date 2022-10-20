@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using EPlast.DataAccess.Entities.Event;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace EPlast.DataAccess.Entities
@@ -18,5 +19,6 @@ namespace EPlast.DataAccess.Entities
         public bool WasPresent { get; set; } 
         public double Estimate { get; set; }
         public User User { get; set; }
+        public EventFeedback EventFeedback { get; set; }
     }
 }
