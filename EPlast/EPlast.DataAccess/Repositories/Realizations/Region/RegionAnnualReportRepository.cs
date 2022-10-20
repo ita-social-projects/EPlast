@@ -39,7 +39,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
                          ra.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy)
                     && (ra.EndDate == null || ra.EndDate >= DateTime.Now)
                 ))
-                .Select(r => r.ID);
+                 .Select(r => r.ID);
 
             var found = EPlastDBContext.Set<RegionAnnualReport>()
                 .Include(rar => rar.Region)
