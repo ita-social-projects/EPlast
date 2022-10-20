@@ -201,6 +201,7 @@ namespace EPlast.WebApi
             services.AddScoped<IUserPersonalDataService, UserPersonalDataService>();
             services.AddScoped<IUserPrecautionService, UserPrecautionService>();
             services.AddScoped<IUserProfileAccessService, UserProfileAccessService>();
+            services.AddScoped<IUserRenewalService, UserRenewalService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
