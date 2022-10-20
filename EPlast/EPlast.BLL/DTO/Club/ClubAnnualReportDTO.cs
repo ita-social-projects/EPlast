@@ -42,6 +42,10 @@ namespace EPlast.BLL.DTO.Club
         public string KbUSPWishes { get; set; }
         public int ClubId { get; set; }
         public string ClubName { get; set; }
+        public string CreatorId { get; set; }
+        public string CreatorFirstName { get; set; }
+        public string CreatorLastName { get; set; }
+        public string CreatorFatherName { get; set; }
         public DateTime Date { get; set; }
         public ClubReportAdministrationDto Head { get; set; }
         public List<ClubReportAdministrationDto> Admins { get; set; }
