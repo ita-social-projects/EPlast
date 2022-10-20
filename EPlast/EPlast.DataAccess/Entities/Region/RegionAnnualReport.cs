@@ -32,7 +32,11 @@ namespace EPlast.DataAccess.Entities
         public int RegionId { get; set; }
         public string RegionName { get; set; }
         public Region Region { get; set; }
-
+        public string CreatorId { get; set; }
+        public string CreatorFirstName { get; set; }
+        public string CreatorLastName { get; set; }
+        public string CreatorFatherName { get; set; }
+        public User Creator { get; set; }
         [Required]
         public string StateOfPreparation { get; set; }
         [Required]
