@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Interfaces.Region;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Region
@@ -34,13 +35,15 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
                     .ThenInclude(ra => ra.AdminType)
                 .Where(r => isAdmin || r.RegionAdministration.Any(ra =>
                     ra.UserId == userId
-                    && ra.AdminType.AdminTypeName == "Голова Округи"
+                    && (ra.AdminType.AdminTypeName == Roles.OkrugaHead ||
+                         ra.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy)
                     && (ra.EndDate == null || ra.EndDate >= DateTime.Now)
                 ))
                 .Select(r => r.ID);
 
             var found = EPlastDBContext.Set<RegionAnnualReport>()
-                .Where(rar => isAdmin || !auth || regionsThatUserCanmanage.Contains(rar.ID))
+                .Include(rar => rar.Region)
+                .Where(rar => isAdmin || !auth || regionsThatUserCanmanage.Contains(rar.RegionId))
                 .Where(rar =>
                     string.IsNullOrWhiteSpace(searchdata)
                     || ("Непідтверджений".ToLower().Contains(searchdata) && rar.Status == AnnualReportStatus.Unconfirmed)
@@ -61,7 +64,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
                     Status = (int)rar.Status,
                     Count = found.Count(),
                     Total = EPlastDBContext.Set<RegionAnnualReport>().Count(),
-                    CanManage = isAdmin || regionsThatUserCanmanage.Contains(rar.ID)
+                    CanManage = isAdmin || regionsThatUserCanmanage.Contains(rar.RegionId)
                 });
 
             switch (sortKey)
