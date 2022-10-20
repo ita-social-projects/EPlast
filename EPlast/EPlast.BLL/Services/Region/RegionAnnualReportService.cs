@@ -30,6 +30,7 @@ namespace EPlast.BLL.Services.Region
             RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
             var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(a => a.ID == id);
+            var user = await _repositoryWrapper.User.GetFirstOrDefaultAsync(u => u.Id == claimsPrincipal.Id);
 
             if (!await _regionAccessService.HasAccessAsync(claimsPrincipal, region.ID))
             {
@@ -57,6 +58,14 @@ namespace EPlast.BLL.Services.Region
                 RegionName = region.RegionName,
 
                 RegionId = id,
+
+                CreatorId = user.Id,
+
+                CreatorFirstName = user.FirstName,
+
+                CreatorLastName = user.LastName,
+
+                CreatorFatherName = user.FatherName,
 
                 Date = reportDate,
 

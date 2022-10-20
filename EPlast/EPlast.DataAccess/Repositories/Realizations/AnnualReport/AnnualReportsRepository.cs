@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
 using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPlast.DataAccess.Repositories
 {
