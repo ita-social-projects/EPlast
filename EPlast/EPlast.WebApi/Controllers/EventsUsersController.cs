@@ -122,8 +122,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDto createDTO)
         {
-            await eventUserManager.EditEventAsync((createDTO));
+            var successful = await eventUserManager.EditEventAsync(createDTO, await _userManager.GetUserAsync(User));
 
+            if (!successful) return Forbid();
             return NoContent();
         }
 
