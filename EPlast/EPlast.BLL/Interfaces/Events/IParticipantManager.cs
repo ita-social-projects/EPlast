@@ -48,20 +48,15 @@ namespace EPlast.BLL.Interfaces.Events
         Task<int> ChangeStatusToRejectedAsync(int id);
 
         /// <summary>
-        /// Set an estimate of the participant's event.
-        /// </summary>
-        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>
-        /// <param name="eventId">The Id of event</param>
-        /// <param name="userId">The Id of logged in user</param>
-        /// <param name="estimate">The value of estimate</param>
-        Task<double> EstimateEventByParticipantAsync(int eventId, string userId, double estimate);
-
-        /// <summary>
         /// Get list of event participants by userId.
         /// </summary>
         /// <returns>List of event participants.</returns>
         /// <param name="userId">The Id of logged in user</param>
         Task<IEnumerable<Participant>> GetParticipantsByUserIdAsync(string userId);
+
+        Task<Participant> GetParticipantByEventIdAndUserIdAsync(int eventId, string userId);
+
+        Task<EventFeedback> GetEventFeedbackByIdAsync(int feedbackId);
 
         /// <summary>
         /// Change present status of the participant's event.

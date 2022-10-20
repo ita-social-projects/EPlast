@@ -245,14 +245,30 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task EventEdit_EventCreate_ReturnsNoContentResult()
+        public async Task EventEdit_UserHasNoAccess_ReturnsForbidResult()
         {
             // Arrange
             eventUserManager
-                .Setup((x) => x.EditEventAsync(CreateFakeEventCreate()));
+                .Setup((x) => x.EditEventAsync(It.IsAny<EventCreateDto>(), It.IsAny<User>()))
+                .ReturnsAsync(false);
 
             // Act
-            var result = await eventsUsersController.EventEdit(CreateFakeEventCreate());
+            var result = await eventsUsersController.EventEdit(It.IsAny<EventCreateDto>());
+
+            // Assert
+            Assert.IsInstanceOf<ForbidResult>(result);
+        }
+
+        [Test]
+        public async Task EventEdit_UserHasAccess_ReturnsNoContentResult()
+        {
+            // Arrange
+            eventUserManager
+                .Setup((x) => x.EditEventAsync(It.IsAny<EventCreateDto>(), It.IsAny<User>()))
+                .ReturnsAsync(true);
+
+            // Act
+            var result = await eventsUsersController.EventEdit(It.IsAny<EventCreateDto>());
 
             // Assert
             Assert.IsInstanceOf<NoContentResult>(result);
