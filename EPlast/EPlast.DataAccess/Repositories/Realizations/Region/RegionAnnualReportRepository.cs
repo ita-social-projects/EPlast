@@ -37,7 +37,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Region
                     && ra.AdminType.AdminTypeName == "Голова Округи"
                     && (ra.EndDate == null || ra.EndDate >= DateTime.Now)
                 ))
-                .Select(r => r.ID);
+                 .Select(r => r.ID);
 
             var found = EPlastDBContext.Set<RegionAnnualReport>()
                 .Where(rar => isAdmin || !auth || regionsThatUserCanmanage.Contains(rar.ID))
