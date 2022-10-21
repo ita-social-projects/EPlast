@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Interfaces.Club;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Repositories.Realizations.Club
@@ -33,14 +34,15 @@ namespace EPlast.DataAccess.Repositories.Realizations.Club
                     .ThenInclude(ca => ca.AdminType)
                 .Where(c => isAdmin || c.ClubAdministration.Any(ca =>
                     ca.UserId == userId
-                    && ca.AdminType.AdminTypeName == "Голова Куреня"
+                    && (ca.AdminType.AdminTypeName == Roles.KurinHead ||
+                     ca.AdminType.AdminTypeName == Roles.KurinHeadDeputy)
                     && (ca.EndDate == null || ca.EndDate >= DateTime.Now)
                 ))
                 .Select(c => c.ID);
 
             var found = EPlastDBContext.Set<ClubAnnualReport>()
                 .Include(car => car.Club)
-                .Where(car => isAdmin || !auth || clubsThatUserCanManage.Contains(car.ID))
+                .Where(car => isAdmin || !auth || clubsThatUserCanManage.Contains(car.ClubId))
                 .Where(car =>
                     string.IsNullOrWhiteSpace(searchdata)
                     || ("Непідтверджений".ToLower().Contains(searchdata) && car.Status == AnnualReportStatus.Unconfirmed)
@@ -61,7 +63,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Club
                     Status = (int)car.Status,
                     Count = found.Count(),
                     Total = EPlastDBContext.Set<ClubAnnualReport>().Count(),
-                    CanManage = isAdmin || clubsThatUserCanManage.Contains(car.ID)
+                    CanManage = isAdmin || clubsThatUserCanManage.Contains(car.ClubId)
                 });
 
             switch (sortKey)

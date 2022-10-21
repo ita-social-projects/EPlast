@@ -446,7 +446,7 @@ namespace EPlast.Tests.Services.GoverningBody
                 .ReturnsAsync(GoverningBodyAdmin);
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
-                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminType));
+                .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeDto));
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()));
             _userManager
@@ -471,39 +471,33 @@ namespace EPlast.Tests.Services.GoverningBody
         public void RemoveMainAdministratorAsync_withAdminRole_ValidTest()
         {
             //Arrange
-            _repoWrapper.Setup(r => r.GoverningBodyAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+            _repoWrapper
+                .Setup(
+                    r => r.AdminType.GetAllAsync(
+                        It.IsAny<Expression<Func<AdminType, bool>>>(),
+                        It.IsAny<Func<IQueryable<AdminType>,
+                        IIncludableQueryable<AdminType, object>>>()))
+                .ReturnsAsync(AdminTypes);
+            _repoWrapper
+                .Setup(
+                    r => r.GoverningBodyAdministration.GetAllAsync(
+                        It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                        It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
-                .ReturnsAsync(GoverningBodyAdmin);
+                .ReturnsAsync(GoverningBodyAdmins);
+            _repoWrapper
+                .Setup(r => r.GoverningBodyAdministration.Update(It.IsAny<GoverningBodyAdministration>()));
+            _repoWrapper
+                .Setup(r => r.SaveAsync());
             _userManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(FakeUser);
-            _userManager
-               .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-               .ReturnsAsync(RolesList);
+
             //Act
             var result = _governingBodyAdministrationService.RemoveMainAdministratorAsync(It.IsAny<string>());
 
             //Assert
             _userManager.Verify(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Once);
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        public void RemoveMainAdministratorAsync_withoutAdminRole_ValidTest()
-        {
-            //Arrange
-            _userManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(FakeUser);
-            _userManager
-               .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
-               .ReturnsAsync(new List<string> { });
-            //Act
-            var result = _governingBodyAdministrationService.RemoveMainAdministratorAsync(It.IsAny<string>());
-
-            //Assert
-            _userManager.Verify(x => x.RemoveFromRoleAsync(It.IsAny<User>(), It.IsAny<string>()), Times.Never);
             Assert.NotNull(result);
         }
 
@@ -601,10 +595,23 @@ namespace EPlast.Tests.Services.GoverningBody
 
         private const int FakeId = 3;
 
-        private static readonly AdminTypeDto AdminType = new AdminTypeDto
+        private static readonly AdminTypeDto AdminTypeDto = new AdminTypeDto
         {
-            AdminTypeName = Roles.GoverningBodyHead,
-            ID = 1
+            ID = 1,
+            AdminTypeName = Roles.GoverningBodyHead
+        };
+
+        private static readonly IEnumerable<AdminType> AdminTypes = new List<AdminType>
+        {
+            new AdminType {
+                ID = 1,
+                AdminTypeName = Roles.GoverningBodyHead
+            },
+            new AdminType
+            {
+                ID = 2,
+                AdminTypeName = Roles.GoverningBodyAdmin
+            }
         };
 
         private static readonly GoverningBodyAdministration GoverningBodyAdmin = new GoverningBodyAdministration
@@ -615,8 +622,32 @@ namespace EPlast.Tests.Services.GoverningBody
                 AdminTypeName = Roles.GoverningBodyHead,
                 ID = 1
             },
-            AdminTypeId = AdminType.ID,
+            AdminTypeId = AdminTypeDto.ID,
             UserId = Roles.GoverningBodyHead
+        };
+
+        private static readonly IEnumerable<GoverningBodyAdministration> GoverningBodyAdmins = new List<GoverningBodyAdministration>
+        {
+            new GoverningBodyAdministration
+            {
+                Id = 1,
+                AdminType = new AdminType
+                {
+                    AdminTypeName = Roles.GoverningBodyHead
+                },
+                AdminTypeId = AdminTypes.ElementAt(0).ID,
+                UserId = Roles.GoverningBodyHead
+            },
+            new GoverningBodyAdministration
+            {
+                Id = 2,
+                AdminType = new AdminType
+                {
+                    AdminTypeName = Roles.GoverningBodyAdmin
+                },
+                AdminTypeId = AdminTypes.ElementAt(0).ID,
+                UserId = Roles.GoverningBodyHead
+            }
         };
 
         private static readonly Organization GoverningBody = new Organization
@@ -627,7 +658,7 @@ namespace EPlast.Tests.Services.GoverningBody
         private static readonly GoverningBodyAdministrationDto GoverningBodyAdministrationDtoEndDateToday = new GoverningBodyAdministrationDto
         {
             ID = 1,
-            AdminType = AdminType,
+            AdminType = AdminTypeDto,
             GoverningBodyId = 1,
             AdminTypeId = 1,
             StartDate = DateTime.Now,
@@ -640,7 +671,7 @@ namespace EPlast.Tests.Services.GoverningBody
         private readonly GoverningBodyAdministrationDto GoverningBodyAdministrationDtoEndDateNull = new GoverningBodyAdministrationDto
         {
             ID = 1,
-            AdminType = AdminType,
+            AdminType = AdminTypeDto,
             GoverningBodyId = 1,
             AdminTypeId = 1,
             StartDate = DateTime.Now,
