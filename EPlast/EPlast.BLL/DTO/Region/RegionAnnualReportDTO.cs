@@ -30,6 +30,10 @@ namespace EPlast.BLL.DTO.Region
         public int NumberOfHonoraryMembers { get; set; }
         public int RegionId { get; set; }
         public string RegionName { get; set; }
+        public string CreatorId { get; set; }
+        public string CreatorFirstName { get; set; }
+        public string CreatorLastName { get; set; }
+        public string CreatorFatherName { get; set; }
         public string StateOfPreparation { get; set; }
         public string Characteristic { get; set; }
         public string StatusOfStrategy { get; set; }
