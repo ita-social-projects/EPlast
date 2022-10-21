@@ -72,17 +72,16 @@ namespace EPlast.WebApi.Controllers
         [HttpPost("addNotifications")]
         public async Task<IActionResult> AddNotificationList(IEnumerable<UserNotificationDto> userNotifications)
         {
-            IEnumerable<UserNotificationDto> AddedUserNotifications;
+            IEnumerable<UserNotificationDto> addedUserNotifications;
             try
             {
-                AddedUserNotifications = await _notificationService.AddListUserNotificationAsync(userNotifications);
+                addedUserNotifications = await _notificationService.AddListUserNotificationAsync(userNotifications);
             }
             catch (InvalidOperationException)
             {
                 return BadRequest();
             }
-
-            var tasks = GetOnlineUserFromList(AddedUserNotifications).Select(un => SendPrivateNotification(un));
+            var tasks = GetOnlineUserFromList(addedUserNotifications).Select(un => SendPrivateNotification(un));
             await Task.WhenAll(tasks);
             return NoContent();
         }
@@ -93,6 +92,11 @@ namespace EPlast.WebApi.Controllers
             return userNotificationDTOs.Where(un => onlineUsers.Contains(un.OwnerUserId));
         }
 
+        private bool IsOwnerOnline(string ownerId)
+        {
+            List<string> onlineUsers = _userNotificationHandler.GetOnlineUsers().ToList();
+            return onlineUsers.Contains(ownerId);
+        }
 
         private async Task SendPrivateNotification(UserNotificationDto userNotificationDTO)
         {
