@@ -111,7 +111,7 @@ namespace EPlast.XUnitTest.Services.Events
             var methodResult = await eventGalleryManager.AddPicturesAsync(eventId, FakeFiles());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDto>>(methodResult);
+            Assert.IsType<List<int>>(methodResult);
         }
 
         public static IList<IFormFile> FakeFiles()
