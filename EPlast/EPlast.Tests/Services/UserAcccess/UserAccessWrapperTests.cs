@@ -1,4 +1,5 @@
 ﻿using EPlast.BLL.Interfaces;
+using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.Club;
 using EPlast.BLL.Interfaces.EventUser;
@@ -22,6 +23,7 @@ namespace EPlast.Tests.Services.UserAcccess
         private Mock<IRegionAccessService> _regionAccessService;
         private Mock<IUserProfileAccessService> _userProfileAccessService;
         private Mock<IAnnualReportAccessService> _annualReportAccessService;
+        private Mock<IBlankAccessService> _blankAccessService;
         private Mock<IRegionAdministrationAccessService> _regionAdministrationAccessService;
 
         private UserAccessWrapper _userAcccessWrapper;
@@ -36,6 +38,7 @@ namespace EPlast.Tests.Services.UserAcccess
             _regionAccessService = new Mock<IRegionAccessService>();
             _annualReportAccessService = new Mock<IAnnualReportAccessService>();
             _userProfileAccessService = new Mock<IUserProfileAccessService>();
+            _blankAccessService = new Mock<IBlankAccessService>();
             _regionAdministrationAccessService = new Mock<IRegionAdministrationAccessService>();
             _userAcccessWrapper = new UserAccessWrapper(
                 _clubAccessService.Object,
@@ -44,7 +47,9 @@ namespace EPlast.Tests.Services.UserAcccess
                 _annualReportAccessService.Object,
                 _userProfileAccessService.Object,
                 _eventAccessService.Object,
-                _regionAdministrationAccessService.Object);
+                _blankAccessService.Object,
+                _regionAdministrationAccessService.Object
+                );
         }
 
         [Test]
@@ -115,6 +120,16 @@ namespace EPlast.Tests.Services.UserAcccess
 
             // Assert
             Assert.IsInstanceOf<IRegionAdministrationAccessService>(result);
+        }
+
+        [Test]
+        public void GetBlankAccessService_Valid()
+        {
+            // Act
+            var result = _userAcccessWrapper.BlankAccessService;
+
+            // Assert
+            Assert.IsInstanceOf<IBlankAccessService>(result);
         }
     }
 }

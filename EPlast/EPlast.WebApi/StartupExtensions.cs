@@ -206,6 +206,7 @@ namespace EPlast.WebApi
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
             services.AddScoped<IRegionAdministrationAccessService, RegionAdministrationAccessService>();
+            services.AddScoped<IBlankAccessService, BlankAccessService>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddSingleton<IAzureBlobConnectionFactory, AzureBlobConnectionFactory>();
             services.AddSingleton<ICacheService, RedisCacheService>();

@@ -1,14 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO.Blank;
+using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Interfaces.Logging;
+using EPlast.BLL.Interfaces.UserAccess;
+using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
+using EPlast.WebApi.Models.UserModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +35,10 @@ namespace EPlast.Tests.Controllers
         Mock<ILoggerService<BlanksController>> _mockLoggerService;
         private Mock<UserManager<User>> _mockUserManager;
         BlanksController _blanksController;
-
+        private Mock<IUserManagerService> _userManagerService;
+        private Mock<IUserService> _userService;
+        private Mock<IUserAccessService> _userAccessService;
+        private Mock<IMapper> _mapper;
 
         [SetUp]
         public void SetUp()
@@ -40,22 +50,47 @@ namespace EPlast.Tests.Controllers
             _mockLoggerService = new Mock<ILoggerService<BlanksController>>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
+            _userManagerService = new Mock<IUserManagerService>();
+            _userService = new Mock<IUserService>();
+            _userAccessService = new Mock<IUserAccessService>();
+            _mapper = new Mock<IMapper>();
             _blanksController = new BlanksController(_mockBiographyService.Object,
                 _mockBlankAchievementDocumentService.Object,
                 _mockBlankExtractFromUPUDocumentService.Object, _mockLoggerService.Object,
-                _pdfService.Object, _mockUserManager.Object);
+                _pdfService.Object, _mockUserManager.Object, _userService.Object,
+                _userManagerService.Object, _userAccessService.Object, _mapper.Object);
         }
 
         [Test]
         public async Task AddBiographyDocument_ReturnsCreatedObjectResult()
         {
             //Arrange
+            var focusUserId = "qwerty123456";
+            var userAccess = new Dictionary<string, bool>()
+            {
+                {"CanAddBiography", true}
+            };
+            _blanksController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
+
+            var currentUser = new User();
+            var focusUser = new User();
+            _mockUserManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(currentUser);
+            _userAccessService.Setup(ua =>
+                    ua.GetUserBlankAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
             _mockBiographyService
                 .Setup(x => x.AddDocumentAsync(It.IsAny<BlankBiographyDocumentsDto>()))
                 .ReturnsAsync(GetBlankBiographyDocumentDTO());
 
             //Act
-            var document = await _blanksController.AddBiographyDocument(GetBlankBiographyDocumentDTO());
+            var document = await _blanksController.AddBiographyDocument(focusUserId, GetBlankBiographyDocumentDTO());
             CreatedResult createdResult = document as CreatedResult;
 
             //Assert
@@ -416,5 +451,18 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
+
+        private UserDto CreateFakeUser()
+            => new UserDto()
+            {
+                Id = "1",
+                FirstName = "SomeFirstName",
+                LastName = "SomeLastName",
+                UserProfile = new UserProfileDto()
+                {
+                    EducationId = 1,
+                    WorkId = 1,
+                },
+            };
     }
 }
