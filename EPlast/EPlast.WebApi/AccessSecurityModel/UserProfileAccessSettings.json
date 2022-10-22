@@ -29,7 +29,10 @@
     "CanApproveAsCityHead": true,
     "CanRejectOtherUserApprove": true,
     "CanEditDeleteUserPhoto": true,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": true,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Крайовий Адмін": {
     "CanViewUserFullProfile": true,
@@ -61,7 +64,10 @@
     "CanApproveAsCityHead": true,
     "CanRejectOtherUserApprove": true,
     "CanEditDeleteUserPhoto": true,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": true,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Голова Керівного Органу": {
     "CanViewUserFullProfile": true,
@@ -93,7 +99,10 @@
     "CanApproveAsCityHead": true,
     "CanRejectOtherUserApprove": true,
     "CanEditDeleteUserPhoto": true,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": true,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Голова Округи": {
     "CanViewUserFullProfile": true,
@@ -125,7 +134,10 @@
     "CanApproveAsCityHead": false,
     "CanRejectOtherUserApprove": false,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Заступник Голови Округи": {
     "CanViewUserFullProfile": true,
@@ -157,7 +169,10 @@
     "CanApproveAsCityHead": true,
     "CanRejectOtherUserApprove": false,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Голова Станиці": {
     "CanViewUserFullProfile": true,
@@ -189,7 +204,10 @@
     "CanApproveAsCityHead": true,
     "CanRejectOtherUserApprove": false,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Заступник Голови Станиці": {
     "CanViewUserFullProfile": true,
@@ -221,7 +239,10 @@
     "CanApproveAsCityHead": true,
     "CanRejectOtherUserApprove": false,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Голова Куреня": {
     "CanViewUserFullProfile": true,
@@ -253,7 +274,10 @@
     "CanApproveAsCityHead": false,
     "CanRejectOtherUserApprove": true,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Заступник Голови Куреня": {
     "CanViewUserFullProfile": true,
@@ -285,7 +309,10 @@
     "CanApproveAsCityHead": false,
     "CanRejectOtherUserApprove": true,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": true,
+    "CanSeeAddDeleteUserExtractUPU": true
   },
   "Прихильник": {
     "CanViewUserFullProfile": false,
@@ -317,7 +344,10 @@
     "CanApproveAsCityHead": false,
     "CanRejectOtherUserApprove": false,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": false
+    "CanEditUserProfile": false,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": false,
+    "CanSeeAddDeleteUserExtractUPU": false
   },
   "Дійсний член організації": {
     "CanViewUserFullProfile": true,
@@ -349,7 +379,10 @@
     "CanApproveAsCityHead": false,
     "CanRejectOtherUserApprove": true,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": true
+    "CanEditUserProfile": true,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": false,
+    "CanSeeAddDeleteUserExtractUPU": false
   },
   "Зареєстрований користувач": {
     "CanViewUserFullProfile": false,
@@ -381,6 +414,9 @@
     "CanApproveAsCityHead": false,
     "CanRejectOtherUserApprove": false,
     "CanEditDeleteUserPhoto": false,
-    "CanEditUserProfile": false
+    "CanEditUserProfile": false,
+    "CanEditDeleteUserBiography": false,
+    "CanViewDownloadUserBiography": false,
+    "CanSeeAddDeleteUserExtractUPU": false
   }
 }

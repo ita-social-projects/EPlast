@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using EPlast.BLL;
 using EPlast.BLL.DTO.Blank;
-using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Interfaces.Logging;
-using EPlast.BLL.Interfaces.UserAccess;
-using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -30,16 +24,13 @@ namespace EPlast.WebApi.Controllers
         private readonly IPdfService _pdfService;
         private readonly ILoggerService<BlanksController> _loggerService;
         private readonly UserManager<User> _userManager;
-        private readonly IUserAccessService _userAccessService;
+
 
         public BlanksController(IBlankBiographyDocumentService blankBiographyDocumentService,
            IBlankAchievementDocumentService blankAchievementDocumentService,
            IBlankExtractFromUpuDocumentService blankExtractFromUPUDocumentService,
            ILoggerService<BlanksController> loggerService,
-           IPdfService pdfService, UserManager<User> userManager, 
-           IUserService userService,
-           IUserManagerService userManagerService,
-           IUserAccessService userAccessService, IMapper mapper)
+           IPdfService pdfService, UserManager<User> userManager)
         {
             _blankBiographyDocumentService = blankBiographyDocumentService;
             _blankAchievementDocumentService = blankAchievementDocumentService;
@@ -47,7 +38,6 @@ namespace EPlast.WebApi.Controllers
             _pdfService = pdfService;
             _loggerService = loggerService;
             _userManager = userManager;
-            _userAccessService = userAccessService;
         }
 
         private async Task<bool> HasAccessSupporterAndRegisteredAsync(string userId)
@@ -67,37 +57,15 @@ namespace EPlast.WebApi.Controllers
         /// <summary>
         /// Add a document to the biography blank
         /// </summary>
-        /// <param name="userId">The id of user whose biography blank is added</param>
         /// <param name="biographyDocument">An information about a specific document</param>
         /// <returns>A newly created Blank biography document</returns>
         [HttpPost("AddDocument/{userId}")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> AddBiographyDocument(string userId, BlankBiographyDocumentsDto biographyDocument)
+        public async Task<IActionResult> AddBiographyDocument(BlankBiographyDocumentsDto biographyDocument)
         {
-            if (string.IsNullOrEmpty(userId))
-            {
-                _loggerService.LogError("User id is null");
-                return NotFound();
-            }
-            try
-            {
-                var currentUser = await _userManager.GetUserAsync(User);
-                var currentUserAccess = await _userAccessService.GetUserBlankAccessAsync(currentUser.Id, userId, currentUser);
+            await _blankBiographyDocumentService.AddDocumentAsync(biographyDocument);
 
-                if (currentUserAccess["CanAddBiography"])
-                {
-                    await _blankBiographyDocumentService.AddDocumentAsync(biographyDocument);
-                    _loggerService.LogInformation($"Biography blank of user {userId} was successfully added");
-                    return Created("", biographyDocument);
-                }
-                _loggerService.LogInformation($"User {currentUser.Id} cannot add biography blank for user {userId}");
-                return StatusCode(StatusCodes.Status403Forbidden);
-            }
-            catch (Exception ex)
-            {
-                _loggerService.LogError($"Cannot add user biography because: {ex.Message}");
-                return BadRequest();
-            }            
+            return Created("", biographyDocument);
         }
 
         /// <summary>
