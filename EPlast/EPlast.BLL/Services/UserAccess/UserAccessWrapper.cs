@@ -5,7 +5,6 @@ using EPlast.BLL.Interfaces.Region;
 using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
-using EPlast.BLL.Interfaces.Blank;
 using EPlast.BLL.Services.Interfaces;
 
 namespace EPlast.BLL.Services.UserAccess
@@ -19,7 +18,6 @@ namespace EPlast.BLL.Services.UserAccess
         public IUserProfileAccessService UserProfileAccessService { get => _userProfileAccessService; }
         public IEventUserAccessService EventAccessService { get => _eventAccessService; }
         public IRegionAdministrationAccessService RegionAdministrationAccessService { get => _regionAdministrationAccessService; }
-        public IBlankAccessService BlankAccessService { get => _blankAccessService; }
 
         public UserAccessWrapper(
             IClubAccessService clubAccessService,
@@ -28,7 +26,6 @@ namespace EPlast.BLL.Services.UserAccess
             IAnnualReportAccessService annualReportAccessService,
             IUserProfileAccessService userProfileAccessService,
             IEventUserAccessService eventAccessService,
-            IBlankAccessService blankAccessService,
             IRegionAdministrationAccessService regionAdministrationAccessService)
         {
             _cityAccessService = cityAccessService;
@@ -37,7 +34,6 @@ namespace EPlast.BLL.Services.UserAccess
             _annualReportAccessService = annualReportAccessService;
             _userProfileAccessService = userProfileAccessService;
             _eventAccessService = eventAccessService;
-            _blankAccessService = blankAccessService;
             _regionAdministrationAccessService = regionAdministrationAccessService;
         }
 
@@ -48,6 +44,5 @@ namespace EPlast.BLL.Services.UserAccess
         private readonly IUserProfileAccessService _userProfileAccessService;
         private readonly IEventUserAccessService _eventAccessService;
         private readonly IRegionAdministrationAccessService _regionAdministrationAccessService;
-        private readonly IBlankAccessService _blankAccessService;
     }
 }

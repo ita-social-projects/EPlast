@@ -62,10 +62,5 @@ namespace EPlast.BLL.Interfaces.UserAccess
 
         Task<Dictionary<string, bool>> GetUserPrecautionsAccessAsync(string userId);
 
-        /// <summary>
-        /// Returns dictionary with user accesses for blanks
-        /// </summary>
-        Task<Dictionary<string, bool>> GetUserBlankAccessAsync(string userId, string focusUserId, User user);
-
     }
 }
