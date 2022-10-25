@@ -53,7 +53,8 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
             var items = selected
                 .Skip(pageSize * (page - 1))
                 .Take(pageSize)
-                .ToList();
+                .ToList()
+                .OrderBy(x => x.Approved);
 
             return items;
         }
