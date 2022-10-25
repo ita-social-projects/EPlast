@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.BLL.Models;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.City;
@@ -97,6 +98,7 @@ namespace EPlast.Tests.Services.City
         private Mock<INotificationService> _notificationServiceMock;
         private Mock<IMediator> _mediator;
         private Mock<IHostURLService> _hostURLService;
+        private Mock<IRegionAdministrationService> _regionalAdministrationService;
 
         [SetUp]
         public void SetUp()
@@ -110,7 +112,8 @@ namespace EPlast.Tests.Services.City
             _emailContentService = new Mock<IEmailContentService>();
             _notificationServiceMock = new Mock<INotificationService>();
             _hostURLService = new Mock<IHostURLService>();
-            _mediator = new Mock<IMediator>(); 
+            _mediator = new Mock<IMediator>();
+            _regionalAdministrationService = new Mock<IRegionAdministrationService>();
             _cityParticipantsService = new CityParticipantsService(
                 _repoWrapper.Object,
                 _mapper.Object,
@@ -120,7 +123,8 @@ namespace EPlast.Tests.Services.City
                 _emailContentService.Object,
                 _mediator.Object,
                 _notificationServiceMock.Object,
-                _hostURLService.Object
+                _hostURLService.Object,
+                _regionalAdministrationService.Object
             );
         }
 
