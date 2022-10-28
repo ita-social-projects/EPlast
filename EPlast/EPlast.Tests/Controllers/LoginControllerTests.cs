@@ -597,7 +597,7 @@ namespace EPlast.Tests.Controllers
         private LocalizedString GetLoginNotConfirmed()
         {
             var localizedString = new LocalizedString("Login-NotConfirmed",
-                "Ваш акаунт не підтверджений, будь ласка, увійдіть та зробіть підтвердження");
+                "Ваш акаунт не підтверджений.\r\nБудь ласка, перевірте свою електронну скриньку та підтвердьте акаунт.");
             return localizedString;
         }
 

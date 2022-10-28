@@ -10,6 +10,8 @@ namespace EPlast.DataAccess.Entities
         public string LastName { get; set; }
         public string UserName { get; set; }
         public DateTime? Birthday { get; set; }
+        public DateTime? Entry { get; set; }
+        public string Kadra { get; set; }
         public string Gender { get; set; }
         public string RegionName { get; set; }
         public string CityName { get; set; }

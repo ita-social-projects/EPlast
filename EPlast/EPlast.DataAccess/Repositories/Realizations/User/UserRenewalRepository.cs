@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
@@ -14,7 +15,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
         {
         }
 
-        public IEnumerable<UserRenewalsTableObject> GetUserRenewals(string searchData, int page, int pageSize)
+        public IEnumerable<UserRenewalsTableObject> GetUserRenewals(string searchData, int page, int pageSize, string filter)
         {
             searchData = searchData?.ToLower();
 
@@ -23,15 +24,21 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                 .Include(ur => ur.City)
                 .ThenInclude(city => city.Region)
                 .Where(ur =>
-                    string.IsNullOrWhiteSpace(searchData)
+                    (string.IsNullOrWhiteSpace(searchData)
                     || ur.User.FirstName.ToLower().Contains(searchData)
                     || ur.User.LastName.ToLower().Contains(searchData)
                     || ur.City.Name.ToLower().Contains(searchData)
                     || ur.City.Region.RegionName.ToLower().Contains(searchData)
                     || ur.RequestDate.ToString().Contains(searchData)
                     || ur.User.Email.Contains(searchData)
-                    || ur.User.Comment.ToLower().Contains(searchData)
-                );
+                    || ur.User.Comment.ToLower().Contains(searchData))
+                    &&
+                    (
+                    filter != "None" ? 
+                    ur.Approved == Convert.ToBoolean(filter) : 
+                    (ur.Approved == true || ur.Approved == false)
+                    )
+                ); 
 
             var selected = found
                 .Select(ur => new UserRenewalsTableObject
@@ -50,7 +57,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.User
                     Comment = ur.User.Comment
                 });
 
-            var items = selected
+         var items = selected
                 .Skip(pageSize * (page - 1))
                 .Take(pageSize)
                 .ToList()
