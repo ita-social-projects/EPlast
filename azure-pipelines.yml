@@ -10,6 +10,7 @@ resources:
 
 variables:
 - group: EPlast
+
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
   # value: '5aab2e73-307d-46b2-8421-8ac50de15018'
@@ -26,10 +27,7 @@ variables:
 - name: imagePullSecret
   # value: 'eplast1348122b-auth'
   value: 'azdev-sa-3a5f0b-token-rqwl2'
-  
-- name: ASPNETCORE_ENVIRONMENT
-  value: 'Staging'
-
+   
   # Agent VM image name
 - name: vmImageName
   value: 'ubuntu-latest'
@@ -46,18 +44,31 @@ stages:
     displayName: Build
     pool:
       vmImage: $(vmImageName)
-    steps:
+    steps:    
     - task: Docker@2
-      displayName: Build and push an image to container registry
+      displayName: Build
       inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
+        command: build
         dockerfile: $(dockerfilePath)
         containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
         tags: |
-          $(tag)          
+          $(tag) 
+        arguments: --build-arg ASPNETCORE_ENVIRONMENT=$(Aspnetcore_Environment)
     - upload: manifests
       artifact: manifests
+      
+    - task: Docker@2
+      displayName: Push
+      inputs:
+        command: push
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: $(imageRepository)
+        tags: |
+          $(tag)
+    - upload: manifests
+      artifact: manifests       
+    
 - stage: Test
   displayName: Test stage
   dependsOn: []

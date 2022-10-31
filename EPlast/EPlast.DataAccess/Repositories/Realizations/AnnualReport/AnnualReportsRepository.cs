@@ -3,16 +3,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories.Contracts;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace EPlast.DataAccess.Repositories
 {
     public class AnnualReportsRepository : RepositoryBase<AnnualReport>, IAnnualReportsRepository
     {
-        public AnnualReportsRepository(EPlastDBContext dbContext) : base(dbContext) { }
+        public AnnualReportsRepository(EPlastDBContext dbContext) : base(dbContext) {  }
 
         public async Task<IEnumerable<AnnualReportTableObject>> GetAnnualReportsAsync(
             string userId,
@@ -26,20 +29,34 @@ namespace EPlast.DataAccess.Repositories
         {
             searchdata = searchdata?.ToLower();
 
-            var citiesThatUserCanManage = EPlastDBContext.Set<City>()
+            var citiesThatСityAdminCanManage = EPlastDBContext.Set<City>()
                 .Include(c => c.CityAdministration)
                     .ThenInclude(ca => ca.AdminType)
                 .Where(c => isAdmin || c.CityAdministration.Any(ca =>
                     ca.UserId == userId
-                    && ca.AdminType.AdminTypeName == "Голова Станиці"
+                    && (ca.AdminType.AdminTypeName == Roles.CityHead ||
+                       ca.AdminType.AdminTypeName == Roles.CityHeadDeputy)
                     && (ca.EndDate == null || ca.EndDate >= DateTime.Now)
                 ))
                 .Select(c => c.ID);
 
+            var citiesThatRegionAdminCanManage = EPlastDBContext.Set<City>()
+               .Include(r => r.Region)
+                  .ThenInclude(ra => ra.RegionAdministration)
+                  .ThenInclude(ca => ca.AdminType)
+               .Where(ra => isAdmin ||
+                  ra.Region.RegionAdministration.Any(ca => ca.UserId == userId
+                   && (ca.AdminType.AdminTypeName == Roles.OkrugaHead ||
+                    ca.AdminType.AdminTypeName == Roles.OkrugaHeadDeputy)
+                   && (ca.EndDate == null  || ca.EndDate >= DateTime.Now)
+                   ))
+               .Select(c => c.ID);
+
             var found = EPlastDBContext.Set<AnnualReport>()
                 .Include(ar => ar.City)
                     .ThenInclude(c => c.Region)
-                .Where(ar => isAdmin || !auth || citiesThatUserCanManage.Contains(ar.CityId))
+                .Where(ar => isAdmin || !auth || citiesThatСityAdminCanManage.Contains(ar.CityId)
+                        || citiesThatRegionAdminCanManage.Contains(ar.CityId))
                 .Where(ar =>
                     string.IsNullOrWhiteSpace(searchdata)
                     || ("Непідтверджений".ToLower().Contains(searchdata) && ar.Status == AnnualReportStatus.Unconfirmed)
@@ -62,7 +79,8 @@ namespace EPlast.DataAccess.Repositories
                     Status = (int)a.Status,
                     Count = found.Count(),
                     Total = EPlastDBContext.Set<AnnualReport>().Count(),
-                    CanManage = isAdmin || citiesThatUserCanManage.Contains(a.CityId)
+                    CanManage = isAdmin || citiesThatСityAdminCanManage.Contains(a.CityId)
+                        || citiesThatRegionAdminCanManage.Contains(a.CityId)
                 });
 
             switch (sortKey)

@@ -110,21 +110,6 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<double> EstimateEventByParticipantAsync(int eventId, string userId, double estimate)
-        {
-            var participant = await _repoWrapper.Participant
-                .GetFirstAsync(predicate: p => p.EventId == eventId && p.UserId == userId);
-            participant.Estimate = estimate;
-            _repoWrapper.Participant.Update(participant);
-            await _repoWrapper.SaveAsync();
-            var eventParticipants = await _repoWrapper.Participant
-                .GetAllAsync(predicate: p => p.EventId == eventId && p.Estimate > 0);
-            var eventRating = Math.Round(eventParticipants.Sum(p => p.Estimate) / eventParticipants.Count(), 2, MidpointRounding.AwayFromZero);
-
-            return eventRating;
-        }
-
-        /// <inheritdoc />
         public async Task<int> ChangeStatusToRejectedAsync(int id)
         {
             try
@@ -165,6 +150,20 @@ namespace EPlast.BLL.Services.Events
                 );
 
             return participants;
+        }
+
+        public async Task<Participant> GetParticipantByEventIdAndUserIdAsync(int eventId, string userId)
+        {
+            var participant = 
+                await _repoWrapper.Participant.GetFirstOrDefaultAsync(e => e.EventId == eventId && e.UserId == userId);
+            return participant;
+        }
+
+        public async Task<EventFeedback> GetEventFeedbackByIdAsync(int feedbackId)
+        {
+            var feedback = 
+                await _repoWrapper.EventFeedback.GetFirstOrDefaultAsync(f=>f.Id==feedbackId);
+            return feedback;
         }
 
         public async Task ChangeUserPresentStatusAsync(int perticipantId)
