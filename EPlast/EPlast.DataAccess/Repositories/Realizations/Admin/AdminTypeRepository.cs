@@ -50,6 +50,7 @@ namespace EPlast.DataAccess.Repositories
                     UserName = x.LastName + " " + x.FirstName,
                     Birthday = x.UserProfile.Birthday,
                     Entry = x.UserMembershipDates.FirstOrDefault(umd => umd.UserId == x.Id).DateEntry,
+                    Membership = x.UserMembershipDates.FirstOrDefault(umd => umd.UserId == x.Id).DateMembership,
                     Kadra = string.Join(", ", x.UsersKadras.Where(uk => uk.UserId == x.Id).Select(y => y.KadraVykhovnykivType.Name)),
                     Gender = x.UserProfile.Gender.Name,
                     RegionName = EPlastDBContext.Set<Region>().FirstOrDefault(y => y.ID == x.RegionId).RegionName
@@ -259,6 +260,14 @@ namespace EPlast.DataAccess.Repositories
                 case -10:
                     items = items
                        .OrderByDescending(x => x.Entry);
+                    break;
+                case 11:
+                    items = items
+                       .OrderBy(x => x.Membership);
+                    break;
+                case -11:
+                    items = items
+                       .OrderByDescending(x => x.Membership);
                     break;
                 default:
                     items = items
