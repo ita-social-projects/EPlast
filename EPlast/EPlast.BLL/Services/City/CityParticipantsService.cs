@@ -10,6 +10,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
@@ -31,6 +32,7 @@ namespace EPlast.BLL.Services.City
         private readonly INotificationService _notificationService;
         private readonly IMediator _mediator;
         private readonly IHostURLService _hostURLService;
+        private readonly IRegionAdministrationService _regionAdministrationService;
 
         public CityParticipantsService(
             IRepositoryWrapper repositoryWrapper,
@@ -41,7 +43,8 @@ namespace EPlast.BLL.Services.City
             IEmailContentService emailContentService,
             IMediator mediator,
             INotificationService notificationService,
-            IHostURLService hostURLService
+            IHostURLService hostURLService,
+            IRegionAdministrationService regionAdministrationService
         )
         {
             _repositoryWrapper = repositoryWrapper;
@@ -53,6 +56,7 @@ namespace EPlast.BLL.Services.City
             _mediator = mediator;
             _notificationService = notificationService;
             _hostURLService = hostURLService;
+            _regionAdministrationService = regionAdministrationService;
         }
 
         /// <inheritdoc />
@@ -147,12 +151,7 @@ namespace EPlast.BLL.Services.City
                     d.UserId == userId && d.Status && d.RegionId != cityDTO.RegionId);
             if (regionAdministrations != null)
             {
-                foreach (var elem in regionAdministrations)
-                {
-                    elem.EndDate = DateTime.Now;
-                    elem.Status = false;
-                    _repositoryWrapper.RegionAdministration.Update(elem);
-                }
+                await _regionAdministrationService.RemoveAdminRolesByUserIdAsync(userId);
             }
 
             await _repositoryWrapper.SaveAsync();

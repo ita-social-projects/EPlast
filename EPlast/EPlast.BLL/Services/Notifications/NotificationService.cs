@@ -41,12 +41,19 @@ namespace EPlast.BLL.Services.Notifications
         {
             bool addedSuccessfully = true;
             var resultUserNotifications = new List<UserNotification>();
-            foreach (var userNotificationDTO in userNotificationsDTO)
+            IEnumerable<UserNotification> userNotifications = _mapper.Map<IEnumerable<UserNotificationDto>, IEnumerable<UserNotification>>(userNotificationsDTO);
+            foreach (var userNotification in userNotifications)
             {
-                if ((await _userManagerService.FindByIdAsync(userNotificationDTO.OwnerUserId)) != null)
+                if ((await _userManagerService.FindByIdAsync(userNotification.OwnerUserId)) != null)
                 {
-                    UserNotification userNotification = _mapper.Map<UserNotification>(userNotificationDTO);
-                    NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotificationDTO.NotificationTypeId);
+                    // Not to add to DB
+                    if (userNotification.NotificationTypeId == 4)
+                    {
+                        resultUserNotifications.Add(userNotification);
+                        continue;
+                    }
+                    // Add to DB
+                    NotificationType notificationType = await _repoWrapper.NotificationTypes.GetFirstOrDefaultAsync(nt => nt.Id == userNotification.NotificationTypeId);
                     if (notificationType != null)
                     {
                         userNotification.Checked = false;

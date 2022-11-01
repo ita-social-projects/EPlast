@@ -201,6 +201,7 @@ namespace EPlast.WebApi
             services.AddScoped<IUserPersonalDataService, UserPersonalDataService>();
             services.AddScoped<IUserPrecautionService, UserPrecautionService>();
             services.AddScoped<IUserProfileAccessService, UserProfileAccessService>();
+            services.AddScoped<IUserRenewalService, UserRenewalService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
@@ -232,16 +233,16 @@ namespace EPlast.WebApi
                                             "59 23 * * *",
                                             TimeZoneInfo.Local);
 
-            recurringJobManager.AddOrUpdate("Cheak register users and sent notifications to admins",
+            recurringJobManager.AddOrUpdate("Check register users and sent notifications to admins",
                                             () => serviceProvider.GetService<IUserService>()
                                                                  .CheckRegisteredUsersAsync(),
-                                            "1 * * * *", // every day at 01:00
+                                            "0 1 * * *", // every day at 01:00
                                             TimeZoneInfo.Local);
 
-            recurringJobManager.AddOrUpdate("Cheak register users and sent notifications to admins",
+            recurringJobManager.AddOrUpdate("Check register users and sent notifications to admins",
                                          () => serviceProvider.GetService<IUserService>()
                                                               .CheckRegisteredWithoutCityUsersAsync(),
-                                             "1 * * * *", // every day at 01:00
+                                             "0 1 * * *", // every day at 01:00
                                             TimeZoneInfo.Local);
 
             recurringJobManager.AddOrUpdate("Check and change event status",

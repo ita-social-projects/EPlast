@@ -39,12 +39,19 @@ namespace EPlast.DataAccess.Repositories
                 .Include(x => x.CityMembers)
                 .Include(x => x.ClubMembers)
                 .Include(x => x.UserPlastDegrees)
+                .Include(x => x.UserMembershipDates)
+                .Include(x => x.UsersKadras)
+                .ThenInclude(x => x.KadraVykhovnykivType)
                 .Select(x => new UserTableObject()
                 {
                     ID = x.Id,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
+                    UserName = x.LastName + " " + x.FirstName,
                     Birthday = x.UserProfile.Birthday,
+                    Entry = x.UserMembershipDates.FirstOrDefault(umd => umd.UserId == x.Id).DateEntry,
+                    Membership = x.UserMembershipDates.FirstOrDefault(umd => umd.UserId == x.Id).DateMembership,
+                    Kadra = string.Join(", ", x.UsersKadras.Where(uk => uk.UserId == x.Id).Select(y => y.KadraVykhovnykivType.Name)),
                     Gender = x.UserProfile.Gender.Name,
                     RegionName = EPlastDBContext.Set<Region>().FirstOrDefault(y => y.ID == x.RegionId).RegionName
                         ?? x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).City.Region.RegionName,
@@ -70,7 +77,7 @@ namespace EPlast.DataAccess.Repositories
                        .Contains(r.Id))),
                     Comment = x.Comment,
                     IsCityFollower = x.CityMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.CityMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : true,
-                    IsClubFollower = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : false
+                    IsClubFollower = x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id) != null ? !x.ClubMembers.FirstOrDefault(y => y.UserId == x.Id).IsApproved : false,
                 });
 
             //tab sorting
@@ -163,6 +170,8 @@ namespace EPlast.DataAccess.Repositories
             // filter out super admins and former members of plast
             finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.Admin));
             if (tab == "registered") finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.FormerPlastMember));
+            if (tab == "confirmed") finalItems = finalItems.Where(u => !u.Roles.Contains(Roles.FormerPlastMember));
+            if (tab == "formers") finalItems = finalItems.Where(u => u.Roles.Contains(Roles.FormerPlastMember));
 
             int rowCount = finalItems.Count();
 
@@ -243,6 +252,22 @@ namespace EPlast.DataAccess.Repositories
                 case -9:
                     items = items
                        .OrderByDescending(x => x.UPUDegree);
+                    break;
+                case 10:
+                    items = items
+                       .OrderBy(x => x.Entry);
+                    break;
+                case -10:
+                    items = items
+                       .OrderByDescending(x => x.Entry);
+                    break;
+                case 11:
+                    items = items
+                       .OrderBy(x => x.Membership);
+                    break;
+                case -11:
+                    items = items
+                       .OrderByDescending(x => x.Membership);
                     break;
                 default:
                     items = items

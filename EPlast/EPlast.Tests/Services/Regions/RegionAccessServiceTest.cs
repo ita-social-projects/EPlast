@@ -55,10 +55,12 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { AdminRoleName });
-            _mockRepositoryWrapper.Setup(x => x.Region.GetAllAsync(
-                It.IsAny<Expression<Func<Region, bool>>>(),
-                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>
-                >>())).ReturnsAsync(new List<Region> { new Region() });
+            _mockRepositoryWrapper
+               .Setup(x => x.Region.GetRangeAsync(null, null,
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(),
+                                 null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
 
             // Act
             await _regionAccessService.GetRegionsAsync(new User());
@@ -77,10 +79,11 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<string> { RegionAdminRoleName });
             _mockRepositoryWrapper.Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(), null))
                 .ReturnsAsync(new RegionAdministration());
-            _mockRepositoryWrapper.Setup(r => r.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
-                    It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
-                .ReturnsAsync(new List<Region> { new Region() });
-
+            _mockRepositoryWrapper.Setup(x => x.Region.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(), null,
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(),
+                                 null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
 
             // Act
             await _regionAccessService.GetRegionsAsync(new User());
@@ -102,7 +105,6 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Setup(r => r.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(),
                     It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>>>()))
                 .ReturnsAsync(new List<Region> { new Region() });
-
 
             // Act
             await _regionAccessService.GetRegionsAsync(new User());
@@ -136,10 +138,12 @@ namespace EPlast.Tests.Services.Regions
             // Arrange
             _mockUserManager.Setup(u => u.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { AdminRoleName });
-            _mockRepositoryWrapper.Setup(x => x.Region.GetAllAsync(
-                It.IsAny<Expression<Func<Region, bool>>>(),
-                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>
-                >>())).ReturnsAsync(new List<Region> { new Region() { RegionName = "TestRegion" } });
+            _mockRepositoryWrapper
+               .Setup(x => x.Region.GetRangeAsync(null, null,
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(),
+                                 null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
             _mockRepositoryWrapper
                 .Setup(x => x.RegionAnnualReports.GetAllAsync(null, null)).ReturnsAsync(new List<RegionAnnualReport>()
                     {new RegionAnnualReport() {RegionId = 1, Date = DateTime.Now}});
@@ -167,10 +171,11 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<string> { RegionAdminRoleName });
             _mockRepositoryWrapper.Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(), null))
                 .ReturnsAsync(new RegionAdministration());
-            _mockRepositoryWrapper.Setup(x => x.Region.GetAllAsync(
-                It.IsAny<Expression<Func<Region, bool>>>(),
-                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>
-                >>())).ReturnsAsync(new List<Region> { new Region() { RegionName = "TestRegionName" } });
+            _mockRepositoryWrapper
+               .Setup(x => x.Region.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(), null, 
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(), null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
             _mockRepositoryWrapper
                 .Setup(x => x.RegionAnnualReports.GetAllAsync(It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
@@ -185,10 +190,10 @@ namespace EPlast.Tests.Services.Regions
             var result = await _regionAccessService.GetAllRegionsIdAndName(new User());
 
             // Assert
-            _mockRepositoryWrapper.Verify(x => x.Region.GetAllAsync(
-                It.IsAny<Expression<Func<Region, bool>>>(),
-                It.IsAny<Func<IQueryable<Region>, IIncludableQueryable<Region, object>
-                >>()), Times.Once);
+            _mockRepositoryWrapper.Verify(x => x.Region.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(), null, 
+                It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(), 
+                It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, 
+                IIncludableQueryable<DataAccess.Entities.Region, object>>>(), null, null), Times.Once);
             Assert.AreEqual(result, _expected);
         }
 
@@ -255,8 +260,11 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<string> { RegionAdminRoleName });
             _mockRepositoryWrapper.Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(), null))
                 .ReturnsAsync(new RegionAdministration());
-            _mockRepositoryWrapper.Setup(r => r.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
-                .ReturnsAsync(new List<Region> { new Region() { ID = 1 } });
+            _mockRepositoryWrapper
+               .Setup(x => x.Region.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(), null,
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(), null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
             _mockMapper.Setup(m => m.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(new List<RegionDto> { new RegionDto() { ID = 1 } });
 
@@ -276,8 +284,11 @@ namespace EPlast.Tests.Services.Regions
                 .ReturnsAsync(new List<string> { RegionAdminRoleName });
             _mockRepositoryWrapper.Setup(r => r.RegionAdministration.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<RegionAdministration, bool>>>(), null))
                 .ReturnsAsync(new RegionAdministration());
-            _mockRepositoryWrapper.Setup(r => r.Region.GetAllAsync(It.IsAny<Expression<Func<Region, bool>>>(), null))
-                .ReturnsAsync(new List<Region> {new Region() {ID = 1}});
+            _mockRepositoryWrapper.Setup(x => x.Region.GetRangeAsync(It.IsAny<Expression<Func<DataAccess.Entities.Region, bool>>>(), null,
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IQueryable<DataAccess.Entities.Region>>>(),
+                                 It.IsAny<Func<IQueryable<DataAccess.Entities.Region>, IIncludableQueryable<DataAccess.Entities.Region, object>>>(),
+                                 null, null))
+               .ReturnsAsync(new Tuple<IEnumerable<DataAccess.Entities.Region>, int>(GetTestRegionsForHandler(), 1));
             _mockMapper.Setup(m => m.Map<IEnumerable<Region>, IEnumerable<RegionDto>>(It.IsAny<IEnumerable<Region>>()))
                 .Returns(new List<RegionDto> { new RegionDto() { ID = 1 } });
             //Act
@@ -287,6 +298,14 @@ namespace EPlast.Tests.Services.Regions
             _mockUserManager.Verify();
             Assert.NotNull(result);
             Assert.IsFalse(result);
+        }
+        private IEnumerable<DataAccess.Entities.Region> GetTestRegionsForHandler()
+        {
+            return new List<DataAccess.Entities.Region>
+            {
+                new DataAccess.Entities.Region() { ID = 2, RegionName = "Lviv" },
+                new DataAccess.Entities.Region() { ID = 3, RegionName = "Kharkiv" }
+            }.AsEnumerable();
         }
 
         private AdminType _adminType => new AdminType() { };

@@ -38,5 +38,7 @@ namespace EPlast.WebApi.Models.User
         public int CityId { get; set; }
         public int ClubId { get; set; }
         public int RegionId { get; set; }
+        public bool ClubMemberIsApproved { get; set; }
+        public bool CityMemberIsApproved { get; set; }
     }
 }
