@@ -12,6 +12,9 @@ namespace EPlast.BLL.DTO
         public string LastName { get; set; }
         public string UserName { get; set; }
         public DateTime? Birthday { get; set; }
+        public DateTime? Entry { get; set; }
+        public DateTime? Membership { get; set; }
+        public string Kadra { get; set; }
         public GenderDto Gender { get; set; }
         public string Email { get; set; }
         public string RegionName { get; set; }

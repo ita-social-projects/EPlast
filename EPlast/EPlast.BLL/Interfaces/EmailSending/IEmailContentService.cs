@@ -75,7 +75,7 @@ namespace EPlast.BLL.Interfaces
         /// <param name="userLastName">User last name</param>
         /// <param name="isReminder">Determinate whether its first email or weekly reminder</param>
         /// <returns>Email content</returns>
-        Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
+        Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder, bool isVolunteer = true);
 
         Task<EmailModel> GetRegionAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder);
 
