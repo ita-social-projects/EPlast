@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -68,6 +69,13 @@ namespace EPlast.BLL.Services.Events
         public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDto model)
         {
             var eventCategoryToCreate = _mapper.Map<EventCategoryDto, EventCategory>(model.EventCategory);
+
+            var existingCategory = await _repoWrapper.EventCategory
+                .GetFirstOrDefaultAsync(c => c.EventCategoryName == eventCategoryToCreate.EventCategoryName);
+            if (existingCategory != null)
+            {
+                return 0;
+            }
 
             await _repoWrapper.EventCategory.CreateAsync(eventCategoryToCreate);
             await _repoWrapper.EventCategoryType.CreateAsync(new EventCategoryType()
