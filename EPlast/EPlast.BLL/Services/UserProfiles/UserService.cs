@@ -165,7 +165,6 @@ namespace EPlast.BLL.Services.UserProfiles
         /// <inheritdoc />
         public async Task UpdateAsyncForBase64(UserDto user, string base64, int? placeOfStudyId, int? specialityId, int? placeOfWorkId, int? positionId)
         {
-            user = SaveCorrectLinks(user);
             user.ImagePath ??= await UploadPhotoAsyncFromBase64(user.Id, base64);
             await UpdateAsync(user, placeOfStudyId, specialityId, placeOfWorkId, positionId);
             await _repoWrapper.SaveAsync();
@@ -318,40 +317,6 @@ namespace EPlast.BLL.Services.UserProfiles
             _repoWrapper.User.Update(userForUpdate);
             _repoWrapper.UserProfile.Update(userForUpdate.UserProfile);
             await _repoWrapper.SaveAsync();
-        }
-
-        private UserDto SaveCorrectLinks(UserDto user)
-        {
-            user.UserProfile.FacebookLink = SaveCorrectLink(user.UserProfile.FacebookLink, "facebook");
-            user.UserProfile.TwitterLink = SaveCorrectLink(user.UserProfile.TwitterLink, "twitter");
-            user.UserProfile.InstagramLink = SaveCorrectLink(user.UserProfile.InstagramLink, "instagram");
-
-            return user;
-        }
-
-        private string SaveCorrectLink(string link, string socialMediaName)
-        {
-            if (link != null && link != "")
-            {
-                if (link.Contains($"www.{socialMediaName}.com/"))
-                {
-                    if (link.Contains("https://"))
-                    {
-                        link = link.Substring(8);
-                    }
-                    link = link.Substring(socialMediaName.Length + 9);
-                }
-                else if (link.Contains($"{socialMediaName}.com/"))
-                {
-                    if (link.Contains("https://"))
-                    {
-                        link = link.Substring(8);
-                    }
-                    link = link.Substring(socialMediaName.Length + 5);
-                }
-                return link;
-            }
-            return link;
         }
 
         public async Task<bool> IsApprovedCityMember(string userId)

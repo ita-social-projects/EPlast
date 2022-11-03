@@ -78,6 +78,12 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, registeredUser);
                     }
+
+                    if(role == plastun)
+                    {
+
+                    }
+
                     await UpdateUserDatesByChangeRoleAsyncAsync(userId, role);
                     await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
@@ -285,6 +291,10 @@ namespace EPlast.BLL.Services
             else if (role == Roles.RegisteredUser && roles.Count == 0)
             {
                 userMembershipDates.DateEnd = default;
+            }
+            else if (role == Roles.PlastMember)
+            {
+                userMembershipDates.DateMembership = DateTime.Now;
             }
             else
             {
