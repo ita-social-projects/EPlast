@@ -90,9 +90,9 @@ namespace EPlast.BLL.Services.UserProfiles
 
         /// <inheritdoc />
         public IEnumerable<UserRenewalsTableObject> GetUserRenewalsTableObject(string searchedData, int page,
-            int pageSize)
+            int pageSize, string filter)
         {
-            return _repoWrapper.UserRenewal.GetUserRenewals(searchedData, page, pageSize);
+            return _repoWrapper.UserRenewal.GetUserRenewals(searchedData, page, pageSize, filter);
         }
 
         /// <inheritdoc />

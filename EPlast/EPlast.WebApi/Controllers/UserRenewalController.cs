@@ -32,12 +32,13 @@ namespace EPlast.WebApi.Controllers
         /// <param name="searchedData">Searched Data</param>
         /// <param name="page">Current page on pagination</param>
         /// <param name="pageSize">Number of records per page</param>
+        ///  /// <param name="filter">Number of records per page</param>
         /// <returns>List of UserRenewalTableObject</returns>
         /// <response code="200">Successful operation</response>
         [HttpGet("UserRenewalsForTable")]
-        public IActionResult GetUserRenewalsForTable(string searchedData, int page, int pageSize)
+        public IActionResult GetUserRenewalsForTable(string searchedData, int page, int pageSize, string filter)
         {
-            var userRenewals = _userRenewalService.GetUserRenewalsTableObject(searchedData, page, pageSize);
+            var userRenewals = _userRenewalService.GetUserRenewalsTableObject(searchedData, page, pageSize, filter);
             return Ok(userRenewals);
         }
 

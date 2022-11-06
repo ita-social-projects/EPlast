@@ -57,12 +57,12 @@ namespace EPlast.Tests.Services.UserProfiles
             //Arrange
             _mockRepoWrapper
                 .Setup(r => r.UserRenewal.GetUserRenewals(It.IsAny<string>(), 
-                    It.IsAny<int>(), It.IsAny<int>()))
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
                 .Returns(new List<UserRenewalsTableObject>());
 
             //Act
             var result = _userRenewalService.GetUserRenewalsTableObject(It.IsAny<string>(),
-                It.IsAny<int>(), It.IsAny<int>());
+                It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
 
             //Assert
             Assert.NotNull(result);

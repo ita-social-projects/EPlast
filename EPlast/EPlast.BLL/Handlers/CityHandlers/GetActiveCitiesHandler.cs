@@ -23,7 +23,7 @@ namespace EPlast.BLL.Handlers.CityHandlers
 
         public async Task<IEnumerable<CityForAdministrationDto>> Handle(GetActiveCitiesQuery request, CancellationToken cancellationToken)
         {
-            var cities = await _repoWrapper.City.GetRangeAsync(null, null, x => x.OrderBy(e => e.Name), null, null, null);
+            var cities = await _repoWrapper.City.GetRangeAsync(c => !request.IsOnlyActive || c.IsActive, null, x => x.OrderBy(e => e.Name), null, null, null);
 
             var sortedCities = cities.Item1;
 
