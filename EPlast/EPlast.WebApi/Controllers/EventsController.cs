@@ -139,6 +139,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
+            if (createDTO.EventCategory.EventCategoryId == 0) return BadRequest();
             return Ok(createDTO);
         }
 
