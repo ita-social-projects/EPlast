@@ -49,10 +49,6 @@ namespace EPlast.Tests.Controllers
                 _participantManager.Object);
         }
 
-        /// <summary>
-        /// WARNING, THIS TESTS SHOULD BE REFACTORED ASAP
-        /// </summary>
-
         [Test]
         public async Task GetTypes_ReturnsOkObjectResult()
         {
