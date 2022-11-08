@@ -97,6 +97,7 @@ namespace EPlast.DataAccess
         public DbSet<UpuDegree> UpuDegrees { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<UserMembershipDates> UserMembershipDates { get; set; }
+        public DbSet<UserFormerMembershipDates> UserFormerMembershipDates { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
         public DbSet<UserPrecaution> UserPrecautions { get; set; }
@@ -272,6 +273,11 @@ namespace EPlast.DataAccess
                     .HasMany(x => x.UserMembershipDates)
                     .WithOne(x => x.User)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                   .HasMany(x => x.UserFormerMembershipDates)
+                   .WithOne(x => x.User)
+                   .OnDelete(DeleteBehavior.Cascade);
 
                 user
                     .HasMany(x => x.GoverningBodyAdministrations)

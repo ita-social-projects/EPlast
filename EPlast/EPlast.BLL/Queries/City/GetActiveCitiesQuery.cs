@@ -6,5 +6,11 @@ namespace EPlast.BLL.Queries.City
 {
     public class GetActiveCitiesQuery : IRequest<IEnumerable<CityForAdministrationDto>>
     {
+        public bool IsOnlyActive { get; set; }
+
+        public GetActiveCitiesQuery(bool isOnlyActive)
+        {
+            IsOnlyActive = isOnlyActive;
+        }
     }
 }
