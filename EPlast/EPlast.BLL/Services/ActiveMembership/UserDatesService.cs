@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.DataAccess.Repositories;
 
 namespace EPlast.BLL.Services.ActiveMembership
@@ -14,6 +18,7 @@ namespace EPlast.BLL.Services.ActiveMembership
         private readonly IMapper _mapper;
         private readonly IRepositoryWrapper _repoWrapper;
         private readonly IUserManagerService _userManagerService;
+
         public UserDatesService(IMapper mapper, IRepositoryWrapper repoWrapper, IUserManagerService userManagerService)
         {
             _mapper = mapper;
@@ -76,6 +81,16 @@ namespace EPlast.BLL.Services.ActiveMembership
             throw new InvalidOperationException();
         }
 
+        public Tuple<IEnumerable<UserFormerMembershipTable>, int> GetUserFormerMembershipDatesTable(string userId)
+        {
+            var tuple = _repoWrapper.UserFormerMembershipDates.GetUserTableObjects(userId);
+
+            var dates = tuple.Item1;
+            var rowCount = tuple.Item2;
+
+            return new Tuple<IEnumerable<UserFormerMembershipTable>, int>(dates, rowCount);
+        }
+
         public async Task<bool> AddDateEntryAsync(string userId)
         {
             var userDto = await _userManagerService.FindByIdAsync(userId);
@@ -96,6 +111,27 @@ namespace EPlast.BLL.Services.ActiveMembership
             }
             return false;
         }
+
+        public async Task<bool> AddFormerEntryDateAsync(string userId)
+        {
+            var userDto = await _userManagerService.FindByIdAsync(userId);
+            if (userDto != null)
+            {
+                UserFormerMembershipDates userFormerMembershipDates = new UserFormerMembershipDates()
+                {
+                    UserId = userId,
+                    DateEntry = DateTime.Now,
+                    DateEnd = default
+                };
+
+                await _repoWrapper.UserFormerMembershipDates.CreateAsync(userFormerMembershipDates);
+                await _repoWrapper.SaveAsync();
+
+                return true;
+            }
+            return false;
+        }
+
 
         public async Task EndUserMembership(string userId)
         {

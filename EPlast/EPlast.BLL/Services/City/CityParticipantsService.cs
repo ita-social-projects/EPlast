@@ -156,11 +156,8 @@ namespace EPlast.BLL.Services.City
 
             await _repositoryWrapper.SaveAsync();
 
-            if (await _userManager.IsInRoleAsync(cityMember.User, Roles.RegisteredUser))
-            {
-                await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
-                await SendNotificationCityAdminAboutNewFollowerAsync(cityId, cityMember.User);
-            }
+            await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
+            await SendNotificationCityAdminAboutNewFollowerAsync(cityId, cityMember.User);
 
             return _mapper.Map<CityMembers, CityMembersDto>(cityMember);
         }
@@ -174,6 +171,17 @@ namespace EPlast.BLL.Services.City
 
         public async Task AddNotificationUserWithoutSelectedCity(User user, int regionId)
         {
+            string message, senderLink;
+            if (await _userManager.IsInRoleAsync(user, Roles.RegisteredUser))
+            {
+                message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}";
+                senderLink = $"/user/table?search={user.FirstName} {user.LastName}&tab=registered";
+            }
+            else
+            {
+                message = $"До Твоєї станиці хоче доєднатися користувач {user.FirstName} {user.LastName}";
+                senderLink = $"/user/table?search={user.FirstName} {user.LastName}";
+            }
             List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
 
             var regionAdministration = await _repositoryWrapper.RegionAdministration
@@ -206,10 +214,10 @@ namespace EPlast.BLL.Services.City
             {
                 userNotificationsDTO.Add(new UserNotificationDto
                 {
-                    Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    Message = message,
                     NotificationTypeId = 1,
                     OwnerUserId = regionHead.UserId,
-                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderLink = senderLink,
                     SenderName = "Переглянути"
                 });
 
@@ -222,10 +230,10 @@ namespace EPlast.BLL.Services.City
             {
                 userNotificationsDTO.Add(new UserNotificationDto
                 {
-                    Message = $"До твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    Message = message,
                     NotificationTypeId = 1,
                     OwnerUserId = regionHeadDeputy.UserId,
-                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderLink = senderLink,
                     SenderName = "Переглянути"
                 });
 
@@ -240,10 +248,10 @@ namespace EPlast.BLL.Services.City
                 {
                     userNotificationsDTO.Add(new UserNotificationDto
                     {
-                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        Message = message,
                         NotificationTypeId = 1,
                         OwnerUserId = referent.UserId,
-                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderLink = senderLink,
                         SenderName = "Переглянути"
                     });
 
@@ -259,10 +267,10 @@ namespace EPlast.BLL.Services.City
                 {
                     userNotificationsDTO.Add(new UserNotificationDto
                     {
-                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        Message = message,
                         NotificationTypeId = 1,
                         OwnerUserId = referent.UserId,
-                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderLink = senderLink,
                         SenderName = "Переглянути"
                     });
                     await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
@@ -277,10 +285,10 @@ namespace EPlast.BLL.Services.City
                 {
                     userNotificationsDTO.Add(new UserNotificationDto
                     {
-                        Message = $"До Твоєї округи хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        Message = message,
                         NotificationTypeId = 1,
                         OwnerUserId = referent.UserId,
-                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderLink = senderLink,
                         SenderName = "Переглянути"
                     });
                     await _emailSendingService.SendEmailAsync(referent.User.Email, emailContent.Subject,
@@ -568,7 +576,7 @@ namespace EPlast.BLL.Services.City
                 && (DateTime.Now < a.EndDate || a.EndDate == null)).ToList();
 
             var emailContent = await _emailContentService.GetCityAdminAboutNewFollowerEmailAsync(user.Id,
-                user.FirstName, user.LastName, false);
+                user.FirstName, user.LastName, false, await _userManager.IsInRoleAsync(user, Roles.RegisteredUser));
             if (cityHead != null)
             {
                 await _emailSendingService.SendEmailAsync(cityHead.User.Email, emailContent.Subject,
@@ -613,6 +621,18 @@ namespace EPlast.BLL.Services.City
 
         public async Task SendNotificationCityAdminAboutNewFollowerAsync(int cityId, User user)
         {
+            string message, senderLink;
+            if (await _userManager.IsInRoleAsync(user, Roles.RegisteredUser))
+            {
+                message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}";
+                senderLink = $"/user/table?search={user.FirstName} {user.LastName}&tab=registered";
+            }
+            else
+            {
+                message = $"До Твоєї станиці хоче доєднатися користувач {user.FirstName} {user.LastName}";
+                senderLink = $"/user/table?search={user.FirstName} {user.LastName}";
+            }
+
             var cityAdministration = await _repositoryWrapper.CityAdministration
                 .GetAllAsync(i => i.CityId == cityId,
                     i => i
@@ -638,10 +658,10 @@ namespace EPlast.BLL.Services.City
             {
                 userNotificationsDTO.Add(new UserNotificationDto
                 {
-                    Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    Message = message,
                     NotificationTypeId = 1,
                     OwnerUserId = cityHead.UserId,
-                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderLink = senderLink,
                     SenderName = "Переглянути"
                 });
             }
@@ -649,10 +669,10 @@ namespace EPlast.BLL.Services.City
             {
                 userNotificationsDTO.Add(new UserNotificationDto
                 {
-                    Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                    Message = message,
                     NotificationTypeId = 1,
                     OwnerUserId = cityHeadDeputy.UserId,
-                    SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                    SenderLink = senderLink,
                     SenderName = "Переглянути"
                 });
             }
@@ -662,10 +682,10 @@ namespace EPlast.BLL.Services.City
                 {
                     userNotificationsDTO.Add(new UserNotificationDto
                     {
-                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        Message = message,
                         NotificationTypeId = 1,
                         OwnerUserId = referent.UserId,
-                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderLink = senderLink,
                         SenderName = "Переглянути"
                     });
                 }
@@ -676,10 +696,10 @@ namespace EPlast.BLL.Services.City
                 {
                     userNotificationsDTO.Add(new UserNotificationDto
                     {
-                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        Message = message,
                         NotificationTypeId = 1,
                         OwnerUserId = referent.UserId,
-                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderLink = senderLink,
                         SenderName = "Переглянути"
                     });
                 }
@@ -690,10 +710,10 @@ namespace EPlast.BLL.Services.City
                 {
                     userNotificationsDTO.Add(new UserNotificationDto
                     {
-                        Message = $"До Твоєї станиці хоче доєднатися волонтер {user.FirstName} {user.LastName}",
+                        Message = message,
                         NotificationTypeId = 1,
                         OwnerUserId = referent.UserId,
-                        SenderLink = $"/user/table?search={user.FirstName} {user.LastName}",
+                        SenderLink = senderLink,
                         SenderName = "Переглянути"
                     });
                 }
