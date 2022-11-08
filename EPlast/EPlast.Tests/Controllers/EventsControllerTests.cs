@@ -89,12 +89,14 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task CreateEventCategory_ReturnsCreatedResult()
+        public async Task CreateEventCategory_ReturnsOkObjectResult()
         {
             // Arrange
+            int eventCategoryId = 1;
+
             _eventCategoryManager
-                .Setup((x) => x.CreateEventCategoryAsync(CreateFakeEventCategory()))
-                .ReturnsAsync(It.IsAny<int>());
+                .Setup(x => x.CreateEventCategoryAsync(It.IsAny<EventCategoryCreateDto>()))
+                .ReturnsAsync(eventCategoryId);
 
             // Act
             var result = await _eventsController.CreateEventCategory(CreateFakeEventCategory());
@@ -104,6 +106,26 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<EventCategoryCreateDto>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
+        public async Task CreateEventCategory_ReturnsStatus400BadRequest()
+        {
+            // Arrange
+            int expectedCode = StatusCodes.Status400BadRequest;
+            int eventCategoryId = 0;
+
+            _eventCategoryManager
+                .Setup(x => x.CreateEventCategoryAsync(CreateFakeEventCategory()))
+                .ReturnsAsync(eventCategoryId);
+
+            // Act
+            var result = await _eventsController.CreateEventCategory(CreateFakeEventCategory());
+            var actualCode = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.IsInstanceOf<BadRequestResult>(result);
         }
 
         [Test]
