@@ -283,7 +283,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(true);
             _emailContentService
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<bool>()))
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
             CityDto cityDto = new CityDto() { RegionId = fakeId };
             _mediator
@@ -348,7 +348,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(true);
             _emailContentService
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<bool>()))
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
             CityDto cityDto = new CityDto() { RegionId = fakeId };
             _mediator
@@ -416,6 +416,10 @@ namespace EPlast.Tests.Services.City
                     default
                 ))
                 .ReturnsAsync(cityDto);
+            _emailContentService
+                .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .ReturnsAsync(new EmailModel());
 
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());

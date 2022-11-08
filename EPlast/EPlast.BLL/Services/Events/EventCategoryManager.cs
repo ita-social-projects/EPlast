@@ -66,9 +66,9 @@ namespace EPlast.BLL.Services.Events
         }
 
         /// <inheritdoc />
-        public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDto model)
+        public async Task<int> CreateEventCategoryAsync(EventCategoryCreateDto eventCategoryCreateDto)
         {
-            var eventCategoryToCreate = _mapper.Map<EventCategoryDto, EventCategory>(model.EventCategory);
+            var eventCategoryToCreate = _mapper.Map<EventCategoryDto, EventCategory>(eventCategoryCreateDto.EventCategory);
 
             var existingCategory = await _repoWrapper.EventCategory
                 .GetFirstOrDefaultAsync(c => c.EventCategoryName == eventCategoryToCreate.EventCategoryName);
@@ -81,12 +81,38 @@ namespace EPlast.BLL.Services.Events
             await _repoWrapper.EventCategoryType.CreateAsync(new EventCategoryType()
             {
                 EventCategory = eventCategoryToCreate,
-                EventTypeId = model.EventTypeId
+                EventTypeId = eventCategoryCreateDto.EventTypeId
             });
 
             await _repoWrapper.SaveAsync();
 
             return eventCategoryToCreate.ID;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> UpdateEventCategoryAsync(EventCategoryDto eventCategoryUpdateDto)
+        {
+            var eventCategoryToUpdate = await _repoWrapper.EventCategory.GetSingleOrDefaultAsync(c => c.ID == eventCategoryUpdateDto.EventCategoryId);
+            if (eventCategoryToUpdate == null) return false;
+            
+            var updatedEventCategory = _mapper.Map<EventCategoryDto, EventCategory>(eventCategoryUpdateDto);
+
+            _repoWrapper.EventCategory.Update(updatedEventCategory);
+            await _repoWrapper.SaveAsync();
+
+            return true;
+        }
+
+        /// <inheritdoc />
+        public async Task<bool> DeleteEventCategoryAsync(int id)
+        {
+            var eventCategoryToDelete = await _repoWrapper.EventCategory.GetSingleOrDefaultAsync(c => c.ID == id);
+            if (eventCategoryToDelete == null) return false;
+
+            _repoWrapper.EventCategory.Delete(eventCategoryToDelete);
+            await _repoWrapper.SaveAsync();
+
+            return true;
         }
     }
 }

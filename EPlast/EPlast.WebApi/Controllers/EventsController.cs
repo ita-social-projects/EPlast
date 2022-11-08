@@ -140,8 +140,39 @@ namespace EPlast.WebApi.Controllers
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
             if (createDTO.EventCategory.EventCategoryId == 0) return BadRequest();
-
             return Ok(createDTO);
+        }
+
+        /// <summary>
+        /// Update a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="eventCategoryUpdateDto"></param>
+        /// <response code="204">No Content</response>
+        /// <response code="400">When event cateogry is not found by id</response>
+        [HttpPut("updateCategory")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateEventCategory([FromBody] EventCategoryDto eventCategoryUpdateDto)
+        { 
+            var isUpdated = await _eventCategoryManager.UpdateEventCategoryAsync(eventCategoryUpdateDto);
+            if (!isUpdated) return BadRequest();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="id"></param>
+        /// <response code="204">No Content</response>
+        /// <response code="400">When event category is not found by id</response>
+        [HttpDelete("deleteCategory/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteEventCategory(int id)
+        {
+            var isDeleted = await _eventCategoryManager.DeleteEventCategoryAsync(id);
+            if (!isDeleted) return BadRequest();
+            return NoContent();
         }
 
         /// <summary>
@@ -224,8 +255,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPut("{eventId:int}/feedbacks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> LeaveFeedback(int eventId, EventFeedbackDto feedback)
-        {
-          
+        { 
             var eventEntity = await _actionManager.GetEventAsync(eventId);
 
             if (eventEntity == null)
@@ -262,7 +292,7 @@ namespace EPlast.WebApi.Controllers
         {
             var eventEntity = await _actionManager.GetEventAsync(eventId);
             var feedback = await _participantManager.GetEventFeedbackByIdAsync(feedbackId);
-            if (eventEntity == null ||feedback == null)
+            if (eventEntity == null || feedback == null)
             {
                 return NotFound();
             }
