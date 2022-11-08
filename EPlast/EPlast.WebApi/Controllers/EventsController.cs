@@ -139,8 +139,39 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
-
             return Ok(createDTO);
+        }
+
+        /// <summary>
+        /// Update a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="eventCategoryUpdateDto"></param>
+        /// <response code="204">No Content</response>
+        /// <response code="400">When event cateogry is not found by id</response>
+        [HttpPut("updateCategory")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateEventCategory([FromBody] EventCategoryDto eventCategoryUpdateDto)
+        { 
+            var isUpdated = await _eventCategoryManager.UpdateEventCategoryAsync(eventCategoryUpdateDto);
+            if (!isUpdated) return BadRequest();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="id"></param>
+        /// <response code="204">No Content</response>
+        /// <response code="400">When event category is not found by id</response>
+        [HttpDelete("deleteCategory/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteEventCategory(int id)
+        {
+            var isDeleted = await _eventCategoryManager.DeleteEventCategoryAsync(id);
+            if (!isDeleted) return BadRequest();
+            return NoContent();
         }
 
         /// <summary>
