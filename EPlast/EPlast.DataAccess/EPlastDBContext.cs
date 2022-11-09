@@ -57,6 +57,7 @@ namespace EPlast.DataAccess
         public DbSet<EventAdministrationType> EventAdministrationType { get; set; }
         public DbSet<EventCategory> EventCategories { get; set; }
         public DbSet<EventCategoryType> EventCategoryTypes { get; set; }
+        public DbSet<EventFeedback> EventFeedbacks { get; set; }
         public DbSet<EventGallary> EventGallarys { get; set; }
         public DbSet<EventSection> EventSection { get; set; }
         public DbSet<EventStatus> EventStatuses { get; set; }
@@ -96,6 +97,7 @@ namespace EPlast.DataAccess
         public DbSet<UpuDegree> UpuDegrees { get; set; }
         public DbSet<UserDistinction> UserDistinctions { get; set; }
         public DbSet<UserMembershipDates> UserMembershipDates { get; set; }
+        public DbSet<UserFormerMembershipDates> UserFormerMembershipDates { get; set; }
         public DbSet<UserNotification> UserNotifications { get; set; }
         public DbSet<UserPlastDegree> UserPlastDegrees { get; set; }
         public DbSet<UserPrecaution> UserPrecautions { get; set; }
@@ -129,8 +131,10 @@ namespace EPlast.DataAccess
                     .HasDefaultValue(false);
             });
 
-            modelBuilder.Entity<Pictures>()
-                .HasKey(x => x.ID);
+            modelBuilder.Entity<Participant>()
+                .HasOne(a => a.EventFeedback)
+                .WithOne(f => f.Participant)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<SubsectionPictures>(subsectionPictures =>
             {
@@ -269,6 +273,11 @@ namespace EPlast.DataAccess
                     .HasMany(x => x.UserMembershipDates)
                     .WithOne(x => x.User)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                user
+                   .HasMany(x => x.UserFormerMembershipDates)
+                   .WithOne(x => x.User)
+                   .OnDelete(DeleteBehavior.Cascade);
 
                 user
                     .HasMany(x => x.GoverningBodyAdministrations)

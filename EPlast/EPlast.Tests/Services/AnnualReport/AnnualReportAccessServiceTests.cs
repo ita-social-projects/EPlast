@@ -3,6 +3,7 @@ using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -17,14 +18,16 @@ namespace EPlast.Tests.Services
     {
         private IAnnualReportAccessService _annualReportAccessService;
         private Mock<IRepositoryWrapper> _repositoryWrapper;
+        private Mock<UserManager<User>> _userManager;
 
         [SetUp]
         public void SetUp()
         {
+            var store = new Mock<IUserStore<User>>();
+            _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _repositoryWrapper = new Mock<IRepositoryWrapper>();
-            _annualReportAccessService = new AnnualReportAccessService(_repositoryWrapper.Object);
+            _annualReportAccessService = new AnnualReportAccessService(_repositoryWrapper.Object, _userManager.Object);
         }
-
 
         [Test]
         public async Task CanViewCityReportDetailsAsync_ReturnsBool()
@@ -66,31 +69,29 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _repositoryWrapper
-                .Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<AnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
-                .ReturnsAsync((AnnualReport) null);
+                 .Setup(x => x.AnnualReports.GetFirstOrDefaultAsync(
+                     It.IsAny<Expression<Func<AnnualReport, bool>>>(),
+                     It.IsAny<Func<IQueryable<AnnualReport>, IIncludableQueryable<AnnualReport, object>>>()))
+                 .ReturnsAsync((AnnualReport)null);
             _repositoryWrapper
                 .Setup(x => x.CityAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration());
             _repositoryWrapper
-                .Setup(x => x.RegionFollowers.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<RegionFollowers, bool>>>(),
-                    It.IsAny<Func<IQueryable<RegionFollowers>, IIncludableQueryable<RegionFollowers, object>>>()))
-                .ReturnsAsync((RegionFollowers) null);
+                .Setup(x => x.City.GetFirstOrDefaultAsync(
+                     It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new DataAccess.Entities.City());
             _repositoryWrapper
-                .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<RegionAdministration>,
-                        IIncludableQueryable<RegionAdministration, object>>>()))
-                .ReturnsAsync((RegionAdministration) null);
+            .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+            .ReturnsAsync(new RegionAdministration());
 
             //Act
-            var result =
-                await _annualReportAccessService.CanViewReportDetailsAsync(It.IsAny<User>(), false, ReportType.City,
-                    It.IsAny<int>());
+            var result = await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), false,
+             ReportType.City - 1, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -126,16 +127,15 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAnnualReport>, IIncludableQueryable<ClubAnnualReport, object>>>()))
-                .ReturnsAsync((ClubAnnualReport) null);
+                .ReturnsAsync(new ClubAnnualReport());
             _repositoryWrapper
                 .Setup(x => x.ClubAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
                 .ReturnsAsync(new ClubAdministration());
             //Act
-            var result =
-                await _annualReportAccessService.CanViewReportDetailsAsync(new User {Id = "1"}, false, ReportType.Club,
-                    It.IsAny<int>());
+            var result = await _annualReportAccessService.CanViewReportDetailsAsync(It.IsAny<User>(), false,
+                ReportType.Club, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -172,7 +172,7 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
-                .ReturnsAsync((RegionAnnualReport) null);
+                .ReturnsAsync(new RegionAnnualReport());
             _repositoryWrapper
                 .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
@@ -237,11 +237,20 @@ namespace EPlast.Tests.Services
                     It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration());
+            _repositoryWrapper
+                .Setup(x => x.City.GetFirstOrDefaultAsync(
+                     It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new DataAccess.Entities.City());
+            _repositoryWrapper
+            .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+            .ReturnsAsync(new RegionAdministration());
 
             //Act
-            var result =
-                await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), false, ReportType.City,
-                    It.IsAny<int>());
+            var result = await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), false,
+                ReportType.City - 1, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -261,11 +270,20 @@ namespace EPlast.Tests.Services
                     It.IsAny<Expression<Func<CityAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<CityAdministration>, IIncludableQueryable<CityAdministration, object>>>()))
                 .ReturnsAsync(new CityAdministration());
+            _repositoryWrapper
+                .Setup(x => x.City.GetFirstOrDefaultAsync(
+                     It.IsAny<Expression<Func<DataAccess.Entities.City, bool>>>(),
+                    It.IsAny<Func<IQueryable<DataAccess.Entities.City>, IIncludableQueryable<DataAccess.Entities.City, object>>>()))
+                .ReturnsAsync(new DataAccess.Entities.City());
+            _repositoryWrapper
+            .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
+                It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
+                It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
+            .ReturnsAsync(new RegionAdministration());
 
             //Act
-            var result =
-                await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), false, ReportType.City,
-                    It.IsAny<int>());
+            var result = await _annualReportAccessService.CanEditReportAsync(It.IsAny<User>(), false,
+              ReportType.City - 1, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -286,8 +304,8 @@ namespace EPlast.Tests.Services
                     It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
                 .ReturnsAsync(new ClubAdministration());
             //Act
-            var result = await _annualReportAccessService.CanEditReportAsync(new User {Id = "1"}, false,
-                ReportType.Club, It.IsAny<int>());
+            var result = await _annualReportAccessService.CanViewReportDetailsAsync(new User { Id = "1" }, false,
+            ReportType.Club, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -301,16 +319,16 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.ClubAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<ClubAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAnnualReport>, IIncludableQueryable<ClubAnnualReport, object>>>()))
-                .ReturnsAsync((ClubAnnualReport) null);
+                .ReturnsAsync(new ClubAnnualReport { ClubId = 1 });
             _repositoryWrapper
                 .Setup(x => x.ClubAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<ClubAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<ClubAdministration>, IIncludableQueryable<ClubAdministration, object>>>()))
                 .ReturnsAsync(new ClubAdministration());
+
             //Act
-            var result =
-                await _annualReportAccessService.CanEditReportAsync(new User {Id = "1"}, false, ReportType.Club,
-                    It.IsAny<int>());
+            var result = await _annualReportAccessService.CanViewReportDetailsAsync(It.IsAny<User>(), false,
+                ReportType.Club, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -324,16 +342,15 @@ namespace EPlast.Tests.Services
                 .Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
                     It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
-                .ReturnsAsync(new RegionAnnualReport {ID = 1});
+                .ReturnsAsync(new RegionAnnualReport { RegionId = 1 });
             _repositoryWrapper
                 .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<RegionAdministration>,
-                        IIncludableQueryable<RegionAdministration, object>>>()))
+                    It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
                 .ReturnsAsync(new RegionAdministration());
             //Act
-            var result = await _annualReportAccessService.CanEditReportAsync(new User {Id = "1"}, false,
-                ReportType.Region, It.IsAny<int>());
+            var result = await _annualReportAccessService.CanViewReportDetailsAsync(new User { Id = "1" }, false,
+            ReportType.Region, It.IsAny<int>());
 
             //Assert
             Assert.IsInstanceOf<bool>(result);
@@ -344,18 +361,18 @@ namespace EPlast.Tests.Services
         {
             //Arrange
             _repositoryWrapper
-                .Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
-                    It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
-                    It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
-                .ReturnsAsync((RegionAnnualReport) null);
+               .Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                   It.IsAny<Expression<Func<RegionAnnualReport, bool>>>(),
+                   It.IsAny<Func<IQueryable<RegionAnnualReport>, IIncludableQueryable<RegionAnnualReport, object>>>()))
+               .ReturnsAsync(new RegionAnnualReport { RegionId = 1 });
             _repositoryWrapper
                 .Setup(x => x.RegionAdministration.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<RegionAdministration, bool>>>(),
-                    It.IsAny<Func<IQueryable<RegionAdministration>,
-                        IIncludableQueryable<RegionAdministration, object>>>()))
+                    It.IsAny<Func<IQueryable<RegionAdministration>, IIncludableQueryable<RegionAdministration, object>>>()))
                 .ReturnsAsync(new RegionAdministration());
+
             //Act
-            var result = await _annualReportAccessService.CanEditReportAsync(new User {Id = "1"}, false,
+            var result = await _annualReportAccessService.CanViewReportDetailsAsync(It.IsAny<User>(), false,
                 ReportType.Region, It.IsAny<int>());
 
             //Assert

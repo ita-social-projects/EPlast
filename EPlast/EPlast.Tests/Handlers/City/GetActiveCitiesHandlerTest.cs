@@ -27,7 +27,7 @@ namespace EPlast.Tests.Handlers.City
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
-            _query = new GetActiveCitiesQuery();
+            _query = new GetActiveCitiesQuery(It.IsAny<bool>());
             _handler = new GetActiveCitiesHandler(_mockRepoWrapper.Object, _mockMapper.Object);
         }
 

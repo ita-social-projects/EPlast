@@ -7,6 +7,7 @@ using EPlast.DataAccess.Entities.Event;
 using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.UserEntities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace EPlast.DataAccess.Entities
 {
@@ -58,6 +59,7 @@ namespace EPlast.DataAccess.Entities
         public ICollection<AnnualReport> NewCityAdminAnnualReports { get; set; }
         public UserPlastDegree UserPlastDegrees { get; set; }
         public ICollection<UserMembershipDates> UserMembershipDates { get; set; }
+        public ICollection<UserFormerMembershipDates> UserFormerMembershipDates { get; set; }
         public ICollection<EducatorsStaff.EducatorsStaff> UsersKadras { get; set; }
         public ICollection<UserDistinction> UserDistinctions { get; set; }
         public ICollection<BlankBiographyDocuments> BlankBiographyDocuments { get; set; }

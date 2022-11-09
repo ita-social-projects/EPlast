@@ -281,9 +281,11 @@ namespace EPlast.BLL.Services.EmailSending
             };
         }
 
-        public async Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder)
+        public async Task<EmailModel> GetCityAdminAboutNewFollowerEmailAsync(string userId, string userFirstName, string userLastName, bool isReminder, bool isVolunteer = true)
         {
             var userGender = await _userService.GetUserGenderAsync(userId);
+
+            var userStatus = isVolunteer ? "волонтер" : "користувач";
 
             var volunteered = userGender switch
             {
@@ -310,9 +312,9 @@ namespace EPlast.BLL.Services.EmailSending
                 Title = "EPlast",
                 Subject = $"{title}",
                 Message = "<h3>СКОБ!</h3>"
-                        + $"<p>До Твоєї станиці {volunteered} волонтер {userFirstName} {userLastName}."
+                        + $"<p>До Твоєї станиці {volunteered} {userStatus} {userFirstName} {userLastName}."
                         + "<p>Бажаємо цікавих знайомств та легкої адаптації :) Просимо переглянути профіль "
-                        + "користувача, а тоді підтвердити профіль волонтера, таким чином надавши ступінь "
+                        + $"користувача, а тоді підтвердити профіль {userStatus}а, таким чином надавши ступінь "
                         + $"'{follower}'. Або аргументовано його не підтвердити."
                         + $"<p>Посилання на профіль користувача: <a href=\"{userTableUrl}\">посилання</a></p>"
                         + "Дякуємо Тобі за роботу.</p>"

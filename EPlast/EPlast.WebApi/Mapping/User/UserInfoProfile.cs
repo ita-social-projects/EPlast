@@ -18,6 +18,8 @@ namespace EPlast.WebApi.Mapping.User
                 .ForMember(x => x.CityId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.ID))
                 .ForMember(x => x.ClubId, q => q.MapFrom(w => w.ClubMembers.FirstOrDefault().Club.ID))
                 .ForMember(x => x.RegionId, q => q.MapFrom(w => w.CityMembers.FirstOrDefault().City.RegionId))
+                .ForMember(u => u.ClubMemberIsApproved, q => q.MapFrom(c => c.ClubMembers.FirstOrDefault().IsApproved))
+                .ForMember(u => u.CityMemberIsApproved, q => q.MapFrom(c => c.CityMembers.FirstOrDefault().IsApproved))
                 .ReverseMap();
         }
     }

@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Interfaces.City;
 using EPlast.BLL.Interfaces.HostURL;
 using EPlast.BLL.Interfaces.Notifications;
+using EPlast.BLL.Interfaces.RegionAdministrations;
 using EPlast.BLL.Models;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.City;
@@ -96,7 +97,8 @@ namespace EPlast.Tests.Services.City
         private Mock<UserManager<User>> _userManager;
         private Mock<INotificationService> _notificationServiceMock;
         private Mock<IMediator> _mediator;
-        private Mock<IHostUrlService> _hostURLService;
+        private Mock<IHostURLService> _hostURLService;
+        private Mock<IRegionAdministrationService> _regionalAdministrationService;
 
         [SetUp]
         public void SetUp()
@@ -109,8 +111,9 @@ namespace EPlast.Tests.Services.City
             _emailSendingService = new Mock<IEmailSendingService>();
             _emailContentService = new Mock<IEmailContentService>();
             _notificationServiceMock = new Mock<INotificationService>();
-            _hostURLService = new Mock<IHostUrlService>();
-            _mediator = new Mock<IMediator>(); 
+            _hostURLService = new Mock<IHostURLService>();
+            _mediator = new Mock<IMediator>();
+            _regionalAdministrationService = new Mock<IRegionAdministrationService>();
             _cityParticipantsService = new CityParticipantsService(
                 _repoWrapper.Object,
                 _mapper.Object,
@@ -120,7 +123,8 @@ namespace EPlast.Tests.Services.City
                 _emailContentService.Object,
                 _mediator.Object,
                 _notificationServiceMock.Object,
-                _hostURLService.Object
+                _hostURLService.Object,
+                _regionalAdministrationService.Object
             );
         }
 
@@ -279,7 +283,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(true);
             _emailContentService
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<bool>()))
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
             CityDto cityDto = new CityDto() { RegionId = fakeId };
             _mediator
@@ -344,7 +348,7 @@ namespace EPlast.Tests.Services.City
                 .ReturnsAsync(true);
             _emailContentService
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<bool>()))
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
             CityDto cityDto = new CityDto() { RegionId = fakeId };
             _mediator
@@ -412,6 +416,10 @@ namespace EPlast.Tests.Services.City
                     default
                 ))
                 .ReturnsAsync(cityDto);
+            _emailContentService
+                .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
+                .ReturnsAsync(new EmailModel());
 
             // Act
             var result = await _cityParticipantsService.AddFollowerAsync(It.IsAny<int>(), It.IsAny<string>());

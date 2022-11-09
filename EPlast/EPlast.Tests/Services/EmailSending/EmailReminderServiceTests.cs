@@ -109,7 +109,7 @@ namespace EPlast.Tests.Services.EmailSending
                 .ReturnsAsync(GetCityAdministration());
             _mockEmailContentService
                 .Setup(x => x.GetCityAdminAboutNewFollowerEmailAsync(It.IsAny<string>(), It.IsAny<string>(),
-                    It.IsAny<string>(), It.IsAny<bool>()))
+                    It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>()))
                 .ReturnsAsync(new EmailModel());
 
             //Act

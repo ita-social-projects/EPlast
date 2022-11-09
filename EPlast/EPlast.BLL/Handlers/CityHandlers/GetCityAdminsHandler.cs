@@ -66,7 +66,8 @@ namespace EPlast.BLL.Handlers.CityHandlers
                     {
                         AdminTypeName = x.AdminType.AdminTypeName
                     },
-                    CityId = x.CityId
+                    CityId = x.CityId,
+                    UserId = x.UserId
             };
             return expr;
         }

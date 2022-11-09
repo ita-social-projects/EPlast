@@ -24,9 +24,6 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
 
         public async Task<Unit> Handle(AddDistinctionCommand request, CancellationToken cancellationToken)
         {
-            var query = new CheckIfAdminQuery(request.User);
-            await _mediator.Send(query, cancellationToken);
-
             var distinction = _mapper.Map<DistinctionDto, Distinction>(request.DistinctionDTO);
             await _repositoryWrapper.Distinction.CreateAsync(distinction);
             await _repositoryWrapper.SaveAsync();
