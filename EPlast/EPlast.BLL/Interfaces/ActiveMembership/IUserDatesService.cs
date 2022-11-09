@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.DataAccess.Entities.UserEntities;
 
 namespace EPlast.BLL.Interfaces.ActiveMembership
 {
@@ -18,6 +19,14 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <returns>All dates of current user</returns>
         public Task<UserMembershipDatesDto> GetUserMembershipDatesAsync(string userId);
 
+
+        /// <summary>
+        /// Returns user former membership dates
+        /// </summary>
+        /// <param name="userId">User id</param>
+        /// <returns>All former membership dates</returns>
+        public Tuple<IEnumerable<UserFormerMembershipTable>, int> GetUserFormerMembershipDatesTable(string userId);
+
         /// <summary>
         /// Returns boolean, if dates is correct and they was changed in DB return true, else false
         /// </summary>
@@ -32,6 +41,7 @@ namespace EPlast.BLL.Interfaces.ActiveMembership
         /// <returns>bool if adding is successful</returns>
         public Task<bool> AddDateEntryAsync(string userId);
 
+        public Task<bool> AddFormerEntryDateAsync(string userId);
         /// <summary>
         /// Returns boolean, if user has membership return true, else false
         /// </summary>

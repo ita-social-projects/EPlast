@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
@@ -134,6 +135,16 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest(userId);
             }
+        }
+
+        [HttpGet("formerdates/{userId}")]
+        public IActionResult GetUserFormerDates(string userId)
+        {
+            var tuple = _userDatesService.GetUserFormerMembershipDatesTable(userId);
+            var formerDates = tuple.Item1;
+            var datesCount = tuple.Item2;
+
+            return StatusCode(StatusCodes.Status200OK, new { dates = formerDates, total = datesCount });
         }
 
         [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.HeadsAndHeadDeputiesAndAdmin)]

@@ -20,9 +20,6 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
 
         public async Task<Unit> Handle(ChangeDistinctionCommand request, CancellationToken cancellationToken)
         {
-            var query = new CheckIfAdminQuery(request.User);
-            await _mediator.Send(query, cancellationToken);
-
             var distinction = await _repositoryWrapper.Distinction.GetFirstAsync(x => x.Id == request.DistinctionDTO.Id);
             distinction.Name = request.DistinctionDTO.Name;
             _repositoryWrapper.Distinction.Update(distinction);
