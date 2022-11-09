@@ -97,7 +97,7 @@ namespace EPlast.Tests.Services.City
         private Mock<UserManager<User>> _userManager;
         private Mock<INotificationService> _notificationServiceMock;
         private Mock<IMediator> _mediator;
-        private Mock<IHostURLService> _hostURLService;
+        private Mock<IHostUrlService> _hostURLService;
         private Mock<IRegionAdministrationService> _regionalAdministrationService;
 
         [SetUp]
@@ -111,7 +111,7 @@ namespace EPlast.Tests.Services.City
             _emailSendingService = new Mock<IEmailSendingService>();
             _emailContentService = new Mock<IEmailContentService>();
             _notificationServiceMock = new Mock<INotificationService>();
-            _hostURLService = new Mock<IHostURLService>();
+            _hostURLService = new Mock<IHostUrlService>();
             _mediator = new Mock<IMediator>();
             _regionalAdministrationService = new Mock<IRegionAdministrationService>();
             _cityParticipantsService = new CityParticipantsService(
