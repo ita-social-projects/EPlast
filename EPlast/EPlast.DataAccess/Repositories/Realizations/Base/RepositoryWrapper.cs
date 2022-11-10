@@ -100,6 +100,7 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
         private IUserNotificationRepository _userNotifications;
         private INotificationTypeRepository _notificationTypes;
         private IUserMembershipDatesRepository _userMembershipDates;
+        private IUserFormerMembershipDatesRepository _userFormerMembershipDates;
         private IEventAdministrationRepository _eventAdministration;
         private IEventAdministrationTypeRepository _eventAdministrationType;
         private IEventFeedbackRepository _eventFeedback;
@@ -1059,6 +1060,19 @@ namespace EPlast.DataAccess.Repositories.Realizations.Base
                 }
 
                 return _userMembershipDates;
+            }
+        }
+
+        public IUserFormerMembershipDatesRepository UserFormerMembershipDates
+        {
+            get
+            {
+                if (_userFormerMembershipDates == null)
+                {
+                    _userFormerMembershipDates = new UserFormerMembershipDatesRepository(_dbContext);
+                }
+
+                return _userFormerMembershipDates;
             }
         }
 

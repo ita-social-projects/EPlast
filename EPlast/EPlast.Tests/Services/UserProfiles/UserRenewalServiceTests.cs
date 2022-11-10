@@ -254,6 +254,10 @@ namespace EPlast.Tests.Services.UserProfiles
                 .Setup(r => r.UserRenewal.GetFirstAsync(It.IsAny<Expression<Func<UserRenewal, bool>>>(),
                     It.IsAny<Func<IQueryable<UserRenewal>, IIncludableQueryable<UserRenewal, object>>>()))
                 .ReturnsAsync(new UserRenewal());
+            _mockRepoWrapper
+                .Setup(u => u.UserFormerMembershipDates.GetFirstAsync(It.IsAny<Expression<Func<UserFormerMembershipDates, bool>>>(),
+                        It.IsAny<Func<IQueryable<UserFormerMembershipDates>, IIncludableQueryable<UserFormerMembershipDates, object>>>()))
+                    .ReturnsAsync(new UserFormerMembershipDates());
             _mockUserManager
                 .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(new User());

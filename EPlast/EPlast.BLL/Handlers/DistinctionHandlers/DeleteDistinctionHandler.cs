@@ -21,9 +21,6 @@ namespace EPlast.BLL.Handlers.DistinctionHandlers
 
         public async Task<Unit> Handle(DeleteDistinctionCommand request, CancellationToken cancellationToken)
         {
-            var query = new CheckIfAdminQuery(request.User);
-            await _mediator.Send(query, cancellationToken);
-
             var distinction = (await _repositoryWrapper.Distinction.GetFirstAsync(d => d.Id == request.Id));
             if (distinction == null)
                 throw new ArgumentNullException($"Distinction with {request.Id} not found");
