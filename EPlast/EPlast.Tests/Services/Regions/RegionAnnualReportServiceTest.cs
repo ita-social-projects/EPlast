@@ -151,10 +151,10 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
                     It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject() });
-
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
 
             //Act
-            await _service.EditAsync(1, _fakeRegionAnnualReportQuestions());
+            await _service.EditAsync(new User(), 1, _fakeRegionAnnualReportQuestions());
 
             //Assert
             _mockRepositoryWrapper.Verify(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
@@ -171,10 +171,11 @@ namespace EPlast.Tests.Services.Regions
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetRegionMembersInfoAsync(It.IsAny<int>(),
                     It.IsAny<int>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(new List<RegionMembersInfoTableObject>() { _fakeMembersInfoTableObject() });
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
 
             // Act & Assert
             Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _service.EditAsync(1, _fakeRegionAnnualReportQuestions()));
+                _service.EditAsync(new User(), 1, _fakeRegionAnnualReportQuestions()));
         }
 
         [Test]
@@ -347,16 +348,31 @@ namespace EPlast.Tests.Services.Regions
         }
 
         [Test]
-        public void EditAsync_ThrowsException()
+        public void EditAsync_ThrowsInvalidOperationException()
         {
             //Arrange
             _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
                     It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null))
                 .ReturnsAsync(new RegionAnnualReport() { RegionId = 1, Status = AnnualReportStatus.Confirmed });
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(true);
 
             //Assert
             Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _service.EditAsync(1, _fakeRegionAnnualReportQuestions()));
+                _service.EditAsync(new User(), 1, _fakeRegionAnnualReportQuestions()));
+        }
+
+        [Test]
+        public void EditAsync_ThrowsUnauthorizedExeption()
+        {
+            //Arrange
+            _mockRepositoryWrapper.Setup(x => x.RegionAnnualReports.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<DataAccess.Entities.RegionAnnualReport, bool>>>(), null))
+                .ReturnsAsync(new RegionAnnualReport() { RegionId = 1, Status = AnnualReportStatus.Confirmed });
+            _mockRegionAccessService.Setup(x => x.HasAccessAsync(It.IsAny<User>(), It.IsAny<int>())).ReturnsAsync(false);
+
+            //Assert
+            Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
+                _service.EditAsync(new User(), 1, _fakeRegionAnnualReportQuestions()));
         }
 
         private RegionMembersInfoTableObject _fakeMembersInfoTableObject()
