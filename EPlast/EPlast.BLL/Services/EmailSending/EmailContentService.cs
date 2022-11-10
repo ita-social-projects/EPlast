@@ -117,7 +117,7 @@ namespace EPlast.BLL.Services.EmailSending
                 Title = "EPlast",
                 Subject = "Зміна статусу поручення",
                 Message = "<h3>СКОБ!</h3>"
-                          + $"<p>{friend}, повідомляємо, що користувач {vaucherUser.FirstName} {vaucherUser.LastName} "
+                          + $"<p>{friend}, повідомляємо, що користувач <a href='{_hostURLService.GetUserPageMainURL(vaucherUser.Id)}'>{vaucherUser.FirstName} {vaucherUser.LastName}</a> "
                           + "скасував своє поручення за Тебе."
             };
         }
