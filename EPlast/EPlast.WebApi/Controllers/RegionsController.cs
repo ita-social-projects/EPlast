@@ -270,7 +270,7 @@ namespace EPlast.WebApi.Controllers
             {
                 try
                 {
-                    await _regionAnnualReportService.EditAsync(reportId, regionAnnualReportQuestions);
+                    await _regionAnnualReportService.EditAsync(await _userManager.GetUserAsync(User), reportId, regionAnnualReportQuestions);
                     _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {reportId})");
                     return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи змінено" });
                 }
@@ -283,6 +283,11 @@ namespace EPlast.WebApi.Controllers
                 {
                     _logger.LogError($"Annual report (id: {reportId}) not found");
                     return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    _logger.LogError($"Annual report (id: {reportId}) can not be edited");
+                    return StatusCode(StatusCodes.Status403Forbidden, new { message = "Користувач не має права редагувати річний звіт" });
                 }
             }
             return BadRequest(ModelState);
