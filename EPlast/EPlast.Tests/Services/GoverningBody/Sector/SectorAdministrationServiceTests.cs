@@ -9,6 +9,7 @@ using EPlast.BLL.DTO.GoverningBody.Sector;
 using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Services.GoverningBodies.Sector;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.GoverningBody;
 using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
@@ -68,6 +69,12 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new GoverningBodyAdministration());
             var testSectorAdmin = new SectorAdministrationDto()
             {
                 AdminType = new AdminTypeDto() { AdminTypeName = "test" }
@@ -117,6 +124,12 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
                 .Setup(x => x.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
                     It.IsAny<Func<IQueryable<SectorAdministration>, IIncludableQueryable<SectorAdministration, object>>>()))
                 .ReturnsAsync(new List<SectorAdministration>() { new SectorAdministration() { Id = 1 } });
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new GoverningBodyAdministration());
 
             //Act
             await _service.RemoveAdminRolesByUserIdAsync(It.IsAny<string>());
@@ -178,6 +191,12 @@ namespace EPlast.Tests.Services.GoverningBody.Sector
             _userManager
                 .Setup(x => x.GetRolesAsync(It.IsAny<User>()))
                 .ReturnsAsync(new List<string> { Roles.PlastMember });
+            _repoWrapper
+                .Setup(x => x.GoverningBodyAdministration.GetFirstOrDefaultAsync(
+                    It.IsAny<Expression<Func<GoverningBodyAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
+                        IIncludableQueryable<GoverningBodyAdministration, object>>>()))
+                .ReturnsAsync(new GoverningBodyAdministration());
             var testSectorAdmin = new SectorAdministrationDto()
             {
                 AdminType = new AdminTypeDto() { AdminTypeName = "test" }
