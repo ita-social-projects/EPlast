@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
@@ -35,11 +36,13 @@ namespace EPlast.WebApi.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly IUserAccessService _userAccessService;
+        private readonly IUserDatesService _userDatesService;
 
         public UserController(IUserService userService,
             IUserPersonalDataService userPersonalDataService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
+            IUserDatesService userDatesService,
             ILoggerService<UserController> loggerService,
             IMapper mapper, UserManager<User> userManager, IUserAccessService userAccessService)
         {
@@ -51,6 +54,7 @@ namespace EPlast.WebApi.Controllers
             _mapper = mapper;
             _userManager = userManager;
             _userAccessService = userAccessService;
+            _userDatesService = userDatesService;
         }
 
 
@@ -143,11 +147,13 @@ namespace EPlast.WebApi.Controllers
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
+            var dates = await _userDatesService.GetUserMembershipDatesAsync(focusUserId);
+            var entryDate = dates.DateEntry;
 
             var currentUserAccess = await 
                 _userAccessService.GetUserProfileAccessAsync(currentUser.Id, focusUserId, currentUser);
 
-            var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
+            var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, entryDate);
             var isFocusUserPlastMember = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember);
 
             if (currentUserAccess["CanViewUserFullProfile"])
