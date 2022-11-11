@@ -217,6 +217,15 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             _repositoryWrapper.GoverningBodyAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
+
+            var countOfSectorAdministrations = await _repositoryWrapper.GoverningBodySectorAdministration.GetAllAsync(
+                u => u.UserId == admin.UserId && u.Status == true);
+            var countOfGbAdministrations = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(
+                u => u.UserId == admin.UserId && u.Status == true);
+            if (countOfGbAdministrations.Count() == 0 && countOfSectorAdministrations.Count() == 0)
+            {
+                await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
+            }
         }
 
         public async Task<IEnumerable<GoverningBodyAdministrationDto>> GetUserAdministrations(string userId)
