@@ -15,6 +15,7 @@ namespace EPlast.WebApi.Models.UserModels
         public ConfirmedUserViewModel ClubApprover { get; set; }
         public ConfirmedUserViewModel CityApprover { get; set; }
         public bool IsUserPlastun { get; set; }
+        public bool IsUserAdmin { get; set; }
         public bool IsUserHeadOfClub { get; set; }
         public bool IsUserHeadDeputyOfClub { get; set; }
         public bool IsUserHeadOfCity { get; set; }
