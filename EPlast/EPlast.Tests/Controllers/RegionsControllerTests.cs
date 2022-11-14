@@ -28,8 +28,6 @@ namespace EPlast.Tests.Controllers
 {
     internal class RegionsControllerTests
     {
-
-        private Mock<ILoggerService<CitiesController>> _logger;
         private Mock<IRegionAdministrationService> _regionAdministrationService;
         private Mock<IRegionAnnualReportService> _regionAnnualReportService;
         private RegionsController _regionController;
@@ -42,7 +40,6 @@ namespace EPlast.Tests.Controllers
         [SetUp]
         public void SetUp()
         {
-            _logger = new Mock<ILoggerService<CitiesController>>();
             _regionService = new Mock<IRegionService>();
             _regionAdministrationService = new Mock<IRegionAdministrationService>();
             _regionAnnualReportService = new Mock<IRegionAnnualReportService>();
@@ -52,7 +49,6 @@ namespace EPlast.Tests.Controllers
             _medaitor = new Mock<IMediator>();
             _userAccessService = new Mock<IUserAccessService>();
             _regionController = new RegionsController(_cache.Object,
-                _logger.Object,
                 _regionService.Object,
                 _regionAdministrationService.Object,
                 _regionAnnualReportService.Object,
@@ -92,7 +88,6 @@ namespace EPlast.Tests.Controllers
             RegionDocumentDto document = new RegionDocumentDto();
             // Act
             var result = await _regionController.AddDocument(document);
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
             var actual = (result as ObjectResult).Value;
             // Assert
             Assert.IsInstanceOf<OkObjectResult>(result);
@@ -103,7 +98,7 @@ namespace EPlast.Tests.Controllers
         public async Task AddDocument_NewDocument_ReturnsBadRequest()
         {
             // Arrange
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>())).Throws(new ArgumentException());
+            _regionService.Setup(x => x.AddDocumentAsync(It.IsAny<RegionDocumentDto>())).Throws<ArgumentException>();
 
             // Act
             var actual = await _regionController.AddDocument(new RegionDocumentDto());
@@ -233,7 +228,6 @@ namespace EPlast.Tests.Controllers
                 .Setup(s => s.GetUserRegionAdministrationAccessAsync(It.IsAny<RegionAdministrationDto>(),
                     It.IsAny<User>())).ReturnsAsync(userAccess);
             _regionAdministrationService.Setup(x => x.EditRegionAdministrator(admin)).ReturnsAsync(admin);
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
             
             // Act
             var result = await _regionController.EditAdministrator(admin);
@@ -1030,7 +1024,7 @@ namespace EPlast.Tests.Controllers
         public async Task Delete_NullReferenceException()
         {
             // Arrange
-            _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>()));
+            _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>())).Throws<NullReferenceException>();
             // Act
             var result = await _regionController.Delete(1);
             // Assert
@@ -1061,7 +1055,6 @@ namespace EPlast.Tests.Controllers
             int id = 2;
             // Act
             var result = await _regionController.RemoveDocument(id);
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
             // Assert
             Assert.IsInstanceOf<OkResult>(result);
         }
@@ -1073,9 +1066,6 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
             RegionAdministrationDto admin = new RegionAdministrationDto() { ID = 2 };
-
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
-
             _regionAnnualReportService.Setup(x => x.DeleteAsync(It.IsAny<int>()));
 
             // Act
@@ -1093,6 +1083,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             int reportID = 0;
+            _regionAnnualReportService.Setup(x => x.EditAsync(reportID, It.IsAny<RegionAnnualReportQuestions>())).Throws<NullReferenceException>();
 
             // Act
             var result = await _regionController.EditRegionReport(reportID, null);
@@ -1186,7 +1177,6 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
             _regionAnnualReportService.Setup(x => x.ConfirmAsync(It.IsAny<int>()));
 
             // Act
@@ -1206,9 +1196,6 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
             RegionAdministrationDto admin = new RegionAdministrationDto() { ID = 2 };
-
-            _logger.Setup(x => x.LogInformation(It.IsAny<string>()));
-
             int id = 0;
 
             // Act
@@ -1225,8 +1212,8 @@ namespace EPlast.Tests.Controllers
         public async Task Cancel_NullReferenceException()
         {
             // Arrange
-            _logger.Setup(x => x.LogError(It.IsAny<string>()));
             int id = -1;
+            _regionAnnualReportService.Setup(x => x.CancelAsync(id)).Throws<NullReferenceException>();
 
             // Act
             var result = await _regionController.Cancel(id);

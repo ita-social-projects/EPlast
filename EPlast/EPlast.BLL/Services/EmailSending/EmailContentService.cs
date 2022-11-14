@@ -15,9 +15,9 @@ namespace EPlast.BLL.Services.EmailSending
     public class EmailContentService : IEmailContentService
     {
         private readonly IUserService _userService;
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
 
-        public EmailContentService(IUserService userService, IHostURLService hostURLService)
+        public EmailContentService(IUserService userService, IHostUrlService hostURLService)
         {
             _userService = userService;
             _hostURLService = hostURLService;
