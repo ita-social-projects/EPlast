@@ -1,5 +1,6 @@
 ﻿using EPlast.DataAccess.Entities;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +15,13 @@ namespace EPlast.DataAccess.Repositories
         public IEnumerable<MethodicDocumentTableObject> GetMethodicDocuments(string searchData, int page, int pageSize,
             string status)
         {
+            if (string.IsNullOrEmpty(searchData))
+            {
+                searchData = "";
+            }
+
             searchData = searchData?.ToLower();
+            var getDate = string.Join("-", searchData?.Split(".").Reverse()) ?? "";
 
             var found = EPlastDBContext.Set<MethodicDocument>()
                 .Include(doc => doc.Organization)
@@ -25,7 +32,7 @@ namespace EPlast.DataAccess.Repositories
                     || doc.Name.ToLower().Contains(searchData)
                     || doc.Organization.OrganizationName.ToLower().Contains(searchData)
                     || doc.Description.ToLower().Contains(searchData)
-                    || doc.Date.ToString().Contains(searchData)
+                    || doc.Date.ToString().Contains(getDate)
                 );
 
             var selected = found.Select(doc => new MethodicDocumentTableObject()

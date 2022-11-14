@@ -9,7 +9,7 @@ namespace EPlast.DataAccess.Repositories.Contracts
     {
         Task<Tuple<IEnumerable<UserTableObject>, int>> GetUserTableObjects(int pageNum, int pageSize, string tab,
             string regions, string cities, string clubs, string degrees, int sortKey, string searchData,
-            string filterRoles = "", string andClubs = null);
+            string filterRoles = "", string filterKadras = "", string andClubs = null);
 
         Task<int> GetUsersCountAsync();
     }
