@@ -278,7 +278,6 @@ namespace EPlast.WebApi.Controllers
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    _logger.LogError($"Annual report (id: {reportId}) can not be edited");
                     return StatusCode(StatusCodes.Status403Forbidden, new { message = "Користувач не має права редагувати річний звіт" });
                 }
             }
