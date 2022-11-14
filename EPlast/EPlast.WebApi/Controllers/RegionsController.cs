@@ -25,7 +25,6 @@ namespace EPlast.WebApi.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly ICacheService _cache;
-        private readonly ILoggerService<CitiesController> _logger;
         private readonly IRegionAdministrationService _regionAdministrationService;
         private readonly IRegionAnnualReportService _regionAnnualReportService;
         private readonly IRegionService _regionService;
@@ -38,7 +37,6 @@ namespace EPlast.WebApi.Controllers
 
 
         public RegionsController(ICacheService cache,
-            ILoggerService<CitiesController> logger,
             IRegionService regionService,
             IRegionAdministrationService regionAdministrationService,
             IRegionAnnualReportService regionAnnualReportService,
@@ -46,7 +44,6 @@ namespace EPlast.WebApi.Controllers
             IMediator mediator, IUserAccessService userAccessService)
         {
             _cache = cache;
-            _logger = logger;
             _regionService = regionService;
             _regionAdministrationService = regionAdministrationService;
             _regionAnnualReportService = regionAnnualReportService;
@@ -71,7 +68,6 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 await _regionService.AddDocumentAsync(document);
-                _logger.LogInformation($"Document with id {{{document.ID}}} was added.");
             }
             catch (ArgumentException ex)
             {
@@ -157,7 +153,6 @@ namespace EPlast.WebApi.Controllers
             if (userAccess["EditRegionHead"])
             {
                 var updatedAdmin = await _regionAdministrationService.EditRegionAdministrator(admin);
-                _logger.LogInformation($"Successful edit Admin: {admin.UserId}");
                 return Ok(updatedAdmin);
             }
 
@@ -271,17 +266,14 @@ namespace EPlast.WebApi.Controllers
                 try
                 {
                     await _regionAnnualReportService.EditAsync(reportId, regionAnnualReportQuestions);
-                    _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) edited annual report (id: {reportId})");
                     return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи змінено" });
                 }
                 catch (InvalidOperationException)
                 {
-                    _logger.LogError($"Annual report (id: {reportId}) can not be edited");
                     return StatusCode(StatusCodes.Status400BadRequest, new { message = "Виникла помилка при внесенні змін до річного звіту округи" });
                 }
                 catch (NullReferenceException)
                 {
-                    _logger.LogError($"Annual report (id: {reportId}) not found");
                     return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
                 }
             }
@@ -317,7 +309,6 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> Confirm(int id)
         {
             await _regionAnnualReportService.ConfirmAsync(id);
-            _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) confirmed annual report (id: {id})");
             return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи підтверджено" });
         }
 
@@ -335,12 +326,10 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 await _regionAnnualReportService.CancelAsync(id);
-                _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) canceled annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи скасовано" });
             }
             catch (NullReferenceException)
             {
-                _logger.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
             }
         }
@@ -359,12 +348,10 @@ namespace EPlast.WebApi.Controllers
             try
             {
                 await _regionAnnualReportService.DeleteAsync(id);
-                _logger.LogInformation($"User (id: {(await _userManager.GetUserAsync(User)).Id}) deleted annual report (id: {id})");
                 return StatusCode(StatusCodes.Status200OK, new { message = "Річний звіт округи видалено" });
             }
             catch (NullReferenceException)
             {
-                _logger.LogError($"Annual report (id: {id}) not found");
                 return StatusCode(StatusCodes.Status404NotFound, new { message = "Річний звіт округи не знайдено" });
             }
         }
@@ -462,7 +449,6 @@ namespace EPlast.WebApi.Controllers
             if (userAccess["EditRegion"])
             {
                 await _regionService.RemoveFollowerAsync(followerId);
-                _logger.LogInformation($"Follower with ID {{{followerId}}} was removed.");
                 return Ok();
             }
 
@@ -493,10 +479,8 @@ namespace EPlast.WebApi.Controllers
 
                 return Ok(region);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                _logger.LogError($"Exception :{e.Message}");
-
                 return BadRequest();
             }
         }
@@ -788,7 +772,6 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> RemoveDocument(int documentId)
         {
             await _regionService.DeleteFileAsync(documentId);
-            _logger.LogInformation($"Document with id {{{documentId}}} was deleted.");
 
             return Ok();
         }
