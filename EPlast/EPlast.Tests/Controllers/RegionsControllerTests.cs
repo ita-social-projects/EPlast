@@ -1083,7 +1083,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             int reportID = 0;
-            _regionAnnualReportService.Setup(x => x.EditAsync(reportID, It.IsAny<RegionAnnualReportQuestions>())).Throws<NullReferenceException>();
+            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<User>(), reportID, It.IsAny<RegionAnnualReportQuestions>())).Throws<NullReferenceException>();
 
             // Act
             var result = await _regionController.EditRegionReport(reportID, null);
@@ -1101,7 +1101,7 @@ namespace EPlast.Tests.Controllers
             // Arrange
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
 
-            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()));
+            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()));
             int reportID = 1;
 
             // Act
@@ -1121,7 +1121,7 @@ namespace EPlast.Tests.Controllers
             _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
             _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Admin" });
 
-            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()))
+            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<User>(), It.IsAny<int>(), It.IsAny<RegionAnnualReportQuestions>()))
                 .ThrowsAsync(new InvalidOperationException());
 
             int reportID = 1;
@@ -1133,6 +1133,28 @@ namespace EPlast.Tests.Controllers
             Assert.IsNotNull(result);
             Assert.AreEqual(400, ((ObjectResult)result).StatusCode);
             Assert.AreEqual("{ message = Виникла помилка при внесенні змін до річного звіту округи }", ((ObjectResult)result).Value.ToString());
+        }
+
+        [Test]
+        public async Task EditRegionReport_Unauthorized()
+        {
+            // Arrange
+            _userManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(new User());
+            _userManager.Setup(x => x.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { "Голова Округи" });
+            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<User>(), It.IsAny<int>(),
+                It.IsAny<RegionAnnualReportQuestions>()))
+                .ThrowsAsync(new UnauthorizedAccessException());
+
+            int reportId = 1;
+
+            // Act
+            var result = await _regionController.EditRegionReport(reportId, fakeRegionAnnualReportQuestions());
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(403, ((ObjectResult)result).StatusCode);
+            Assert.AreEqual("{ message = Користувач не має права редагувати річний звіт }", 
+                ((ObjectResult)result).Value.ToString());
         }
 
         [Test]
