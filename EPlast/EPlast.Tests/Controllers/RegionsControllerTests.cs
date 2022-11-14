@@ -1083,7 +1083,7 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             int reportID = 0;
-            _regionAnnualReportService.Setup(x => x.EditAsync(reportID, It.IsAny<RegionAnnualReportQuestions>())).Throws<NullReferenceException>();
+            _regionAnnualReportService.Setup(x => x.EditAsync(It.IsAny<User>(), reportID, It.IsAny<RegionAnnualReportQuestions>())).Throws<NullReferenceException>();
 
             // Act
             var result = await _regionController.EditRegionReport(reportID, null);
