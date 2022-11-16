@@ -9,6 +9,7 @@ using EPlast.BLL.DTO.City;
 using EPlast.BLL.Handlers.CityHandlers;
 using EPlast.BLL.Queries.City;
 using EPlast.DataAccess.Repositories;
+using EPlast.Resources;
 using Microsoft.EntityFrameworkCore.Query;
 using Moq;
 using NUnit.Framework;
@@ -27,7 +28,7 @@ namespace EPlast.Tests.Handlers.City
         {
             _mockRepoWrapper = new Mock<IRepositoryWrapper>();
             _mockMapper = new Mock<IMapper>();
-            _query = new GetActiveCitiesQuery(It.IsAny<bool>());
+            _query = new GetActiveCitiesQuery(It.IsAny<bool>(), It.IsAny<UkraineOblasts>());
             _handler = new GetActiveCitiesHandler(_mockRepoWrapper.Object, _mockMapper.Object);
         }
 
