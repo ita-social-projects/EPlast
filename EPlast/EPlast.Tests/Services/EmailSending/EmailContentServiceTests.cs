@@ -17,7 +17,7 @@ namespace EPlast.Tests.Services.EmailSending
         private EmailContentService _emailContentService;
         private Mock<IUserService> _mockUserService;
         private Mock<IRepositoryWrapper> _mockRepositoryWrapper;
-        private Mock<IHostURLService> _mockHostUrlService;
+        private Mock<IHostUrlService> _mockHostUrlService;
 
         [Test]
         public void GetAuthFacebookRegisterEmail_ReturnsEmailModel()
@@ -254,7 +254,7 @@ namespace EPlast.Tests.Services.EmailSending
             _mockUserService = new Mock<IUserService>();
             _mockRepositoryWrapper = new Mock<IRepositoryWrapper>();
 
-            _mockHostUrlService = new Mock<IHostURLService>();
+            _mockHostUrlService = new Mock<IHostUrlService>();
 
             _emailContentService = new EmailContentService(_mockUserService.Object, _mockHostUrlService.Object);
         }

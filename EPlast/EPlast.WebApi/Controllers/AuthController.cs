@@ -44,7 +44,7 @@ namespace EPlast.WebApi.Controllers
         private readonly IUserDatesService _userDatesService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly UserManager<User> _userManager;
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
         private readonly IMapper _mapper;
         private readonly ICityParticipantsService _cityParticipantsService;
         private readonly ILoggerService<AuthController> _loggerService;
@@ -55,7 +55,7 @@ namespace EPlast.WebApi.Controllers
             IMapper mapper,
             ICityParticipantsService cityParticipantsService,
             UserManager<User> userManager,
-            IHostURLService hostURLService, ILoggerService<AuthController> loggerService)
+            IHostUrlService hostURLService, ILoggerService<AuthController> loggerService)
         {
             _userDatesService = userDatesService;
             _emailSendingService = emailSendingService;
@@ -85,7 +85,7 @@ namespace EPlast.WebApi.Controllers
                 _loggerService.LogWarning("Invalid ModelState");
                 return Redirect(_hostURLService.GetSignInURL(error: 400));
             }
-            
+
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
@@ -256,12 +256,7 @@ namespace EPlast.WebApi.Controllers
 
             var token = HttpUtility.UrlEncode(await _userManager.GenerateEmailConfirmationTokenAsync(user)); 
 
-            string url = Url.Action(
-                "ConfirmEmail",
-                "Auth",
-                new { userId = user.Id, token },
-                "https"
-            );
+            string url = _hostURLService.GetConfirmEmailApiURL(user.Id, token);
 
             var message = _emailSendingService.Compose(
                 reciever,

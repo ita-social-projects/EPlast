@@ -46,6 +46,7 @@ namespace EPlast.DataAccess.Repositories
         IGoverningBodyAnnouncementImageRepository GoverningBodyAnnouncementImage { get; }
         IEducationRepository Education { get; }
         IEventRepository Event { get; }
+        IEventFeedbackRepository EventFeedback { get; }
         IEventAdminRepository EventAdmin { get; }
         IEventAdministrationRepository EventAdministration { get; }
         IEventAdministrationTypeRepository EventAdministrationType { get; }
@@ -89,6 +90,7 @@ namespace EPlast.DataAccess.Repositories
         IUserRepository User { get; }
         IUserDistinctionRepository UserDistinction { get; }
         IUserMembershipDatesRepository UserMembershipDates { get; }
+        IUserFormerMembershipDatesRepository UserFormerMembershipDates { get; }
         IUserNotificationRepository UserNotifications { get; }
         IUserPlastDegreeRepository UserPlastDegree { get; }
         IUserPrecautionRepository UserPrecaution { get; }

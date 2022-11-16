@@ -237,6 +237,21 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get all administrators of a specific club
+        /// </summary>
+        /// <param name="clubId">The id of the club</param>
+        /// <returns>All administrators of a specific city</returns>
+        /// <response code="200">Successful operation</response>
+        /// <response code="404">Club not found</response>
+        [HttpGet("GetAdministrations/{clubId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetAdministrations(int clubId)
+        {
+            var clubAdministrations = await _clubParticipantsService.GetAdministrationByIdAsync(clubId);
+            return Ok(clubAdministrations);
+        }
+
+        /// <summary>
         /// Get all documents of a specific Club
         /// </summary>
         /// <param name="clubId">The id of the Club</param>

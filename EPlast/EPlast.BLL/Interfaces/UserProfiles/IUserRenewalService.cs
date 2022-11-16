@@ -43,7 +43,7 @@ namespace EPlast.BLL.Interfaces.UserProfiles
         /// <param name="page">Current page</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>UserRenewals</returns>
-        IEnumerable<UserRenewalsTableObject> GetUserRenewalsTableObject(string searchedData, int page, int pageSize);
+        IEnumerable<UserRenewalsTableObject> GetUserRenewalsTableObject(string searchedData, int page, int pageSize, string filter);
 
         /// <summary>
         /// Renews Former-Member as registered user, adds him to the members of chosen city

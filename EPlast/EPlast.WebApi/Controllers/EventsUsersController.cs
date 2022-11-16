@@ -31,7 +31,7 @@ namespace EPlast.WebApi.Controllers
         private async Task<bool> HasAccessAsync()
         {
             var roles = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(User));
-            var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastun.Contains(x));
+            var role = roles.FirstOrDefault(x => Roles.HeadsAndHeadDeputiesAndAdminAndPlastMemberAndSupporter.Contains(x));
             if (role != null)
             {
                 return true;
@@ -122,8 +122,9 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.HeadsAndHeadDeputiesAndAdminAndPlastun)]
         public async Task<IActionResult> EventEdit([FromBody] EventCreateDto createDTO)
         {
-            await eventUserManager.EditEventAsync((createDTO));
+            var successful = await eventUserManager.EditEventAsync(createDTO, await _userManager.GetUserAsync(User));
 
+            if (!successful) return Forbid();
             return NoContent();
         }
 

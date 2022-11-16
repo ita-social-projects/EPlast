@@ -128,6 +128,7 @@ namespace EPlast.BLL.Services.UserAccess
             userAccess["CanDeleteUserDistinction"] = canEditUserProfile;
             userAccess["CanDownloadUserDistinction"] = canEditUserProfile;
             userAccess["CanViewDownloadUserBiography"] = canEditUserProfile;
+            userAccess["CanEditDeleteUserPhoto"] = canEditUserProfile;
 
             return userAccess;
         }

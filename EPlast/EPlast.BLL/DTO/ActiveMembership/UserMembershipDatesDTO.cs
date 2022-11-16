@@ -8,6 +8,7 @@ namespace EPlast.BLL.DTO.ActiveMembership
         public int Id { get; set; }
         public DateTime DateEntry { get; set; }
         public DateTime DateOath { get; set; }
+        public DateTime DateMembership { get; set; }
         public DateTime DateEnd { get; set; }
     }
 }
