@@ -317,7 +317,8 @@ namespace EPlast.BLL.Services.Events
                     List<UserNotificationDto> userNotificationsDTO = new List<UserNotificationDto>();
                     foreach (var user in eventToCheck.Participants)
                     {
-                        if (!user.WasPresent && eventToCheck.EventDateEnd.Add(TimeSpan.FromDays(3)) < DateTime.Now) continue;
+                        if ((!user.WasPresent && eventToCheck.EventDateEnd.Add(TimeSpan.FromDays(3)) < DateTime.Now) ||
+                            user.ParticipantStatusId != 1) continue;
 
                         userNotificationsDTO.Add(new UserNotificationDto
                         {

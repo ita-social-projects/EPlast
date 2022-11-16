@@ -20,14 +20,14 @@ namespace EPlast.WebApi.Controllers
         private readonly IAuthService _authService;
         private readonly IResources _resources;
         private readonly UserManager<User> _userManager;
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
 
         public PasswordController(
             IAuthService authService,
             IResources resources,
             IAuthEmailService authEmailService,
             UserManager<User> userManager,
-            IHostURLService hostURLService
+            IHostUrlService hostURLService
         )
         {
             _authService = authService;

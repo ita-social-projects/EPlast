@@ -4,11 +4,11 @@ using System.Web;
 
 namespace EPlast.BLL.Services.HostURL
 {
-    public class HostURLService : IHostURLService
+    public class HostUrlService : IHostUrlService
     {
-        private readonly HostURLOptions _hostUrl;
+        private readonly HostUrlOptions _hostUrl;
 
-        public HostURLService(IOptions<HostURLOptions> options)
+        public HostUrlService(IOptions<HostUrlOptions> options)
         {
             _hostUrl = options.Value;
         }
@@ -56,9 +56,9 @@ namespace EPlast.BLL.Services.HostURL
             return $"{UserPageMainURL}/{userId}";
         }       
         
-        public string GetCitiesURL(int cityId)
+        public string GetCitiesURL(int userId)
         {
-            return $"{CitiesURL}/{cityId}";
+            return $"{CitiesURL}/{userId}";
         }
     }
 }

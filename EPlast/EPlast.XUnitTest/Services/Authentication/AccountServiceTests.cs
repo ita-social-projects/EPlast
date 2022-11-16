@@ -91,7 +91,7 @@ namespace EPlast.XUnitTest.Services
             Mock<IEmailSendingService>,
             Mock<IEmailContentService>,
             Mock<IAuthService>,
-            Mock<IHostURLService>,
+            Mock<IHostUrlService>,
             Mock<UserManager<User>>,
             AuthEmailService
             ) CreateAuthEmailService()
@@ -101,7 +101,7 @@ namespace EPlast.XUnitTest.Services
             Mock<IAuthService> mockAuthSerive = new Mock<IAuthService>();
             var store = new Mock<IUserStore<User>>();
             Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
-            Mock<IHostURLService> mockHostUrlService = new Mock<IHostURLService>();
+            Mock<IHostUrlService> mockHostUrlService = new Mock<IHostUrlService>();
             AuthEmailService authEmailService = new AuthEmailService(
                     mockEmailConfirmatioService.Object,
                     mockEmailContentService.Object,

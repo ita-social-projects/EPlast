@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.Events;
@@ -55,6 +57,9 @@ namespace EPlast.Tests.Services.Events
             //Arrange
             _mockMapper.Setup(m => m.Map<EventCategoryDto, EventCategory>(It.IsAny<EventCategoryDto>()))
                        .Returns(new EventCategory());
+            _mockRepositoryWrapper
+                .Setup(r => r.EventCategory.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<EventCategory, bool>>>(), null))
+                .ReturnsAsync(new EventCategory());
             _mockRepositoryWrapper.Setup(r => r.EventCategory.CreateAsync(It.IsAny<EventCategory>()));
             _mockRepositoryWrapper.Setup(r => r.EventCategoryType.CreateAsync(It.IsAny<EventCategoryType>()));
             _mockRepositoryWrapper.Setup(r => r.SaveAsync());

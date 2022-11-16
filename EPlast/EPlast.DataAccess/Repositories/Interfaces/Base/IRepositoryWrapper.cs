@@ -90,6 +90,7 @@ namespace EPlast.DataAccess.Repositories
         IUserRepository User { get; }
         IUserDistinctionRepository UserDistinction { get; }
         IUserMembershipDatesRepository UserMembershipDates { get; }
+        IUserFormerMembershipDatesRepository UserFormerMembershipDates { get; }
         IUserNotificationRepository UserNotifications { get; }
         IUserPlastDegreeRepository UserPlastDegree { get; }
         IUserPrecautionRepository UserPrecaution { get; }

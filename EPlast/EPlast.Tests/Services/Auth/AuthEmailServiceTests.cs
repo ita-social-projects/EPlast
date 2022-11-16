@@ -23,7 +23,7 @@ namespace EPlast.Tests.Services
         private Mock<IAuthService> _mockAuthService;
         private Mock<IEmailSendingService> _mockEmailSendingService;
         private Mock<IEmailContentService> _mockEmailContentService;
-        private Mock<IHostURLService> _mockHostUrlService;
+        private Mock<IHostUrlService> _mockHostUrlService;
         private Mock<UserManager<User>> _mockUserManager;
         private AuthEmailService _authEmailService;
 
@@ -133,7 +133,7 @@ namespace EPlast.Tests.Services
             _mockEmailSendingService = new Mock<IEmailSendingService>();
             _mockEmailContentService = new Mock<IEmailContentService>();
             _mockAuthService = new Mock<IAuthService>();
-            _mockHostUrlService = new Mock<IHostURLService>();
+            _mockHostUrlService = new Mock<IHostUrlService>();
             var store = new Mock<IUserStore<User>>();
             _mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
