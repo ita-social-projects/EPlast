@@ -135,7 +135,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="201">Instance of EventCategoryCreateDTO</response>
         /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
         [HttpPost("newCategory")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
@@ -150,7 +150,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">No Content</response>
         /// <response code="400">When event cateogry is not found by id</response>
         [HttpPut("updateCategory")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> UpdateEventCategory([FromBody] EventCategoryDto eventCategoryUpdateDto)
         { 
             var isUpdated = await _eventCategoryManager.UpdateEventCategoryAsync(eventCategoryUpdateDto);
@@ -166,7 +166,7 @@ namespace EPlast.WebApi.Controllers
         /// <response code="204">No Content</response>
         /// <response code="400">When event category is not found by id</response>
         [HttpDelete("deleteCategory/{id}")]
-        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer", Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> DeleteEventCategory(int id)
         {
             var isDeleted = await _eventCategoryManager.DeleteEventCategoryAsync(id);
