@@ -13,6 +13,15 @@ spec:
       labels:
         app: eplastapi 
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - aks-agentpool-38126314-vmss00002a    
       containers:
         - name: eplastapi 
           image: ___containerRegistry___/eplastapi:___containerRegistry_version_backend_test___
