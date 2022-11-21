@@ -11,12 +11,12 @@ namespace EPlast.XUnitTest.Services.HostURL
 {
     public class HostURLServiceTests
     {
-        private Mock<HostURLOptions> _hostUrl;
-        private Mock<IOptions<HostURLOptions>> options;
+        private Mock<EPlast.BLL.Services.HostURL.HostURLOptions> _hostUrl;
+        private Mock<IOptions<EPlast.BLL.Services.HostURL.HostURLOptions>> options;
         public HostURLServiceTests()
         {
-            _hostUrl = new Mock<HostURLOptions>();
-            options = new Mock<IOptions<HostURLOptions>>();
+            _hostUrl = new Mock<EPlast.BLL.Services.HostURL.HostURLOptions>();
+            options = new Mock<IOptions<EPlast.BLL.Services.HostURL.HostURLOptions>>();
 
         }
        
