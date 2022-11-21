@@ -133,11 +133,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
             await _repositoryWrapper.SaveAsync();
 
             var countOfGbAdministrations = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(
-                u => u.UserId == admin.UserId && u.Status == true);
+                u => u.UserId == admin.UserId && u.Status);
             var countOfSectorAdministrations = await _repositoryWrapper.GoverningBodySectorAdministration.GetAllAsync(
-                u => u.UserId == admin.UserId && u.Status == true);            
+                u => u.UserId == admin.UserId && u.Status);            
 
-            if (countOfGbAdministrations.Count() == 0 && countOfSectorAdministrations.Count() == 0)
+            if (countOfGbAdministrations.Any() && countOfSectorAdministrations.Any())
             {
                 await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
             }            
