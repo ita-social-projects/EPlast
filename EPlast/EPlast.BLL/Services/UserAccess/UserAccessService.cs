@@ -76,7 +76,9 @@ namespace EPlast.BLL.Services.UserAccess
         {
             _securityModel.SetSettingsFile(CitySecuritySettingsFile);
             var userAccess = await _securityModel.GetUserAccessAsync(userId);
-            userAccess["EditCity"] = await _cityAccessService.HasAccessAsync(user, cityId);
+            var hasAccess = await _cityAccessService.HasAccessAsync(user, cityId);
+            userAccess["EditCity"] = hasAccess;
+            userAccess["AddCityHead"] = hasAccess;
             return userAccess;
         }
 
