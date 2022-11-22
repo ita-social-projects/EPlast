@@ -305,6 +305,11 @@ namespace EPlast.BLL.Services.Region
         }
         public async Task<RegionDocumentDto> AddDocumentAsync(RegionDocumentDto documentDTO)
         {
+            if (documentDTO == null)
+            {
+                throw new ArgumentException(nameof(documentDTO));
+            }
+
             var fileBase64 = documentDTO.BlobName.Split(',')[1];
             ValidateFileName(documentDTO, out string[] splittedName);
             var fileName = $"{Guid.NewGuid()}.{splittedName.Last()}";

@@ -69,7 +69,7 @@ namespace EPlast.BLL.Services.Precautions
                 return false;
             }
 
-            bool existNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            bool existNumber = await DoesPrecautionExistAsync(userPrecautionDTO.Id);
             if (existNumber)
             {
                 return false;
@@ -132,7 +132,7 @@ namespace EPlast.BLL.Services.Precautions
                 return false;
             }
 
-            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            bool existRegisterNumber = await DoesPrecautionExistAsync(userPrecautionDTO.Id);
             if (existRegisterNumber)
             {
                 return false;
@@ -225,7 +225,7 @@ namespace EPlast.BLL.Services.Precautions
             return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(userPrecautions);
         }
 
-        public async Task<bool> IsNumberExistAsync(int number, int? id = null)
+        public async Task<bool> DoesPrecautionExistAsync(int id)
         {
             var userPrecaution = await _repoWrapper
                 .UserPrecaution
@@ -240,6 +240,17 @@ namespace EPlast.BLL.Services.Precautions
             }
 
             return userPrecaution.Id != id;
+        }
+
+        public async Task<bool> DoesNumberExistAsync(int number)
+        {
+            var userPrecaution = await _repoWrapper
+                .UserPrecaution
+                .GetFirstOrDefaultAsync
+                (
+                    predicate: up => up.Number == number
+                );
+            return userPrecaution != null;
         }
 
         public async Task<IEnumerable<ShortUserInformationDto>> UsersTableWithoutPrecautionAsync()

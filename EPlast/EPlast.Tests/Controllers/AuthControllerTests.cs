@@ -34,7 +34,7 @@ namespace EPlast.Tests.Controllers
             _userManagerMock = new Mock<UserManager<User>>(MockBehavior.Strict, Mock.Of<IUserStore<User>>(), null, null, null, null, null, null, null, null);
             _userManagerMock
                 .SetupSet(m => m.Logger = null);
-            _hostURLService = new Mock<IHostURLService>();
+            _hostURLService = new Mock<IHostUrlService>();
             _loggerServiceMock = new Mock<ILoggerService<AuthController>>();
             _controller = new AuthController(
                 _userDatesServiceMock.Object,
@@ -554,9 +554,9 @@ namespace EPlast.Tests.Controllers
         private Mock<IMapper> _mapperMock = null!;
         private Mock<ICityParticipantsService> _cityParticipantServiceMock = null!;
         private Mock<UserManager<User>> _userManagerMock = null!;
-        private Mock<IHostURLService> _hostURLService = null!;
+        private Mock<IHostUrlService> _hostURLService = null!;
         private AuthController _controller = null!;
-        private Mock<ILoggerService<AuthController>> _loggerServiceMock;
+        private Mock<ILoggerService<AuthController>> _loggerServiceMock = null!;
 
         private string GetURL()
         {
