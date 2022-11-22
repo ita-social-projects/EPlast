@@ -11,13 +11,12 @@ namespace EPlast.XUnitTest.Services.HostURL
 {
     public class HostURLServiceTests
     {
-        private Mock<EPlast.BLL.Services.HostURL.HostURLOptions> _hostUrl;
-        private Mock<IOptions<EPlast.BLL.Services.HostURL.HostURLOptions>> options;
+        private HostURLOptions _hostUrl;
+        private Mock<IOptions<HostURLOptions>> options;
         public HostURLServiceTests()
         {
-            _hostUrl = new Mock<EPlast.BLL.Services.HostURL.HostURLOptions>();
-            options = new Mock<IOptions<EPlast.BLL.Services.HostURL.HostURLOptions>>();
-
+            _hostUrl = new HostURLOptions();
+            options = new Mock<IOptions<HostURLOptions>>();
         }
        
         [Fact]
@@ -25,7 +24,7 @@ namespace EPlast.XUnitTest.Services.HostURL
         {
             // Arrange
             string tail = "/api";
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetFrontEndURL(tail);
@@ -40,28 +39,28 @@ namespace EPlast.XUnitTest.Services.HostURL
         {
             // Arrange
             int error = 404;
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetSignInURL(error);
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<string>(result);
-          
+
         }
         [Fact]
         public void GetResetPasswordURLTest()
         {
             // Arrange
             string token = "kkhkf57jgdu58";
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetResetPasswordURL(token);
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<string>(result);
-          
+
         }
 
         [Fact]
@@ -69,7 +68,7 @@ namespace EPlast.XUnitTest.Services.HostURL
         {
             // Arrange
             string search = "search";
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetUserTableURL(search);
@@ -82,8 +81,8 @@ namespace EPlast.XUnitTest.Services.HostURL
         {
             // Arrange
             string firstName = "Леся";
-            string lastName="Українка";
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            string lastName = "Українка";
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetUserTableURL((firstName, lastName));
@@ -96,7 +95,7 @@ namespace EPlast.XUnitTest.Services.HostURL
         {
             // Arrange
             string token = "kkhkf57jgdu58";
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetConfirmEmailApiURL("1", token);
@@ -108,7 +107,7 @@ namespace EPlast.XUnitTest.Services.HostURL
         public void GetUserPageMainURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetUserPageMainURL("1");
@@ -120,76 +119,76 @@ namespace EPlast.XUnitTest.Services.HostURL
         public void GetCitiesURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             var result = service.GetCitiesURL(1);
             // Assert
             Assert.NotNull(result);
             Assert.IsAssignableFrom<string>(result);
-           
+
         }
 
         [Fact]
         public void CitiesURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Assert
             Assert.IsAssignableFrom<string>(service.CitiesURL);
-         
+
         }
 
         [Fact]
         public void SignInURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Assert
             Assert.IsAssignableFrom<string>(service.SignInURL);
-            
+
         }
 
         [Fact]
         public void UserTableURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             // Assert
             Assert.IsAssignableFrom<string>(service.UserTableURL);
-           
+
         }
         [Fact]
         public void ResetPasswordURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             // Assert
             Assert.IsAssignableFrom<string>(service.ResetPasswordURL);
-          
+
         }
         [Fact]
         public void UserPageMainURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             // Assert
             Assert.IsAssignableFrom<string>(service.UserPageMainURL);
-           
+
         }
         [Fact]
         public void FrontEndURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             // Assert
@@ -199,12 +198,12 @@ namespace EPlast.XUnitTest.Services.HostURL
         public void BackEndApiURLTest()
         {
             // Arrange
-            options.Setup(x => x.Value).Returns(_hostUrl.Object);
+            options.Setup(x => x.Value).Returns(_hostUrl);
             var service = new HostURLService(options.Object);
             // Act
             // Assert
             Assert.IsAssignableFrom<string>(service.BackEndApiURL);
-           
+
         }
     }
 }
