@@ -71,10 +71,13 @@ namespace EPlast.Tests.Controllers
             var result = await controller.GetAll();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as List<CourseDto>)
+            Assert.Multiple(() => {
+                Assert.NotNull(result);
+                Assert.IsInstanceOf<OkObjectResult>(result);
+                Assert.IsNotNull(((result as ObjectResult).Value as List<CourseDto>)
                 .Where(n => n.Name.Equals(EXPEXTED_STR)));
+            });
+            
         }
 
         [Test]
@@ -102,10 +105,12 @@ namespace EPlast.Tests.Controllers
             var result = await controller.GetAllCourseByUserId(USER_ID.ToString());
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.IsNotNull(((result as ObjectResult).Value as List<CourseDto>)
+            Assert.Multiple(() => {
+                Assert.NotNull(result);
+                Assert.IsInstanceOf<OkObjectResult>(result);
+                Assert.IsNotNull(((result as ObjectResult).Value as List<CourseDto>)
                 .Where(n => n.Name.Equals(EXPEXTED_STR)));
+            });
         }
 
         [Test]
@@ -122,7 +127,6 @@ namespace EPlast.Tests.Controllers
             var result = await controller.AddCourse(It.IsAny<CourseDto>());
 
             // Assert
-            Assert.NotNull(result);
             Assert.IsInstanceOf<CreatedResult>(result);
         }
 
