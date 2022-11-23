@@ -16,13 +16,13 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
     public class BlobStorageRepositoryTests
     {
         private readonly Mock<IAzureBlobConnectionFactory> _connectionFactory;
-        private readonly string _containerNameKey;
+        
 
         public BlobStorageRepositoryTests()
         {
             _connectionFactory = new Mock<IAzureBlobConnectionFactory>();
         }
-        private string nameKey = "NameKey";
+       
 
         [Fact]
         public async Task GetBlobTest()
@@ -30,6 +30,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
             // Arrange
             _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
+            const string nameKey = "NameKey";
             // Act
             var result = await service.GetBlobAsync(nameKey);
 
@@ -44,10 +45,11 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
             // Arrange
             _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
+            const string blobName = "blobName";
             // Act
-          
+            var result = service.GetBlobBase64Async(blobName);
             // Assert
-            await Assert.ThrowsAsync<Microsoft.Azure.Storage.StorageException>( () => service.GetBlobBase64Async("blobName"));
+            await Assert.ThrowsAsync<Microsoft.Azure.Storage.StorageException>( () => result);
           
         }
 
@@ -57,8 +59,9 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
             // Arrange
             _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
+            const string blobName = "blobName";
             // Act
-            await service.DeleteBlobAsync("blobName");
+            await service.DeleteBlobAsync(blobName);
             // Assert
             _connectionFactory.Verify(r => r.GetBlobContainer(It.IsAny<string>()));
            
@@ -72,28 +75,28 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
             _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
             var mockFile = new Mock<IFormFile>();
+            const string fileName = "picture.png";
             // Act
-            var fileName = "picture.png";
             var ms = new MemoryStream();
             mockFile.Setup(_ => _.OpenReadStream()).Returns(ms);
             mockFile.Setup(_ => _.FileName).Returns(fileName);
             mockFile.Setup(_ => _.Length).Returns(ms.Length);
             // Assert
             await Assert.ThrowsAsync<Microsoft.Azure.Storage.StorageException>(() => service.UploadBlobAsync(mockFile.Object, "blobName"));
-         
-         
         }
-
         [Fact]
         public async Task UploadBlobForBase64Test()
         {
-            // Arrange
+            //Arrange
             _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
+            const string blobForBase64 = "qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwer";
             // Act
-      
+            var result = service.UploadBlobForBase64Async(blobForBase64, "blobName");
             // Assert
-             await Assert.ThrowsAsync<Microsoft.Azure.Storage.StorageException>(() => service.UploadBlobForBase64Async("qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwer", "blobName"));
+            await Assert.ThrowsAsync<Microsoft.Azure.Storage.StorageException>(() => result);
+
         }
+       
     }
 }
