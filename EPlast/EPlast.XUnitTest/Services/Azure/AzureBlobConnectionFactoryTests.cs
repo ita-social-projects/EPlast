@@ -27,15 +27,23 @@ namespace EPlast.XUnitTest.Services.Azure
     public class AzureBlobConnectionFactoryTests
     {
 
+        private Dictionary<string, string> inMemorySettings;
+        private IConfiguration configuration;
+
+        public AzureBlobConnectionFactoryTests()
+        {
+            inMemorySettings = new Dictionary<string, string>();
+        }
+
+
         [Fact]
-        public async Task GetBlobContainerTest()
+        public async Task GetBlobContainerTest_DoesntThrowExeption()
         {
             // Arrange
-            var inMemorySettings = new Dictionary<string, string>();
-            inMemorySettings.Add("BlobContainerNames:1", "value");
-            inMemorySettings.Add("BlobStorage", "value");
+            const int ID_CONTAINER = 1;
 
-            IConfiguration configuration = new ConfigurationBuilder()
+            FillMemorySettings(ID_CONTAINER);
+            configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(inMemorySettings)
                 .Build();
 
@@ -43,8 +51,14 @@ namespace EPlast.XUnitTest.Services.Azure
             var actionManager = new AzureBlobConnectionFactory(configuration);
 
             // Assert
-            await Assert.ThrowsAsync<ArgumentException>(() => actionManager.GetBlobContainer("1"));
+            await Assert.ThrowsAsync<ArgumentException>(() => actionManager.GetBlobContainer(ID_CONTAINER.ToString()));
 
+        }
+
+        private void FillMemorySettings(int ID_CONTAINER)
+        {
+            inMemorySettings.Add($"BlobContainerNames:{ID_CONTAINER}", "value");
+            inMemorySettings.Add("BlobStorage", "value");
         }
 
 
