@@ -27,6 +27,9 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<IUserCourseService> _usercourseService;
         private readonly Mock<ILoggerService<CoursesController>> _loggerService;
         private readonly Mock<UserManager<User>> _userManager;
+        private readonly CoursesController _controller;
+        private readonly Mock<HttpContext> _httpContext;
+        private readonly ControllerContext _context;
 
 
         public CourseControllerTest()
@@ -37,6 +40,13 @@ namespace EPlast.Tests.Controllers
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
 
+            _httpContext = new Mock<HttpContext>();
+
+            _context = new ControllerContext(
+                new ActionContext(
+                    _httpContext.Object, new RouteData(),
+                    new ControllerActionDescriptor()));
+
         }
 
         private CoursesController CreateCoursesController => new CoursesController(_courseService.Object,
@@ -46,20 +56,17 @@ namespace EPlast.Tests.Controllers
           );
 
         [Test]
-        public async Task GetAllTest()
+        public async Task GetAllTest_ReturnsInstanceOfOkObjectResult()
         {
             // Arrange
             CoursesController controller = CreateCoursesController;
-            var httpContext = new Mock<HttpContext>();
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            controller.ControllerContext = context;
+
+            controller.ControllerContext = _context;
             _courseService
                 .Setup(c => c.GetAllAsync())
                 .ReturnsAsync(GetFakeCourses());
 
+            const string EXPEXTED_STR = "Course";
             // Act
             var result = await controller.GetAll();
 
@@ -67,20 +74,16 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(((result as ObjectResult).Value as List<CourseDto>)
-                .Where(n => n.Name.Equals("Course")));
+                .Where(n => n.Name.Equals(EXPEXTED_STR)));
         }
 
         [Test]
-        public async Task GetAllCourseByUserIdTest()
+        public async Task GetAllCourseByUserIdTest_ReturnsInstanceOfOkObjectResult()
         {
             // Arrange
             CoursesController controller = CreateCoursesController;
-            var httpContext = new Mock<HttpContext>();
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            controller.ControllerContext = context;
+            
+            controller.ControllerContext = _context;
             _courseService
                 .Setup(c => c.GetAllAsync())
                 .ReturnsAsync(GetFakeCourses());
@@ -93,28 +96,25 @@ namespace EPlast.Tests.Controllers
             _usercourseService.
                 Setup(c => c.GetCourseByUserIdAsync(It.IsAny<string>()))
                 .ReturnsAsync(GetFakeCourses());
-
+            const int USER_ID = 1;
+            const string EXPEXTED_STR = "Course";
             // Act
-            var result = await controller.GetAllCourseByUserId("1");
+            var result = await controller.GetAllCourseByUserId(USER_ID.ToString());
 
             // Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsNotNull(((result as ObjectResult).Value as List<CourseDto>)
-                .Where(n => n.Name.Equals("Course")));
+                .Where(n => n.Name.Equals(EXPEXTED_STR)));
         }
 
         [Test]
-        public async Task AddCourseTest()
+        public async Task AddCourseTest_ReturnsInstanceOfCreatedResult()
         {
             // Arrange
             CoursesController controller = CreateCoursesController;
-            var httpContext = new Mock<HttpContext>();
-            var context = new ControllerContext(
-                new ActionContext(
-                    httpContext.Object, new RouteData(),
-                    new ControllerActionDescriptor()));
-            controller.ControllerContext = context;
+            
+            controller.ControllerContext = _context;
             _courseService
                 .Setup(c => c.AddCourseAsync(It.IsAny<CourseDto>()));
 
