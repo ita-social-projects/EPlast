@@ -37,7 +37,7 @@ namespace EPlast.XUnitTest.Services.Educators
         }
 
         [Fact]
-        public async Task CreateKVTypeTest()
+        public async Task CreateKVTypeTest_ReturnsNotNull()
         {
             //Arrange
 
@@ -61,13 +61,14 @@ namespace EPlast.XUnitTest.Services.Educators
 
             var actionManager = new EducatorsStaffTypesService(_repositoryWrapper.Object, _mapper.Object);
             var methodResult = await actionManager.CreateKVType(It.IsAny<EducatorsStaffTypesDto>());
+
+            //Assert 
             
-            Assert.NotNull(methodResult);
             Assert.IsAssignableFrom<EducatorsStaffTypesDto>(methodResult);
         }
 
         [Fact]
-        public async Task GetAllKVTypesAsyncTest()
+        public async Task GetAllKVTypesAsyncTest_ReturnsNotNull()
         {
             //Arrange
 
@@ -88,17 +89,17 @@ namespace EPlast.XUnitTest.Services.Educators
             var actionManager = new EducatorsStaffTypesService(_repositoryWrapper.Object, _mapper.Object);
             var methodResult = await actionManager.GetAllKVTypesAsync();
             //Assert
-            Assert.NotNull(methodResult);
+
             Assert.IsAssignableFrom<List<EducatorsStaffTypesDto>>(methodResult);
         }
 
         [Fact]
-        public async Task GetKadrasWithSuchTypeTest()
+        public async Task GetKadrasWithSuchTypeTest_ReturnsNotNull()
         {
             //Arrange
 
             _mapper.Setup(a => a.Map<IEnumerable<EducatorsStaff>, IEnumerable<EducatorsStaffDto>>(It.IsAny<IEnumerable<EducatorsStaff>>()))
-               .Returns(new List<EducatorsStaffDto>() { new EducatorsStaffDto() { ID = 1 } });
+               .Returns(GetFakeEducatorsStaffDto());
 
             _repositoryWrapper.Setup(x => x.KVs.GetAllAsync(null, null)).ReturnsAsync(GetFakeEducators());
 
@@ -107,12 +108,12 @@ namespace EPlast.XUnitTest.Services.Educators
             var actionManager = new EducatorsStaffTypesService(_repositoryWrapper.Object, _mapper.Object);
             var methodResult = await actionManager.GetKadrasWithSuchType(It.IsAny<EducatorsStaffTypesDto>());
             //Assert
-            Assert.NotNull(methodResult);
+
             Assert.IsAssignableFrom<List<EducatorsStaffDto>>(methodResult);
         }
 
         [Fact]
-        public async Task GetKVsTypeByIdAsyncTest()
+        public async Task GetKVsTypeByIdAsyncTest_ReturnsNotNull()
         {
             //Arrange
 
@@ -129,7 +130,7 @@ namespace EPlast.XUnitTest.Services.Educators
             var actionManager = new EducatorsStaffTypesService(_repositoryWrapper.Object, _mapper.Object);
             var methodResult = await actionManager.GetKVsTypeByIdAsync(It.IsAny<int>());
             //Assert
-            Assert.NotNull(methodResult);
+
             Assert.IsAssignableFrom<EducatorsStaffTypesDto>(methodResult);
         }
 
@@ -145,6 +146,17 @@ namespace EPlast.XUnitTest.Services.Educators
                 }
             }.AsEnumerable();
         }
+        private IEnumerable<EducatorsStaffDto> GetFakeEducatorsStaffDto()
+        {
+            return new List<EducatorsStaffDto>() 
+            { 
+                new EducatorsStaffDto() 
+                { 
+                    ID = 1 
+                } 
+            }.AsEnumerable();
+        }
+
         private IEnumerable<EducatorsStaff> GetFakeEducators()
         {
             return new List<EducatorsStaff>()
