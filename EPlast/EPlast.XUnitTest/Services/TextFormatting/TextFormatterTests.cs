@@ -10,25 +10,21 @@ namespace EPlast.XUnitTest.Services.TextFormatting
     public class TextFormatterTests
     {
 
-        private readonly TextFormatter.LayoutOptions _layoutOptions;
-        private readonly XGraphics _gfx;
-        private readonly XFont font;
+        private TextFormatter.LayoutOptions _layoutOptions;
+        private XGraphics _gfx;
+        private XFont font;
 
         public TextFormatterTests()
         {
-            _layoutOptions = new TextFormatter.LayoutOptions()
-            { SpacingMode = TextFormatter.SpacingMode.Relative, Spacing = 0 };
+            _layoutOptions = CreateLayoutOptions();
+            font = CreateXFont();
+            _gfx = CreateXGraphics();
 
-            var _document = new PdfDocument();
-            _gfx = XGraphics.FromPdfPage(_document.AddPage());
-
-            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
-            font = new XFont("Arial", 20, XFontStyle.Bold, options);
         }
 
 
         [Fact]
-        public void FontTest()
+        public void FontTest_DoesntThrowExeption()
         {
             //Arrange
 
@@ -43,21 +39,46 @@ namespace EPlast.XUnitTest.Services.TextFormatting
         }
 
         [Fact]
-        public void DrawStringTest()
+        public void DrawStringTest_DoesntThrowExeption()
         {
             //Arrange
+            const string STRING_TO_DRAW = "Hello";
+            const int X = 0, Y = 0, WIDTH = 48, HEIGHT = 48;
 
-            XRect rect = new XRect(0, 0, 100 / 2 - 2, 100 / 2 - 2);
+            XRect rect = CreateXRect(X, Y, WIDTH, HEIGHT);
 
             //Act
             var actionManager = new TextFormatter(_gfx);
 
             var exception = Record.Exception(() => {
-                actionManager.DrawString("Hello", font, XBrushes.Black, rect); });
+                actionManager.DrawString(STRING_TO_DRAW, font, XBrushes.Black, rect); });
 
             //Assert
             Assert.Null(exception);
 
+        }
+
+        private XRect CreateXRect(int X, int Y, int WIDTH, int HEIGHT)
+        {
+            return new XRect(X, Y, WIDTH, HEIGHT);
+        }
+
+        private XGraphics CreateXGraphics()
+        {
+            var _document = new PdfDocument();
+            return XGraphics.FromPdfPage(_document.AddPage());
+        }
+
+        private TextFormatter.LayoutOptions CreateLayoutOptions()
+        {
+            return new TextFormatter.LayoutOptions()
+            { SpacingMode = TextFormatter.SpacingMode.Relative, Spacing = 0 };
+        }
+
+        private XFont CreateXFont()
+        {
+            XPdfFontOptions options = new XPdfFontOptions(PdfFontEncoding.Unicode);
+            return new XFont("Arial", 20, XFontStyle.Bold, options);
         }
     }
 }
