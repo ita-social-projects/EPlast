@@ -16,7 +16,7 @@ namespace EPlast.XUnitTest.Services.Logging
     public class LoggerServiceTests
     {
         private readonly Mock<ILogger<LoggerServiceTests>> _Logger;
-   
+        private const string LogText = "0";
         public LoggerServiceTests()
         {
            _Logger = new Mock<ILogger<LoggerServiceTests>>();
@@ -30,7 +30,7 @@ namespace EPlast.XUnitTest.Services.Logging
             var service = new LoggerService<LoggerServiceTests>(_Logger.Object);
 
             // Act
-            service.LogInformation("LogInformation");
+            service.LogInformation(LogText);
 
             // Assert
             _Logger.Verify(
@@ -50,7 +50,7 @@ namespace EPlast.XUnitTest.Services.Logging
             var service = new LoggerService<LoggerServiceTests>(_Logger.Object);
 
             // Act
-            service.LogWarning("LogWarning");
+            service.LogWarning(LogText);
 
             // Assert
             _Logger.Verify(
@@ -69,7 +69,7 @@ namespace EPlast.XUnitTest.Services.Logging
             var service = new LoggerService<LoggerServiceTests>(_Logger.Object);
 
             // Act
-            service.LogTrace("LogTrace");
+            service.LogTrace(LogText);
 
             // Assert
             _Logger.Verify(
@@ -87,7 +87,7 @@ namespace EPlast.XUnitTest.Services.Logging
             var service = new LoggerService<LoggerServiceTests>(_Logger.Object);
 
             // Act
-            service.LogDebug("LogDebug");
+            service.LogDebug(LogText);
 
             // Assert
             _Logger.Verify(
@@ -105,7 +105,7 @@ namespace EPlast.XUnitTest.Services.Logging
             var service = new LoggerService<LoggerServiceTests>(_Logger.Object);
 
             // Act
-            service.LogError("LogError");
+            service.LogError(LogText);
 
             // Assert
             _Logger.Verify(
