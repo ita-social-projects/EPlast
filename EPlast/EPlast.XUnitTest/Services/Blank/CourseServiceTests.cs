@@ -26,6 +26,7 @@ namespace EPlast.XUnitTest.Services.Blank
         [Fact]
         public async Task GetAllCourseTest()
         {
+            // Arrange
             _repoWrapper.Setup(r => r.Course.GetAllAsync(null, null)).ReturnsAsync(new List<Course>().AsQueryable());
             _mapper.Setup(x => x.Map<Course, CourseDto>(It.IsAny<Course>())).Returns(new CourseDto());
             var service = new CourseService(_repoWrapper.Object, _mapper.Object);
@@ -38,6 +39,7 @@ namespace EPlast.XUnitTest.Services.Blank
         [Fact]
         public async Task AddCourseTests()
         {
+            // Arrange
             _mapper.Setup(m => m.Map<CourseDto, DataAccess.Entities.Course.Course>(It.IsAny<CourseDto>()))
                .Returns(() => new DataAccess.Entities.Course.Course());
             _repoWrapper.Setup(r => r.Course.Create(It.IsAny<Course>()))
@@ -47,9 +49,9 @@ namespace EPlast.XUnitTest.Services.Blank
             CourseDto courseDto = new CourseDto { 
                 ID=0
             };
-             
+            // Act 
             var result = await service.AddCourseAsync(courseDto);
-
+            // Assert
             Assert.IsType<CourseDto>(result);
         }
        
