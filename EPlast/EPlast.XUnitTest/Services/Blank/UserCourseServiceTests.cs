@@ -30,7 +30,7 @@ namespace EPlast.XUnitTest.Services.Blank
         [Fact]
         public async Task GetCourseByUserIdTest()
         {
-           
+            //Arrange 
             _repoWrapper.Setup(r => r.Course.GetAllAsync(It.IsAny<Expression<Func<Course, bool>>>(), null)).ReturnsAsync(new List<Course>()
              {new Course
              {
@@ -39,18 +39,18 @@ namespace EPlast.XUnitTest.Services.Blank
                 AchievementDocuments=new List<AchievementDocuments>(){
                     new AchievementDocuments
                 {
-                   UserId="1",
+                   UserId="0",
                 }
                 }
              }});
           
             _mapper.Setup(x => x.Map<Course, CourseDto>(It.IsAny<Course>())).Returns(new CourseDto());
             var service = new UserCourseService(_repoWrapper.Object, _mapper.Object);
+           
             // Act
+            var result = await service.GetCourseByUserIdAsync("0");
 
-            var result = await service.GetCourseByUserIdAsync("1");
             // Assert
-         
             Assert.NotNull(result);
             Assert.IsAssignableFrom<IEnumerable<CourseDto>>(result);
            
