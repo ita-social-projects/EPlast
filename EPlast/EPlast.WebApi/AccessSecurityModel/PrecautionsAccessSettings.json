@@ -10,7 +10,7 @@
   },
 
   "Крайовий Адмін": {
-    "AddPrecautionToGoverningBodyAdmin": false,
+    "AddPrecautionToGoverningBodyAdmin": true,
     "AddPrecaution": true,
     "OpenUserProfile": true,
     "EditActivePrecaution": true,
