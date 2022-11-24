@@ -39,16 +39,6 @@ namespace EPlast.BLL.Services.Precautions
         {
             var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.UserId);
 
-            bool isUserInPrecautionGoverningBodyAdmin =
-                await _userManager.IsInRoleAsync(precautionUser, Roles.GoverningBodyAdmin);
-
-            bool isCreatorGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
-
-            if (isUserInPrecautionGoverningBodyAdmin && isCreatorGoverningBodyAdmin)
-            {
-                return false;
-            }
-
             var roles = await _userManager.GetRolesAsync(precautionUser);
             var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
 
@@ -297,7 +287,7 @@ namespace EPlast.BLL.Services.Precautions
 
                 if (isCreatorGoverningBodyAdmin)
                 {
-                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin) &&
+                    suggestedUser.IsAvailable = !isInLowerRole &&
                                                 !roles.Contains(Roles.Admin);
                 }
                 else
