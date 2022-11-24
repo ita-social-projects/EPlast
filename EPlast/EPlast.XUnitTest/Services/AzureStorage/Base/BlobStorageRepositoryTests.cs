@@ -16,7 +16,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
     public class BlobStorageRepositoryTests
     {
         private readonly Mock<IAzureBlobConnectionFactory> _connectionFactory;
-        
+        private const string uri = "https://www.google.com";
 
         public BlobStorageRepositoryTests()
         {
@@ -28,7 +28,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
         public async Task GetBlobTest()
         {
             // Arrange
-            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
+            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri(uri)));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
             const string nameKey = "NameKey";
             // Act
@@ -43,7 +43,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
         public async Task GetBlobBase64Test()
         {
             // Arrange
-            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
+            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri(uri)));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
             const string blobName = "blobName";
             // Act
@@ -57,7 +57,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
         public async Task DeleteBlobTest()
         {
             // Arrange
-            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
+            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri(uri)));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
             const string blobName = "blobName";
             // Act
@@ -72,7 +72,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
         public async Task UploadBlobTest()
         {
             // Arrange
-            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
+            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri(uri)));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
             var mockFile = new Mock<IFormFile>();
             const string fileName = "picture.png";
@@ -88,7 +88,7 @@ namespace EPlast.XUnitTest.Services.AzureStorage.Base
         public async Task UploadBlobForBase64Test()
         {
             //Arrange
-            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri("https://www.google.com")));
+            _connectionFactory.Setup(c => c.GetBlobContainer(It.IsAny<string>())).ReturnsAsync(new CloudBlobContainer(new Uri(uri)));
             var service = new AboutBaseBlobStorageRepository(_connectionFactory.Object);
             const string blobForBase64 = "qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwer";
             // Act
