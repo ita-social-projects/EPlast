@@ -78,9 +78,9 @@ namespace EPlast.WebApi.Controllers
         /// </summary>
         /// <returns>List of cities</returns>
         [HttpGet("Cities")]
-        public async Task<IActionResult> GetCities(bool isOnlyActive)
+        public async Task<IActionResult> GetCities(bool isOnlyActive, UkraineOblasts oblast = UkraineOblasts.NotSpecified)
         {
-            var query = new GetActiveCitiesQuery(isOnlyActive);
+            var query = new GetActiveCitiesQuery(isOnlyActive, oblast);
             var cities = await _mediator.Send(query);
             return Ok(cities);
         }

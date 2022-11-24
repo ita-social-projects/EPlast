@@ -174,7 +174,7 @@ namespace EPlast.Tests.Controllers
             Mock<IAuthEmailService> w,
             Mock<IAuthService> f,
             Mock<IResources> h,
-            Mock<IHostURLService> g,
+            Mock<IHostUrlService> g,
             Mock<UserManager<User>> hfg ,
             PasswordController hf
             ) CreatePasswordController()
@@ -182,7 +182,7 @@ namespace EPlast.Tests.Controllers
             var mockAuthEmailService = new Mock<IAuthEmailService>();
             var mockAuthService = new Mock<IAuthService>();
             var mockResources = new Mock<IResources>();
-            var mockHostUrlService = new Mock<IHostURLService>();
+            var mockHostUrlService = new Mock<IHostUrlService>();
             var store = new Mock<IUserStore<User>>();
             Mock<UserManager<User>> mockUserManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             PasswordController passwordController = new PasswordController(

@@ -15,7 +15,7 @@ namespace EPlast.BLL.Services.Auth
 {
     public class AuthEmailService : IAuthEmailService
     {
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
         private readonly IAuthService _authService;
         private readonly IEmailSendingService _emailSendingService;
         private readonly IEmailContentService _emailContentService;
@@ -25,7 +25,7 @@ namespace EPlast.BLL.Services.Auth
                                 IEmailContentService emailContentService,
                                 IAuthService authService,
                                 UserManager<User> userManager,
-                                IHostURLService hostURLService)
+                                IHostUrlService hostURLService)
         {
             _emailSendingService = emailSendingService;
             _emailContentService = emailContentService;
