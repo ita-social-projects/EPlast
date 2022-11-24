@@ -26,23 +26,28 @@ namespace EPlast.XUnitTest.Services.Blank
             _repoWrapper = new Mock<IRepositoryWrapper>();
             _mapper = new Mock<IMapper>();
         }
-
-        [Fact]
-        public async Task GetCourseByUserIdTest()
+        public IEnumerable<Course> CourseList()
         {
-            //Arrange 
-            _repoWrapper.Setup(r => r.Course.GetAllAsync(It.IsAny<Expression<Func<Course, bool>>>(), null)).ReturnsAsync(new List<Course>()
-             {new Course
-             {
-                Name = "Course Name",
-                Link = "https://www.google.com",
-                AchievementDocuments=new List<AchievementDocuments>(){
+            return new List<Course>()
+            {
+                new Course
+                {
+                    Name = "Course Name",
+                    Link = "https://www.google.com",
+                    AchievementDocuments = new List<AchievementDocuments>(){
                     new AchievementDocuments
                 {
                    UserId="0",
                 }
                 }
-             }});
+            }};
+        }
+
+        [Fact]
+        public async Task GetCourseByUserIdTest()
+        {
+            //Arrange 
+            _repoWrapper.Setup(r => r.Course.GetAllAsync(It.IsAny<Expression<Func<Course, bool>>>(), null)).ReturnsAsync(CourseList);
           
             _mapper.Setup(x => x.Map<Course, CourseDto>(It.IsAny<Course>())).Returns(new CourseDto());
             var service = new UserCourseService(_repoWrapper.Object, _mapper.Object);
