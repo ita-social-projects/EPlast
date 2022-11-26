@@ -11,12 +11,10 @@ namespace EPlast.XUnitTest.Services.FileManager
 {
     public class FileStreamManagerTests
     {
-        private Mock<IFileStreamManager> mockedFileStreamManager;
         private IFileStreamManager fileStreamManager;
 
         public FileStreamManagerTests()
         {
-            mockedFileStreamManager = new Mock<IFileStreamManager>();
             fileStreamManager = new FileStreamManager();
         }
 
@@ -38,31 +36,25 @@ namespace EPlast.XUnitTest.Services.FileManager
         [Fact]
         public void GetStreamTest_ReturnsNull()
         { 
-            // Arrange
-            mockedFileStreamManager.Setup(m => m.GetStream()).Returns(It.IsAny<Stream>());
-
             // Act
-            var streamInstance = mockedFileStreamManager.Object.GetStream();
+            var streamInstance = fileStreamManager.GetStream();
 
             // Assert 
             Assert.Null(streamInstance);
         }
 
         [Fact]
-        public void GenerateFileStreamManagerTest_ReturnsNewFileStreamManagerInstance()
+        public void GenerateFileStreamManagerTest_ReturnsFileNotFoundException()
         {
             // Arrange
-            const string anyFilePath = "TestPath";
+            const string anyFilePath = "FileNotFoundPath";
             const FileMode anyFileMode = FileMode.Open;
- 
-            mockedFileStreamManager.Setup(x => x.GenerateFileStreamManager(anyFilePath, anyFileMode)).Returns(It.IsAny<FileStreamManager>());
 
             // Act
-            Action actionToAssert = () => mockedFileStreamManager.Object.GenerateFileStreamManager(anyFilePath, anyFileMode);
-            bool exceptionOccured=ExceptionHandlerMethod(actionToAssert);
+            Action actionToAssert = () => fileStreamManager.GenerateFileStreamManager(anyFilePath, anyFileMode);
 
             // Assert
-            Assert.False(exceptionOccured);
+            FileNotFoundException exception = Assert.Throws<FileNotFoundException>(actionToAssert);
         }
 
         [Fact]
