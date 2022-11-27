@@ -176,5 +176,21 @@ namespace EPlast.BLL.Services.Events
             _repoWrapper.Participant.Update(participant);
             await _repoWrapper.SaveAsync();
         }
+
+        public async Task<bool> CheckIfUserAttendedEducationalEvent(string participantId)
+        {
+            var participant = await _repoWrapper.Participant
+                              .GetFirstOrDefaultAsync(predicate: p => p.UserId == participantId);
+            if (participant == null || !participant.WasPresent)
+            {
+                return false;
+            }
+            var userEvent = await _repoWrapper.Event.GetFirstOrDefaultAsync(e => e.ID == participant.EventId);
+            if (userEvent.EventTypeID == 2)
+            {
+                return true;
+            }
+            return false;
+        }
     }
 }

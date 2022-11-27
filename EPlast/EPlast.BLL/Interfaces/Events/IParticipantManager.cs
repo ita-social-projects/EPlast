@@ -63,5 +63,12 @@ namespace EPlast.BLL.Interfaces.Events
         /// </summary>
         /// <param name="perticipantId">The Id of participant</param>
         Task ChangeUserPresentStatusAsync(int perticipantId);
+
+        /// <summary>
+        /// Check if user attended educational event
+        /// </summary>
+        /// <param name="participantId"></param>
+        /// <returns></returns>
+        Task<bool> CheckIfUserAttendedEducationalEvent(string participantId);
     }
 }
