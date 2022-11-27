@@ -29,7 +29,7 @@ namespace EPlast.BLL.Services.FormerMember
             _userManager = userManager;
         }
 
-        public async Task MakeUserFormerMeberAsync(string userId)
+        public async Task MakeUserFormerMemberAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
 

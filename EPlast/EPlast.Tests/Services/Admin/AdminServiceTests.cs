@@ -41,20 +41,6 @@ namespace EPlast.Tests.Services
         private Mock<IFormerMemberService> _formerMemberService;
 
         [Test]
-        public void ChangeAsync_ReturnsCorrect()
-        {
-            // Arrange
-            _formerMemberService.Setup(x => x.MakeUserFormerMeberAsync(It.IsAny<string>()));        
-
-            // Act
-            var result = service.ChangeAsync(It.IsAny<string>());
-
-            // Assert
-            _formerMemberService.Verify();
-            Assert.NotNull(result);
-        }
-
-        [Test]
         public async Task ChangeCurrentRoleAsync_AddInterested_CaseInterFormer_ReturnsCorrectAsync()
         {
             // Arrange

@@ -7,6 +7,7 @@ using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.FormerMember;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Interfaces;
@@ -29,6 +30,8 @@ namespace EPlast.Tests.Controllers
 
         private readonly Mock<ICityParticipantsService> _cityAdministrationService;
 
+        private readonly Mock<IFormerMemberService> _formerMemberService;
+
         private readonly Mock<ILoggerService<AdminController>> _logger;
 
         private readonly Mock<IUserManagerService> _userManagerService;
@@ -45,6 +48,7 @@ namespace EPlast.Tests.Controllers
             _userManagerService = new Mock<IUserManagerService>();
             _adminService = new Mock<IAdminService>();
             _cityAdministrationService = new Mock<ICityParticipantsService>();
+            _formerMemberService = new Mock<IFormerMemberService>();
             _httpContext = new Mock<HttpContext>();
             _mediator = new Mock<IMediator>();
 
@@ -62,6 +66,7 @@ namespace EPlast.Tests.Controllers
             _userManagerService.Object,
             _adminService.Object,
             _cityAdministrationService.Object,
+            _formerMemberService.Object,
             _mediator.Object
             );
 
@@ -76,7 +81,7 @@ namespace EPlast.Tests.Controllers
 
             //Assert
             Assert.NotNull(result);
-            _adminService.Verify(x => x.ChangeAsync(It.IsAny<string>()), Times.AtLeastOnce);
+            _formerMemberService.Verify(x => x.MakeUserFormerMemberAsync(It.IsAny<string>()), Times.AtLeastOnce);
             _logger.Verify(x => x.LogInformation(It.IsAny<string>()), Times.AtLeastOnce);
         }
 

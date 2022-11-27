@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.City;
+using EPlast.BLL.Interfaces.FormerMember;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Queries.City;
 using EPlast.BLL.Services.Interfaces;
@@ -26,6 +27,8 @@ namespace EPlast.WebApi.Controllers
 
         private readonly ICityParticipantsService _cityAdministrationService;
 
+        private readonly IFormerMemberService _formerMemberService;
+
         private readonly ILoggerService<AdminController> _loggerService;
 
         private readonly IUserManagerService _userManagerService;
@@ -37,6 +40,7 @@ namespace EPlast.WebApi.Controllers
             IUserManagerService userManagerService,
             IAdminService adminService,
             ICityParticipantsService cityAdministrationService,
+            IFormerMemberService formerMemberService,
             IMediator mediator
             )
         {
@@ -44,6 +48,7 @@ namespace EPlast.WebApi.Controllers
             _userManagerService = userManagerService;
             _adminService = adminService;
             _cityAdministrationService = cityAdministrationService;
+            _formerMemberService = formerMemberService;
             _mediator = mediator;
         }
 
@@ -82,7 +87,7 @@ namespace EPlast.WebApi.Controllers
         {
             if (!string.IsNullOrEmpty(userId))
             {
-                await _adminService.ChangeAsync(userId);
+                await _formerMemberService.MakeUserFormerMemberAsync(userId);
                 _loggerService.LogInformation($"Successful change role for {userId}");
                 return NoContent();
             }

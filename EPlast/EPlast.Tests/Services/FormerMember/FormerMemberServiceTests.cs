@@ -54,7 +54,7 @@ namespace EPlast.Tests.Services.FormerMember
             _userManager.Setup(x => x.AddToRoleAsync(It.IsAny<User>(), It.IsAny<string>()));
 
             //Act
-            await _formerMemberService.MakeUserFormerMeberAsync(userFakeId);
+            await _formerMemberService.MakeUserFormerMemberAsync(userFakeId);
 
             //Assert
             _userManager.Verify();

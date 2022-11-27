@@ -8,6 +8,6 @@ namespace EPlast.BLL.Interfaces.FormerMember
         /// Changes user status to Former member 
         /// </summary>
         /// <param name="userId">User id</param>
-        public Task MakeUserFormerMeberAsync(string userId);
+        public Task MakeUserFormerMemberAsync(string userId);
     }
 }

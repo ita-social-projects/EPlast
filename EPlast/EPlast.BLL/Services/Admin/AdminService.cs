@@ -38,50 +38,37 @@ namespace EPlast.BLL.Services
             _mapper = mapper;
             _roleManager = roleManager;
         }
-        public async Task ChangeAsync(string userId)
-        {
-            await _formerMemberService.MakeUserFormerMeberAsync(userId);
-        }
+        
         public async Task ChangeCurrentRoleAsync(string userId, string role)
         {
-            const string supporter = Roles.Supporter;
-            const string plastun = Roles.PlastMember;
-            const string interested = Roles.Interested;
-            const string formerMember = Roles.FormerPlastMember;
-            const string registeredUser = Roles.RegisteredUser;
             var user = await _userManager.FindByIdAsync(userId);
             var roles = await _userManager.GetRolesAsync(user);
 
             switch (role)
             {
-                case supporter:
-                case plastun:
-                case interested:
-                case registeredUser:
-                    if (roles.Contains(supporter))
+                case Roles.Supporter:
+                case Roles.PlastMember:
+                case Roles.Interested:
+                case Roles.RegisteredUser:
+                    if (roles.Contains(Roles.Supporter))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, supporter);
+                        await _userManager.RemoveFromRoleAsync(user, Roles.Supporter);
                     }
-                    else if (roles.Contains(plastun))
+                    else if (roles.Contains(Roles.PlastMember))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, plastun);
+                        await _userManager.RemoveFromRoleAsync(user, Roles.PlastMember);
                     }
-                    else if (roles.Contains(interested))
+                    else if (roles.Contains(Roles.Interested))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, interested);
+                        await _userManager.RemoveFromRoleAsync(user, Roles.Interested);
                     }
-                    else if (roles.Contains(formerMember))
+                    else if (roles.Contains(Roles.FormerPlastMember))
                     {
-                        await _userManager.RemoveFromRoleAsync(user, formerMember);
+                        await _userManager.RemoveFromRoleAsync(user, Roles.FormerPlastMember);
                     }
                     else
                     {
-                        await _userManager.RemoveFromRoleAsync(user, registeredUser);
-                    }
-
-                    if(role == plastun)
-                    {
-
+                        await _userManager.RemoveFromRoleAsync(user, Roles.RegisteredUser);
                     }
 
                     await UpdateUserDatesByChangeRoleAsyncAsync(userId, role);
@@ -89,8 +76,8 @@ namespace EPlast.BLL.Services
                     await _userManager.AddToRoleAsync(user, role);
                     break;
 
-                case formerMember:
-                    await ChangeAsync(userId);
+                case Roles.FormerPlastMember:
+                    await _formerMemberService.MakeUserFormerMemberAsync(userId);
                     break;
             }
         }
