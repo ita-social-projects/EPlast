@@ -6,8 +6,10 @@ using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
@@ -28,10 +30,12 @@ namespace EPlast.Tests.Controllers
         private readonly Mock<ILoggerService<ActiveMembershipController>> _loggerService;
         private readonly Mock<UserManager<User>> _userManager;
         private readonly Mock<IUserService> _userService;
+        private readonly Mock<IConfirmedUsersService> _confirmedUserService;
+        private readonly Mock<IParticipantManager> _participantsService;
 
         private ActiveMembershipController _activeMembershipController =>
             new ActiveMembershipController(_plastDegreeService.Object, _accessLevelService.Object,
-                _userDatesService.Object, _loggerService.Object, _userManager.Object, _userService.Object);
+                _userDatesService.Object, _loggerService.Object, _userManager.Object, _userService.Object, _confirmedUserService.Object, _participantsService.Object);
 
         public ActiveMembershipControllerTests()
         {
@@ -42,6 +46,8 @@ namespace EPlast.Tests.Controllers
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _userService = new Mock<IUserService>();
+            _confirmedUserService = new Mock<IConfirmedUsersService>();
+            _participantsService = new Mock<IParticipantManager>();
         }
 
         [Test]

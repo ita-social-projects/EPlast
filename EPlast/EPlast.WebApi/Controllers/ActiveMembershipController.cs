@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.Admin;
 using EPlast.BLL.Interfaces.ActiveMembership;
+using EPlast.BLL.Interfaces.Events;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
+using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Authorization;
@@ -26,11 +28,14 @@ namespace EPlast.WebApi.Controllers
         private readonly ILoggerService<ActiveMembershipController> _loggerService;
         private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
+        private readonly IConfirmedUsersService _confirmedUsersService;
+        private readonly IParticipantManager _participantManager;
 
         public ActiveMembershipController(IPlastDegreeService plastDegreeService,
             IAccessLevelService accessLevelService, IUserDatesService userDatesService,
             ILoggerService<ActiveMembershipController> loggerService,
-            UserManager<User> userManager, IUserService userService)
+            UserManager<User> userManager, IUserService userService, IConfirmedUsersService confirmedUsersService,
+            IParticipantManager participantManager)
         {
             _plastDegreeService = plastDegreeService;
             _accessLevelService = accessLevelService;
@@ -38,6 +43,8 @@ namespace EPlast.WebApi.Controllers
             _loggerService = loggerService;
             _userManager = userManager;
             _userService = userService;
+            _confirmedUsersService = confirmedUsersService;
+            _participantManager = participantManager;
         }
 
         private async Task<bool> HasAccessAsync(string userId)
@@ -174,6 +181,26 @@ namespace EPlast.WebApi.Controllers
                 return Ok(userId);
             }
             return BadRequest();
+        }
+
+        [HttpGet("canAddActiveMembership/{userId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> CanAddActiveMembership(string userId)
+        {
+            try
+            {
+                var userDates = await _userDatesService.GetUserMembershipDatesAsync(userId);
+
+                var allowedEntryDate = userDates.DateEntry != new DateTime() && userDates.DateEntry < DateTime.Now.AddYears(-1);
+                var isUserConfirmed = await _confirmedUsersService.IsUserConfirmed(userId);
+                var attendedEducationalEvent = await _participantManager.CheckIfUserAttendedEducationalEvent(userId);
+
+                return Ok(allowedEntryDate && isUserConfirmed && attendedEducationalEvent);
+            }
+            catch (InvalidOperationException)
+            {
+                return BadRequest(userId);
+            }
         }
     }
 }
