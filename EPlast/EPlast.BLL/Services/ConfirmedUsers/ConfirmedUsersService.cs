@@ -57,5 +57,15 @@ namespace EPlast.BLL.Services
             var email = await _emailContentService.GetConfirmedUserEmailAsync(vaucheeUser, vaucherUser);
             return await _emailSendingService.SendEmailAsync(vaucheeUser.Email, email.Subject, email.Message, email.Title);
         }
+
+        public async Task<bool> IsUserConfirmed(string userId)
+        {
+            var confirmedUser = await _repoWrapper.ConfirmedUser.GetFirstOrDefaultAsync(u => u.UserID == userId);
+            if (confirmedUser == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

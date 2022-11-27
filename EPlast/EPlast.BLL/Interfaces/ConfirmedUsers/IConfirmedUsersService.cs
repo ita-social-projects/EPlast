@@ -9,5 +9,6 @@ namespace EPlast.BLL.Services.Interfaces
     {
         Task CreateAsync(User vaucherUser, string vaucheeId, ApproveType approveType);
         Task DeleteAsync(User vaucherUser, int confirmedUserId);
+        Task<bool> IsUserConfirmed(string userId);
     }
 }
