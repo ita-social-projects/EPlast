@@ -83,7 +83,7 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
-        public async Task AddUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
+        public async Task AddUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsTrue()
         {
             //Arrange
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
@@ -97,11 +97,11 @@ namespace EPlast.Tests.Services.Precautions
             var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
-        public async Task AddUserPrecautionAsync_NumberExists_ReturnsFalse()
+        public async Task AddUserPrecautionAsync_NumberExists_ReturnsTrue()
         {
             //Arrange
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
@@ -115,7 +115,7 @@ namespace EPlast.Tests.Services.Precautions
             var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
@@ -719,7 +719,7 @@ namespace EPlast.Tests.Services.Precautions
             _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
 
             _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(unassignableRoles);
-            var expected = GetUnavailableSuggestedUsers().ToList();
+            var expected = GetAvailableSuggestedUsers().ToList();
 
             //Act
             var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
