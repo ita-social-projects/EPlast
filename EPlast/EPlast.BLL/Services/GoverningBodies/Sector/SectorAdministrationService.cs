@@ -69,6 +69,11 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
                 throw new ArgumentException("Can't add user with the roles");
             }
 
+            if (sectorAdministrationDto.AdminType.AdminTypeName == Roles.GoverningBodySectorHead)
+                await _userManager.AddToRoleAsync(user, Roles.GoverningBodySectorHead);
+            else
+                await _userManager.AddToRoleAsync(user, Roles.GoverningBodySectorSecretary);
+
             await _userManager.AddToRoleAsync(user, Roles.GoverningBodyAdmin);
 
             await RemoveSectorAdminIfPresent(sectorAdministrationDto.SectorId, adminType.AdminTypeName);
@@ -126,6 +131,16 @@ namespace EPlast.BLL.Services.GoverningBodies.Sector
 
             _repositoryWrapper.GoverningBodySectorAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
+
+            var countOfGbAdministrations = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(
+                u => u.UserId == admin.UserId && u.Status);
+            var countOfSectorAdministrations = await _repositoryWrapper.GoverningBodySectorAdministration.GetAllAsync(
+                u => u.UserId == admin.UserId && u.Status);            
+
+            if (countOfGbAdministrations.Any() && countOfSectorAdministrations.Any())
+            {
+                await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
+            }            
         } 
 
         public async Task RemoveAdminRolesByUserIdAsync(string userId)

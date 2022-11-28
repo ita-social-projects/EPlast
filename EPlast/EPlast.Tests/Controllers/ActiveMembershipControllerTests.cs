@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.ActiveMembership;
+using EPlast.BLL.DTO.City;
 using EPlast.BLL.DTO.UserProfiles;
 using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserProfiles;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.UserEntities;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using Microsoft.AspNetCore.Http;
@@ -266,6 +268,29 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.IsInstanceOf<BadRequestObjectResult>(result);
         }
+
+        [Test]
+        public async Task GetUserFormerDates_ReturnsOK()
+        {
+            //Arrange
+            _userDatesService.Setup(cs => cs.GetUserFormerMembershipDatesTable(It.IsAny<string>()))
+                .Returns(CreateTuple);
+
+            //Act
+            var result = await _activeMembershipController.GetUserDates(null);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull(((OkObjectResult)result).Value);
+        }
+
+        private Tuple<IEnumerable<UserFormerMembershipTable>, int> CreateTuple => new Tuple<IEnumerable<UserFormerMembershipTable>, int>(CreateFormerMemberships, 100);
+
+        private IEnumerable<UserFormerMembershipTable> CreateFormerMemberships => new List<UserFormerMembershipTable>()
+        {
+            new UserFormerMembershipTable(),
+            new UserFormerMembershipTable()
+        };
 
         [Test]
         public async Task ChangeUserEntryAndOathDates_ReturnOK()

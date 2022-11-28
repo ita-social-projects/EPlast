@@ -31,7 +31,7 @@ namespace EPlast.BLL.Services.City
         private readonly UserManager<User> _userManager;
         private readonly INotificationService _notificationService;
         private readonly IMediator _mediator;
-        private readonly IHostURLService _hostURLService;
+        private readonly IHostUrlService _hostURLService;
         private readonly IRegionAdministrationService _regionAdministrationService;
 
         public CityParticipantsService(
@@ -43,7 +43,7 @@ namespace EPlast.BLL.Services.City
             IEmailContentService emailContentService,
             IMediator mediator,
             INotificationService notificationService,
-            IHostURLService hostURLService,
+            IHostUrlService hostURLService,
             IRegionAdministrationService regionAdministrationService
         )
         {
@@ -152,6 +152,12 @@ namespace EPlast.BLL.Services.City
             if (regionAdministrations != null)
             {
                 await _regionAdministrationService.RemoveAdminRolesByUserIdAsync(userId);
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (cityDTO.RegionId != user.RegionId)
+            {
+                user.RegionId = cityDTO.RegionId;
             }
 
             await _repositoryWrapper.SaveAsync();

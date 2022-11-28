@@ -36,6 +36,7 @@ namespace EPlast.BLL.Services.FormerMember
             await _cityParticipants.RemoveMemberAsync(userId);
             await _clubParticipants.RemoveMemberAsync(userId);
             await _formerMemberAdminService.RemoveFromAdminRolesAsync(userId);
+            await _userDatesService.AddFormerEntryDateAsync(userId);
             await _userDatesService.EndUserMembership(userId);
             await _userManager.AddToRoleAsync(user, Roles.FormerPlastMember);
         }

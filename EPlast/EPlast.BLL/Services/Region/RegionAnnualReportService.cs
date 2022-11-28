@@ -266,8 +266,14 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
+        public async Task EditAsync(User user, int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
+            var report = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(r => r.ID == reportId);
+
+            if (!await _regionAccessService.HasAccessAsync(user, report.RegionId))
+            {
+                throw new UnauthorizedAccessException();
+            }
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == reportId && a.Status == AnnualReportStatus.Unconfirmed);
             if (regionAnnualReport.Status != AnnualReportStatus.Unconfirmed)

@@ -11,6 +11,7 @@ using EPlast.BLL.Interfaces.Admin;
 using EPlast.BLL.Services.GoverningBodies;
 using EPlast.DataAccess.Entities;
 using EPlast.DataAccess.Entities.GoverningBody;
+using EPlast.DataAccess.Entities.GoverningBody.Sector;
 using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using Microsoft.AspNetCore.Identity;
@@ -319,6 +320,11 @@ namespace EPlast.Tests.Services.GoverningBody
                    It.IsAny<Func<IQueryable<Organization>,
                        IIncludableQueryable<Organization, object>>>()))
                .ReturnsAsync(GoverningBody);
+            _repoWrapper
+                .Setup(r => r.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>,
+                        IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration>() { new SectorAdministration() { Id = FakeId } });
             _userManager
                 .Setup(x => x.IsInRoleAsync(It.IsAny<User>(), It.Is<string>(v => v == Roles.PlastMember)))
                 .ReturnsAsync(true);
@@ -444,6 +450,11 @@ namespace EPlast.Tests.Services.GoverningBody
                     It.IsAny<Func<IQueryable<GoverningBodyAdministration>,
                         IIncludableQueryable<GoverningBodyAdministration, object>>>()))
                 .ReturnsAsync(GoverningBodyAdmin);
+            _repoWrapper
+                .Setup(r => r.GoverningBodySectorAdministration.GetAllAsync(It.IsAny<Expression<Func<SectorAdministration, bool>>>(),
+                    It.IsAny<Func<IQueryable<SectorAdministration>,
+                        IIncludableQueryable<SectorAdministration, object>>>()))
+                .ReturnsAsync(new List<SectorAdministration>() { new SectorAdministration() { Id = FakeId } });
             _adminTypeService
                 .Setup(a => a.GetAdminTypeByIdAsync(It.IsAny<int>()))
                 .Returns(() => Task<AdminTypeDto>.Factory.StartNew(() => AdminTypeDto));

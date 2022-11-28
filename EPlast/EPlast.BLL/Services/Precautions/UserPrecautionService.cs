@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -39,16 +40,6 @@ namespace EPlast.BLL.Services.Precautions
         {
             var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.UserId);
 
-            bool isUserInPrecautionGoverningBodyAdmin =
-                await _userManager.IsInRoleAsync(precautionUser, Roles.GoverningBodyAdmin);
-
-            bool isCreatorGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
-
-            if (isUserInPrecautionGoverningBodyAdmin && isCreatorGoverningBodyAdmin)
-            {
-                return false;
-            }
-
             var roles = await _userManager.GetRolesAsync(precautionUser);
             var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
 
@@ -69,7 +60,7 @@ namespace EPlast.BLL.Services.Precautions
                 return false;
             }
 
-            bool existNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            bool existNumber = await DoesPrecautionExistAsync(userPrecautionDTO.Id);
             if (existNumber)
             {
                 return false;
@@ -132,7 +123,7 @@ namespace EPlast.BLL.Services.Precautions
                 return false;
             }
 
-            bool existRegisterNumber = await IsNumberExistAsync(userPrecautionDTO.Number, userPrecautionDTO.Id);
+            bool existRegisterNumber = await DoesPrecautionExistAsync(userPrecautionDTO.Id);
             if (existRegisterNumber)
             {
                 return false;
@@ -225,7 +216,7 @@ namespace EPlast.BLL.Services.Precautions
             return _mapper.Map<IEnumerable<UserPrecaution>, IEnumerable<UserPrecautionDto>>(userPrecautions);
         }
 
-        public async Task<bool> IsNumberExistAsync(int number, int? id = null)
+        public async Task<bool> DoesPrecautionExistAsync(int id)
         {
             var userPrecaution = await _repoWrapper
                 .UserPrecaution
@@ -240,6 +231,17 @@ namespace EPlast.BLL.Services.Precautions
             }
 
             return userPrecaution.Id != id;
+        }
+
+        public async Task<bool> DoesNumberExistAsync(int number)
+        {
+            var userPrecaution = await _repoWrapper
+                .UserPrecaution
+                .GetFirstOrDefaultAsync
+                (
+                    predicate: up => up.Number == number
+                );
+            return userPrecaution != null;
         }
 
         public async Task<IEnumerable<ShortUserInformationDto>> UsersTableWithoutPrecautionAsync()
@@ -286,7 +288,7 @@ namespace EPlast.BLL.Services.Precautions
 
                 if (isCreatorGoverningBodyAdmin)
                 {
-                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin) &&
+                    suggestedUser.IsAvailable = !isInLowerRole &&
                                                 !roles.Contains(Roles.Admin);
                 }
                 else
