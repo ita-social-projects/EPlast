@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
