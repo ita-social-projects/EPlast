@@ -43,6 +43,10 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
         {
             var searchedDataEmty = string.IsNullOrEmpty(searchedData);
             var getDate = searchedDataEmty ? "" : String.Join("-", searchedData.Split(".").Reverse());
+            UserPrecautionStatus? statusSearch = null;
+            if (!searchedDataEmty)
+                statusSearch = SearchedByStatus(searchedData);
+
             Expression<Func<UserPrecaution, bool>> searchedDataExpr = (searchedDataEmty) switch
             {
                 true => x => true,
@@ -54,6 +58,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
                 || x.Reporter.Contains(searchedData) 
                 || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
+                || statusSearch != null ? searchedData == "П" ? x.Status == UserPrecautionStatus.Confirmed || x.Status == UserPrecautionStatus.Accepted : x.Status == statusSearch : false
             };
 
             Expression<Func<UserPrecaution, bool>> nameFilterExpr = (precautionNameFilter == null) switch
@@ -147,6 +152,17 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
         {
             Expression<Func<UserPrecaution, object>> expr = x => x.Date.AddMonths(x.Precaution.MonthsPeriod); 
             return expr;
+        }
+        private UserPrecautionStatus? SearchedByStatus(string searchedData)
+        {
+            foreach (var s in (UserPrecautionStatus[]) Enum.GetValues(typeof(UserPrecautionStatus)))
+            {
+                if (s.GetDescription().Contains(searchedData))
+                {
+                    return s;
+                }
+            }
+            return null;
         }
     }
 }

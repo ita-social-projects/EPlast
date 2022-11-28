@@ -154,6 +154,12 @@ namespace EPlast.BLL.Services.City
                 await _regionAdministrationService.RemoveAdminRolesByUserIdAsync(userId);
             }
 
+            var user = await _userManager.FindByIdAsync(userId);
+            if (cityDTO.RegionId != user.RegionId)
+            {
+                user.RegionId = cityDTO.RegionId;
+            }
+
             await _repositoryWrapper.SaveAsync();
 
             await SendEmailCityAdminAboutNewFollowerAsync(cityMember.CityId, cityMember.User);
