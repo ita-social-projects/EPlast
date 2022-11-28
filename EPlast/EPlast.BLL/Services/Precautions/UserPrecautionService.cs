@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO.PrecautionsDTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.ExtensionMethods;
 using EPlast.BLL.Queries.Precaution;
 using EPlast.BLL.Services.Interfaces;
 using EPlast.DataAccess.Entities;
@@ -38,16 +39,6 @@ namespace EPlast.BLL.Services.Precautions
         private async Task<bool> CanUserAddPrecaution(UserPrecautionDto userPrecautionDto, User user)
         {
             var precautionUser = await _userManager.FindByIdAsync(userPrecautionDto.UserId);
-
-            bool isUserInPrecautionGoverningBodyAdmin =
-                await _userManager.IsInRoleAsync(precautionUser, Roles.GoverningBodyAdmin);
-
-            bool isCreatorGoverningBodyAdmin = await _userManager.IsInRoleAsync(user, Roles.GoverningBodyAdmin);
-
-            if (isUserInPrecautionGoverningBodyAdmin && isCreatorGoverningBodyAdmin)
-            {
-                return false;
-            }
 
             var roles = await _userManager.GetRolesAsync(precautionUser);
             var isInLowerRole = roles.Intersect(Roles.LowerRoles).Any();
@@ -297,7 +288,7 @@ namespace EPlast.BLL.Services.Precautions
 
                 if (isCreatorGoverningBodyAdmin)
                 {
-                    suggestedUser.IsAvailable = !isInLowerRole && !roles.Contains(Roles.GoverningBodyAdmin) &&
+                    suggestedUser.IsAvailable = !isInLowerRole &&
                                                 !roles.Contains(Roles.Admin);
                 }
                 else
