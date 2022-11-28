@@ -154,7 +154,7 @@ namespace EPlast.WebApi.Controllers
             {
                 return BadRequest(_resources.ResourceForErrors["Account-Locked"]);
             }
-            if (result.Succeeded == false)
+            if (!result.Succeeded)
             {
                 return BadRequest(_resources.ResourceForErrors["Login-InCorrectPassword"]);
             }
