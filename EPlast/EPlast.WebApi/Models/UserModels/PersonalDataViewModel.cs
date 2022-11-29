@@ -9,5 +9,6 @@ namespace EPlast.WebApi.Models.UserModels
         public UserShortViewModel ShortUser { get; set; }
         public int TimeToJoinPlast { get; set; }
         public bool IsUserPlastun { get; set; }
+        public bool IsUserAdmin { get; set; }
     }
 }

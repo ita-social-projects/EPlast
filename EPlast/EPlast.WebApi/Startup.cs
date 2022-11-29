@@ -120,7 +120,7 @@ namespace EPlast.WebApi
                 o.SupportedUICultures = supportedCultures;
             });
 
-            services.Configure<HostURLOptions>(Configuration.GetSection("URLs"));
+            services.Configure<HostUrlOptions>(Configuration.GetSection("URLs"));
         }
 
         private void ConfigureAppSecurity(IServiceCollection services)

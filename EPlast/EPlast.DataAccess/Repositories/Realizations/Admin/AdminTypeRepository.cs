@@ -32,6 +32,7 @@ namespace EPlast.DataAccess.Repositories
             int sortKey,
             string searchData,
             string filterRoles = "",
+            string filterKadras = "",
             string andClubs = null)
         {
             var items = EPlastDBContext.Set<User>()
@@ -156,7 +157,7 @@ namespace EPlast.DataAccess.Repositories
 
             IEnumerable<UserTableObject> finalItems = await items.ToListAsync();
 
-            //roles sorting
+            //roles 
             if (!string.IsNullOrEmpty(filterRoles))
             {
                 var frs = filterRoles.Split(",");
@@ -164,6 +165,17 @@ namespace EPlast.DataAccess.Repositories
                 {
                     var filter = fr.Trim();
                     finalItems = finalItems.Where(r => r.Roles.Contains(filter));
+                }
+            }
+
+            //kadras 
+            if (!string.IsNullOrEmpty(filterKadras))
+            {
+                var fks = filterKadras.Split(",");
+                foreach (var fr in fks)
+                {
+                    var filter = fr.Trim();
+                    finalItems = finalItems.Where(r => r.Kadra.Contains(filter));
                 }
             }
 

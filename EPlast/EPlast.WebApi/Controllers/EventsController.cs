@@ -139,6 +139,7 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
+            if (createDTO.EventCategory.EventCategoryId == 0) return BadRequest();
             return Ok(createDTO);
         }
 
@@ -254,8 +255,7 @@ namespace EPlast.WebApi.Controllers
         [HttpPut("{eventId:int}/feedbacks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> LeaveFeedback(int eventId, EventFeedbackDto feedback)
-        {
-          
+        { 
             var eventEntity = await _actionManager.GetEventAsync(eventId);
 
             if (eventEntity == null)
@@ -292,7 +292,7 @@ namespace EPlast.WebApi.Controllers
         {
             var eventEntity = await _actionManager.GetEventAsync(eventId);
             var feedback = await _participantManager.GetEventFeedbackByIdAsync(feedbackId);
-            if (eventEntity == null ||feedback == null)
+            if (eventEntity == null || feedback == null)
             {
                 return NotFound();
             }

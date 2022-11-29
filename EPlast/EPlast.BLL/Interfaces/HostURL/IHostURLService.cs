@@ -1,6 +1,6 @@
 ﻿namespace EPlast.BLL.Interfaces.HostURL
 {
-    public interface IHostURLService
+    public interface IHostUrlService
     {
         string BackEndApiURL { get; }
         string FrontEndURL { get; }
