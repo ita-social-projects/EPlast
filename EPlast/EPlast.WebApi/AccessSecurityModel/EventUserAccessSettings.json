@@ -7,7 +7,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": true,
     "SeeUserTable": true,
-    "ApproveParticipant": true
+    "ApproveParticipant": true,
+    "CreateEventCategory": true,
+    "EditEventCategory": true,
+    "DeleteEventCategory": true
   },
   "Крайовий Адмін": {
     "ApproveEvent": true,
@@ -17,7 +20,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": true,
     "SeeUserTable": true,
-    "ApproveParticipant": true
+    "ApproveParticipant": true,
+    "CreateEventCategory": true,
+    "EditEventCategory": true,
+    "DeleteEventCategory": true
   },
   "Голова Керівного Органу": {
     "ApproveEvent": true,
@@ -27,7 +33,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": true,
     "SeeUserTable": true,
-    "ApproveParticipant": true
+    "ApproveParticipant": true,
+    "CreateEventCategory": false,
+    "EditEventCategory": false,
+    "DeleteEventCategory": false
   },
   "Голова Станиці": {
     "ApproveEvent": false,
@@ -37,7 +46,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": true,
     "SeeUserTable": true,
-    "ApproveParticipant": true
+    "ApproveParticipant": true,
+    "CreateEventCategory": false,
+    "EditEventCategory": false,
+    "DeleteEventCategory": false
   },
   "Заступник Голови Станиці": {
     "ApproveEvent": false,
@@ -47,7 +59,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": true,
     "SeeUserTable": true,
-    "ApproveParticipant": true
+    "ApproveParticipant": true,
+    "CreateEventCategory": false,
+    "EditEventCategory": false,
+    "DeleteEventCategory": false
   },
   "Дійсний член організації": {
     "ApproveEvent": false,
@@ -57,7 +72,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": true,
     "SeeUserTable": true,
-    "ApproveParticipant": true
+    "ApproveParticipant": true,
+    "CreateEventCategory": false,
+    "EditEventCategory": false,
+    "DeleteEventCategory": false
   },
   "Прихильник": {
     "ApproveEvent": false,
@@ -67,7 +85,10 @@
     "SubscribeOnEvent": true,
     "AddPhotos": false,
     "SeeUserTable": true,
-    "ApproveParticipant": false
+    "ApproveParticipant": false,
+    "CreateEventCategory": false,
+    "EditEventCategory": false,
+    "DeleteEventCategory": false
   },
   "Зареєстрований користувач": {
     "ApproveEvent": false,
@@ -77,6 +98,9 @@
     "SubscribeOnEvent": false,
     "AddPhotos": false,
     "SeeUserTable": false,
-    "ApproveParticipant": false
+    "ApproveParticipant": false,
+    "CreateEventCategory": false,
+    "EditEventCategory": false,
+    "DeleteEventCategory": false
   }
 }

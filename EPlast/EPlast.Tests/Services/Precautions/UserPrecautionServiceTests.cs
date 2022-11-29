@@ -83,7 +83,7 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
-        public async Task AddUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsFalse()
+        public async Task AddUserPrecautionAsync_BothUsersGoverningBodyAdmins_ReturnsTrue()
         {
             //Arrange
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
@@ -97,11 +97,11 @@ namespace EPlast.Tests.Services.Precautions
             var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
-        public async Task AddUserPrecautionAsync_NumberExists_ReturnsFalse()
+        public async Task AddUserPrecautionAsync_NumberExists_ReturnsTrue()
         {
             //Arrange
             _userManagerMock.Setup(m => m.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(new User());
@@ -115,7 +115,7 @@ namespace EPlast.Tests.Services.Precautions
             var result = await _precautionService.AddUserPrecautionAsync(userPrecautionDTO, new User());
 
             //Assert
-            Assert.AreEqual(false, result);
+            Assert.AreEqual(true, result);
         }
 
         [Test]
@@ -219,7 +219,7 @@ namespace EPlast.Tests.Services.Precautions
         }
 
         [Test]
-        public async Task IsNumberExistAsync_True()
+        public async Task DoesPrecautionExistAsync_True()
         {
             //Arrange
             _repoWrapperMock
@@ -231,14 +231,14 @@ namespace EPlast.Tests.Services.Precautions
                 .Returns(new UserPrecautionDto());
 
             //Act
-            var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
+            var result = await _precautionService.DoesPrecautionExistAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsNotNull(result);
         }
 
         [Test]
-        public async Task IsNumberExistAsync_False()
+        public async Task DoesPrecautionExistAsync_False()
         {
             //Arrange
             _repoWrapperMock
@@ -250,14 +250,14 @@ namespace EPlast.Tests.Services.Precautions
                 .Returns(nullPrecautionDTO);
 
             //Act
-            var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
+            var result = await _precautionService.DoesPrecautionExistAsync(It.IsAny<int>());
 
             //Assert
             Assert.IsFalse(result);
         }
 
         [Test]
-        public async Task IsNumberExistAsync_IsInstanceOf()
+        public async Task DoesPrecautionExistAsync_IsInstanceOf()
         {
             //Arrange
             _repoWrapperMock
@@ -269,9 +269,55 @@ namespace EPlast.Tests.Services.Precautions
                 .Returns(new UserPrecautionDto());
 
             //Act
-            var result = await _precautionService.IsNumberExistAsync(It.IsAny<int>());
+            var result = await _precautionService.DoesPrecautionExistAsync(It.IsAny<int>());
 
             //Assert
+            Assert.IsInstanceOf<bool>(result);
+        }
+
+        [Test]
+        public async Task DoesNumberExistAsync_True()
+        {
+            // Arrange
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(new UserPrecaution());
+
+            // Act
+            var result = await _precautionService.DoesNumberExistAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        public async Task DoesNumberExistAsync_False()
+        {
+            // Arrange
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(nullPrecaution);
+
+            // Act
+            var result = await _precautionService.DoesNumberExistAsync(It.IsAny<int>());
+
+            // Assert
+            Assert.IsTrue(result);
+        }
+
+        public async Task DoesNumberExistAsync_IsInstanceOf()
+        {
+            // Arrange
+            _repoWrapperMock
+                .Setup(x => x.UserPrecaution.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<UserPrecaution, bool>>>(),
+                    It.IsAny<Func<IQueryable<UserPrecaution>, IIncludableQueryable<UserPrecaution, object>>>()))
+                .ReturnsAsync(new UserPrecaution());
+
+            // Act
+            var result = await _precautionService.DoesNumberExistAsync(It.IsAny<int>());
+
+            // Assert
             Assert.IsInstanceOf<bool>(result);
         }
 
@@ -673,7 +719,7 @@ namespace EPlast.Tests.Services.Precautions
             _mapperMock.Setup(m => m.Map<User, SuggestedUserDto>(It.IsAny<User>())).Returns(suggestedUser);
 
             _userManagerMock.Setup(m => m.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(unassignableRoles);
-            var expected = GetUnavailableSuggestedUsers().ToList();
+            var expected = GetAvailableSuggestedUsers().ToList();
 
             //Act
             var result = await _precautionService.GetUsersForPrecautionAsync(currentUser);
