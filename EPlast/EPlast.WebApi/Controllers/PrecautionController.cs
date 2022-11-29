@@ -315,7 +315,7 @@ namespace EPlast.WebApi.Controllers
         [Authorize(Roles = Roles.AdminAndGBAdmin)]
         public async Task<IActionResult> CheckNumberExisting(int number)
         {
-            bool distNumber = await _userPrecautionService.IsNumberExistAsync(number);
+            bool distNumber = await _userPrecautionService.DoesNumberExistAsync(number);
             return Ok(distNumber);
         }
 

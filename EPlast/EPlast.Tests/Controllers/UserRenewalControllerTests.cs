@@ -57,13 +57,13 @@ namespace EPlast.Tests.Controllers
             //Arrange
             _mockUserRenewalService
                 .Setup(r => r.GetUserRenewalsTableObject(It.IsAny<string>(), 
-                    It.IsAny<int>(), It.IsAny<int>()))
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
                 .Returns(new List<UserRenewalsTableObject>());
 
             //Act
             var result =
                 _userRenewalController.GetUserRenewalsForTable(It.IsAny<string>(),
-                    It.IsAny<int>(), It.IsAny<int>());
+                    It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>());
             var resultValue = (result as OkObjectResult)?.Value;
 
             //Assert

@@ -344,16 +344,13 @@ namespace EPlast.Tests.Services.Club
             _repositoryWrapper.Setup(x => x.ClubReportMember.CreateAsync(It.IsAny<ClubReportMember>()));
             _repositoryWrapper.Setup(x => x.ClubReportCities.CreateAsync(It.IsAny<ClubReportCities>()));
             _repositoryWrapper.Setup(x => x.ClubReportPlastDegrees.CreateAsync(It.IsAny<ClubReportPlastDegrees>()));
-
-
-
+            _repositoryWrapper.Setup(r => r.SaveAsync());
 
             // Act  
             var result = _service.CreateAsync(It.IsAny<User>(), reportDto);
 
             // Assert
             Assert.IsNotNull(result);
-            _repositoryWrapper.Verify(r => r.SaveAsync(), Times.AtLeastOnce());
         }
 
 

@@ -508,7 +508,7 @@ namespace EPlast.Tests.Controllers
         public async Task CheckNumberExisting_ReturnsOkObjectResult_Test(int number)
         {
             //Arrange
-            _userPrecautionService.Setup(x => x.IsNumberExistAsync(It.IsAny<int>(), It.IsAny<int>()))
+            _userPrecautionService.Setup(x => x.DoesNumberExistAsync(It.IsAny<int>()))
                 .ReturnsAsync(true);
 
             //Act

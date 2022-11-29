@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Repositories;
 using EPlast.Resources;
 using EPlast.WebApi.Models.Events;
 using Microsoft.AspNetCore.Authorization;
@@ -25,13 +27,17 @@ namespace EPlast.WebApi.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IEventStatusManager _eventStatusManager;
         private readonly IEventCategoryManager _eventCategoryManager;
+        private readonly IEventUserAccessService _eventUserAccessService;
+        private readonly IParticipantManager _participantManager;
 
-        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventStatusManager eventStatusManager, IEventCategoryManager eventCategoryManager)
+        public EventsController(IActionManager actionManager, UserManager<User> userManager, IEventStatusManager eventStatusManager, IEventCategoryManager eventCategoryManager, IEventUserAccessService eventUserAccessService, IParticipantManager participantManager)
         {
             _actionManager = actionManager;
             _userManager = userManager;
             _eventStatusManager = eventStatusManager;
             _eventCategoryManager = eventCategoryManager;
+            _eventUserAccessService = eventUserAccessService;
+            _participantManager = participantManager;
         }
 
         /// <summary>
@@ -105,6 +111,23 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
+        /// Get event category by ID.
+        /// </summary>
+        /// <returns>List of event categories of the appropriate event type.</returns>
+        /// <param name="id">The Id of event type</param>
+        /// <response code="200">List of event categories</response>
+        /// <response code="400">Server could not understand the request due to invalid syntax</response> 
+        /// <response code="404">Events does not exist</response> 
+        [HttpGet("categories/{id:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetCategoryById(int id)
+        {
+            var category = await _actionManager.GetCategoryByIdAsync(id);
+            if (category == null) return NotFound();
+            return Ok(category);
+        }
+
+        /// <summary>
         /// Create a new category
         /// </summary>
         /// <returns>A newly created category</returns>
@@ -116,8 +139,40 @@ namespace EPlast.WebApi.Controllers
         public async Task<IActionResult> CreateEventCategory([FromBody] EventCategoryCreateDto createDTO)
         {
             createDTO.EventCategory.EventCategoryId = await _eventCategoryManager.CreateEventCategoryAsync(createDTO);
-
+            if (createDTO.EventCategory.EventCategoryId == 0) return BadRequest();
             return Ok(createDTO);
+        }
+
+        /// <summary>
+        /// Update a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="eventCategoryUpdateDto"></param>
+        /// <response code="204">No Content</response>
+        /// <response code="400">When event cateogry is not found by id</response>
+        [HttpPut("updateCategory")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> UpdateEventCategory([FromBody] EventCategoryDto eventCategoryUpdateDto)
+        { 
+            var isUpdated = await _eventCategoryManager.UpdateEventCategoryAsync(eventCategoryUpdateDto);
+            if (!isUpdated) return BadRequest();
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Delete a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="id"></param>
+        /// <response code="204">No Content</response>
+        /// <response code="400">When event category is not found by id</response>
+        [HttpDelete("deleteCategory/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteEventCategory(int id)
+        {
+            var isDeleted = await _eventCategoryManager.DeleteEventCategoryAsync(id);
+            if (!isDeleted) return BadRequest();
+            return NoContent();
         }
 
         /// <summary>
@@ -170,7 +225,10 @@ namespace EPlast.WebApi.Controllers
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetEventDetail(int id)
         {
-            return Ok(await _actionManager.GetEventInfoAsync(id, await _userManager.GetUserAsync(User)));
+            var eventInfo = await _actionManager.GetEventInfoAsync(id, await _userManager.GetUserAsync(User));
+
+            if (eventInfo == null) return NotFound();
+            return Ok(eventInfo);
         }
 
         /// <summary>
@@ -186,19 +244,68 @@ namespace EPlast.WebApi.Controllers
         }
 
         /// <summary>
-        /// Set an estimate of the participant's event.
+        /// Add a feedback for an event.
         /// </summary>
-        /// <returns>Status code of the setting an estimate of the participant's event operation.</returns>  
-        /// <param name="id">The Id of event</param>
-        /// <param name="estimate">The value of estimate</param>
+        /// <returns>Status code of sending a feedback of the participant's event operation.</returns>  
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="feedback">Feedback DTO</param>
         /// <response code="200">OK</response>
-        /// <response code="400">Bad Request</response>  
-        [HttpPut("{id:int}/estimate/{estimate:double}")]
+        /// <response code="403">The user was not present at an event</response>
+        /// <response code="404">The event was not found</response>
+        [HttpPut("{eventId:int}/feedbacks")]
         [Authorize(AuthenticationSchemes = "Bearer")]
-        public async Task<IActionResult> EstimateEvent(int id, double estimate)
+        public async Task<IActionResult> LeaveFeedback(int eventId, EventFeedbackDto feedback)
+        { 
+            var eventEntity = await _actionManager.GetEventAsync(eventId);
+
+            if (eventEntity == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            var participant = await _participantManager.GetParticipantByEventIdAndUserIdAsync(eventId, user.Id);
+
+            var canPostFeedback = await _eventUserAccessService.CanPostFeedback(participant, eventId);
+            if (!canPostFeedback)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+
+            await _actionManager.LeaveFeedbackAsync(feedback, participant);
+            return Ok();
+        }
+
+        /// <summary>
+        /// Add a feedback for an event.
+        /// </summary>
+        /// <returns>Status code of sending a feedback of the participant's event operation.</returns>  
+        /// <param name="eventId">The Id of event</param>
+        /// <param name="feedbackId">Feedback ID</param>
+        /// <response code="203">No Content</response>
+        /// <response code="403">The user was not present at an event</response>
+        /// <response code="404">The event was not found</response>
+        /// <response code="400">Bad Request</response>  
+        [HttpDelete("{eventId:int}/feedbacks/{feedbackId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteFeedback(int eventId, int feedbackId)
         {
-            var result = await _actionManager.EstimateEventAsync(id, await _userManager.GetUserAsync(User), estimate);
-            return Ok(result);
+            var eventEntity = await _actionManager.GetEventAsync(eventId);
+            var feedback = await _participantManager.GetEventFeedbackByIdAsync(feedbackId);
+            if (eventEntity == null || feedback == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            bool canDelete = await _eventUserAccessService.CanDeleteFeedback(user, feedback);
+            if (!canDelete)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden);
+            }
+
+           await _actionManager.DeleteFeedbackAsync(feedback.Id);
+           return NoContent();
         }
 
         /// <summary>
@@ -238,6 +345,23 @@ namespace EPlast.WebApi.Controllers
             var pictures = await _actionManager.GetPicturesAsync(eventId);
 
             return Ok(pictures);
+        }
+
+        /// <summary>
+        /// Get a picture in Base64 format by its' Id.
+        /// </summary>
+        /// <returns>Picture data in Base64 format.</returns>
+        /// <param name="pictureId">The Id of the picture</param>
+        /// <response code="200">Picture data</response>
+        /// <response code="404">Picture wasn't found</response> 
+        [HttpGet("pictures/{pictureId:int}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> GetPicture(int pictureId)
+        {
+            var picture = await _actionManager.GetPictureAsync(pictureId);
+
+            if (picture == null) return NotFound();
+            return Ok(picture);
         }
 
         /// <summary>
@@ -355,9 +479,5 @@ namespace EPlast.WebApi.Controllers
         {
             return Ok(await _actionManager.FillEventGalleryAsync(eventId, files));
         }
-
-
-
-
     }
 }

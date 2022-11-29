@@ -8,6 +8,7 @@ using AutoMapper;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.BLL.Interfaces.Notifications;
 using EPlast.BLL.Services.Events;
 using EPlast.DataAccess.Entities;
@@ -30,6 +31,7 @@ namespace EPlast.XUnitTest.Services.Events
         private readonly Mock<IParticipantManager> _participantManager;
         private readonly Mock<IEventWrapper> _eventWrapper;
         private readonly Mock<INotificationService> _mockNotificationService;
+        private readonly Mock<IEventUserAccessService> _eventUserAccessService;
 
         public ActionManagerTests()
         {
@@ -41,7 +43,9 @@ namespace EPlast.XUnitTest.Services.Events
             _participantManager = new Mock<IParticipantManager>();
             _eventWrapper = new Mock<IEventWrapper>();
             _mockNotificationService = new Mock<INotificationService>();
+            _eventUserAccessService = new Mock<IEventUserAccessService>();
         }
+
 
         [Fact]
         public async Task GetEventTypesTestAsync()
@@ -135,8 +139,9 @@ namespace EPlast.XUnitTest.Services.Events
             Assert.IsType<List<GeneralEventDto>>(methodResult);
             Assert.Equal(GetEvents().Count(), methodResult.Count());
         }
+
         [Fact]
-        public async Task GetEventInfoTestAsync()
+        public async Task GetEventInfoTestNotFoundAsync()
         {
             //Arrange
             string expectedID = "abc-1";
@@ -149,13 +154,39 @@ namespace EPlast.XUnitTest.Services.Events
             _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
                 .Returns(expectedID);
             _mapper.Setup(m => m.Map<Event, EventInfoDto>(It.IsAny<Event>())).Returns(new EventInfoDto());
-            _repoWrapper.Setup(x => x.Event.GetFirstAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
-                .ReturnsAsync(GetEvents().First());
+            _repoWrapper.Setup(x => x.Event.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync((Event)null);
+
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
+
             //Assert
-            Assert.NotNull(methodResult);
+            Assert.Null(methodResult);
+        }
+
+        [Fact]
+        public async Task GetEventInfoTestSuccessAsync()
+        {
+            //Arrange
+            string expectedID = "abc-1";
+            int eventId = 3;
+            int fakeId = 3;
+            _eventWrapper.Setup(x => x.EventStatusManager.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _participantStatusManager.Setup(x => x.GetStatusIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(fakeId);
+            _userManager.Setup(x => x.GetUserId(It.IsAny<ClaimsPrincipal>()))
+                .Returns(expectedID);
+            _mapper.Setup(m => m.Map<Event, EventInfoDto>(It.IsAny<Event>())).Returns(new EventInfoDto());
+            _repoWrapper.Setup(x => x.Event.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Event, bool>>>(), It.IsAny<Func<IQueryable<Event>, IIncludableQueryable<Event, object>>>()))
+                .ReturnsAsync(GetEvents().First());
+
+            //Act
+            var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
+            var methodResult = await actionManager.GetEventInfoAsync(eventId, new User());
+
+            //Assert
             Assert.IsType<EventDto>(methodResult);
         }
 
@@ -322,13 +353,13 @@ namespace EPlast.XUnitTest.Services.Events
             //Arrange
             int eventId = 3;
             _eventWrapper.Setup(x => x.EventGalleryManager.AddPicturesAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(new List<EventGalleryDto>());
+                .ReturnsAsync(new List<int>());
             //Act
             var actionManager = new ActionManager(_userManager.Object, _repoWrapper.Object, _mapper.Object, _participantStatusManager.Object, _participantManager.Object, _eventWrapper.Object, _mockNotificationService.Object);
             var methodResult = await actionManager.FillEventGalleryAsync(eventId, new List<IFormFile>());
             //Assert
             Assert.NotNull(methodResult);
-            Assert.IsType<List<EventGalleryDto>>(methodResult);
+            Assert.IsType<List<int>>(methodResult);
         }
         [Fact]
         public async Task DeletePictureTestAsync()
@@ -366,7 +397,8 @@ namespace EPlast.XUnitTest.Services.Events
                     EventAdministrations = new List<EventAdministration>()
                     {
                         new EventAdministration(){EventID = 1,UserID ="abc-1",EventAdministrationTypeID = 1}
-                    }
+                    },
+                    EventGallarys = new List<EventGallary>()
                 },
                  new Event{
                     ID=2,

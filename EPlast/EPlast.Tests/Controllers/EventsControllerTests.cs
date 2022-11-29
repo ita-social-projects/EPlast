@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using EPlast.BLL.DTO.Events;
 using EPlast.BLL.DTO.EventUser;
 using EPlast.BLL.Interfaces.Events;
+using EPlast.BLL.Interfaces.EventUser;
 using EPlast.DataAccess.Entities;
+using EPlast.DataAccess.Entities.Event;
 using EPlast.Resources;
 using EPlast.WebApi.Controllers;
 using EPlast.WebApi.Models.Events;
@@ -24,6 +27,8 @@ namespace EPlast.Tests.Controllers
         private Mock<UserManager<User>> _userManager;
         private Mock<IEventCategoryManager> _eventCategoryManager;
         private Mock<IEventStatusManager> _eventStatusManager;
+        private Mock<IEventUserAccessService> _eventUserAccessService;
+        private Mock<IParticipantManager> _participantManager;
 
         [SetUp]
         public void SetUp()
@@ -33,18 +38,22 @@ namespace EPlast.Tests.Controllers
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
             _eventCategoryManager = new Mock<IEventCategoryManager>();
             _eventStatusManager = new Mock<IEventStatusManager>();
+            _eventUserAccessService = new Mock<IEventUserAccessService>();
+            _participantManager = new Mock<IParticipantManager>();
             _eventsController = new EventsController(
                 _actionManager.Object,
                 _userManager.Object,
                 _eventStatusManager.Object,
-                _eventCategoryManager.Object);
+                _eventCategoryManager.Object,
+                _eventUserAccessService.Object,
+                _participantManager.Object);
         }
 
         [Test]
         public async Task GetTypes_ReturnsOkObjectResult()
         {
             //Arrange
-            var expectedCount = 2;
+            var expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.GetEventTypesAsync())
                 .ReturnsAsync(CreateListOfFakeEventTypes());
@@ -57,39 +66,17 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(types);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(expectedCount, typesList.Count);
-        }
-
-        [Test]
-        public async Task GetTypes_ListWithTwoItems_ReturnsListWithTwoItems()
-        {
-            // Arrange
-            var listCount = 2;
-
-            _actionManager
-                .Setup((x) => x.GetEventTypesAsync())
-                .ReturnsAsync(CreateListOfFakeEventTypes());
-
-            var expected = listCount;
-
-            // Act
-            var result = await _eventsController.GetTypes();
-
-            var actual = (result as ObjectResult).Value as List<EventTypeDto>;
-
-            // Assert
-            Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual.Count);
+            Assert.AreEqual(expectedListCount, typesList.Count);
         }
 
         [Test]
         public async Task GetCategories_ReturnsOkObjectResult()
         {
             //Assert
+            var expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventCategories());
-            var listCount = 2;
 
             // Act
             var result = await _eventsController.GetCategories(It.IsAny<int>());
@@ -97,36 +84,20 @@ namespace EPlast.Tests.Controllers
 
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(listCount, categoryList.Count);
+            Assert.AreEqual(expectedListCount, categoryList.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
         }
 
         [Test]
-        public async Task GetCategories_ListWithTwoItems_ReturnsListWithItems()
+        public async Task CreateEventCategory_ReturnsOkObjectResult()
         {
             // Arrange
-            var listCount = 2;
-            _actionManager
-                .Setup((x) => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
-                .ReturnsAsync(CreateListOfFakeEventCategories());
+            int eventCategoryId = 1;
 
-            // Act
-            var result = await _eventsController.GetCategories(It.IsAny<int>());
-            var actual = (result as ObjectResult).Value as List<EventCategoryDto>;
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(listCount, actual.Count);
-        }
-
-        [Test]
-        public async Task CreateEventCategory_ReturnsCreatedResult()
-        {
-            // Arrange
             _eventCategoryManager
-                .Setup((x) => x.CreateEventCategoryAsync(CreateFakeEventCategory()))
-                .ReturnsAsync(It.IsAny<int>());
+                .Setup(x => x.CreateEventCategoryAsync(It.IsAny<EventCategoryCreateDto>()))
+                .ReturnsAsync(eventCategoryId);
+
             // Act
             var result = await _eventsController.CreateEventCategory(CreateFakeEventCategory());
             var resultValue = (result as OkObjectResult).Value;
@@ -135,17 +106,113 @@ namespace EPlast.Tests.Controllers
             Assert.NotNull(resultValue);
             Assert.IsInstanceOf<EventCategoryCreateDto>(resultValue);
             Assert.IsInstanceOf<OkObjectResult>(result);
-
         }
+
+        [Test]
+        public async Task CreateEventCategory_ReturnsStatus400BadRequest()
+        {
+            // Arrange
+            int expectedCode = StatusCodes.Status400BadRequest;
+            int eventCategoryId = 0;
+
+            _eventCategoryManager
+                .Setup(x => x.CreateEventCategoryAsync(CreateFakeEventCategory()))
+                .ReturnsAsync(eventCategoryId);
+
+            // Act
+            var result = await _eventsController.CreateEventCategory(CreateFakeEventCategory());
+            var actualCode = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
+        public async Task UpdateEventCategory_Status204NoContent_ReturnsStatus204NoContent()
+        {
+            // Arrange
+            _eventCategoryManager
+                .Setup(ecm => ecm.UpdateEventCategoryAsync(It.IsAny<EventCategoryDto>()))
+                .ReturnsAsync(true);
+
+            var expectedCode = StatusCodes.Status204NoContent;
+
+            // Act
+            var result = await _eventsController.UpdateEventCategory(It.IsAny<EventCategoryDto>());
+            var actualCode = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task UpdateEventCategory_Status400BadRequest_ReturnsStatus400BadRequest()
+        {
+            // Arrange
+            _eventCategoryManager
+                .Setup(ecm => ecm.UpdateEventCategoryAsync(It.IsAny<EventCategoryDto>()))
+                .ReturnsAsync(false);
+
+            var expectedCode = StatusCodes.Status400BadRequest;
+
+            // Act
+            var result = await _eventsController.UpdateEventCategory(It.IsAny<EventCategoryDto>());
+            var actualCode = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteEventCategory_Status204NoContent_ReturnsStatus204NoContent()
+        {
+            // Arrange
+            _eventCategoryManager
+                .Setup(ecm => ecm.DeleteEventCategoryAsync(It.IsAny<int>()))
+                .ReturnsAsync(true);
+
+            var expectedCode = StatusCodes.Status204NoContent;
+
+            // Act
+            var result = await _eventsController.DeleteEventCategory(It.IsAny<int>());
+            var actualCode = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.IsInstanceOf<NoContentResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteEventCategory_Status400BadRequest_ReturnsStatus400BadRequest()
+        {
+            // Arrange
+            _eventCategoryManager
+                .Setup(ecm => ecm.DeleteEventCategoryAsync(It.IsAny<int>()))
+                .ReturnsAsync(false);
+
+            var expectedCode = StatusCodes.Status400BadRequest;
+
+            // Act
+            var result = await _eventsController.DeleteEventCategory(It.IsAny<int>());
+            var actualCode = (result as StatusCodeResult).StatusCode;
+
+            // Assert
+            Assert.AreEqual(expectedCode, actualCode);
+            Assert.IsInstanceOf<BadRequestResult>(result);
+        }
+
 
         [Test]
         public async Task GetEvents_ReturnsOkObjectResult()
         {
             // Arrange
+            var expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
-            var expectedCount = 2;
 
             // Act
             var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
@@ -155,39 +222,18 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(resultObject);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(expectedCount, eventList.Count);
+            Assert.AreEqual(expectedListCount, eventList.Count);
 
-        }
-
-        [Test]
-        public async Task GetEvents_ListWithTwoItems_ReturnsListWithTwoCategories()
-        {
-            // Arrange
-            var listCount = 2;
-            _actionManager
-                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(CreateListOfFakeGeneralEvents());
-
-            var expected = listCount;
-
-            // Act
-            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
-
-            var actual = (result as ObjectResult).Value as List<GeneralEventDto>;
-
-            // Assert
-            Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual.Count);
         }
 
         [Test]
         public async Task GetSections_ReturnsOkObjectResult()
         {
             // Arrange
+            var expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.GetEventSectionsAsync())
                 .ReturnsAsync(CreateListOfFakeEventSections());
-            var expectedCount = 2;
 
             // Act
             var result = await _eventsController.GetSections();
@@ -197,33 +243,12 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull(resultObject);
             Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(expectedCount, eventList.Count);
+            Assert.AreEqual(expectedListCount, eventList.Count);
 
         }
 
         [Test]
-        public async Task GetSections_ListWithTwoItems_ReturnsListWithTwoCategories()
-        {
-            // Arrange
-            var listCount = 2;
-            _actionManager
-                .Setup((x) => x.GetEventsAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(CreateListOfFakeGeneralEvents());
-
-            var expected = listCount;
-
-            // Act
-            var result = await _eventsController.GetEvents(It.IsAny<int>(), It.IsAny<int>());
-
-            var actual = (result as ObjectResult).Value as List<GeneralEventDto>;
-
-            // Assert
-            Assert.NotNull((result as ObjectResult).Value);
-            Assert.AreEqual(expected, actual.Count);
-        }
-
-        [Test]
-        public async Task GetEventDetail_ReturnsOkObjectResult()
+        public async Task GetEventDetail_EventExists_ReturnsOkObjectResult()
         {
             // Arrange
             _actionManager
@@ -239,20 +264,20 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task GetEventDetail_EventDTO_ReturnsNotNullEventDTO()
+        public async Task GetEventDetail_EventDoesntExist_ReturnsNotFound()
         {
             // Arrange
             _actionManager
                 .Setup((x) => x.GetEventInfoAsync(It.IsAny<int>(), It.IsAny<User>()))
-                .ReturnsAsync(CreateFakeEvent());
+                .ReturnsAsync((EventDto)null);
 
             // Act
             var result = await _eventsController.GetEventDetail(It.IsAny<int>());
-            var actual = (result as ObjectResult).Value as EventDto;
 
             // Assert
-            Assert.IsNotNull(actual);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
+
 
         [Test]
         public async Task GetEventStatusId_ReturnsOkObjectResult()
@@ -269,24 +294,6 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.NotNull((result as ObjectResult).Value);
             Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task EstimateEvent_OkObjectResult_ReturnsOkObjectResult()
-        {
-            // Arrange
-            _actionManager
-                .Setup(x => x.EstimateEventAsync(It.IsAny<int>(), It.IsAny<User>(), It.IsAny<double>()))
-                .ReturnsAsync(200);
-
-            // Act
-            var result = await _eventsController.EstimateEvent(It.IsAny<int>(), It.IsAny<double>());
-            var resultValue = (result as OkObjectResult).Value;
-
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.AreEqual(200, resultValue);
         }
 
         [Test]
@@ -325,7 +332,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
+        
         [Test]
         public async Task DeletePicture_Status200OK_ReturnsStatus200OK()
         {
@@ -363,7 +370,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
+        
         [Test]
         public async Task SubscribeOnEvent_Status200OK_ReturnsStatus200OK()
         {
@@ -389,7 +396,6 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.RegisteredUser });
-
 
             var expected = StatusCodes.Status403Forbidden;
 
@@ -421,24 +427,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
-        [Test]
-        public async Task SubscribeOnEvent_Status403Forbidden_ReturnsStatus403Forbidden()
-        {
-            // Arrange
-            _userManager.Setup(u => u.GetRolesAsync(It.IsAny<User>())).ReturnsAsync(new List<string>() { Roles.RegisteredUser });
-
-            var expected = StatusCodes.Status403Forbidden;
-
-            // Act
-            var result = await _eventsController.SubscribeOnEvent(It.IsAny<int>());
-
-            var actual = (result as StatusCodeResult).StatusCode;
-
-            // Assert
-            Assert.AreEqual(expected, actual);
-        }
-
+        
         [Test]
         public async Task UnSubscribeOnEvent_Status200OK_ReturnsStatus200OK()
         {
@@ -476,7 +465,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
+        
         [Test]
         public async Task ApproveParticipant_Status200OK_ReturnsStatus200OK()
         {
@@ -514,7 +503,7 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
+        
         [Test]
         public async Task UnderReviewParticipant_Status200OK_ReturnsStatus200OK()
         {
@@ -590,96 +579,54 @@ namespace EPlast.Tests.Controllers
             // Assert
             Assert.AreEqual(expected, actual);
         }
-
+        
         [Test]
         public async Task FillEventGallery_ReturnsOkObjectResult()
         {
             // Arrange
-            const int expectedCount = 2;
+            const int expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(CreateListOfFakeEventGallery());
+                .ReturnsAsync(new List<int>() { 1, 2 });
 
             // Act
             var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
-            var resultObject = (result as ObjectResult).Value as IList<EventGalleryDto>;
-
+            var resultObject = (result as ObjectResult).Value as List<int>;
 
             // Assert
             Assert.NotNull(result);
             Assert.NotNull(resultObject);
-            Assert.AreEqual(expectedCount, resultObject.Count);
+            Assert.AreEqual(expectedListCount, resultObject.Count);
             Assert.IsInstanceOf<OkObjectResult>(result);
-        }
-
-        [Test]
-        public async Task FillEventGallery_ListOfTwoItems_ReturnsListOfTwoItems()
-        {
-            // Arrange
-            var expectedCount = 2;
-
-            _actionManager
-                .Setup((x) => x.FillEventGalleryAsync(It.IsAny<int>(), It.IsAny<IList<IFormFile>>()))
-                .ReturnsAsync(CreateListOfFakeEventGallery());
-
-            // Act
-            var result = await _eventsController.FillEventGallery(It.IsAny<int>(), It.IsAny<IList<IFormFile>>());
-
-            var actual = ((result as ObjectResult).Value as List<EventGalleryDto>).Count;
-
-            // Assert
-            Assert.AreEqual(expectedCount, actual);
         }
 
         [Test]
         public async Task GetPictures_ReturnsOkObjectResult_GetTwoPicture()
         {
             // Arrange
+            int expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventGallery());
-            const int countPicture = 2;
 
             // Act
             var result = await _eventsController.GetPictures(It.IsAny<int>());
-            var okResult = result as ObjectResult;
-            var pictures = okResult.Value as IEnumerable<EventGalleryDto>;
+            var pictures = (result as ObjectResult).Value as IEnumerable<EventGalleryDto>;
             var picturesAsList = pictures as IList<EventGalleryDto>;
 
-
-
             // Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
-            Assert.NotNull(okResult);
+            Assert.NotNull(result);
             Assert.NotNull(pictures);
             Assert.NotNull(picturesAsList);
-            Assert.AreEqual(countPicture, picturesAsList.Count);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedListCount, picturesAsList.Count);
         }
-
-        [Test]
-        public async Task GetPictures_ListOfTwoItems_ReturnsListOfTwoItems()
-        {
-            // Arrange
-            const int expectedCount = 2;
-
-            _actionManager
-                .Setup((x) => x.GetPicturesAsync(It.IsAny<int>()))
-                .ReturnsAsync(CreateListOfFakeEventGallery());
-
-            // Act
-            var result = await _eventsController.GetPictures(It.IsAny<int>());
-
-            var actual = ((result as ObjectResult).Value as List<EventGalleryDto>).Count;
-
-            // Assert
-            Assert.AreEqual(expectedCount, actual);
-        }
-
+ 
         [Test]
         public async Task GetEventsByCategoryAndStatus_ReturnOkObjectResult()
         {
             // Arrange
-            const int expectedCount = 2;
+            const int expectedListCount = 2;
             _actionManager
                 .Setup((x) => x.GetEventsByStatusAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<User>()))
                 .ReturnsAsync(CreateListOfFakeGeneralEvents());
@@ -690,20 +637,50 @@ namespace EPlast.Tests.Controllers
             var category = okObject?.Value as IEnumerable<GeneralEventDto>;
             var categoryList = category as List<GeneralEventDto>;
 
-
-            Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(okObject);
             Assert.NotNull(category);
             Assert.NotNull(categoryList);
-            Assert.AreEqual(expectedCount, categoryList.Count);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.AreEqual(expectedListCount, categoryList.Count);
+        }
 
+        [Test]
+        public async Task GetCategoriesById_CategoryExists_ReturnsOkObjectResult()
+        {
+            //Arrange
+            int categoryId = 1;
+            _actionManager
+                .Setup(x => x.GetCategoryByIdAsync(categoryId)).ReturnsAsync(new EventCategoryDto());
+
+            //Act
+            var result = await _eventsController.GetCategoryById(categoryId);
+
+            //Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as OkObjectResult).Value);
+        }
+
+        [Test]
+        public async Task GetCategoriesById_CategoryDoesntExist_ReturnsNotFound()
+        {
+            //Arrange
+            int categoryId = 1;
+            _actionManager
+                .Setup(x => x.GetCategoryByIdAsync(categoryId)).ReturnsAsync((EventCategoryDto)null);
+
+            //Act
+            var result = await _eventsController.GetCategoryById(categoryId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         [Test]
         public async Task GetCategoriesByTypeAndPage_ReturnOkObjectResultTestAsync()
         {
             //Arrange
-            var expectedCategories = 2;
+            var expectedListCount = 2;
             _actionManager
                 .Setup(x => x.GetCategoriesByTypeIdAsync(It.IsAny<int>()))
                 .ReturnsAsync(CreateListOfFakeEventCategories());
@@ -713,46 +690,248 @@ namespace EPlast.Tests.Controllers
             var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
 
             //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(categories);
-            Assert.AreEqual(expectedCategories, categories.Total);
+            Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
+            Assert.AreEqual(expectedListCount, categories.Total);
         }
 
         [Test]
         public async Task GetCategoriesByTypeAndPage_FirstType_ReturnOkObjectResultTestAsync()
         {
             //Arrange
-            var expectedCategories = 2;
+            var expectedListCount = 2;
             int typeId = 1;
             _actionManager
                 .Setup(x => x.GetActionCategoriesAsync())
                 .ReturnsAsync(CreateListOfFakeEventCategories());
+
             //Act
             var result = await _eventsController.GetCategoriesByTypeAndPageAsync(typeId, It.IsAny<int>(), It.IsAny<int>());
             var categories = (result as ObjectResult).Value as EventsCategoryViewModel;
 
             //Assert
-            Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.NotNull(categories);
-            Assert.AreEqual(expectedCategories, categories.Total);
+            Assert.IsInstanceOf<OkObjectResult>(result);
             Assert.IsInstanceOf<EventsCategoryViewModel>(categories);
+            Assert.AreEqual(expectedListCount, categories.Total);
+        }
+
+        [Test]
+        public async Task LeaveFeedback_FeedbackIsPosted_ReturnsOk()
+        {
+            _actionManager
+                .Setup(x => x.GetEventAsync(It.IsAny<int>()))
+                .ReturnsAsync(new Event());
+            _userManager
+                .Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _participantManager
+                .Setup(x => x.GetParticipantByEventIdAndUserIdAsync(It.IsAny<int>(), It.IsAny<string>()))
+                .ReturnsAsync(new Participant());
+            _eventUserAccessService
+                .Setup(x => x.CanPostFeedback(It.IsAny<Participant>(), It.IsAny<int>()))
+                .ReturnsAsync(false);
+            _actionManager
+                .Setup(x => x.LeaveFeedbackAsync(It.IsAny<EventFeedbackDto>(), It.IsAny<Participant>()))
+                .Returns(Task.CompletedTask);
+            _actionManager
+                .Setup(x => x.LeaveFeedbackAsync(It.IsAny<EventFeedbackDto>(), It.IsAny<Participant>()))
+                .Returns(Task.CompletedTask);
+
+            //Act
+            var result = await _eventsController.LeaveFeedback(It.IsAny<int>(), It.IsAny<EventFeedbackDto>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<StatusCodeResult>(result);
+        }
+
+        [Test]
+        public async Task LeaveFeedback_EventNotFound_ReturnsNotFound()
+        {
+            //Arrange
+            int eventId = 1;
+
+            _actionManager
+                .Setup(x => x.GetEventAsync(eventId))
+                .ReturnsAsync((Event)null);
+
+            //Act
+            var result = await _eventsController.LeaveFeedback(eventId, It.IsAny<EventFeedbackDto>());
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task LeaveFeedback_PostFeedbackAccessCheckFails_ReturnsForbidden()
+        {
+            //Arrange
+            int eventId = 1;
+            int expectedStatus = StatusCodes.Status403Forbidden;
+
+            _actionManager
+                .Setup(x => x.GetEventAsync(eventId))
+                .ReturnsAsync(new Event());
+            _userManager
+                .Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _participantManager
+                .Setup(x => x.GetParticipantByEventIdAndUserIdAsync(eventId, It.IsAny<string>()))
+                .ReturnsAsync(new Participant());
+            _eventUserAccessService
+                .Setup(x => x.CanPostFeedback(It.IsAny<Participant>(), eventId))
+                .ReturnsAsync(false);
+            _actionManager
+                .Setup(x => x.LeaveFeedbackAsync(It.IsAny<EventFeedbackDto>(), It.IsAny<Participant>()))
+                .Returns(Task.CompletedTask);
+
+            //Act
+            var result = await _eventsController.LeaveFeedback(eventId, It.IsAny<EventFeedbackDto>());
+            var actualStatus = (result as StatusCodeResult).StatusCode;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<StatusCodeResult>(result);
+            Assert.AreEqual(expectedStatus, actualStatus);
+        }
+
+        [Test]
+        public async Task DeleteFeedback_ParticipantCheckFails_ReturnsForbidden()
+        {
+            //Arrange
+            int eventId = 1;
+            int feedbackId = 1;
+            int expectedStatus = StatusCodes.Status403Forbidden;
+
+            _actionManager
+                .Setup(x => x.GetEventAsync(eventId))
+                .ReturnsAsync(new Event());
+            _participantManager
+                .Setup(x => x.GetEventFeedbackByIdAsync(feedbackId))
+                .ReturnsAsync(new EventFeedback());
+            _userManager
+                .Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _eventUserAccessService
+                .Setup(x => x.CanDeleteFeedback(It.IsAny<User>(), It.IsAny<EventFeedback>()))
+                .ReturnsAsync(false);
+
+            //Act
+            var result = await _eventsController.DeleteFeedback(eventId, feedbackId);
+            var actualStatus = (result as StatusCodeResult).StatusCode;
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.AreEqual(expectedStatus, actualStatus);
+        }
+
+        [Test]
+        public async Task DeleteFeedback_EventOrFeedbackNotFound_ReturnsNotFound()
+        {
+            //Arrange
+            int eventId = 1;
+            int feedbackId = 0;
+
+            _actionManager
+                .Setup(x => x.GetEventAsync(eventId))
+                .ReturnsAsync(new Event());
+            _participantManager
+                .Setup(x => x.GetEventFeedbackByIdAsync(feedbackId))
+                .ReturnsAsync((EventFeedback)null);
+
+            //Act
+            var result = await _eventsController.DeleteFeedback(eventId, feedbackId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
+        }
+
+        [Test]
+        public async Task DeleteFeedback_AllChecksPassed_ReturnsNoContent()
+        {
+            //Arrange
+            int eventId = 1;
+            int feedbackId = 1;
+
+            _actionManager
+                .Setup(x => x.GetEventAsync(eventId))
+                .ReturnsAsync(new Event());
+            _participantManager
+                .Setup(x => x.GetEventFeedbackByIdAsync(feedbackId))
+                .ReturnsAsync((new EventFeedback()));
+            _userManager
+                .Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _eventUserAccessService
+                .Setup(x => x.CanDeleteFeedback(It.IsAny<User>(), It.IsAny<EventFeedback>()))
+                .ReturnsAsync(false);
+            _actionManager
+                .Setup(x => x.DeleteFeedbackAsync(feedbackId))
+                .Returns(Task.CompletedTask);
+
+            //Act
+            var result = await _eventsController.DeleteFeedback(eventId, feedbackId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<StatusCodeResult>(result);
+        }
+
+        [Test]
+        public async Task GetPicture_PictureExists_ReturnsOkObject()
+        {
+            //Arrange
+            int pictureId = 1;
+
+            _actionManager
+                .Setup(x => x.GetPictureAsync(pictureId))
+                .ReturnsAsync(new EventGalleryDto());
+
+            //Act
+            var result = await _eventsController.GetPicture(pictureId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<OkObjectResult>(result);
+            Assert.NotNull((result as OkObjectResult).Value);
+        }
+
+        [Test]
+        public async Task GetPicture_PictureDoesntExist_ReturnsNotFound()
+        {
+            //Arrange
+            int pictureId = 1;
+
+            _actionManager
+                .Setup(x => x.GetPictureAsync(pictureId))
+                .ReturnsAsync((EventGalleryDto)null);
+
+            //Act
+            var result = await _eventsController.GetPicture(pictureId);
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsInstanceOf<NotFoundResult>(result);
         }
 
         private List<EventTypeDto> CreateListOfFakeEventTypes()
-            => new List<EventTypeDto>()
+        => new List<EventTypeDto>()
+        {
+            new EventTypeDto()
             {
-                new EventTypeDto()
-                {
-                    ID = 0,
-                    EventTypeName = "SomeEventTypeName",
-                },
-                new EventTypeDto()
-                { 
-                    ID = 1,
-                    EventTypeName = "AnotherEventTypeName",
-                },
-            };
+                ID = 0,
+                EventTypeName = "SomeEventTypeName",
+            },
+            new EventTypeDto()
+            {
+                ID = 1,
+                EventTypeName = "AnotherEventTypeName",
+            },
+        };
 
         private List<EventCategoryDto> CreateListOfFakeEventCategories()
             => new List<EventCategoryDto>()
@@ -773,14 +952,14 @@ namespace EPlast.Tests.Controllers
             => new List<GeneralEventDto>()
             {
                 new GeneralEventDto()
-                { 
-                    EventId = 0, 
+                {
+                    EventId = 0,
                     EventName = "SomeGeneralEventName",
-                    
+
                 },
                 new GeneralEventDto()
-                { 
-                    EventId = 1, 
+                {
+                    EventId = 1,
                     EventName = "AnotherGeneralEventName",
                 },
             };
@@ -805,11 +984,11 @@ namespace EPlast.Tests.Controllers
             => new EventDto()
             {
                 Event = new EventInfoDto()
-                { 
-                    EventId = 0, 
+                {
+                    EventId = 0,
                     EventName = "SomeEventName",
                 },
-                
+
             };
 
         private EventCategoryCreateDto CreateFakeEventCategory()
@@ -830,15 +1009,15 @@ namespace EPlast.Tests.Controllers
                 new EventGalleryDto()
                 {
                     GalleryId = 1,
-                    FileName = "SomeFilenameID1"
+                    EncodedData = "SomeFilenameID1"
                 },
                 new EventGalleryDto()
                 {
                     GalleryId = 2,
-                    FileName = "SomeFilenameID2"
+                    EncodedData = "SomeFilenameID2"
                 },
 
             };
-        
+
     }
 }

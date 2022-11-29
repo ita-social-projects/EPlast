@@ -77,6 +77,9 @@ namespace EPlast.BLL.DTO.AnnualReport
 
         public string CreatorId { get; set; }
         public UserDto Creator { get; set; }
+        public string CreatorFirstName { get; set; }
+        public string CreatorLastName { get; set; }
+        public string CreatorFatherName { get; set; }
 
         public string NewCityAdminId { get; set; }
         public UserDto NewCityAdmin { get; set; }
