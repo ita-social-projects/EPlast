@@ -4,7 +4,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
@@ -37,6 +39,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IMapper> _mapper;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserAccessService> _userAccessService;
+        private Mock<IUserDatesService> _datesService;
 
         private UserController _userController;
 
@@ -48,6 +51,7 @@ namespace EPlast.Tests.Controllers
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
             _loggerService = new Mock<ILoggerService<UserController>>();
+            _datesService = new Mock<IUserDatesService>();
             _mapper = new Mock<IMapper>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -58,6 +62,7 @@ namespace EPlast.Tests.Controllers
                 _userPersonalDataService.Object,
                 _confirmedUserService.Object,
                 _userManagerService.Object,
+                _datesService.Object,
                 _loggerService.Object,
                 _mapper.Object,
                 _userManager.Object,
@@ -283,8 +288,11 @@ namespace EPlast.Tests.Controllers
 
             var currentUser = new User();
             var focusUserViewModel = new UserViewModel();
+            var userDate = new UserMembershipDatesDto();
+
             _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
+            _datesService.Setup(ds => ds.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(userDate);
             _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(currentUser);
             _userAccessService.Setup(ua =>
@@ -294,7 +302,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(focusUserViewModel);
 
             //Act
-            var result= await _userController.GetUserProfile(focusUserId);
+            var result = await _userController.GetUserProfile(focusUserId);
             var actual = (result as ObjectResult).Value as PersonalDataViewModel;
 
             //Assert
@@ -323,6 +331,7 @@ namespace EPlast.Tests.Controllers
             };
             var currentUser = new User();
             var focusUserViewModel = new UserShortViewModel();
+            var userDate = new UserMembershipDatesDto();
 
             _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
@@ -331,6 +340,7 @@ namespace EPlast.Tests.Controllers
             _userAccessService.Setup(ua =>
                     ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(userAccess);
+            _datesService.Setup(ds => ds.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(userDate);
             _mapper.Setup(m => m.Map<UserDto, UserShortViewModel>(It.IsAny<UserDto>()))
                 .Returns(focusUserViewModel);
 

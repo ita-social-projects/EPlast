@@ -90,9 +90,9 @@ namespace EPlast.BLL.Services.UserProfiles
 
         /// <inheritdoc />
         public IEnumerable<UserRenewalsTableObject> GetUserRenewalsTableObject(string searchedData, int page,
-            int pageSize)
+            int pageSize, string filter)
         {
-            return _repoWrapper.UserRenewal.GetUserRenewals(searchedData, page, pageSize);
+            return _repoWrapper.UserRenewal.GetUserRenewals(searchedData, page, pageSize, filter);
         }
 
         /// <inheritdoc />
@@ -120,6 +120,15 @@ namespace EPlast.BLL.Services.UserProfiles
             await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
             await ResolveUserMembershipDatesAsync(userId);
             var newUser = await _cityParticipantsService.AddFollowerAsync(cityId, userId);
+
+            var formerMembershipDates = await _repoWrapper.UserFormerMembershipDates.GetFirstOrDefaultAsync(m => m.UserId == userId);
+            if (formerMembershipDates != null)
+            {
+                formerMembershipDates.DateEnd = DateTime.Now;
+                _repoWrapper.UserFormerMembershipDates.Update(formerMembershipDates);
+                await _repoWrapper.SaveAsync();
+            }
+
             await ChangeUserRenewalAsync(userRenewal);
 
             return newUser;

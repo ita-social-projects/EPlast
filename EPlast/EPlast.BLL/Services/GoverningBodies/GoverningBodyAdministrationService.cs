@@ -217,6 +217,15 @@ namespace EPlast.BLL.Services.GoverningBodies
 
             _repositoryWrapper.GoverningBodyAdministration.Update(admin);
             await _repositoryWrapper.SaveAsync();
+
+            var countOfSectorAdministrations = await _repositoryWrapper.GoverningBodySectorAdministration.GetAllAsync(
+                u => u.UserId == admin.UserId && u.Status);
+            var countOfGbAdministrations = await _repositoryWrapper.GoverningBodyAdministration.GetAllAsync(
+                u => u.UserId == admin.UserId && u.Status);
+            if (countOfGbAdministrations.Any() && countOfSectorAdministrations.Any())
+            {
+                await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);
+            }
         }
 
         public async Task<IEnumerable<GoverningBodyAdministrationDto>> GetUserAdministrations(string userId)
@@ -230,23 +239,28 @@ namespace EPlast.BLL.Services.GoverningBodies
 
         public async Task RemoveMainAdministratorAsync(string userId)
         {
-            var adminType = await _adminTypeService.GetAdminTypeByNameAsync(Roles.GoverningBodyAdmin);
-            var admins = await _repositoryWrapper.GoverningBodyAdministration
+            var adminTypesToRemove = await _repositoryWrapper.AdminType.GetAllAsync(
+                at => at.AdminTypeName == Roles.GoverningBodyAdmin ||
+                      at.AdminTypeName == Roles.GoverningBodyHead    
+            );
+
+            foreach (var adminTypeToRemove in adminTypesToRemove)
+            {
+                var admins = await _repositoryWrapper.GoverningBodyAdministration
                 .GetAllAsync(u =>
                     u.UserId == userId
-                    && u.AdminTypeId == adminType.ID
+                    && u.AdminTypeId == adminTypeToRemove.ID
                     && u.Status
                 );
+                foreach (var admin in admins)
+                {
+                    admin.EndDate = DateTime.Now;
+                    admin.Status = false;
 
-            foreach (var admin in admins)
-            {
-                admin.EndDate = DateTime.Now;
-                admin.Status = false;
-
-                _repositoryWrapper.GoverningBodyAdministration.Update(admin);
-
-                await _repositoryWrapper.SaveAsync();
+                    _repositoryWrapper.GoverningBodyAdministration.Update(admin);
+                }
             }
+            await _repositoryWrapper.SaveAsync();
 
             var user = await _userManager.FindByIdAsync(userId);
             await _userManager.RemoveFromRoleAsync(user, Roles.GoverningBodyAdmin);

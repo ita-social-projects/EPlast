@@ -30,6 +30,7 @@ namespace EPlast.BLL.Services.Region
             RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
             var region = await _repositoryWrapper.Region.GetFirstOrDefaultAsync(a => a.ID == id);
+            var user = await _repositoryWrapper.User.GetFirstOrDefaultAsync(u => u.Id == claimsPrincipal.Id);
 
             if (!await _regionAccessService.HasAccessAsync(claimsPrincipal, region.ID))
             {
@@ -57,6 +58,14 @@ namespace EPlast.BLL.Services.Region
                 RegionName = region.RegionName,
 
                 RegionId = id,
+
+                CreatorId = user.Id,
+
+                CreatorFirstName = user.FirstName,
+
+                CreatorLastName = user.LastName,
+
+                CreatorFatherName = user.FatherName,
 
                 Date = reportDate,
 
@@ -257,8 +266,14 @@ namespace EPlast.BLL.Services.Region
         }
 
         ///<inheritdoc/>
-        public async Task EditAsync(int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
+        public async Task EditAsync(User user, int reportId, RegionAnnualReportQuestions regionAnnualReportQuestions)
         {
+            var report = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(r => r.ID == reportId);
+
+            if (!await _regionAccessService.HasAccessAsync(user, report.RegionId))
+            {
+                throw new UnauthorizedAccessException();
+            }
             var regionAnnualReport = await _repositoryWrapper.RegionAnnualReports.GetFirstOrDefaultAsync(
                 predicate: a => a.ID == reportId && a.Status == AnnualReportStatus.Unconfirmed);
             if (regionAnnualReport.Status != AnnualReportStatus.Unconfirmed)

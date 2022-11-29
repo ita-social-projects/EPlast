@@ -78,6 +78,12 @@ namespace EPlast.BLL.Services
                     {
                         await _userManager.RemoveFromRoleAsync(user, registeredUser);
                     }
+
+                    if(role == plastun)
+                    {
+
+                    }
+
                     await UpdateUserDatesByChangeRoleAsyncAsync(userId, role);
                     await _repoWrapper.SaveAsync();
                     await _userManager.AddToRoleAsync(user, role);
@@ -244,9 +250,10 @@ namespace EPlast.BLL.Services
 
             string strDegrees = tableFilterParameters.Degrees == null ? null : string.Join(",", tableFilterParameters.Degrees.ToArray());
             string strRoles = tableFilterParameters.FilterRoles == null ? null : string.Join(", ", tableFilterParameters.FilterRoles.ToArray());
+            string strKadras = tableFilterParameters.FilterKadras == null ? null : string.Join(", ", tableFilterParameters.FilterKadras.ToArray());
             var tuple = await _repoWrapper.AdminType.GetUserTableObjects(tableFilterParameters.Page,
                 tableFilterParameters.PageSize, tableFilterParameters.Tab, strRegions, strCities, strClubs, strDegrees,
-                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles, strAndClubs);
+                tableFilterParameters.SortKey, tableFilterParameters.SearchData, strRoles, strKadras, strAndClubs);
             var users = tuple.Item1;
             var rowCount = tuple.Item2;
 
@@ -285,6 +292,10 @@ namespace EPlast.BLL.Services
             else if (role == Roles.RegisteredUser && roles.Count == 0)
             {
                 userMembershipDates.DateEnd = default;
+            }
+            else if (role == Roles.PlastMember)
+            {
+                userMembershipDates.DateMembership = DateTime.Now;
             }
             else
             {

@@ -336,7 +336,7 @@
     "CanCreateEvent": false,
     "CanSeeUserVisitedEvents": false,
     "CanApplyForEvent": true,
-    "CanSeeUserBlankPage": true,
+    "CanSeeUserBlankPage": false,
     "CanSeeUserApproversPage": true,
     "CanApproveUser": false,
     "CanRejectOwnApprove": false,

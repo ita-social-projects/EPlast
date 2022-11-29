@@ -31,9 +31,21 @@ namespace EPlast.BLL.Interfaces.Events
         /// Create a new category
         /// </summary>
         /// <returns>The Id of newly created category</returns>
-        /// <param name="model"></param>
-        /// <response code="201">Instance of EventCategoryCreateDTO</response>
-        /// <response code="400">When the EventCategoryCreateDTO is null or empty</response> 
-        Task<int> CreateEventCategoryAsync(EventCategoryCreateDto model);
+        /// <param name="eventCategoryCreateDto"></param>
+        Task<int> CreateEventCategoryAsync(EventCategoryCreateDto eventCategoryCreateDto);
+
+        /// <summary>
+        /// Update a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="eventCategoryUpdateDto"></param>
+        Task<bool> UpdateEventCategoryAsync(EventCategoryDto eventCategoryUpdateDto);
+
+        /// <summary>
+        /// Delete a category
+        /// </summary>
+        /// <returns>No Content</returns>
+        /// <param name="id"></param>
+        Task<bool> DeleteEventCategoryAsync(int id);
     }
 }

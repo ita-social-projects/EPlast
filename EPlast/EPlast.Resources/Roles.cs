@@ -54,6 +54,16 @@ namespace EPlast.Resources
                                                                      "," + KurinHead + 
                                                                      "," + KurinHeadDeputy + 
                                                                      "," + PlastMember;
+        public const string HeadsAndHeadDeputiesAndAdminAndPlastMemberAndSupporter = Admin +
+                                                                     "," + GoverningBodyAdmin +
+                                                                     "," + GoverningBodyHead +
+                                                                     "," + OkrugaHead +
+                                                                     "," + OkrugaHeadDeputy +
+                                                                     "," + CityHead +
+                                                                     "," + CityHeadDeputy +
+                                                                     "," + KurinHead +
+                                                                     "," + KurinHeadDeputy +
+                                                                     "," + Supporter;
         public const string HeadsAndHeadDeputiesAndAdmin = Admin +
                                                            "," + GoverningBodyAdmin + 
                                                            "," + GoverningBodyHead + 
