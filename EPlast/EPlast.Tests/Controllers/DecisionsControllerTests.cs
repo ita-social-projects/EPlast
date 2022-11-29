@@ -277,13 +277,13 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public void GetDecisionsForTable_ReturnsOkObjectResult()
+        public async Task GetDecisionsForTable_ReturnsOkObjectResult()
         {
             //Arrange
             _mockMediator.Setup(x => x.Send(It.IsAny<GetDecisionsForTableQuery>(),It.IsAny<CancellationToken>())).Returns(FakedDecisionTableObject);
 
             //Act
-            var result = _decisionsController.GetDecisionsForTable(It.IsAny<string>(),
+            var result = await _decisionsController.GetDecisionsForTable(It.IsAny<string>(),
                 It.IsAny<int>(), It.IsAny<int>());
             var resultValue = (result as OkObjectResult)?.Value;
 
