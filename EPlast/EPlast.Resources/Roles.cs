@@ -6,6 +6,8 @@ namespace EPlast.Resources
     {
         public const string Admin = "Admin";
         public const string Supporter = "Прихильник";
+        public const string OlderSupporter = "Старший прихильник";
+        public const string SeniorSupporter = "Сеніор прихильник";
         public const string PlastMember = "Дійсний член організації";
         public const string PlastHead = "Голова Пласту";
         public const string EventAdministrator = "Адміністратор подій";
@@ -63,12 +65,12 @@ namespace EPlast.Resources
                                                            "," + KurinHeadDeputy;
         public const string AdminAndOkrugaHeadAndOkrugaHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy;
         public const string HeadsAndHeadDeputiesAndAdminPlastunAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + "," 
-            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter;
+            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + OlderSupporter + "," + SeniorSupporter;
         public const string HeadsAndHeadDeputiesAndAdminPlastunSupporterAndRegisteredUser = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + ","
-            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + Supporter + "," + RegisteredUser;
+            + CityHeadDeputy + "," + KurinHead + "," + KurinHeadDeputy + "," + PlastMember + "," + OlderSupporter + "," + SeniorSupporter + "," + RegisteredUser;
         public const string StatisticsAccessRoles = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastHead + "," + OkrugaHead + "," + OkrugaHeadDeputy + "," + CityHead + ","
             + CityHeadDeputy;
-        public const string AdminPlastMemberAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastMember + "," + Supporter;
+        public const string AdminPlastMemberAndSupporter = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + PlastMember + "," + OlderSupporter + "," + SeniorSupporter;
         public const string AdminAndKurinHeadAndKurinHeadDeputy = Admin + "," + GoverningBodyAdmin + "," + GoverningBodyHead + "," + KurinHead + "," + KurinHeadDeputy;
 
         public const string AdminCityHeadOkrugaHeadCityHeadDeputyOkrugaHeadDeputy = Admin +
@@ -147,7 +149,8 @@ namespace EPlast.Resources
         public static List<string> ListOfRoles => new List<string>
         {
             Roles.Admin,
-            Roles.Supporter,
+            Roles.OlderSupporter,
+            Roles.SeniorSupporter,
             Roles.PlastMember,
             Roles.PlastHead,
             Roles.EventAdministrator,
@@ -189,7 +192,8 @@ namespace EPlast.Resources
         public static List<string> LowerRoles => new List<string>
         {
             Roles.RegisteredUser,
-            Roles.Supporter,
+            Roles.OlderSupporter,
+            Roles.SeniorSupporter,
             Roles.FormerPlastMember,
             Roles.Interested
         };
