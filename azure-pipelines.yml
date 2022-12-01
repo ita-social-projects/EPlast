@@ -132,7 +132,7 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'EPlast.default'
+    environment: 'EPlast.eplast'
     strategy:
       runOnce:
         deploy:
