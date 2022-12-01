@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- move
 
 resources:
 - repo: self
@@ -132,7 +132,7 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'EPlast.eplast'
+    environment: 'EPlast.default'
     strategy:
       runOnce:
         deploy:
