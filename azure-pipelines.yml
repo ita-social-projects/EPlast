@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- move
 
 resources:
 - repo: self
@@ -132,7 +132,7 @@ stages:
     displayName: Deploy
     pool:
       vmImage: $(vmImageName)
-    environment: 'EPlast.eplast'
+    environment: 'EPlast.default'
     strategy:
       runOnce:
         deploy:
@@ -151,14 +151,14 @@ stages:
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
-              kubernetesServiceConnection: 'EPlast-eplast-ServiceConnection'
+              kubernetesServiceConnection: 'new EPlast'
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              kubernetesServiceConnection: 'EPlast-eplast-ServiceConnection'
+              kubernetesServiceConnection: 'new EPlast'
               manifests: |
                 $(Pipeline.Workspace)/manifests/test/deployment.yml
                 $(Pipeline.Workspace)/manifests/test/service.yml
