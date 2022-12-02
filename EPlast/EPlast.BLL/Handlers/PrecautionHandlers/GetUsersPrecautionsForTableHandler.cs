@@ -58,7 +58,7 @@ namespace EPlast.BLL.Handlers.PrecautionHandlers
                 || x.Reporter.Contains(searchedData) 
                 || x.Reason.Contains(searchedData)
                 || x.Precaution.Name.Contains(searchedData)
-                || statusSearch != null ? searchedData == "П" ? x.Status == UserPrecautionStatus.Confirmed || x.Status == UserPrecautionStatus.Accepted : x.Status == statusSearch : false
+                || x.Status == statusSearch
             };
 
             Expression<Func<UserPrecaution, bool>> nameFilterExpr = (precautionNameFilter == null) switch
