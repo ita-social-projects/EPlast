@@ -28,6 +28,7 @@ namespace EPlast.DataAccess.Repositories
                     || ("У розгляді".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.InReview)
                     || ("Потверджено".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.Confirmed)
                     || ("Скасовано".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.Canceled)
+                    || d.ID.ToString().Contains(searchData)
                     || d.Name.ToLower().Contains(searchData)
                     || d.Organization.OrganizationName.ToLower().Contains(searchData)
                     || d.DecesionTarget.TargetName.ToLower().Contains(searchData)
