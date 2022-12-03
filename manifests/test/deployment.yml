@@ -16,10 +16,10 @@ spec:
       containers:
         - name: eplastapi 
           image: ___containerRegistry___/eplastapi:___containerRegistry_version_backend_test___
-#          resources:
-#            limits:
-#              cpu: "1000m"
-#              memory: "1000Mi"
+         resources:
+            limits:
+              cpu: "600m"
+              memory: "500Mi"
           ports:
           - containerPort: 5000
           env:
@@ -50,7 +50,7 @@ spec:
           - name: FacebookAuthentication__FacebookAppId
             value: ___FacebookAuthentication__FacebookAppId___
           - name: FacebookAuthentication__FacebookAppSecret
-            value: ___FacebookAuthentication__FacebookAppSecret___          
+            value: ___FacebookAuthentication__FacebookAppSecret___
 ---
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
