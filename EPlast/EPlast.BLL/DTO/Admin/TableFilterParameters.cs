@@ -14,6 +14,7 @@ namespace EPlast.BLL.DTO.Admin
         public IEnumerable<int> Degrees { get; set; }
         public int SortKey { get; set; }
         public IEnumerable<string> FilterRoles { get; set; }
+        public IEnumerable<string> FilterKadras { get; set; }
         public string SearchData { get; set; }
     }
 }

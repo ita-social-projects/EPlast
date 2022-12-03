@@ -10,6 +10,7 @@ resources:
 
 variables:
 - group: EPlast
+
   # Container registry service connection established during pipeline creation
 - name: dockerRegistryServiceConnection
   # value: '5aab2e73-307d-46b2-8421-8ac50de15018'
@@ -26,7 +27,7 @@ variables:
 - name: imagePullSecret
   # value: 'eplast1348122b-auth'
   value: 'azdev-sa-3a5f0b-token-rqwl2'
-
+   
   # Agent VM image name
 - name: vmImageName
   value: 'ubuntu-latest'
@@ -43,7 +44,7 @@ stages:
     displayName: Build
     pool:
       vmImage: $(vmImageName)
-    steps:
+    steps:    
     - task: Docker@2
       displayName: Build
       inputs:
@@ -66,8 +67,8 @@ stages:
         tags: |
           $(tag)
     - upload: manifests
-      artifact: manifests
-
+      artifact: manifests       
+    
 - stage: Test
   displayName: Test stage
   dependsOn: []

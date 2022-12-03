@@ -233,6 +233,21 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
+        public async Task GetClubAdmins_Int_ReturnsOkObjResult()
+        {
+            // Arrange
+            int id = 2;
+            _clubParticipantsService
+                .Setup(x => x.GetAdministrationByIdAsync(id))
+                .ReturnsAsync(GetAdmins());
+            ClubController controller = CreateClubController;
+            // Act
+            var result = await controller.GetAdministrations(id);
+            // Assert
+            Assert.IsInstanceOf<OkObjectResult>(result);
+        }
+
+        [Test]
         public async Task GetProfile_Invalid_Test()
         {
             // Arrange
@@ -871,7 +886,7 @@ namespace EPlast.Tests.Controllers
             //Assert
             Assert.NotNull(result);
             Assert.IsInstanceOf<OkResult>(result);
-        }  
+        }
 
         public async Task EditAdmin_OldEndDate_ReturnsBadRequest()
         {
@@ -1095,6 +1110,17 @@ namespace EPlast.Tests.Controllers
                     Name = "Курінь"
                 }
             }.AsEnumerable();
+        }
+
+        private IEnumerable<ClubAdministrationDto> GetAdmins()
+        {
+            return new List<ClubAdministrationDto>()
+            {
+                new ClubAdministrationDto() { ID = 2 },
+                new ClubAdministrationDto() { ID = 3 },
+                new ClubAdministrationDto() { ID = 4 },
+                new ClubAdministrationDto() { ID = 5 }
+            };
         }
     }
 }

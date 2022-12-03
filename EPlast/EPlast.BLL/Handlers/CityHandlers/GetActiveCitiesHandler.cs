@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,11 @@ namespace EPlast.BLL.Handlers.CityHandlers
 
         public async Task<IEnumerable<CityForAdministrationDto>> Handle(GetActiveCitiesQuery request, CancellationToken cancellationToken)
         {
-            var cities = await _repoWrapper.City.GetRangeAsync(null, null, x => x.OrderBy(e => e.Name), null, null, null);
+            var cities = await _repoWrapper.City.GetRangeAsync(
+                c => (!request.IsOnlyActive || c.IsActive) && (!Convert.ToBoolean(request.Oblast) || request.Oblast == c.Oblast), 
+                null, 
+                x => x.OrderBy(e => e.Name), 
+                null, null, null);
 
             var sortedCities = cities.Item1;
 

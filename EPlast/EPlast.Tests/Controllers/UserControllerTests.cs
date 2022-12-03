@@ -4,7 +4,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
+using EPlast.BLL.DTO.ActiveMembership;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
@@ -37,6 +39,7 @@ namespace EPlast.Tests.Controllers
         private Mock<IMapper> _mapper;
         private Mock<UserManager<User>> _userManager;
         private Mock<IUserAccessService> _userAccessService;
+        private Mock<IUserDatesService> _datesService;
 
         private UserController _userController;
 
@@ -48,6 +51,7 @@ namespace EPlast.Tests.Controllers
             _userManagerService = new Mock<IUserManagerService>();
             _confirmedUserService = new Mock<IConfirmedUsersService>();
             _loggerService = new Mock<ILoggerService<UserController>>();
+            _datesService = new Mock<IUserDatesService>();
             _mapper = new Mock<IMapper>();
             var store = new Mock<IUserStore<User>>();
             _userManager = new Mock<UserManager<User>>(store.Object, null, null, null, null, null, null, null, null);
@@ -58,6 +62,7 @@ namespace EPlast.Tests.Controllers
                 _userPersonalDataService.Object,
                 _confirmedUserService.Object,
                 _userManagerService.Object,
+                _datesService.Object,
                 _loggerService.Object,
                 _mapper.Object,
                 _userManager.Object,
@@ -283,8 +288,11 @@ namespace EPlast.Tests.Controllers
 
             var currentUser = new User();
             var focusUserViewModel = new UserViewModel();
+            var userDate = new UserMembershipDatesDto();
+
             _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
+            _datesService.Setup(ds => ds.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(userDate);
             _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
                 .ReturnsAsync(currentUser);
             _userAccessService.Setup(ua =>
@@ -294,7 +302,7 @@ namespace EPlast.Tests.Controllers
                 .Returns(focusUserViewModel);
 
             //Act
-            var result= await _userController.GetUserProfile(focusUserId);
+            var result = await _userController.GetUserProfile(focusUserId);
             var actual = (result as ObjectResult).Value as PersonalDataViewModel;
 
             //Assert
@@ -323,6 +331,7 @@ namespace EPlast.Tests.Controllers
             };
             var currentUser = new User();
             var focusUserViewModel = new UserShortViewModel();
+            var userDate = new UserMembershipDatesDto();
 
             _userService.Setup(us => us.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
@@ -331,6 +340,7 @@ namespace EPlast.Tests.Controllers
             _userAccessService.Setup(ua =>
                     ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
                 .ReturnsAsync(userAccess);
+            _datesService.Setup(ds => ds.GetUserMembershipDatesAsync(It.IsAny<string>())).ReturnsAsync(userDate);
             _mapper.Setup(m => m.Map<UserDto, UserShortViewModel>(It.IsAny<UserDto>()))
                 .Returns(focusUserViewModel);
 
@@ -397,12 +407,22 @@ namespace EPlast.Tests.Controllers
             // Arrange
             string currentUserId = "1";
             string focusUserId = "1";
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditUserProfile", true }
+            };
+
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+
 
             _userService
                 .Setup((x) => x.GetUserAsync(currentUserId))
                 .ReturnsAsync(CreateFakeUser());
 
-            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(currentUserId);
+            _userAccessService.Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
 
             _mapper
                 .Setup((x) => x.Map<UserDto, UserViewModel>(It.IsAny<UserDto>()))
@@ -422,18 +442,26 @@ namespace EPlast.Tests.Controllers
             // Arrange
             var idString = "1";
             var idInt = 1;
-            string currentUserId = "1";
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditUserProfile", true }
+            };
+
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
 
             _userService
-                .Setup((x) => x.GetUserAsync(currentUserId))
+                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
                 .ReturnsAsync(CreateFakeUser());
-
-            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(currentUserId);
             
 
             _userPersonalDataService
                 .Setup((x) => x.GetAllGendersAsync())
                 .ReturnsAsync(new List<GenderDto>());
+
+            _userAccessService.Setup(ua =>
+                   ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+               .ReturnsAsync(userAccess);
 
             _mapper
                 .Setup((x) => x.Map<IEnumerable<GenderDto>, IEnumerable<GenderViewModel>>(new List<GenderDto>()))
@@ -512,7 +540,9 @@ namespace EPlast.Tests.Controllers
         public async Task Edit_NullUser_ReturnsNotFoundResult()
         {
             // Arrange
-            string id = "1";
+            string id = null;
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
             _userService
                 .Setup((x) => x.GetUserAsync(id))
                 .ReturnsAsync(It.IsAny<UserDto>);
@@ -535,14 +565,26 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             string focusUserId = "2";
+            var user = CreateFakeUser();
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditUserProfile", false }
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
 
-            _userService
-                .Setup((x) => x.GetUserAsync(It.IsAny<string>()))
-                .ReturnsAsync(CreateFakeUserWithoutCity(focusUserId));
-
-            _userManagerService
-                .Setup((x) => x.IsInRoleAsync(It.IsAny<UserDto>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
+             _userManager
+                .Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _userAccessService
+                .Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
 
             var expected = StatusCodes.Status403Forbidden;
 
@@ -560,10 +602,32 @@ namespace EPlast.Tests.Controllers
         public async Task EditProfilePhoto_ReturnsOkResult()
         {
             // Arrange
-            var id = "1";
-            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            string focusUserId = "2";
+            var user = CreateFakeUser();
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditDeleteUserPhoto", true }
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
+
+            _userManager
+                .Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _userAccessService
+                .Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
+            _userManagerService
+                .Setup(m => m.FindByIdAsync(focusUserId))
+                .ReturnsAsync(new UserDto());
             // Act
-            var result = await _userController.EditProfilePhotoAsync(id,It.IsAny<string>());
+            var result = await _userController.EditProfilePhotoAsync(focusUserId, It.IsAny<string>());
 
             // Assert
             _userService.Verify();
@@ -576,9 +640,28 @@ namespace EPlast.Tests.Controllers
         public async Task EditProfilePhoto_Returns403Forbidden()
         {
             // Arrange
-            var id = "1";
+            var user = CreateFakeUser();
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditDeleteUserPhoto", false }
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
+
+            _userManagerService
+                .Setup(m => m.FindByIdAsync(It.IsAny<string>()))
+                .ReturnsAsync(new UserDto());
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _userAccessService.Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
             var expected = StatusCodes.Status403Forbidden;
-            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
             // Act
             var result = await _userController.EditProfilePhotoAsync(It.IsAny<string>(), It.IsAny<string>());
             var actual = ((StatusCodeResult) result).StatusCode;
@@ -610,13 +693,26 @@ namespace EPlast.Tests.Controllers
         public async Task EditBase64_ReturnsOkResult()
         {
             // Arrange
-            var id = "1";
-            _userManager.Setup(u => u.GetUserId(It.IsAny<ClaimsPrincipal>())).Returns(id);
+            var user = CreateFakeUser();
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditUserProfile", true }
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _userAccessService.Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
             _mapper
                 .Setup((x) => x.Map<UserViewModel, UserDto>(It.IsAny<UserViewModel>()))
                 .Returns(CreateFakeUser());
-
-            _userManager.Setup(x => x.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(true);
             _userService
                 .Setup((x) => x.UpdateAsyncForBase64(It.IsAny<UserDto>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>()));
 
@@ -635,11 +731,24 @@ namespace EPlast.Tests.Controllers
         {
             // Arrange
             var expected = StatusCodes.Status403Forbidden;
-            _mapper
-                .Setup((x) => x.Map<UserViewModel, UserDto>(It.IsAny<UserViewModel>()))
-                .Returns(CreateFakeUser());
 
-            _userManager.Setup(x => x.IsInRoleAsync(It.IsAny<User>(), Roles.Admin)).ReturnsAsync(false);
+            var user = CreateFakeUser();
+            var userAccess = new Dictionary<string, bool>()
+            {
+                { "CanEditUserProfile", false }
+            };
+            _userController.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity())
+                }
+            };
+            _userManager.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+                .ReturnsAsync(new User());
+            _userAccessService.Setup(ua =>
+                    ua.GetUserProfileAccessAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<User>()))
+                .ReturnsAsync(userAccess);
             _userService
                 .Setup((x) => x.UpdateAsyncForBase64(It.IsAny<UserDto>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>(), It.IsAny<int?>()));
 

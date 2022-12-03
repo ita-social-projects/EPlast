@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EPlast.BLL.DTO;
 using EPlast.BLL.DTO.UserProfiles;
+using EPlast.BLL.Interfaces.ActiveMembership;
 using EPlast.BLL.Interfaces.Logging;
 using EPlast.BLL.Interfaces.UserAccess;
 using EPlast.BLL.Interfaces.UserProfiles;
@@ -35,11 +36,13 @@ namespace EPlast.WebApi.Controllers
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
         private readonly IUserAccessService _userAccessService;
+        private readonly IUserDatesService _userDatesService;
 
         public UserController(IUserService userService,
             IUserPersonalDataService userPersonalDataService,
             IConfirmedUsersService confirmedUserService,
             IUserManagerService userManagerService,
+            IUserDatesService userDatesService,
             ILoggerService<UserController> loggerService,
             IMapper mapper, UserManager<User> userManager, IUserAccessService userAccessService)
         {
@@ -51,6 +54,7 @@ namespace EPlast.WebApi.Controllers
             _mapper = mapper;
             _userManager = userManager;
             _userAccessService = userAccessService;
+            _userDatesService = userDatesService;
         }
 
 
@@ -83,6 +87,8 @@ namespace EPlast.WebApi.Controllers
                     || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
                     && await _userService.IsApprovedCityMember(userId));
 
+                var IsUserAdmin = await _userManagerService.IsInRoleAsync(user, Roles.Admin);
+
                 if (await _userManagerService.IsInRoleAsync(currentUser, Roles.RegisteredUser) && !isThisUser)
                 {
                     _loggerService.LogError($"User (id: {currentUserId}) hasn't access to profile (id: {userId})");
@@ -94,6 +100,7 @@ namespace EPlast.WebApi.Controllers
                     User = _mapper.Map<UserDto, UserViewModel>(user),
                     TimeToJoinPlast = (int)time.TotalDays,
                     IsUserPlastun = isUserPlastun,
+                    IsUserAdmin = IsUserAdmin
                 };
 
                 return Ok(model);
@@ -143,12 +150,16 @@ namespace EPlast.WebApi.Controllers
             }
 
             var currentUser = await _userManager.GetUserAsync(User);
+            var dates = await _userDatesService.GetUserMembershipDatesAsync(focusUserId);
+            var entryDate = dates.DateEntry;
 
             var currentUserAccess = await 
                 _userAccessService.GetUserProfileAccessAsync(currentUser.Id, focusUserId, currentUser);
 
-            var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, focusUser.RegistredOn);
+            var timeToJoinPlast = _userService.CheckOrAddPlastunRole(focusUser.Id, entryDate);
             var isFocusUserPlastMember = await _userManagerService.IsInRoleAsync(focusUser, Roles.PlastMember);
+
+            var isFocusUserAdmin = await _userManagerService.IsInRoleAsync(focusUser, Roles.Admin);
 
             if (currentUserAccess["CanViewUserFullProfile"])
             {
@@ -156,7 +167,8 @@ namespace EPlast.WebApi.Controllers
                 {
                     User = _mapper.Map<UserDto, UserViewModel>(focusUser),
                     TimeToJoinPlast = (int)timeToJoinPlast.TotalDays,
-                    IsUserPlastun = isFocusUserPlastMember
+                    IsUserPlastun = isFocusUserPlastMember,
+                    IsUserAdmin = isFocusUserAdmin
                 };
                 return Ok(viewModel);
             }
@@ -203,11 +215,11 @@ namespace EPlast.WebApi.Controllers
                 return NotFound();
             }
             var user = await _userService.GetUserAsync(userId);
-            var currentUserId = _userManager.GetUserId(User);
-            var currentUser = await _userService.GetUserAsync(currentUserId);
-            if (!(userId == currentUserId || await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin })))
+            var currentUser = await _userManager.GetUserAsync(User);
+            var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUser.Id, userId, currentUser);
+            if (!currentUserAccess["CanEditUserProfile"])
             {
-                _loggerService.LogError($"User (id: {currentUserId}) hasn't access to edit profile (id: {userId})");
+                _loggerService.LogError($"User (id: {currentUser.Id}) hasn't access to edit profile (id: {userId})");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
 
@@ -246,20 +258,18 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var currentUserId = _userManager.GetUserId(User);
-                var currentUser = await _userService.GetUserAsync(currentUserId);
+                var currentUser = await _userManager.GetUserAsync(User);
                 var userToUpdate = await _userManagerService.FindByIdAsync(userid);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
-                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUser.Id, userToUpdate.Id, currentUser);
 
-                if (currentUserId == userid || isUserAdmin || isUserGoverningBodyHead)
+                if (currentUserAccess["CanEditDeleteUserPhoto"])
                 {
                     await _userService.UpdatePhotoAsyncForBase64(userToUpdate, imageBase64);
                     _loggerService.LogInformation($"Photo of user {userid} was successfully updated");
                     return Ok("Photo successfully updated");
                 }
 
-                _loggerService.LogInformation($"User {currentUserId} cannot update profile photo of user {userid}");
+                _loggerService.LogInformation($"User {currentUser.Id} cannot update profile photo of user {userid}");
                 return StatusCode(StatusCodes.Status403Forbidden);
             }
             catch (Exception ex)
@@ -282,12 +292,10 @@ namespace EPlast.WebApi.Controllers
         {
             try
             {
-                var currentUserId = _userManager.GetUserId(User);
-                var currentUser = await _userService.GetUserAsync(currentUserId);
-                var isUserAdmin = await _userManagerService.IsInRoleAsync(currentUser, new string[] { Roles.Admin, Roles.GoverningBodyAdmin });
-                var isUserGoverningBodyHead = await _userManagerService.IsInRoleAsync(currentUser, Roles.GoverningBodyHead);
+                var currentUser = await _userManager.GetUserAsync(User);
+                var currentUserAccess = await _userAccessService.GetUserProfileAccessAsync(currentUser.Id, model.User.ID, currentUser);
 
-                if (currentUserId == model.User.ID || isUserAdmin || isUserGoverningBodyHead)
+                if (currentUserAccess["CanEditUserProfile"])
                 {
                     await _userService.UpdateAsyncForBase64(_mapper.Map<UserViewModel, UserDto>(model.User),
                         model.ImageBase64, model.EducationView.PlaceOfStudyID, model.EducationView.SpecialityID,
@@ -297,7 +305,7 @@ namespace EPlast.WebApi.Controllers
                 }
                 else
                 {
-                    _loggerService.LogInformation($"User {currentUserId} cannot edit user profile of user {model.User.ID}");
+                    _loggerService.LogInformation($"User {currentUser.Id} cannot edit user profile of user {model.User.ID}");
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
             }
@@ -380,7 +388,9 @@ namespace EPlast.WebApi.Controllers
                     || user.UserProfile.UpuDegreeID != 1
                     || !(await _userManagerService.IsInRoleAsync(user, Roles.Supporter)
                     && await _userService.IsApprovedCityMember(userId)),
+                IsUserAdmin = await _userManagerService.IsInRoleAsync(user, Roles.Admin),
                 CurrentUserId = approverId
+
             };
             foreach (var item in model.ConfirmedUsers.Select(x => x.Approver.User))
             {

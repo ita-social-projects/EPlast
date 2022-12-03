@@ -17,23 +17,26 @@ namespace EPlast.DataAccess.Repositories
         {
             searchData = searchData?.ToLower();
 
-            var found = EPlastDBContext.Set<Decesion>()
+            var found = await EPlastDBContext.Set<Decesion>()
                 .Include(d => d.Organization)
-                .Include(d=>d.DecesionTarget)
+                .Include(d => d.DecesionTarget)
+                .ToListAsync();
+
+            var sorted = found
                 .Where(d =>
                     string.IsNullOrWhiteSpace(searchData)
-                    || ("У розгляді".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.Canceled)
-                    || ("Підтверджено".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.Confirmed)
+                    || ("У розгляді".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.InReview)
+                    || ("Потверджено".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.Confirmed)
                     || ("Скасовано".ToLower().Contains(searchData) && d.DecesionStatusType == DecesionStatusType.Canceled)
                     || d.ID.ToString().Contains(searchData)
                     || d.Name.ToLower().Contains(searchData)
                     || d.Organization.OrganizationName.ToLower().Contains(searchData)
-                    ||d.DecesionTarget.TargetName.ToLower().Contains(searchData)
-                    ||d.Description.ToLower().Contains(searchData)
-                    ||d.Date.ToString().Contains(searchData)
+                    || d.DecesionTarget.TargetName.ToLower().Contains(searchData)
+                    || d.Description.ToLower().Contains(searchData)
+                    || d.Date.ToShortDateString().Contains(searchData)
                 );
 
-            var selected = found
+            var selected = sorted
                 .Select(d => new DecisionTableObject
                 {
                     Id = d.ID,
@@ -49,10 +52,9 @@ namespace EPlast.DataAccess.Repositories
                     Total = EPlastDBContext.Set<Decesion>().Count()
                 });
 
-            var items = await selected
+            var items = selected
                 .Skip(pageSize * (page - 1))
-                .Take(pageSize)
-                .ToListAsync();
+                .Take(pageSize);
 
             return items;
         }

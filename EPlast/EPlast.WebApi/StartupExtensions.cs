@@ -201,6 +201,7 @@ namespace EPlast.WebApi
             services.AddScoped<IUserPersonalDataService, UserPersonalDataService>();
             services.AddScoped<IUserPrecautionService, UserPrecautionService>();
             services.AddScoped<IUserProfileAccessService, UserProfileAccessService>();
+            services.AddScoped<IUserRenewalService, UserRenewalService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<RegionAccessSettings>();
             services.AddScoped<StatisticsServiceSettings>();
@@ -216,7 +217,7 @@ namespace EPlast.WebApi
             services.AddTransient<IJwtService, JwtService>();
             services.AddSingleton<IUserMapService, UserMapService>();
             services.AddSingleton<ICacheService, RedisCacheService>();
-            services.AddSingleton<IHostURLService, HostURLService>();
+            services.AddSingleton<IHostUrlService, HostUrlService>();
             return services;
         }
 
@@ -232,16 +233,16 @@ namespace EPlast.WebApi
                                             "59 23 * * *",
                                             TimeZoneInfo.Local);
 
-            recurringJobManager.AddOrUpdate("Cheak register users and sent notifications to admins",
+            recurringJobManager.AddOrUpdate("Check register users and sent notifications to admins",
                                             () => serviceProvider.GetService<IUserService>()
                                                                  .CheckRegisteredUsersAsync(),
-                                            "1 * * * *", // every day at 01:00
+                                            "0 1 * * *", // every day at 01:00
                                             TimeZoneInfo.Local);
 
-            recurringJobManager.AddOrUpdate("Cheak register users and sent notifications to admins",
+            recurringJobManager.AddOrUpdate("Check register users and sent notifications to admins",
                                          () => serviceProvider.GetService<IUserService>()
                                                               .CheckRegisteredWithoutCityUsersAsync(),
-                                             "1 * * * *", // every day at 01:00
+                                             "0 1 * * *", // every day at 01:00
                                             TimeZoneInfo.Local);
 
             recurringJobManager.AddOrUpdate("Check and change event status",

@@ -291,18 +291,18 @@ namespace EPlast.DataAccess.ExtensionMethods
                 new Precaution
                 {
                     Id = 1,
-                    Name = "Догана",
+                    Name = "І пересторога",
                     MonthsPeriod = 3
                 },
                 new Precaution
                 {
                     Id = 2,
-                    Name = "Сувора догана",
+                    Name = "ІІ пересторога",
                     MonthsPeriod = 6
                 }, new Precaution
                 {
                     Id = 3,
-                    Name = "Догана із загрозою виключення з Пласту",
+                    Name = "ІІІ пересторога",
                     MonthsPeriod = 12
                 });
 

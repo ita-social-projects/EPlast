@@ -152,6 +152,11 @@ namespace EPlast.BLL.Services.Club
             }
 
             clubAnnualReportDTO.ClubName = club.Name;
+            clubAnnualReportDTO.CreatorId = user.Id;
+            clubAnnualReportDTO.CreatorFirstName = user.FirstName;
+            clubAnnualReportDTO.CreatorLastName = user.LastName;
+            clubAnnualReportDTO.CreatorFatherName = user.FatherName;
+
             var clubAnnualReport = _mapper.Map<ClubAnnualReportDto, ClubAnnualReport>(clubAnnualReportDTO);
 
             await _repositoryWrapper.ClubAnnualReports.CreateAsync(clubAnnualReport);

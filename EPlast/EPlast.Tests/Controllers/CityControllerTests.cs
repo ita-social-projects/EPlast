@@ -677,7 +677,7 @@ namespace EPlast.Tests.Controllers
 
 
             // Act
-            var result = await controller.GetCities();
+            var result = await controller.GetCities(It.IsAny<bool>());
             var resultValue = (result as OkObjectResult)?.Value;
 
             // Assert
