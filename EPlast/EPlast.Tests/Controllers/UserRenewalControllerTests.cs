@@ -232,34 +232,6 @@ namespace EPlast.Tests.Controllers
         }
 
         [Test]
-        public async Task RenewUser_ReturnsBadRequestResultWrongTargetRole()
-        {
-            //Arrange
-            _mockUserManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User());
-            _mockUserManager
-                .Setup(u => u.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
-            _mockUserRenewalService
-                .Setup(r => r.IsValidAdminAsync(It.IsAny<User>(), It.IsAny<int>()))
-                .ReturnsAsync(true);
-            _mockUserRenewalService
-                .Setup(r => r.RenewFormerMemberUserAsync(It.IsAny<UserRenewalDto>()))
-                .ReturnsAsync(new CityMembersDto());
-            _mockUserRenewalService
-                .Setup(r => r.SendRenewalConfirmationEmailAsync(It.IsAny<string>(), It.IsAny<int>()));
-
-            //Act
-            var result = await _userRenewalController.RenewUser(userRenewalDTO);
-
-            //Assert
-            _mockUserRenewalService.Verify();
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOf<BadRequestObjectResult>(result);
-        }
-
-        [Test]
         public async Task RenewUser_ReturnsBadRequestResultUnfortunateRenewal()
         {
             //Arrange

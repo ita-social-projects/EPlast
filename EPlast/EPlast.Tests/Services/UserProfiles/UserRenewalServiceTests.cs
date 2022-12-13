@@ -283,22 +283,6 @@ namespace EPlast.Tests.Services.UserProfiles
         }
 
         [Test]
-        public void RenewFormerMemberUser_ThrowsArgumentException()
-        {
-            //Arrange
-            _mockUserManager
-                .Setup(u => u.FindByIdAsync(It.IsAny<string>()))
-                .ReturnsAsync(new User());
-            _mockUserManager
-                .Setup(u => u.IsInRoleAsync(It.IsAny<User>(), It.IsAny<string>()))
-                .ReturnsAsync(false);
-
-            //Assert
-            Assert.ThrowsAsync<ArgumentException>(
-                async ()=>{await _userRenewalService.RenewFormerMemberUserAsync(userRenewalDTO);});
-        }
-
-        [Test]
         public async Task ResolveMembershipDates_ResolvesDatesAsync()
         {
             //Arrange

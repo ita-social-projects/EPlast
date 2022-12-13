@@ -113,11 +113,12 @@ namespace EPlast.BLL.Services.UserProfiles
             var cityId = userRenewal.CityId;
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (!await _userManager.IsInRoleAsync(user, Roles.FormerPlastMember)) 
-                throw new ArgumentException("User is not Former-Member", nameof(userRenewal));
+            if (await _userManager.IsInRoleAsync(user, Roles.FormerPlastMember))
+            {
+                await _userManager.RemoveFromRoleAsync(user, Roles.FormerPlastMember);
+                await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
+            }
 
-            await _userManager.RemoveFromRoleAsync(user, Roles.FormerPlastMember);
-            await _userManager.AddToRoleAsync(user, Roles.RegisteredUser);
             await ResolveUserMembershipDatesAsync(userId);
             var newUser = await _cityParticipantsService.AddFollowerAsync(cityId, userId);
 
