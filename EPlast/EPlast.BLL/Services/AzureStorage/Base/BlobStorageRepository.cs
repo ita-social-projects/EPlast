@@ -29,15 +29,22 @@ namespace EPlast.BLL.Services.AzureStorage.Base
         /// <inheritdoc />
         public async Task<string> GetBlobBase64Async(string blobName)
         {
-            var cloudBlobContainer = await _connectionFactory.GetBlobContainer(_containerNameKey);
-            CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+            try
+            {
+                var cloudBlobContainer = await _connectionFactory.GetBlobContainer(_containerNameKey);
+                CloudBlockBlob blockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
 
-            blockBlob.FetchAttributes();
-            byte[] arr = new byte[blockBlob.Properties.Length];
-            blockBlob.DownloadToByteArray(arr, 0);
-            var azureBase64 = Convert.ToBase64String(arr);
-            var result = $"data:{blockBlob.Properties.ContentType};base64," + azureBase64;
-            return result;
+                blockBlob.FetchAttributes();
+                byte[] arr = new byte[blockBlob.Properties.Length];
+                blockBlob.DownloadToByteArray(arr, 0);
+                var azureBase64 = Convert.ToBase64String(arr);
+                var result = $"data:{blockBlob.Properties.ContentType};base64," + azureBase64;
+                return result;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <inheritdoc />
