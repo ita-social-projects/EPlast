@@ -3,7 +3,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- master
+- move
 
 resources:
 - repo: self
@@ -15,6 +15,8 @@ variables:
 - name: dockerRegistryServiceConnection
   # value: '5aab2e73-307d-46b2-8421-8ac50de15018'
   value: '88435167-4a39-4ca0-9290-a2ef27d3ff17'
+- name: SiteDnsName
+  value: 'umtestag.westeurope.cloudapp.azure.com'
 #  value: 'a4044132-4df5-4427-8b71-97bb4e8a3dda'
 - name: imageRepository
   value: 'eplastapi'
@@ -151,14 +153,14 @@ stages:
             inputs:
               action: createSecret
               secretName: $(imagePullSecret)
-              kubernetesServiceConnection: 'EPlast-eplast-ServiceConnection'
+              kubernetesServiceConnection: 'new EPlast'
               dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
               
           - task: KubernetesManifest@0
             displayName: Deploy to Kubernetes cluster
             inputs:
               action: deploy
-              kubernetesServiceConnection: 'EPlast-eplast-ServiceConnection'
+              kubernetesServiceConnection: 'new EPlast'
               manifests: |
                 $(Pipeline.Workspace)/manifests/test/deployment.yml
                 $(Pipeline.Workspace)/manifests/test/service.yml
